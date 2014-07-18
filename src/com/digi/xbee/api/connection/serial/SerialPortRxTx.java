@@ -1,0 +1,390 @@
+package com.digi.xbee.api.connection.serial;
+
+import gnu.io.CommPortIdentifier;
+import gnu.io.CommPortOwnershipListener;
+import gnu.io.NoSuchPortException;
+import gnu.io.PortInUseException;
+import gnu.io.RXTXPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.TooManyListenersException;
+
+import com.digi.xbee.api.exceptions.XBeeException;
+
+public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
+	
+	// Variables
+	private RXTXPort serialPort;
+	
+	private InputStream inputStream;
+	
+	private OutputStream outputStream;
+	
+	private Thread breakThread;
+	
+	private boolean breakEnabled = false;
+	
+	private CommPortIdentifier portIdentifier = null;
+	
+	/**
+	 * Class constructor. Instances a new object of type SerialPort with
+	 * the given parameters.
+	 * 
+	 * @param port Serial port name to use.
+	 * @param parameters Serial port parameters.
+	 */
+	public SerialPortRxTx(String port, SerialPortParameters parameters) {
+		super(port, parameters, DEFAULT_PORT_TIMEOUT);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type SerialPort with
+	 * the given parameters.
+	 * 
+	 * @param port Serial port name to use.
+	 * @param parameters Serial port parameters.
+	 * @param receiveTimeout Serial port receive timeout.
+	 */
+	public SerialPortRxTx(String port, SerialPortParameters parameters, int receiveTimeout) {
+		super(port, parameters, receiveTimeout);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type SerialPort with
+	 * the given parameters.
+	 * 
+	 * @param port Serial port name to use.
+	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
+	 */
+	public SerialPortRxTx(String port, int baudRate) {
+		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type SerialPort with
+	 * the given parameters.
+	 * 
+	 * @param port Serial port name to use.
+	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
+	 * @param receiveTimeout Serial port receive timeout.
+	 */
+	public SerialPortRxTx(String port, int baudRate, int receiveTimeout) {
+		super(port, baudRate, receiveTimeout);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.XBeeInterface#open()
+	 */
+	public void connect() throws XBeeException {
+		// Check that the given serial port exists.
+		try {
+			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
+		} catch (NoSuchPortException e) {
+			throw new XBeeException(XBeeException.INVALID_PORT, "No such port: " + port);
+		}
+		try {
+			// Get the serial port.
+			serialPort = (RXTXPort)portIdentifier.open(PORT_ALIAS + " " + port, receiveTimeout);
+			// Set port as connected.
+			connected = true;
+			// Configure the port.
+			if (parameters == null)
+				parameters = new SerialPortParameters(baudRate, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_FLOW_CONTROL);
+			serialPort.setSerialPortParams(baudRate, parameters.dataBits, parameters.stopBits, parameters.parity);
+			serialPort.setFlowControlMode(parameters.flowControl);
+			
+			serialPort.enableReceiveTimeout(receiveTimeout);
+			
+			// Set the port ownership.
+			portIdentifier.addPortOwnershipListener(this);
+			
+			// Initialize input and output streams before setting the listener.
+			inputStream = serialPort.getInputStream();
+			outputStream = serialPort.getOutputStream();
+			// Activate data received event.
+			serialPort.notifyOnDataAvailable(true);
+			// Register serial port event listener to be notified when data is available.
+			serialPort.addEventListener(this);
+		} catch (PortInUseException e) {
+			throw new XBeeException(XBeeException.PORT_IN_USE);
+		} catch (UnsupportedCommOperationException e) {
+			throw new XBeeException(XBeeException.INVALID_OPERATION, e.getMessage());
+		} catch (TooManyListenersException e) {
+			throw new XBeeException(XBeeException.GENERIC, e.getMessage());
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.XBeeInterface#close()
+	 */
+	public void disconnect() {
+		try {
+			if (inputStream != null) {
+				inputStream.close();
+				inputStream = null;
+			}
+			if (outputStream != null) {
+				outputStream.close();
+				outputStream = null;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (serialPort != null) {
+			try {
+				serialPort.notifyOnDataAvailable(false);
+				//serialPort.removeEventListener();
+				portIdentifier.removePortOwnershipListener(this);
+				Thread closeThread = new Thread("Closing thread for " + port) {
+					public void run() {
+						synchronized (serialPort) {
+							serialPort.close();
+							serialPort = null;
+							connected = false;
+						}
+					};
+				};
+				closeThread.start();
+			} catch (Exception e) { }
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see purejavacomm.SerialPortEventListener#serialEvent(purejavacomm.SerialPortEvent)
+	 */
+	public void serialEvent(SerialPortEvent event) {
+		// Listen only to data available event.
+		switch (event.getEventType()) {
+		case SerialPortEvent.DATA_AVAILABLE:
+			// Check if serial device has been disconnected or not.
+			try {
+				getInputStream().available();
+			} catch (Exception e) {
+				// Serial device has been disconnected.
+				disconnect();
+				synchronized (this) {
+					this.notify();
+				}
+				break;
+			}
+			// Notify data is available by waking up the read thread.
+			try {
+				if (getInputStream().available() > 0) {
+					synchronized (this) {
+						this.notify();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return super.toString();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#setBreak(boolean)
+	 */
+	public void setBreak(boolean enabled) {
+		breakEnabled = enabled;
+		if(breakEnabled){
+			if (breakThread == null) {
+				breakThread = new Thread() {
+					public void run() {
+						while (breakEnabled && serialPort != null)
+							serialPort.sendBreak(100);
+					};
+				};
+				breakThread.start();
+			}
+		} else {
+			if (breakThread != null)
+				breakThread.interrupt();
+			breakThread = null;
+			serialPort.sendBreak(0);
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.XBeeInterface#getInputStream()
+	 */
+	public InputStream getInputStream() {
+		return inputStream;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.XBeeInterface#getOutputStream()
+	 */
+	public OutputStream getOutputStream() {
+		return outputStream;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#setReadTimeout(int)
+	 */
+	public void setReadTimeout(int timeout) {
+		serialPort.disableReceiveTimeout();
+		serialPort.enableReceiveTimeout(timeout);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#getReadTimeout()
+	 */
+	public int getReadTimeout() {
+		return serialPort.getReceiveTimeout();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#setDTR(boolean)
+	 */
+	public void setDTR(boolean state) {
+		serialPort.setDTR(state);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#setRTS(boolean)
+	 */
+	public void setRTS(boolean state) {
+		serialPort.setRTS(state);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#setPortParameters(int, int, int, int, int)
+	 */
+	public void setPortParameters(int baudRate, int dataBits, int stopBits,
+			int parity, int flowControl) throws XBeeException {
+		if (serialPort != null) {
+			try {
+				serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
+				serialPort.setFlowControlMode(flowControl);
+			} catch (UnsupportedCommOperationException e) {
+				throw new XBeeException(XBeeException.INVALID_OPERATION, e.getMessage());
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#sendBreak(int)
+	 */
+	public void sendBreak(int duration) {
+		if (serialPort != null)
+			serialPort.sendBreak(duration);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see gnu.io.CommPortOwnershipListener#ownershipChange(int)
+	 */
+	public void ownershipChange(int nType) {
+		switch (nType) {
+		case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
+			onSerialOwnershipRequested(null);
+			break;
+		}
+	}
+	
+	/**
+	 * Releases the port on any ownership request in the same application instance.
+	 * 
+	 * @param data The port requester.
+	 */
+	private void onSerialOwnershipRequested(Object data) {
+		try {
+			throw new Exception();
+		} catch (Exception e) {
+			StackTraceElement[] elems = e.getStackTrace();
+			String requester = elems[elems.length - 4].getClassName();
+			synchronized (this) {
+				this.notify();
+			}
+			disconnect();
+			String myPackage = this.getClass().getPackage().getName();
+			if (requester.startsWith(myPackage))
+				requester = "another AT connection";
+			System.out.println("Connection for port " + port + " canceled due to ownership request from " + requester + ".");
+		}
+	}
+	
+	/**
+	 * Retrieves the list of serial ports of the PC.
+	 * 
+	 * @return List of available serial ports.
+	 */
+	@SuppressWarnings("unchecked")
+	public static String[] listSerialPorts() {
+		ArrayList<String> serialPorts = new ArrayList<String>();
+		Enumeration<CommPortIdentifier> comPorts = CommPortIdentifier.getPortIdentifiers();
+		while (comPorts.hasMoreElements()) {
+			CommPortIdentifier identifier = (CommPortIdentifier)comPorts.nextElement();
+			String strName = identifier.getName();
+			serialPorts.add(strName);
+		}
+		return serialPorts.toArray(new String[serialPorts.size()]);
+	}
+	
+	/**
+	 * Retrieves the list of serial ports of the PC with description.
+	 * 
+	 * @return List of available serial ports with their description.
+	 */
+	@SuppressWarnings("unchecked")
+	public static ArrayList<SerialPortInfo> listSerialPortsInfo() {
+		ArrayList<SerialPortInfo> ports = new ArrayList<SerialPortInfo>();
+		Enumeration<CommPortIdentifier> comPorts = CommPortIdentifier.getPortIdentifiers();
+		while (comPorts.hasMoreElements()) {
+			CommPortIdentifier identifier = (CommPortIdentifier)comPorts.nextElement();
+			ports.add(new SerialPortInfo(identifier.getName()));
+		}
+		return ports;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#isCTS()
+	 */
+	public boolean isCTS() {
+		return serialPort.isCTS();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#isDSR()
+	 */
+	public boolean isDSR() {
+		return serialPort.isDSR();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.AbstractXBeeSerialPort#isCD()
+	 */
+	public boolean isCD() {
+		return serialPort.isCD();
+	}
+}

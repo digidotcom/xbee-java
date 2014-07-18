@@ -1,0 +1,5 @@
+/bin
+/libs
+/src/com/digi/xbee/api/app
+.project
+.classpath

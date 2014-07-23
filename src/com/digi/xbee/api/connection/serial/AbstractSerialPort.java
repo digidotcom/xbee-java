@@ -37,7 +37,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	protected SerialPortParameters parameters;
 	
-	protected boolean connected = false;
+	protected boolean connectionOpen = false;
 	
 	/**
 	 * Class constructor. Instantiates a new object of type AbstractXBeeSerialPort with
@@ -128,20 +128,20 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public abstract void connect() throws XBeeException, InvalidOperatingModeException;
+	public abstract void open() throws XBeeException, InvalidOperatingModeException;
 	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#close()
 	 */
-	public abstract void disconnect();
+	public abstract void close();
 	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#isConnected()
 	 */
-	public boolean isConnected() {
-		return connected;
+	public boolean isOpen() {
+		return connectionOpen;
 	}
 	
 	/*
@@ -241,9 +241,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		
 		baudRate = parameters.baudrate;
 		this.parameters = parameters;
-		if (isConnected()) {
-			disconnect();
-			connect();
+		if (isOpen()) {
+			close();
+			open();
 		}
 	}
 	

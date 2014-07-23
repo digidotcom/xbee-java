@@ -128,13 +128,13 @@ public class XBeeDevice {
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@code XBeeMode.API}
 	 *                                       and {@code XBeeMode.API_ESCAPE}.
 	 */
-	public void connect() throws XBeeException, InvalidOperatingModeException {
+	public void open() throws XBeeException, InvalidOperatingModeException {
 		// First, verify that the connection is not already open.
-		if (connectionInterface.isConnected())
+		if (connectionInterface.isOpen())
 			throw new XBeeException(XBeeException.CONNECTION_ALREADY_OPEN);
 		
 		// Connect the interface.
-		connectionInterface.connect();
+		connectionInterface.open();
 		
 		// Initialize the data reader.
 		dataReader = new DataReader(connectionInterface);
@@ -146,10 +146,10 @@ public class XBeeDevice {
 		
 		// Check if the operating mode is a valid and supported one.
 		if (operatingMode == OperatingMode.UNKNOWN) {
-			disconnect();
+			close();
 			throw new InvalidOperatingModeException("Could not determine operating mode.");
 		} else if (operatingMode == OperatingMode.AT) {
-			disconnect();
+			close();
 			throw new InvalidOperatingModeException("Unsupported operating mode AT.");
 		}
 	}
@@ -157,23 +157,23 @@ public class XBeeDevice {
 	/**
 	 * Closes the connection interface associated with this XBee device.
 	 */
-	public void disconnect() {
+	public void close() {
 		// Stop XBee reader.
 		if (dataReader != null && dataReader.isRunning())
 			dataReader.stopReader();
 		// Close interface.
-		connectionInterface.disconnect();
+		connectionInterface.close();
 	}
 	
 	/**
 	 * Retrieves whether or not the connection interface associated to the device is 
-	 * connected.
+	 * open.
 	 * 
-	 * @return True if the interface is connected, false otherwise.
+	 * @return True if the interface is open, false otherwise.
 	 */
-	public boolean isConnected() {
+	public boolean isOpen() {
 		if (connectionInterface != null)
-			return connectionInterface.isConnected();
+			return connectionInterface.isOpen();
 		return false;
 	}
 	
@@ -236,11 +236,11 @@ public class XBeeDevice {
 	 */
 	public ATCommandResponse sendATCommand(ATCommand command) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
-		if (!connectionInterface.isConnected())
+		if (!connectionInterface.isOpen())
 			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
 		
 		// Check if command is null.
-		if (!connectionInterface.isConnected())
+		if (!connectionInterface.isOpen())
 			throw new NullPointerException("AT command cannot be null.");
 		
 		ATCommandResponse response = null;
@@ -284,7 +284,7 @@ public class XBeeDevice {
 	 */
 	public XBeePacket sendXBeePacket(final XBeePacket packet) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
-		if (!connectionInterface.isConnected())
+		if (!connectionInterface.isOpen())
 			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
 		
 		switch (getOperatingMode()) {
@@ -420,7 +420,7 @@ public class XBeeDevice {
 	 */
 	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
-		if (!connectionInterface.isConnected())
+		if (!connectionInterface.isOpen())
 			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
 		
 		switch (getOperatingMode()) {

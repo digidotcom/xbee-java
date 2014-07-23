@@ -23,19 +23,19 @@ public interface IConnectionInterface {
 	 * @throws XBeeException;
 	 * @throws InvalidOperatingModeException;
 	 */
-	public void connect() throws XBeeException, InvalidOperatingModeException;
+	public void open() throws XBeeException, InvalidOperatingModeException;
 	
 	/**
 	 * Attempts to close the connection interface.
 	 */
-	public void disconnect();
+	public void close();
 	
 	/**
 	 * Retrieves whether the connection interface is open or not.
 	 * 
 	 * @return True if the connection interface is open, false otherwise.
 	 */
-	public boolean isConnected();
+	public boolean isOpen();
 	
 	/**
 	 * Retrieves the connection interface input stream to read data from.
@@ -58,4 +58,6 @@ public interface IConnectionInterface {
 	 * @throws IOException;
 	 */
 	public void writeData(byte[] data) throws IOException;
+	
+	// TODO: Add a read method.
 }

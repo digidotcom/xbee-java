@@ -110,7 +110,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public void connect() throws XBeeException {
+	public void open() throws XBeeException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
@@ -121,7 +121,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			// Get the serial port.
 			serialPort = (RXTXPort)portIdentifier.open(PORT_ALIAS + " " + port, receiveTimeout);
 			// Set port as connected.
-			connected = true;
+			connectionOpen = true;
 			// Configure the port.
 			if (parameters == null)
 				parameters = new SerialPortParameters(baudRate, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_FLOW_CONTROL);
@@ -153,7 +153,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#close()
 	 */
-	public void disconnect() {
+	public void close() {
 		try {
 			if (inputStream != null) {
 				inputStream.close();
@@ -176,7 +176,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 						synchronized (serialPort) {
 							serialPort.close();
 							serialPort = null;
-							connected = false;
+							connectionOpen = false;
 						}
 					};
 				};
@@ -198,7 +198,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				getInputStream().available();
 			} catch (Exception e) {
 				// Serial device has been disconnected.
-				disconnect();
+				close();
 				synchronized (this) {
 					this.notify();
 				}
@@ -356,7 +356,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			synchronized (this) {
 				this.notify();
 			}
-			disconnect();
+			close();
 			String myPackage = this.getClass().getPackage().getName();
 			if (requester.startsWith(myPackage))
 				requester = "another AT connection";

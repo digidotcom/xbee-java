@@ -194,8 +194,8 @@ public class DataReader extends Thread {
 		} finally {
 			if (running) {
 				running = false;
-				if (connectionInterface != null && connectionInterface.isConnected())
-					connectionInterface.disconnect();
+				if (connectionInterface != null && connectionInterface.isOpen())
+					connectionInterface.close();
 			}
 		}
 	}

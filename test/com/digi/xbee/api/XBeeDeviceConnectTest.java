@@ -33,19 +33,19 @@ public class XBeeDeviceConnectTest {
 	public void createMocks() throws Exception {
 		// Mock the connection interface to be returned by the XBee class.
 		connectionInterface = Mockito.mock(SerialPortRxTx.class);
-		// Stub the 'connect' method of the connectionInterface mock so when checking if the 
-		// interface is connected next time it returns true.
-		PowerMockito.when(connectionInterface, "connect").thenAnswer(new Answer<Object>() {
+		// Stub the 'open' method of the connectionInterface mock so when checking if the 
+		// interface is open next time it returns true.
+		PowerMockito.when(connectionInterface, "open").thenAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				PowerMockito.when(connectionInterface, "isConnected").thenReturn(true);
+				PowerMockito.when(connectionInterface, "isOpen").thenReturn(true);
 				return null;
 			}
 		});
-		// Stub the 'disconnect' method of the connectionInterface mock so when checking if the 
-		// interface is connected next time it returns false.
-		PowerMockito.when(connectionInterface, "disconnect").thenAnswer(new Answer<Object>() {
+		// Stub the 'close' method of the connectionInterface mock so when checking if the 
+		// interface is open next time it returns false.
+		PowerMockito.when(connectionInterface, "close").thenAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				PowerMockito.when(connectionInterface, "isConnected").thenReturn(false);
+				PowerMockito.when(connectionInterface, "isOpen").thenReturn(false);
 				return null;
 			}
 		});
@@ -86,7 +86,7 @@ public class XBeeDeviceConnectTest {
 		
 		// Execute the connect method.
 		try {
-			xbeeDevice.connect();
+			xbeeDevice.open();
 		} catch (XBeeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (InvalidOperatingModeException e) {
@@ -94,7 +94,7 @@ public class XBeeDeviceConnectTest {
 		}
 		
 		// Verify the device is connected.
-		assertTrue(xbeeDevice.isConnected());
+		assertTrue(xbeeDevice.isOpen());
 		// Verify the dataReader is running.
 		assertTrue(dataReader.isRunning());
 		// Verify the operating mode is API.
@@ -112,7 +112,7 @@ public class XBeeDeviceConnectTest {
 		
 		// Execute the connect method.
 		try {
-			xbeeDevice.connect();
+			xbeeDevice.open();
 		} catch (XBeeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (InvalidOperatingModeException e) {
@@ -120,7 +120,7 @@ public class XBeeDeviceConnectTest {
 		}
 		
 		// Verify the device is connected.
-		assertTrue(xbeeDevice.isConnected());
+		assertTrue(xbeeDevice.isOpen());
 		// Verify the dataReader is running.
 		assertTrue(dataReader.isRunning());
 		// Verify the operating mode is API Escaped.
@@ -138,7 +138,7 @@ public class XBeeDeviceConnectTest {
 		
 		// Execute the connect method.
 		try {
-			xbeeDevice.connect();
+			xbeeDevice.open();
 		} catch (XBeeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (InvalidOperatingModeException e) {
@@ -146,7 +146,7 @@ public class XBeeDeviceConnectTest {
 		}
 		
 		// Verify the device is disconnected.
-		assertFalse(xbeeDevice.isConnected());
+		assertFalse(xbeeDevice.isOpen());
 		// Verify the dataReader is not running.
 		assertFalse(dataReader.isRunning());
 		// Verify the operating mode is AT.
@@ -165,7 +165,7 @@ public class XBeeDeviceConnectTest {
 		
 		// Execute the connect method.
 		try {
-			xbeeDevice.connect();
+			xbeeDevice.open();
 		} catch (XBeeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (InvalidOperatingModeException e) {
@@ -173,7 +173,7 @@ public class XBeeDeviceConnectTest {
 		}
 		
 		// Verify the device is disconnected.
-		assertFalse(xbeeDevice.isConnected());
+		assertFalse(xbeeDevice.isOpen());
 		// Verify the dataReader is not running.
 		assertFalse(dataReader.isRunning());
 		// Verify the operating mode is Unknown.
@@ -188,11 +188,11 @@ public class XBeeDeviceConnectTest {
 	 */
 	public void testConnectTimeout() throws Exception {
 		// Configure the determineConnectionMode method to return 'API'.
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "connect");
+		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "open");
 		
 		// Execute the connect method.
 		try {
-			xbeeDevice.connect();
+			xbeeDevice.open();
 			fail("Device shouldn't have connected");
 		} catch (XBeeException e) {
 			// This is the exception we should have received.
@@ -201,7 +201,7 @@ public class XBeeDeviceConnectTest {
 		}
 		
 		// Verify the device is disconnected.
-		assertFalse(xbeeDevice.isConnected());
+		assertFalse(xbeeDevice.isOpen());
 		// Verify the dataReader is not running.
 		assertFalse(dataReader.isRunning());
 		// Verify the operating mode is Unknown.

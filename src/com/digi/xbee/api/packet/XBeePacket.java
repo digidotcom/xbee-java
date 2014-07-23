@@ -16,13 +16,10 @@ import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 
 import com.digi.xbee.api.exceptions.PacketParsingException;
-import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
-
-
 
 /**
  * This abstract class represents the basic structure of an XBee packet. Derived classes

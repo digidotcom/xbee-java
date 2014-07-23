@@ -25,7 +25,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.DataReader;
-import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.XBeeException;

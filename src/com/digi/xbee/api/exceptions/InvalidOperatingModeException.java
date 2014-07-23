@@ -1,8 +1,12 @@
 package com.digi.xbee.api.exceptions;
 
+import com.digi.xbee.api.models.OperatingMode;
+
 /**
  * This exception is thrown whenever an action related with AT mode is performed
  * while in API or API2 modes and vice-versa. 
+ * 
+ * @see OperatingMode
  */
 public class InvalidOperatingModeException extends Exception {
 

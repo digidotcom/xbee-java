@@ -16,9 +16,9 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	public final static int NO_FRAME_ID = 9999;
 	
 	// Variables
-	private XBeeAPIType apiID = null;
+	private APIFrameType frameType = null;
 	
-	private int apiIDValue;
+	private int frameTypeValue;
 	
 	protected int frameID = NO_FRAME_ID;
 
@@ -26,41 +26,54 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * Class constructor. Instances a new object of type AbstractXBeeAPIPacket
 	 * with the given API ID.
 	 * 
-	 * @param apiID XBee packet API ID.
+	 * @param frameType XBee packet frame type.
+	 * 
+	 * @throws NullPointerException if {@code frameType == null}.
 	 */
-	protected XBeeAPIPacket(XBeeAPIType apiID) {
+	protected XBeeAPIPacket(APIFrameType frameType) {
 		super();
-		this.apiID = apiID;
-		apiIDValue = apiID.getValue();
+		
+		if (frameType == null)
+			throw new NullPointerException("Frame type cannot be null.");
+		
+		this.frameType = frameType;
+		frameTypeValue = frameType.getValue();
 	}
 	
 	/**
 	 * Class constructor. Instances a new object of type AbstractXBeeAPIPacket
 	 * with the given API ID integer.
 	 * 
-	 * @param apiIDValue XBee packet API ID integer value.
+	 * @param frameTypeValue XBee packet frame type integer value.
+	 * 
+	 * @throws NullPointerException if {@code frameTypeValue < 0} or 
+	 *                              if {@code frameTypeValue > 255}.
 	 */
-	protected XBeeAPIPacket(int apiIDValue) {
+	protected XBeeAPIPacket(int frameTypeValue) {
 		super();
-		this.apiIDValue = apiIDValue;
+		
+		if (frameTypeValue < 0 || frameTypeValue > 255)
+			throw new IllegalArgumentException("Frame type value must be between 0 and 255.");
+		
+		this.frameTypeValue = frameTypeValue;
 	}
 	
 	/**
-	 * Retrieves the XBee packet API ID.
+	 * Retrieves the XBee packet frame type.
 	 * 
-	 * @return The XBee packet API ID.
+	 * @return The XBee packet frame type.
 	 */
-	public XBeeAPIType getAPIID() {
-		return apiID;
+	public APIFrameType getFrameType() {
+		return frameType;
 	}
 	
 	/**
-	 * Retrieves the XBee packet API ID integer value.
+	 * Retrieves the XBee packet frame type integer value.
 	 * 
-	 * @return The XBee packet API ID integer value.
+	 * @return The XBee packet frame type integer value.
 	 */
-	public int getAPIIDValue() {
-		return apiIDValue;
+	public int getFrameTypeValue() {
+		return frameTypeValue;
 	}
 	
 	/*
@@ -69,7 +82,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 */
 	public byte[] getPacketData() {
 		byte[] data = new byte[getAPIData().length + 1];
-		data[0] = (byte)apiIDValue;
+		data[0] = (byte)frameTypeValue;
 		System.arraycopy(getAPIData(), 0, data, 1, getAPIData().length);
 		return data;
 	}
@@ -82,11 +95,11 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	public abstract byte[] getAPIData();
 	
 	/**
-	 * Retrieves whether the API packet has API Frame ID or not.
+	 * Retrieves whether the API packet needs API Frame ID or not.
 	 * 
-	 * @return True if the packet has API Frame ID, false otherwise.
+	 * @return True if the packet needs API Frame ID, false otherwise.
 	 */
-	public abstract boolean hasAPIFrameID();
+	public abstract boolean needsAPIFrameID();
 	
 	/**
 	 * Gets the Frame ID
@@ -101,9 +114,32 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * Sets the frame ID
 	 * 
 	 * @param frameID frame ID to set
+	 * 
+	 * @throws IllegalArgumentException if {@code frameID < 0} or 
+	 *                                  if {@code frameID > 255}.
 	 */
 	public void setFrameID(int frameID) {
+		if (frameID < 0 || frameID > 255)
+			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
+		
 		this.frameID = frameID;
+	}
+	
+	/**
+	 * Returns whether the given id is the current frame id.
+	 * 
+	 * @param id the frame id to check.
+	 * @return {@code true} if frame ID is equal to the {@code id} provided, 
+	 *         {@code false} otherwise or if the frame does not need an id.
+	 *         
+	 * @see #needsAPIFrameID()
+	 * @see #getFrameID()
+	 * @see #setFrameID(int)
+	 */
+	public boolean checkFrameID(int id) {
+		if (needsAPIFrameID() && getFrameID() == id)
+			return true;
+		return false;
 	}
 	
 	/*
@@ -112,10 +148,10 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 */
 	protected LinkedHashMap<String, String> getPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		if (getAPIID() != null)
-			parameters.put("Frame type", HexUtils.prettyHexString(HexUtils.integerToHexString(apiIDValue, 1)) + " (" + getAPIID().getName() + ")");
+		if (getFrameType() != null)
+			parameters.put("Frame type", HexUtils.prettyHexString(HexUtils.integerToHexString(frameTypeValue, 1)) + " (" + getFrameType().getName() + ")");
 		else
-			parameters.put("Frame type", HexUtils.prettyHexString(HexUtils.integerToHexString(apiIDValue, 1)));
+			parameters.put("Frame type", HexUtils.prettyHexString(HexUtils.integerToHexString(frameTypeValue, 1)));
 		parameters.putAll(getAPIPacketParameters());
 		return parameters;
 	}

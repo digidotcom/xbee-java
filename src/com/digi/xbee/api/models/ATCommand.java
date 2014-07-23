@@ -9,13 +9,9 @@ package com.digi.xbee.api.models;
  *  See {@link com.digi.xbee.models.ATResponse}.
  */
 public class ATCommand {
-
-	// Constants
-	private static final String AT_HEADER = "AT";
-	private static final String END_LINE = "\r";
 	
 	// Variables
-	private String command;
+	private final String command;
 	
 	private byte[] parameter;
 	
@@ -24,8 +20,13 @@ public class ATCommand {
 	 * the given parameters.
 	 * 
 	 * @param command The AT Command.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command) {
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		
 		this.command = command;
 		this.parameter = null;
 	}
@@ -36,10 +37,16 @@ public class ATCommand {
 	 * 
 	 * @param command The AT Command.
 	 * @param parameter The command parameter as string, null if no parameter is required.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command, String parameter) {
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		
 		this.command = command;
-		this.parameter = parameter.getBytes();
+		if (parameter != null)
+			this.parameter = parameter.getBytes();
 	}
 	
 	/**
@@ -48,8 +55,13 @@ public class ATCommand {
 	 * 
 	 * @param command The AT Command.
 	 * @param parameter The command parameter as byte array, null if no parameter is required.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command, byte[] parameter) {
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		
 		this.command = command;
 		this.parameter = parameter;
 	}
@@ -84,15 +96,6 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Sets the AT command.
-	 * 
-	 * @param command The AT command.
-	 */
-	public void setCommand(String command) {
-		this.command = command;
-	}
-	
-	/**
 	 * Sets the AT command parameter as string.
 	 * 
 	 * @param parameter The AT command parameter as string, null if none.
@@ -108,27 +111,5 @@ public class ATCommand {
 	 */
 	public void setParameter(byte[] parameter) {
 		this.parameter = parameter;
-	}
-	
-	/**
-	 * Generates the AT command byte array.
-	 * 
-	 * @return The full AT command as byte array. 
-	 */
-	public byte[] generateByteArray() {
-		byte[] data;
-		if (parameter != null) {
-			data = new byte[AT_HEADER.length() + command.length() + parameter.length + END_LINE.length()];
-			System.arraycopy(AT_HEADER.getBytes(), 0, data, 0, AT_HEADER.length());
-			System.arraycopy(command.getBytes(), 0, data, AT_HEADER.length(), command.length());
-			System.arraycopy(parameter, 0, data, AT_HEADER.length() + command.length(), parameter.length);
-			System.arraycopy(END_LINE.getBytes(), 0, data, AT_HEADER.length() + command.length() + parameter.length, END_LINE.length());
-		} else {
-			data = new byte[AT_HEADER.length() + command.length() + END_LINE.length()];
-			System.arraycopy(AT_HEADER.getBytes(), 0, data, 0, AT_HEADER.length());
-			System.arraycopy(command.getBytes(), 0, data, AT_HEADER.length(), command.length());
-			System.arraycopy(END_LINE.getBytes(), 0, data, AT_HEADER.length() + command.length() , END_LINE.length());
-		}
-		return data;
 	}
 }

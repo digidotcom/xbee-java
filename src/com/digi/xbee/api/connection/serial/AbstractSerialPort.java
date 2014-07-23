@@ -11,7 +11,15 @@ import com.digi.xbee.api.exceptions.XBeeException;
 public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	// Constants
+	/**
+	 * Default receive timeout: {@value} seconds.
+	 * 
+	 * <p>When the specified number of milliseconds have elapsed, read will 
+	 * return immediately.</p>
+	 */
 	public static final int DEFAULT_PORT_TIMEOUT = 10;
+	
+	// TODO: Add the rest of JavaDoc.
 	public static final int DEFAULT_DATA_BITS = 8;
 	public static final int DEFAULT_STOP_BITS = 1;
 	public static final int DEFAULT_PARITY = 0;
@@ -37,6 +45,11 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * 
 	 * @param port COM port name to use.
 	 * @param parameters Serial connection parameters.
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code parameters == null}.
+	 * 
+	 * @see SerialPortParameters
 	 */
 	protected AbstractSerialPort(String port, SerialPortParameters parameters) {
 		this(port, parameters, DEFAULT_PORT_TIMEOUT);
@@ -47,37 +60,68 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * the given parameters.
 	 * 
 	 * @param port COM port name to use.
-	 * @param parameters Serial connection parameters.
-	 * @param timeout Serial connection timeout.
-	 */
-	protected AbstractSerialPort(String port, SerialPortParameters parameters, int timeout) {
-		this(port, parameters.baudrate, timeout);
-		this.parameters = parameters;
-	}
-	
-	/**
-	 * Class constructor. Instances a new object of type AbstractXBeeSerialPort with
-	 * the given parameters.
-	 * 
-	 * @param port COM port name to use.
 	 * @param baudRate Serial connection baud rate, the rest of parameters will be set by default.
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
+	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
+	 * @see AbstractSerialPort#DEFAULT_PARITY
+	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
+	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
 	 */
 	protected AbstractSerialPort(String port, int baudRate) {
-		this(port, baudRate, DEFAULT_PORT_TIMEOUT);
+		this(port, new SerialPortParameters(baudRate, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_FLOW_CONTROL), DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type AbstractXBeeSerialPort with
+	 * Class constructor. Instances a new object of type {@code AbstractSerialPort} with
 	 * the given parameters.
 	 * 
 	 * @param port COM port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
-	 * @param receiveTimeout Receive timeout.
+	 * @param receiveTimeout Receive timeout in milliseconds.
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * 
+	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
+	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
+	 * @see AbstractSerialPort#DEFAULT_PARITY
+	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
 	 */
 	protected AbstractSerialPort(String port, int baudRate, int receiveTimeout) {
+		this(port, new SerialPortParameters(baudRate, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_FLOW_CONTROL), receiveTimeout);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type AbstractXBeeSerialPort with
+	 * the given parameters.
+	 * 
+	 * @param port COM port name to use.
+	 * @param parameters Serial connection parameters.
+	 * @param receiveTimeout Serial connection receive timeout in milliseconds.
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code parameters == null}.
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 *
+	 * @see SerialPortParameters
+	 */
+	protected AbstractSerialPort(String port, SerialPortParameters parameters, int receiveTimeout) {
+		if (port == null)
+			throw new NullPointerException("Serial port cannot be null");
+
+		if (parameters == null)
+			throw new NullPointerException("SerialPortParameters cannot be null");
+
+		if (receiveTimeout < 0)
+			throw new IllegalArgumentException("Receive timeout cannot be less than 0");
+
 		this.port = port;
-		this.baudRate = baudRate;
+		this.baudRate = parameters.baudrate;
 		this.receiveTimeout = receiveTimeout;
+		this.parameters = parameters;
 	}
 	
 	/*
@@ -163,9 +207,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @return True if the flow control is hardware, false otherwise.
 	 */
 	public boolean isHardwareFlowControl() {
-		if (parameters.flowControl == FLOW_CONTROL_HW)
-			return true;
-		return false;
+		return parameters.flowControl == FLOW_CONTROL_HW;
 	}
 	
 	/**
@@ -190,8 +232,13 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param parameters The new serial port parameters.
 	 * @throws XBeeException
 	 * @throws InvalidOperatingModeException 
+	 * 
+	 * @throws NullPointerException if {@code parameters == null}.
 	 */
 	public void setPortParameters(SerialPortParameters parameters) throws XBeeException, InvalidOperatingModeException {
+		if (parameters == null)
+			throw new NullPointerException("Serial port parameters cannot be null.");
+		
 		baudRate = parameters.baudrate;
 		this.parameters = parameters;
 		if (isConnected()) {
@@ -261,8 +308,13 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * 
 	 * @param data The byte array to be sent.
 	 * @throws IOException 
+	 * 
+	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public void writeData(byte[] data) throws IOException {
+		if (data == null)
+			throw new NullPointerException("Data to be sent cannot be null.");
+		
 		if (getOutputStream() != null) {
 			// Writing data in ports without any device connected and configured with 
 			// hardware flow-control causes the majority of serial libraries to hang.
@@ -297,8 +349,16 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param numBytes The number of bytes to read.
 	 * @return The number of bytes read.
 	 * @throws IOException
+	 * 
+	 * @throws NullPointerException if {@code buffer == null}.
+	 * @throws IllegalArgumentException if {@code numBytes < 1}.
 	 */
 	public int readData(byte[] buffer, int numBytes) throws IOException {
+		if (buffer == null)
+			throw new NullPointerException("Buffer cannot be null.");
+		if (numBytes < 1)
+			throw new IllegalArgumentException("Bytes to read cannot be less than 1.");
+		
 		int readBytes = 0;
 		if (getInputStream() != null)
 			readBytes = getInputStream().read(buffer, 0, numBytes);
@@ -311,8 +371,13 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param buffer The buffer where the read bytes will be placed.
 	 * @return The number of bytes read.
 	 * @throws IOException
+	 * 
+	 * @throws NullPointerException if {@code buffer == null}.
 	 */
 	public int readData(byte[] buffer) throws IOException {
+		if (buffer == null)
+			throw new NullPointerException("Buffer cannot be null.");
+		
 		int readBytes = 0;
 		if (getInputStream() != null && getInputStream().available() > 0) {
 			int numBytesToRead = getInputStream().available();
@@ -329,8 +394,13 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param buffer The buffer where the read bytes will be placed.
 	 * @return The number of bytes read.
 	 * @throws IOException
+	 * 
+	 * @throws NullPointerException if {@code buffer == null}.
 	 */
 	public int readDataBlocking(byte[] buffer) throws IOException {
+		if (buffer == null)
+			throw new NullPointerException("Buffer cannot be null.");
+		
 		int readBytes = 0;
 		if (getInputStream() != null)
 			readBytes = getInputStream().read(buffer);
@@ -382,9 +452,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 					|| parameters.flowControl == 8
 					|| parameters.flowControl == 12)
 				flowControl = "S";
-			return port.toString() + " - " + baudRate + "/" + parameters.dataBits + 
+			return port + " - " + baudRate + "/" + parameters.dataBits + 
 					"/"  + parity + "/" + parameters.stopBits + "/" + flowControl;
 		} else
-			return port.toString() + " - " + baudRate + "/8/N/1/N";
+			return port + " - " + baudRate + "/8/N/1/N";
 	}
 }

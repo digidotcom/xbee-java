@@ -6,10 +6,10 @@ import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This enumeration lists all the available frame types used in the ZigBee protocol
- * according to the XBee/XBee-PRO ZB RF Modules manual.
+ * This enumeration lists all the available frame types used in any XBee 
+ * protocol.
  */
-public enum XBeeAPIType {
+public enum APIFrameType {
 
 	// Enumeration elements
 	AT_COMMAND (0x08, "AT Command"),
@@ -20,14 +20,14 @@ public enum XBeeAPIType {
 	GENERIC (0xFF, "Generic");
 	
 	// Variables
-	private int idValue;
+	private final int idValue;
 	
-	private String name;
+	private final String name;
 	
-	private static HashMap<Integer, XBeeAPIType> lookupTable = new HashMap<Integer, XBeeAPIType>();
+	private static final HashMap<Integer, APIFrameType> lookupTable = new HashMap<Integer, APIFrameType>();
 	
 	static {
-		for (XBeeAPIType type:values())
+		for (APIFrameType type:values())
 			lookupTable.put(type.getValue(), type);
 	}
 	
@@ -35,10 +35,10 @@ public enum XBeeAPIType {
 	 * Class constructor. Instances a new object of type XBee API Type with
 	 * the given value and name.
 	 * 
-	 * @param idValue XBee API type value.
-	 * @param name XBee API type name.
+	 * @param idValue XBee frame type value.
+	 * @param name XBee frame type name.
 	 */
-	XBeeAPIType(int idValue, String name) {
+	APIFrameType(int idValue, String name) {
 		this.idValue = idValue;
 		this.name = name;
 	}
@@ -46,11 +46,11 @@ public enum XBeeAPIType {
 	/**
 	 * Retrieves the XBeeAPIType associated with the given ID value.
 	 * 
-	 * @param value ID value to retrieve XBeeAPIType;
+	 * @param value ID value to retrieve APIFrameType;
 	 * @return XBeeAPIType for the given ID value, null if it does not exist.
 	 */
-	public static XBeeAPIType get(int value) {
-		XBeeAPIType type = lookupTable.get(value);
+	public static APIFrameType get(int value) {
+		APIFrameType type = lookupTable.get(value);
 		return type; 
 	}
 	

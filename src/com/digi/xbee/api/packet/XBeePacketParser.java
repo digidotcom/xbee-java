@@ -9,7 +9,7 @@ import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeMode;
+import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
@@ -18,7 +18,7 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 
 /**
  * This class reads and parses XBee packets from the input stream returning
- * a generic {@link com.digi.xbee.packet.XBeeAPIPacket} which can be casted later
+ * a generic {@link com.digi.xbee.api.packet.XBeeAPIPacket} which can be casted later
  * to the corresponding high level specific API packet.
  * 
  * All the API and API2 logic is already included so all packet reads from the input 
@@ -31,7 +31,7 @@ public class XBeePacketParser {
 	// Variables
 	private InputStream inputStream;
 	
-	private XBeeMode mode;
+	private OperatingMode mode;
 	
 	private boolean lengthRead;
 	
@@ -40,16 +40,26 @@ public class XBeePacketParser {
 	
 	private XBeeChecksum checksum;
 	
-	private String errorMessage;
-	
 	/**
 	 * Class constructor. Instances a new object of type XBeePacketParser with
 	 * the given parameters.
 	 * 
 	 * @param inputStream Input stream to read bytes from.
 	 * @param mode XBee device working mode.
+	 * 
+	 * @throws NullPointerException if {@code inputStream == null} or 
+	 *                              if {@code mode == null}.
+	 * @throws NullPointerException if {@code mode != OperatingMode.API} and
+	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
 	 */
-	public XBeePacketParser(InputStream inputStream, XBeeMode mode) {
+	public XBeePacketParser(InputStream inputStream, OperatingMode mode) {
+		if (inputStream == null)
+			throw new NullPointerException("Input stream cannot be null.");
+		if (mode == null)
+			throw new NullPointerException("Operating mode cannot be null.");
+		if (mode != OperatingMode.API || mode != OperatingMode.API_ESCAPE)
+			throw new IllegalArgumentException("Operating mode must be API or API Escaped.");
+		
 		this.inputStream = inputStream;
 		this.mode = mode;
 	}
@@ -66,7 +76,6 @@ public class XBeePacketParser {
 			// Reset variables.
 			readBytes = 0;
 			lengthRead = false;
-			errorMessage = "";
 			
 			// Initialize checksum.
 			checksum = new XBeeChecksum();
@@ -78,7 +87,7 @@ public class XBeePacketParser {
 			
 			// Read API ID
 			int apiID = readByte();
-			XBeeAPIType apiType = XBeeAPIType.get(apiID);
+			APIFrameType apiType = APIFrameType.get(apiID);
 			
 			// Parse API payload depending on API ID.
 			XBeePacket packet = null;
@@ -138,7 +147,7 @@ public class XBeePacketParser {
 		}
 		if (b == -1)
 			throw new PacketParsingException("Read -1 from stream.");
-		if (mode == XBeeMode.API_ESCAPE) {
+		if (mode == OperatingMode.API_ESCAPE) {
 			// Check if the byte is special.
 			if (SpecialByte.isSpecialByte(b)) {
 				// Check if the byte is ESCAPE
@@ -157,6 +166,7 @@ public class XBeePacketParser {
 						throw new PacketParsingException("Read -1 from stream.");
 					b ^= 0x20;
 				} else {
+					// TODO: Log some kind of information here when logging is implemented.
 					// This should NEVER not occur!
 					// rebootTheMatrix();
 				}
@@ -225,16 +235,6 @@ public class XBeePacketParser {
 			break;
 		}
 		return data;
-	}
-	
-	/**
-	 * Retrieves the error message if there is any. Useful to retrieve information
-	 * when parsed packet is null.
-	 * 
-	 * @return The error message.
-	 */
-	public String getErrorMessage() {
-		return errorMessage;
 	}
 	
 	/**

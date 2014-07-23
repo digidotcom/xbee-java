@@ -2,10 +2,14 @@ package com.digi.xbee.api.listeners;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -15,7 +19,7 @@ import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.packet.XBeeAPIType;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
@@ -24,7 +28,7 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DataReader.class})
 public class ISerialDataReceiveListenerTest {
-
+	
 	// Constants.
 	private static final XBee16BitAddress XBEE_16BIT_ADDRESS = new XBee16BitAddress("0123");
 	private static final XBee64BitAddress XBEE_64BIT_ADDRESS = new XBee64BitAddress("0123456789ABCDEF");
@@ -33,9 +37,10 @@ public class ISerialDataReceiveListenerTest {
 	private static final byte[] RECEIVED_DATA_BYTES = RECEIVED_DATA.getBytes();
 	
 	private static final String PACKET_RECEIVED_METHOD = "packetReceived";
+	private static final String NOTIFY_SERIAL_DATA_RECEIVED_METHOD = "notifySerialDataReceived";
 	
 	// Variables.
-	private MyReceiveListener receiveSerialDataListener = new MyReceiveListener();
+	private MyReceiveListener receiveSerialDataListener;
 	
 	private RX16Packet rx16Packet;
 	private RX64Packet rx64Packet;
@@ -45,28 +50,39 @@ public class ISerialDataReceiveListenerTest {
 	private DataReader dataReader;
 	
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		// Serial data receive listener.
-		//receiveSerialDataListener = new MyReceiveListener();
+		receiveSerialDataListener = new MyReceiveListener();
 		
 		// Data reader.
 		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class)));
+		// Stub the 'notifySerialDataReceived' method of the dataReader instance so it directly notifies the 
+		// listeners instead of opening a new thread per listener (which is what the real method does).
+		PowerMockito.doAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) {
+				Object[] args = invocation.getArguments();
+				String address = (String)args[0];
+				byte[] data = (byte[])args[1];
+				notifySerialReceivedListeners(address, data);
+				return null;
+			}
+		}).when(dataReader, NOTIFY_SERIAL_DATA_RECEIVED_METHOD, Mockito.anyString(), Mockito.anyObject());
 		
 		// Mock Rx16 Packet.
 		rx16Packet = Mockito.mock(RX16Packet.class);
-		Mockito.when(rx16Packet.getAPIID()).thenReturn(XBeeAPIType.RX_16);
+		Mockito.when(rx16Packet.getFrameType()).thenReturn(APIFrameType.RX_16);
 		Mockito.when(rx16Packet.getReceivedData()).thenReturn(RECEIVED_DATA_BYTES);
 		Mockito.when(rx16Packet.getSourceAddress()).thenReturn(XBEE_16BIT_ADDRESS);
 		
 		// Mock Rx64 Packet.
 		rx64Packet = Mockito.mock(RX64Packet.class);
-		Mockito.when(rx64Packet.getAPIID()).thenReturn(XBeeAPIType.RX_64);
+		Mockito.when(rx64Packet.getFrameType()).thenReturn(APIFrameType.RX_64);
 		Mockito.when(rx64Packet.getReceivedData()).thenReturn(RECEIVED_DATA_BYTES);
 		Mockito.when(rx64Packet.getSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
 		// Mock Receive Packet.
 		receivePacket = Mockito.mock(ReceivePacket.class);
-		Mockito.when(receivePacket.getAPIID()).thenReturn(XBeeAPIType.RECEIVE_PACKET);
+		Mockito.when(receivePacket.getFrameType()).thenReturn(APIFrameType.RECEIVE_PACKET);
 		Mockito.when(receivePacket.getReceivedData()).thenReturn(RECEIVED_DATA_BYTES);
 		Mockito.when(receivePacket.get64bitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
@@ -98,9 +114,6 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the notifySerialDataReceived private method was not called.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", Mockito.anyString(), Mockito.anyObject());
 		
-		// notifySerialDataReceived method starts a thread executor, need some time to let the thread of the listener run.
-		Thread.sleep(10);
-		
 		assertNull(receiveSerialDataListener.getAddress());
 		assertNull(receiveSerialDataListener.getSerialData());
 	}
@@ -118,9 +131,6 @@ public class ISerialDataReceiveListenerTest {
 		
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", XBEE_16BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
-		
-		// notifySerialDataReceived method starts a thread executor, need some time to let the thread of the listener run.
-		Thread.sleep(10);
 		
 		assertEquals(receiveSerialDataListener.getAddress(), XBEE_16BIT_ADDRESS.toString());
 		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
@@ -140,9 +150,6 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
-		// notifySerialDataReceived method starts a thread executor, need some time to let the thread of the listener run.
-		Thread.sleep(10);
-		
 		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
 		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
 	}
@@ -160,9 +167,6 @@ public class ISerialDataReceiveListenerTest {
 		
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
-		
-		// notifySerialDataReceived method starts a thread executor, need some time to let the thread of the listener run.
-		Thread.sleep(10);
 		
 		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
 		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
@@ -182,11 +186,24 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the notifySerialDataReceived private method was not called.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(0)).invoke("notifySerialDataReceived", Mockito.anyString(), Mockito.anyObject());
 		
-		// notifySerialDataReceived method starts a thread executor, need some time to let the thread of the listener run.
-		Thread.sleep(10);
-		
 		assertNull(receiveSerialDataListener.getAddress());
 		assertNull(receiveSerialDataListener.getSerialData());
+	}
+	
+	
+	/**
+	 * This method directly notifies the ISerialDataReceiveListeners of the dataReader instance that new 
+	 * serial data has been received. This method intends to replace the original 'notifySerialDataReceived' 
+	 * located within the dataReader object because it generates a thread for each notify process.
+	 * 
+	 * @param address The address of the node that sent the data.
+	 * @param data The serial data received.
+	 */
+	private void notifySerialReceivedListeners(String address, byte[] data) {
+		@SuppressWarnings("unchecked")
+		ArrayList<ISerialDataReceiveListener> serialDataReceiveListeners = (ArrayList<ISerialDataReceiveListener>)Whitebox.getInternalState(dataReader, "serialDataReceiveListeners");
+		for (ISerialDataReceiveListener listener:serialDataReceiveListeners)
+			listener.serialDataReceived(address, data);
 	}
 	
 	/**
@@ -225,4 +242,6 @@ public class ISerialDataReceiveListenerTest {
 			return address;
 		}
 	}
+	
+	// TODO: More test cases can be added here to try null data, address, etc.
 }

@@ -25,6 +25,9 @@ public class ATCommandResponse {
 	 * 
 	 * @param command The AT command which generated the response.
 	 * @param response The command response.
+	 * 
+	 * @throws NullPointerException if {@code command == null} or 
+	 *                              if {@code response == null}.
 	 */
 	public ATCommandResponse(ATCommand command, byte[] response) {
 		this(command, response, ATCommandStatus.OK);
@@ -36,9 +39,22 @@ public class ATCommandResponse {
 	 * 
 	 * @param command The AT command which generated the response.
 	 * @param response The command response.
-	 * @param status Response status. See {@link com.digi.xbee.api.models.ATCommandStatus}.
+	 * @param status Response status.
+	 * 
+	 * @throws NullPointerException if {@code command == null} or 
+	 *                              if {@code response == null} or
+	 *                              if {@code status == null}.
+	 * 
+	 * @see ATCommandStatus
 	 */
 	public ATCommandResponse(ATCommand command, byte[] response, ATCommandStatus status) {
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		if (response == null)
+			throw new NullPointerException("Response cannot be null.");
+		if (status == null)
+			throw new NullPointerException("Status cannot be null.");
+		
 		this.command = command;
 		this.response = response;
 		this.status = status;
@@ -69,7 +85,7 @@ public class ATCommandResponse {
 	 */
 	public String getResponseString() {
 		if (response == null)
-			return "";
+			return null;
 		return HexUtils.byteArrayToHexString(response).replace("\n", "");
 	}
 	
@@ -81,33 +97,5 @@ public class ATCommandResponse {
 	 */
 	public ATCommandStatus getResponseStatus() {
 		return status;
-	}
-	
-	/**
-	 * Sets the AT command which generated the response.
-	 * 
-	 * @param command The AT command which generated the response.
-	 */
-	public void setCommand(ATCommand command) {
-		this.command = command;
-	}
-	
-	/**
-	 * Sets the AT command response data if any.
-	 * 
-	 * @param response The AT command response data, maybe null.
-	 */
-	public void setResponse(byte[] response) {
-		this.response = response;
-	}
-	
-	/**
-	 * Sets the AT command response status.
-	 * See {@link com.digi.xbee.models.ATCommandStatus}.
-	 * 
-	 * @param status The AT command response status. See {@link com.digi.xbee.models.ATCommandStatus}.
-	 */
-	public void setResponseStatus(ATCommandStatus status) {
-		this.status = status;
 	}
 }

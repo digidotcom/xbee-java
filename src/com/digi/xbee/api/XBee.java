@@ -12,6 +12,10 @@ public class XBee {
 	 * @param port Serial port name.
 	 * @param baudRate Serial port baud rate.
 	 * @return The serial port connection interface.
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see IConnectionInterface
 	 */
 	public static IConnectionInterface createConnectiontionInterface(String port, int baudRate) {
 		IConnectionInterface connectionInterface = new SerialPortRxTx(port, baudRate);
@@ -24,6 +28,12 @@ public class XBee {
 	 * @param port Serial port name.
 	 * @param serialPortParameters Serial port parameters.
 	 * @return The serial port connection interface.
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code serialPortParameters == null}.
+	 * 
+	 * @see SerialPortParameters
+	 * @see IConnectionInterface
 	 */
 	public static IConnectionInterface createConnectiontionInterface(String port, SerialPortParameters serialPortParameters) {
 		IConnectionInterface connectionInterface = new SerialPortRxTx(port, serialPortParameters);

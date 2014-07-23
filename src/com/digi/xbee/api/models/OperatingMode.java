@@ -3,7 +3,7 @@ package com.digi.xbee.api.models;
 /**
  * Enumerates the different working modes of the XBee device.
  */
-public enum XBeeMode {
+public enum OperatingMode {
 
 	// Enumeration types
 	AT(0, "AT mode"),
@@ -12,9 +12,9 @@ public enum XBeeMode {
 	UNKNOWN(3, "Unknown");
 	
 	// Variables
-	private int id;
+	private final int id;
 	
-	private String name;
+	private final String name;
 	
 	/**
 	 * Creates a new XBee mode with the given ID.
@@ -22,7 +22,7 @@ public enum XBeeMode {
 	 * @param id XBee mode ID.
 	 * @param name XBee mode name.
 	 */
-	XBeeMode(int id, String name) {
+	OperatingMode(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}

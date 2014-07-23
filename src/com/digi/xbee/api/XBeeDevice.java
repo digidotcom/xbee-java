@@ -12,10 +12,10 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
-import com.digi.xbee.api.models.XBeeMode;
+import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.packet.GenericXBeePacket;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.XBeeAPIType;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
@@ -31,7 +31,7 @@ public class XBeeDevice {
 	
 	protected DataReader dataReader = null;
 	
-	protected XBeeMode operatingMode = XBeeMode.UNKNOWN;
+	protected OperatingMode operatingMode = OperatingMode.UNKNOWN;
 	
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
@@ -43,8 +43,11 @@ public class XBeeDevice {
 	 * @param baudRate Serial port baud rate to communicate with the device. Other 
 	 * 					connection parameters will be set as default (8 data bits, 
 	 * 					1 stop bit, no parity, no flow control).
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
 	 */
-	public XBeeDevice(String port, int baudRate) {
+	public XBeeDevice(String port, int baudRate) throws XBeeException {
 		this(XBee.createConnectiontionInterface(port, baudRate));
 	}
 	
@@ -59,8 +62,15 @@ public class XBeeDevice {
 	 * @param parity Serial port data bits.
 	 * @param flowControl Serial port data bits.
 	 * @throws XBeeException 
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
+	 * @throws IllegalArgumentException if {@code baudRate < 0} or
+	 *                                  if {@code dataBits < 0} or
+	 *                                  if {@code stopBits < 0} or
+	 *                                  if {@code parity < 0} or
+	 *                                  if {@code flowControl < 0}.
 	 */
-	public XBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
+	public XBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) throws XBeeException {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
 	}
 	
@@ -70,8 +80,14 @@ public class XBeeDevice {
 	 * 
 	 * @param port Serial port name where XBee device is attached to.
 	 * @param serialPortParameters Object containing the serial port parameters.
+	 * @throws XBeeException 
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code serialPortParameters == null}.
+	 * 
+	 * @see SerialPortParameters
 	 */
-	public XBeeDevice(String port, SerialPortParameters serialPortParameters) {
+	public XBeeDevice(String port, SerialPortParameters serialPortParameters) throws XBeeException {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
 	}
 	
@@ -79,9 +95,17 @@ public class XBeeDevice {
 	 * Class constructor. Instantiates a new XBeeDevice object with the given connection 
 	 * interface.
 	 * 
-	 * @param communicationInterface The connection interface with the physical XBee device.
+	 * @param connectionInterface The connection interface with the physical XBee device.
+	 * @throws XBeeException 
+	 * 
+	 * @throws NullPointerException if {@code connectionInterface == null}
+	 * 
+	 * @see IConnectionInterface
 	 */
-	public XBeeDevice(IConnectionInterface connectionInterface) {
+	public XBeeDevice(IConnectionInterface connectionInterface) throws XBeeException {
+		if (connectionInterface == null)
+			throw new IllegalArgumentException("ConnectionInterface cannot be null.");
+		
 		this.connectionInterface = connectionInterface;
 	}
 	
@@ -89,6 +113,8 @@ public class XBeeDevice {
 	 * Retrieves the connection interface associated to this XBee device.
 	 * 
 	 * @return XBee device's connection interface.
+	 * 
+	 * @see IConnectionInterface
 	 */
 	public IConnectionInterface getConnectionInterface() {
 		return connectionInterface;
@@ -96,6 +122,11 @@ public class XBeeDevice {
 	
 	/**
 	 * Opens the connection interface associated with this XBee device.
+	 * 
+	 * @throws XBeeException if the device is already connected or
+	 *                       if any error occurs when connecting the device.
+	 * @throws InvalidOperatingModeException if the operating mode is different than {@code XBeeMode.API}
+	 *                                       and {@code XBeeMode.API_ESCAPE}.
 	 */
 	public void connect() throws XBeeException, InvalidOperatingModeException {
 		// First, verify that the connection is not already open.
@@ -105,12 +136,19 @@ public class XBeeDevice {
 		// Connect the interface.
 		connectionInterface.connect();
 		
-		// Determine the operating mode of the XBee device.
-		operatingMode = determineConnectionMode();
-		if (operatingMode == XBeeMode.UNKNOWN) {
+		// Initialize the data reader.
+		dataReader = new DataReader(connectionInterface);
+		dataReader.start();
+		
+		// Determine the operating mode of the XBee device if it is unknown.
+		if (operatingMode == OperatingMode.UNKNOWN)
+			operatingMode = determineConnectionMode();
+		
+		// Check if the operating mode is a valid and supported one.
+		if (operatingMode == OperatingMode.UNKNOWN) {
 			disconnect();
 			throw new InvalidOperatingModeException("Could not determine operating mode.");
-		} else if (operatingMode == XBeeMode.AT) {
+		} else if (operatingMode == OperatingMode.AT) {
 			disconnect();
 			throw new InvalidOperatingModeException("Unsupported operating mode AT.");
 		}
@@ -141,60 +179,69 @@ public class XBeeDevice {
 	
 	/**
 	 * Determines the connection mode of the XBee device.
-	 * See {@link com.digi.xbee.api.models.XBeeMode}.
 	 * 
 	 * @return The operating mode of the XBee device.
+	 * 
+	 * @see OperatingMode
 	 */
-	protected XBeeMode determineConnectionMode() {
-		// Instantiate the data reader.
-		dataReader = new DataReader(connectionInterface);
-		dataReader.start();
-		
+	protected OperatingMode determineConnectionMode() {
 		// Check if device is in API or API Escaped operating modes.
 		try {
-			operatingMode = XBeeMode.API;
+			operatingMode = OperatingMode.API;
 			dataReader.setXBeeReaderMode(operatingMode);
 			ATCommandResponse response = sendATCommand(new ATCommand("AP"));
 			if (response.getResponse() != null) {
-				if (response.getResponse()[0] == 0x01)
-					return XBeeMode.API;
+				if (response.getResponse()[0] == OperatingMode.API.getID())
+					return OperatingMode.API;
 				else
-					return XBeeMode.API_ESCAPE;
+					return OperatingMode.API_ESCAPE;
 			}
 		} catch (XBeeException e) {
 			// TODO: Check if device is in AT mode here and return it if so!!.
 			e.printStackTrace();
-			return XBeeMode.UNKNOWN;
+			return OperatingMode.UNKNOWN;
 		} catch (InvalidOperatingModeException e) {
-			return XBeeMode.UNKNOWN;
+			return OperatingMode.UNKNOWN;
 		}
-		return XBeeMode.UNKNOWN;
+		return OperatingMode.UNKNOWN;
 	}
 	
 	/**
 	 * Retrieves the Operating mode (AT, API or API escaped) of the XBee device.
 	 * 
 	 * @return The operating mode of the XBee device.
+	 * 
+	 * @see OperatingMode
 	 */
-	public XBeeMode getOperatingMode() {
+	public OperatingMode getOperatingMode() {
 		return operatingMode;
 	}
 	
 	/**
 	 * Sends the given AT command and waits for answer or until receive timeout 
 	 * is reached.
-	 * See {@link #setReceiveTimeout(int)} and {@link #getReceiveTimeout()} for more
-	 * information about default timeout.
 	 * 
 	 * @param command AT command to be sent.
-	 * @return an ATCommandResponse object containing the response of the command.
-	 * @throws InvalidOperatingModeException
+	 * @return an {@code ATCommandResponse} object containing the response of the command.
+	 * @throws InvalidOperatingModeException if the operating mode is different than {@code XBeeMode.API}
+	 *                                       and {@code XBeeMode.API_ESCAPE}.
 	 * @throws XBeeException
+	 * @throws NullPointerException if {@code command == null}
+	 * 
+	 * @see #setReceiveTimeout(int)
+	 * @see #getReceiveTimeout()
+	 * 
+	 * @see ATCommand
+	 * @see ATCommandResponse
 	 */
 	public ATCommandResponse sendATCommand(ATCommand command) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isConnected())
 			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		
+		// Check if command is null.
+		if (!connectionInterface.isConnected())
+			throw new NullPointerException("AT command cannot be null.");
 		
 		ATCommandResponse response = null;
 		switch (getOperatingMode()) {
@@ -223,13 +270,17 @@ public class XBeeDevice {
 	/**
 	 * Sends the given XBee packet synchronously and waits until response is 
 	 * received or receive timeout is reached.
-	 * See {@link #setReceiveTimeout(int)} and {@link #getReceiveTimeout()} for more
-	 * information about default timeout.
 	 * 
 	 * @param packet XBee packet to be sent.
 	 * @return XBeePacket object containing the response of the sent packet.
-	 * @throws InvalidOperatingModeException
+	 * @throws InvalidOperatingModeException if the operating mode is different than {@code XBeeMode.API}
+	 *                                       and {@code XBeeMode.API_ESCAPE}.
 	 * @throws XBeeException
+	 * 
+	 * @see #setReceiveTimeout(int)
+	 * @see #getReceiveTimeout()
+	 * 
+	 * @see XBeePacket
 	 */
 	public XBeePacket sendXBeePacket(final XBeePacket packet) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
@@ -244,7 +295,7 @@ public class XBeeDevice {
 		case API:
 		case API_ESCAPE:
 			// Build response container.
-			final ArrayList<XBeePacket> responseList = new ArrayList<XBeePacket>();
+			ArrayList<XBeePacket> responseList = new ArrayList<XBeePacket>();
 			
 			// If the packet is generic we don't wait for answer, send it as an async. packet.
 			if (packet instanceof GenericXBeePacket) {
@@ -252,42 +303,13 @@ public class XBeeDevice {
 				return null;
 			}
 			
-			// Add the required frame ID.
-			if (((XBeeAPIPacket)packet).hasAPIFrameID() && ((XBeeAPIPacket)packet).getFrameID() == XBeeAPIPacket.NO_FRAME_ID)
-				((XBeeAPIPacket)packet).setFrameID(getNextFrameID());
-			IPacketReceiveListener packetReceiveListener = new IPacketReceiveListener() {
-				/*
-				 * (non-Javadoc)
-				 * @see com.digi.xbee.listeners.XBeePacketListener#packetReceived(byte[])
-				 */
-				public void packetReceived(XBeePacket receivedPacket) {
-					// Check if it is the packet we are waiting for.
-					if (((XBeeAPIPacket)receivedPacket).hasAPIFrameID() && 
-							(((XBeeAPIPacket)receivedPacket).getFrameID() == (((XBeeAPIPacket)packet).getFrameID()))) {
-						// Security check to avoid class cast exceptions. It has been observed that parallel processes 
-						// using the same connection but with different frame index may collide and cause this exception at some point.
-						if (packet instanceof XBeeAPIPacket
-								&& receivedPacket instanceof XBeeAPIPacket) {
-							XBeeAPIPacket sentAPIPacket = (XBeeAPIPacket)packet;
-							XBeeAPIPacket receivedAPIPacket = (XBeeAPIPacket)receivedPacket;
-							if (sentAPIPacket.getAPIID() == XBeeAPIType.AT_COMMAND) {
-								if (receivedAPIPacket.getAPIID() != XBeeAPIType.AT_COMMAND_RESPONSE)
-									return;
-								if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
-									return;
-							}
-						}
-						if (!HexUtils.byteArrayToHexString(packet.generateByteArray()).equals(HexUtils.byteArrayToHexString(receivedPacket.generateByteArray()))) {
-							responseList.add(receivedPacket);
-							synchronized (responseList) {
-								responseList.notify();
-							}
-						}
-					}
-				}
-			};
+			// Add the required frame ID to the packet if necessary.
+			insertFrameID(packet);
 			
-			// Add the packet listener.
+			// Generate a packet received listener for the packet to be sent.
+			IPacketReceiveListener packetReceiveListener = createPacketReceivedListener(packet, responseList);
+			
+			// Add the packet listener to the data reader.
 			dataReader.addPacketReceiveListener(packetReceiveListener);
 			try {
 				// Write the packet data.
@@ -313,6 +335,81 @@ public class XBeeDevice {
 	}
 	
 	/**
+	 * Insert (if possible) the next frame ID stored in the device to the provided packet.
+	 * 
+	 * @param xbeePacket The packet to add the frame ID.
+	 */
+	private void insertFrameID(XBeePacket xbeePacket) {
+		if (xbeePacket instanceof XBeeAPIPacket)
+			return;
+		
+		if (((XBeeAPIPacket)xbeePacket).needsAPIFrameID() && ((XBeeAPIPacket)xbeePacket).getFrameID() == XBeeAPIPacket.NO_FRAME_ID)
+			((XBeeAPIPacket)xbeePacket).setFrameID(getNextFrameID());
+	}
+	
+	/**
+	 * Retrieves the packet listener corresponding to the provided sent packet. The listener will filter those packets 
+	 * matching with the Frame ID of the sent packet storing them in the provided responseList array.
+	 * 
+	 * @param sentPacket The packet sent.
+	 * @param responseList List of packets received that correspond to the frame ID of the packet sent.
+	 * @return A packet receive listener that will filter the packets received corresponding to the sent one.
+	 */
+	private IPacketReceiveListener createPacketReceivedListener(final XBeePacket sentPacket, final ArrayList<XBeePacket> responseList) {
+		IPacketReceiveListener packetReceiveListener = new IPacketReceiveListener() {
+			/*
+			 * (non-Javadoc)
+			 * @see com.digi.xbee.listeners.XBeePacketListener#packetReceived(byte[])
+			 */
+			public void packetReceived(XBeePacket receivedPacket) {
+				// Check if it is the packet we are waiting for.
+				if (((XBeeAPIPacket)receivedPacket).checkFrameID((((XBeeAPIPacket)sentPacket).getFrameID()))) {
+					// Security check to avoid class cast exceptions. It has been observed that parallel processes 
+					// using the same connection but with different frame index may collide and cause this exception at some point.
+					if (sentPacket instanceof XBeeAPIPacket
+							&& receivedPacket instanceof XBeeAPIPacket) {
+						XBeeAPIPacket sentAPIPacket = (XBeeAPIPacket)sentPacket;
+						XBeeAPIPacket receivedAPIPacket = (XBeeAPIPacket)receivedPacket;
+						
+						// If the packet sent is an AT command, verify that the received one is an AT command response and 
+						// the command matches in both packets.
+						if (sentAPIPacket.getFrameType() == APIFrameType.AT_COMMAND) {
+							if (receivedAPIPacket.getFrameType() != APIFrameType.AT_COMMAND_RESPONSE)
+								return;
+							if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
+								return;
+						}
+					}
+					
+					// Verify that the sent packet is not the received one! This can happen when the echo mode is enabled in the 
+					// serial port.
+					if (!isSamePacket(sentPacket, receivedPacket)) {
+						responseList.add(receivedPacket);
+						synchronized (responseList) {
+							responseList.notify();
+						}
+					}
+				}
+			}
+		};
+		
+		return packetReceiveListener;
+	}
+	
+	/**
+	 * Retrieves whether or not the sent packet is the same than the received one.
+	 * 
+	 * @param sentPacket The packet sent.
+	 * @param receivedPacket The packet received.
+	 * @return True if the sent packet is the same than the received one, false otherwise.
+	 */
+	private boolean isSamePacket(XBeePacket sentPacket, XBeePacket receivedPacket) {
+		if (HexUtils.byteArrayToHexString(sentPacket.generateByteArray()).equals(HexUtils.byteArrayToHexString(receivedPacket.generateByteArray())))
+			return true;
+		return false;
+	}
+	
+	/**
 	 * Sends the given XBee packet asynchronously and registers the given packet
 	 * listener (if not null) to wait for an answer.
 	 * 
@@ -335,7 +432,7 @@ public class XBeeDevice {
 		case API_ESCAPE:
 			// Add the required frame ID and subscribe listener if given.
 			if (packet instanceof XBeeAPIPacket) {
-				if (((XBeeAPIPacket)packet).hasAPIFrameID()) {
+				if (((XBeeAPIPacket)packet).needsAPIFrameID()) {
 					if (((XBeeAPIPacket)packet).getFrameID() == XBeeAPIPacket.NO_FRAME_ID)
 						((XBeeAPIPacket)packet).setFrameID(getNextFrameID());
 					if (packetReceiveListener != null)
@@ -424,6 +521,8 @@ public class XBeeDevice {
 	 * @param listener Listener to be notified when new packets are received.
 	 */
 	public void startlisteningForPackets(IPacketReceiveListener listener) {
+		if (dataReader == null)
+			return;
 		dataReader.addPacketReceiveListener(listener);
 	}
 	
@@ -434,6 +533,8 @@ public class XBeeDevice {
 	 * @param listener Listener to be removed from the list of listeners.
 	 */
 	public void stoplisteningForPackets(IPacketReceiveListener listener) {
+		if (dataReader == null)
+			return;
 		dataReader.removePacketReceiveListener(listener);
 	}
 	
@@ -445,6 +546,8 @@ public class XBeeDevice {
 	 * @param listener Listener to be notified when new serial data is received.
 	 */
 	public void startlisteningForSerialData(ISerialDataReceiveListener listener) {
+		if (dataReader == null)
+			return;
 		dataReader.addSerialDatatReceiveListener(listener);
 	}
 	
@@ -455,6 +558,8 @@ public class XBeeDevice {
 	 * @param listener Listener to be removed from the list of listeners.
 	 */
 	public void stoplisteningForSerialData(ISerialDataReceiveListener listener) {
+		if (dataReader == null)
+			return;
 		dataReader.removeSerialDataReceiveListener(listener);
 	}
 }

@@ -12,8 +12,16 @@ public class ByteUtils {
 	 * @param numBytes Number of bytes to read.
 	 * @param inputStream Byte array input stream to read from.
 	 * @return Read bytes.
+	 * 
+	 * @throws NullPointerException if {@code inputStream == null}.
+	 * @throws IllegalArgumentException if {@code numBytes < 0}.
 	 */
 	public static byte[] readBytes(int numBytes, ByteArrayInputStream inputStream) {
+		if (inputStream == null)
+			throw new NullPointerException("Input stream cannot be null.");
+		if (numBytes < 0)
+			throw new IllegalArgumentException("Number of bytes to read must be great than 0.");
+		
 		byte[] data = new byte[numBytes];
 		inputStream.read(data, 0, numBytes);
 		return data;
@@ -24,8 +32,13 @@ public class ByteUtils {
 	 * 
 	 * @param inputStream Byte array input stream to read from.
 	 * @return The read String.
+	 * 
+	 * @throws NullPointerException if {@code inputStream == null}.
 	 */
 	public static String readString(ByteArrayInputStream inputStream) {
+		if (inputStream == null)
+			throw new NullPointerException("Input stream cannot be null.");
+		
 		StringBuilder sb = new StringBuilder();
 		byte readByte;
 		while (((readByte = (byte)inputStream.read()) != 0x00) && readByte != -1)
@@ -57,8 +70,13 @@ public class ByteUtils {
 	 * 
 	 * @param b Byte array to convert to long (8 bytes length max).
 	 * @return Converted long.
+	 * 
+	 * @throws NullPointerException if {@code b == null}.
 	 */
 	public static long byteArrayToLong(byte[] b) {
+		if (b == null)
+			throw new NullPointerException("Byte array cannot be null.");
+		
 		byte[] values = b;
 		if (b.length < 8) {
 			values = new byte[8];
@@ -68,14 +86,14 @@ public class ByteUtils {
 			for (int i = diff; i < 8; i++)
 				values[i] = b[i - diff];
 		}
-		return ((values[0] & 0xFF) << 56)
-				| ((values[1] & 0xFF) << 48)
-				| ((values[2] & 0xFF) << 40)
-				| ((values[3] & 0xFF) << 32)
-				| ((values[4] & 0xFF) << 24)
-				| ((values[5] & 0xFF) << 16)
-				| ((values[6] & 0xFF) << 8)
-				| (values[7] & 0xFF);
+		return ((long)values[0] << 56) 
+				+ ((long)(values[1] & 0xFF) << 48) 
+				+ ((long)(values[2] & 0xFF) << 40) 
+				+ ((long)(values[3] & 0xFF) << 32) 
+				+ ((long)(values[4] & 0xFF) << 24) 
+				+ ((values[5] & 0xFF) << 16) 
+				+ ((values[6] & 0xFF) <<  8) 
+				+ (values[7] & 0xFF);
 	}
 	
 	/**
@@ -99,8 +117,13 @@ public class ByteUtils {
 	 * 
 	 * @param b Byte array to convert to integer (4 bytes length max).
 	 * @return Converted integer.
+	 * 
+	 * @throws NullPointerException if {@code b == null}.
 	 */
 	public static int byteArrayToInt(byte[] b) {
+		if (b == null)
+			throw new NullPointerException("Byte array cannot be null.");
+		
 		byte[] values = b;
 		if (b.length < 4) {
 			values = new byte[4];
@@ -134,8 +157,13 @@ public class ByteUtils {
 	 * 
 	 * @param b byte array to convert to.
 	 * @return short of the given byte array (2 bytes length).
+	 * 
+	 * @throws NullPointerException if {@code b == null}.
 	 */
 	public static short byteArrayToShort(byte[] b) {
+		if (b == null)
+			throw new NullPointerException("Byte array cannot be null.");
+		
 		return (short) (((b[0] << 8) & 0xFF00) 
 						| b[1] & 0x00FF);
 	}
@@ -145,8 +173,13 @@ public class ByteUtils {
 	 * 
 	 * @param value String to convert to.
 	 * @return Byte array of the given string.
+	 * 
+	 * @throws NullPointerException if {@code value == null}.
 	 */
 	public static byte[] stringToByteArray(String value) {
+		if (value == null)
+			throw new NullPointerException("Value cannot be null.");
+		
 		return value.getBytes();
 	}
 	
@@ -155,8 +188,13 @@ public class ByteUtils {
 	 * 
 	 * @param value Byte array to convert to string.
 	 * @return Converted String.
+	 * 
+	 * @throws NullPointerException if {@code value == null}.
 	 */
 	public static String byteArrayToString(byte[] value) {
+		if (value == null)
+			throw new NullPointerException("Byte array cannot be null.");
+		
 		return new String(value);
 	}
 	
@@ -208,9 +246,7 @@ public class ByteUtils {
 	 * @return The boolean value.
 	 */
 	public static boolean readBooleanFromByte(byte containerByte, int bitOffset) {
-		if (isBitEnabled(containerByte, bitOffset))
-			return true;
-		return false;
+		return isBitEnabled(containerByte, bitOffset);
 	}
 	
 	/**
@@ -219,8 +255,13 @@ public class ByteUtils {
 	 * 
 	 * @param inputStream Byte array input stream to read from.
 	 * @return The read bytes.
+	 * 
+	 * @throws NullPointerException if {@code inputStream == null}.
 	 */
 	public static byte[] readUntilCR(ByteArrayInputStream inputStream) {
+		if (inputStream == null)
+			throw new NullPointerException("Input stream cannot be null.");
+		
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		byte readByte;
 		while (((readByte = (byte)inputStream.read()) != 0x0D) && readByte != -1)
@@ -236,8 +277,13 @@ public class ByteUtils {
 	 * @param data Data to use in the new array.
 	 * @param finalSize Final size of the array.
 	 * @return Final array of the given size replacing with zeros the remaining space.
+	 * 
+	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public static byte[] newByteArray(byte[] data, int finalSize) {
+		if (data == null)
+			throw new NullPointerException("Data cannot be null.");
+		
 		byte[] filledArray = new byte[finalSize];
 		int diff = finalSize - data.length;
 		if (diff >= 0) {

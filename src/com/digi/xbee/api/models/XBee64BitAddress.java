@@ -8,24 +8,34 @@ import com.digi.xbee.api.utils.HexUtils;
  * This class represents a 64 bit address (also known as MAC address). Each
  * XBee device has its own 64 bit address which is unique.
  */
-public class XBee64BitAddress {
+public final class XBee64BitAddress {
 
 	// Constants
-	private static final String COORDINATOR_ADDRESS = "0x0000";
-	private static final String BROADCAST_ADDRESS = "0xFFFF";
+	public static final XBee64BitAddress COORDINATOR_ADDRESS = new XBee64BitAddress("0000");
+	public static final XBee64BitAddress BROADCAST_ADDRESS = new XBee64BitAddress("FFFF");
 	private static final String DEVICE_ID_SEPARATOR = "-";
 	private static final String DEVICE_ID_MAC_SEPARATOR = "FF";
 	
+	private static final int HASH_SEED = 23;
+	
 	// Variables
-	private byte[] address;
+	private final byte[] address;
 	
 	/**
 	 * Class constructor. Instances a new object of type XBee64BitAddress
 	 * with the given parameters-
 	 * 
 	 * @param address The XBee 64 bit address as byte array.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws IllegalArgumentException if {@code address.length > 8}.
 	 */
 	public XBee64BitAddress(byte[] address) {
+		if (address == null)
+			throw new NullPointerException("Address cannot be null.");
+		if (address.length > 8)
+			throw new IllegalArgumentException("Address cannot contain more than 8 bytes.");
+		
 		this.address = address;
 	}
 	
@@ -34,8 +44,16 @@ public class XBee64BitAddress {
 	 * with the given parameters-
 	 * 
 	 * @param address The XBee 64 bit address as integer array.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws IllegalArgumentException if {@code address.length > 8}.
 	 */
 	public XBee64BitAddress(int[] address) {
+		if (address == null)
+			throw new NullPointerException("Address cannot be null.");
+		if (address.length > 2)
+			throw new IllegalArgumentException("Address cannot contain more than 8 integers.");
+		
 		this.address = new byte[address.length];
 		for (int i = 0; i < address.length; i++)
 			this.address[i] = (byte)address[i];
@@ -46,8 +64,13 @@ public class XBee64BitAddress {
 	 * with the given parameters-
 	 * 
 	 * @param address The XBee 64 bit address as string.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
 	 */
 	public XBee64BitAddress(String address) {
+		if (address == null)
+			throw new NullPointerException("Address cannot be null.");
+		
 		byte[] byteAddress = HexUtils.hexStringToByteArray(address);
 		this.address = new byte[8];
 		int diff = 8 - byteAddress.length;
@@ -70,8 +93,42 @@ public class XBee64BitAddress {
 	 * @param b5 XBee 64 bit address b5.
 	 * @param b6 XBee 64 bit address b6.
 	 * @param b7 XBee 64 bit address b7.
+	 * 
+	 * @throws IllegalArgumentException if {@code b0 > 255} or
+	 *                                  if {@code b0 < 0} or
+	 *                                  if {@code b1 > 255} or
+	 *                                  if {@code b1 < 0} or
+	 *                                  if {@code b2 > 255} or
+	 *                                  if {@code b2 < 0} or
+	 *                                  if {@code b3 > 255} or
+	 *                                  if {@code b3 < 0} or
+	 *                                  if {@code b4 > 255} or
+	 *                                  if {@code b4 < 0} or
+	 *                                  if {@code b5 > 255} or
+	 *                                  if {@code b5 < 0} or
+	 *                                  if {@code b6 > 255} or
+	 *                                  if {@code b6 < 0} or
+	 *                                  if {@code b7 > 255} or
+	 *                                  if {@code b7 < 0}.
 	 */
 	public XBee64BitAddress(int b0, int b1, int b2, int b3, int b4, int b5, int b6, int b7) {
+		if (b0 > 255 || b0 < 0)
+			throw new IllegalArgumentException("B0 must be betwwen 0 and 255.");
+		if (b1 > 255 || b1 < 0)
+			throw new IllegalArgumentException("B1 must be betwwen 0 and 255.");
+		if (b2 > 255 || b2 < 0)
+			throw new IllegalArgumentException("B2 must be betwwen 0 and 255.");
+		if (b3 > 255 || b3 < 0)
+			throw new IllegalArgumentException("B3 must be betwwen 0 and 255.");
+		if (b5 > 255 || b5 < 0)
+			throw new IllegalArgumentException("B4 must be betwwen 0 and 255.");
+		if (b5 > 255 || b5 < 0)
+			throw new IllegalArgumentException("B5 must be betwwen 0 and 255.");
+		if (b6 > 255 || b6 < 0)
+			throw new IllegalArgumentException("B6 must be betwwen 0 and 255.");
+		if (b7 > 255 || b7 < 0)
+			throw new IllegalArgumentException("B7 must be betwwen 0 and 255.");
+		
 		address = new byte[8];
 		address[0] = (byte) b0;
 		address[1] = (byte) b1;
@@ -81,33 +138,6 @@ public class XBee64BitAddress {
 		address[5] = (byte) b5;
 		address[6] = (byte) b6;
 		address[7] = (byte) b7;
-	}
-	
-	/**
-	 * Instances a new broadcast XBee64BitAddress.
-	 * 
-	 * @return Broadcast XBee 64 bit address.
-	 */
-	public static XBee64BitAddress BroadcastAddress() {
-		return new XBee64BitAddress(BROADCAST_ADDRESS);
-	}
-	
-	/**
-	 * Instances a new coordinator XBee64BitAddress.
-	 * 
-	 * @return Coordinator XBee 64 bit address.
-	 */
-	public static XBee64BitAddress CoordinatorAddress() {
-		return new XBee64BitAddress(COORDINATOR_ADDRESS);
-	}
-	
-	/**
-	 * Sets the XBee 64 bit address value.
-	 * 
-	 * @param address The XBee 64 bit address value.
-	 */
-	public void setValue(byte[] address) {
-		this.address = address;
 	}
 	
 	/**
@@ -143,23 +173,24 @@ public class XBee64BitAddress {
 		return sb.toString();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
 		if (!(obj instanceof XBee64BitAddress))
 			return false;
 		XBee64BitAddress addr = (XBee64BitAddress)obj;
 		return Arrays.equals(addr.getValue(), getValue());
+		// TODO: Does this compare really work?
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
+	public int hashCode() {
+		int hash = HASH_SEED;
+		for (byte b:getValue())
+			hash = hash * (hash + b);
+		return hash;
+	}
+	
+	@Override
 	public String toString() {
 		return HexUtils.byteArrayToHexString(address);
 	}

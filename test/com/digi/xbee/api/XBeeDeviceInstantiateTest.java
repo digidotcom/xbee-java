@@ -1,5 +1,7 @@
 package com.digi.xbee.api;
 
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +13,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
+import com.digi.xbee.api.exceptions.XBeeException;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({XBee.class, XBeeDevice.class, SerialPortParameters.class})
@@ -44,7 +47,12 @@ public class XBeeDeviceInstantiateTest {
 	 */
 	public void testInstantiateXBeeDeviceNameBR() {
 		// Instantiate an XBeeDevice object with basic parameters.
-		XBeeDevice xbeeDevice = new XBeeDevice("COM1", 9600);
+		XBeeDevice xbeeDevice = null;
+		try {
+			xbeeDevice = new XBeeDevice("COM1", 9600);
+		} catch (XBeeException e) {
+			fail(e.getMessage());
+		}
 		
 		// Verify the createConnectiontionInterface static method from the XBee class 
 		// was called.
@@ -62,7 +70,12 @@ public class XBeeDeviceInstantiateTest {
 	 */
 	public void testInstantiateXBeeDeviceAdvancedSettings() {
 		// Instantiate an XBeeDevice object with advanced parameters.
-		XBeeDevice xbeeDevice = new XBeeDevice("COM1", 9600, 8, 1, 0, 0);
+		XBeeDevice xbeeDevice = null;
+		try {
+			xbeeDevice = new XBeeDevice("COM1", 9600, 8, 1, 0, 0);
+		} catch (XBeeException e) {
+			fail(e.getMessage());
+		}
 		
 		// Verify the createConnectiontionInterface static method from the XBee class 
 		// was called.
@@ -80,7 +93,12 @@ public class XBeeDeviceInstantiateTest {
 	 */
 	public void testInstantiateXBeeDeviceSerialPortParams() {
 		// Instantiate an XBeeDevice object with a SerialParameters object.
-		XBeeDevice xbeeDevice = new XBeeDevice("COM1", serialPortParameters);
+		XBeeDevice xbeeDevice = null;
+		try {
+			xbeeDevice = new XBeeDevice("COM1", serialPortParameters);
+		} catch (XBeeException e) {
+			fail(e.getMessage());
+		}
 		
 		// Verify the createConnectiontionInterface static method from the XBee class 
 		// was called.

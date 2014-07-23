@@ -18,11 +18,10 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	/**
 	 * Class constructor. Instances an XBee packet with the given packet data.
 	 * 
-	 * @param apiIDValue The XBee API integer value of the packet.
 	 * @param rfData The XBee RF Data.
 	 */
 	public GenericXBeePacket(byte[] rfData) {
-		super(XBeeAPIType.GENERIC);
+		super(APIFrameType.GENERIC);
 		this.rfData = rfData;
 	}
 	
@@ -36,7 +35,8 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
-			e.printStackTrace();
+			// TODO: Log this exception.
+			//e.printStackTrace();
 		}
 		return data.toByteArray();
 	}
@@ -45,7 +45,7 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
 	 */
-	public boolean hasAPIFrameID() {
+	public boolean needsAPIFrameID() {
 		return false;
 	}
 	

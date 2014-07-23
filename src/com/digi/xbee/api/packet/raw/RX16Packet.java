@@ -6,16 +6,16 @@ import java.util.LinkedHashMap;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.XBeeAPIType;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 public class RX16Packet extends XBeeAPIPacket {
 
 	// Variables
-	private XBee16BitAddress sourceAddress;
+	private final XBee16BitAddress sourceAddress;
 	
-	private int rssi;
-	private int receiveOptions;
+	private final int rssi;
+	private final int receiveOptions;
 	
 	private byte[] receivedData;
 	
@@ -27,9 +27,23 @@ public class RX16Packet extends XBeeAPIPacket {
 	 * @param rssi Received signal strength indicator.
 	 * @param receiveOptions Bitfield indicating the receive options. See {@link com.digi.xbee.models.XBeeReceiveOptions}.
 	 * @param receivedData Received RF data.
+	 * 
+	 * @throws NullPointerException if {@code sourceAddress == null}.
+	 * @throws IllegalArgumentException if {@code rssi < 0} or
+	 *                                  if {@code rssi > 100} or
+	 *                                  if {@code receiveOptions > 255} or
+	 *                                  if {@code receiveOptions > 255}.
 	 */
 	public RX16Packet(XBee16BitAddress sourceAddress, int rssi, int receiveOptions, byte[] receivedData) {
-		super(XBeeAPIType.RX_16);
+		super(APIFrameType.RX_16);
+		
+		if (sourceAddress == null)
+			throw new NullPointerException("Source address cannot be null.");
+		if (rssi < 0 || rssi > 100)
+			throw new IllegalArgumentException("RSSI value must be between 0 and 100.");
+		if (receiveOptions < 0 || receiveOptions > 255)
+			throw new IllegalArgumentException("Receive options value must be between 0 and 255.");
+		
 		this.sourceAddress = sourceAddress;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
@@ -49,7 +63,8 @@ public class RX16Packet extends XBeeAPIPacket {
 			if (receivedData != null)
 				os.write(receivedData);
 		} catch (IOException e) {
-			e.printStackTrace();
+			// TODO: Revisit this when logging feature is implemented.
+			//e.printStackTrace();
 		}
 		return os.toByteArray();
 	}
@@ -58,17 +73,8 @@ public class RX16Packet extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
 	 */
-	public boolean hasAPIFrameID() {
+	public boolean needsAPIFrameID() {
 		return false;
-	}
-	
-	/**
-	 * Sets the 16 bit sender/source address.
-	 * 
-	 * @param sourceAddress The 16 bit sender/source address.
-	 */
-	public void setSourceAddress(XBee16BitAddress sourceAddress) {
-		this.sourceAddress = sourceAddress;
 	}
 	
 	/**
@@ -78,16 +84,6 @@ public class RX16Packet extends XBeeAPIPacket {
 	 */
 	public XBee16BitAddress getSourceAddress() {
 		return sourceAddress;
-	}
-	
-	/**
-	 * Sets the receive options bitfield.
-	 * See {@link com.digi.xbee.models.XBeeReceiveOptions}.
-	 * 
-	 * @param options Receive options bitfield.
-	 */
-	public void setReceiveOptions(int options) {
-		this.receiveOptions = options;
 	}
 	
 	/**

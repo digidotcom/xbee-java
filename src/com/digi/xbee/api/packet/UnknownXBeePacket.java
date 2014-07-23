@@ -36,7 +36,8 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
-			e.printStackTrace();
+			// TODO: Log this exception.
+			//e.printStackTrace();
 		}
 		return data.toByteArray();
 	}
@@ -45,7 +46,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
 	 */
-	public boolean hasAPIFrameID() {
+	public boolean needsAPIFrameID() {
 		return false;
 	}
 	

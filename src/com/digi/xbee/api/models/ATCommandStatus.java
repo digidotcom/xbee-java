@@ -17,11 +17,11 @@ public enum ATCommandStatus {
 	UNKNOWN (64, "Unknown status");
 	
 	// Variables
-	private int id;
+	private final int id;
 	
-	private String description;
+	private final String description;
 	
-	private static HashMap<Integer, ATCommandStatus> lookupTable = new HashMap<Integer, ATCommandStatus>();
+	private final static HashMap<Integer, ATCommandStatus> lookupTable = new HashMap<Integer, ATCommandStatus>();
 	
 	static {
 		for (ATCommandStatus at:values())

@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.XBeeAPIType;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 import com.digi.xbee.api.models.ATStringCommands;
 
@@ -24,9 +24,9 @@ import com.digi.xbee.api.models.ATStringCommands;
 public class ATCommandResponsePacket extends XBeeAPIPacket {
 	
 	// Variables
-	private ATCommandStatus status;
+	private final ATCommandStatus status;
 	
-	private String command;
+	private final String command;
 	
 	private byte[] commandData;
 	
@@ -38,9 +38,22 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @param status The AT command response status. See {@link com.digi.xbee.models.ATCommandStatus}
 	 * @param command The AT command.
 	 * @param commandData The AT command response data.
+	 * 
+	 * @throws NullPointerException if {@code status == null} or 
+	 *                              if {@code command == null}.
+	 * @throws IllegalArgumentException if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255}.
 	 */
 	public ATCommandResponsePacket(int frameID, ATCommandStatus status, String command, byte[] commandData) {
-		super(XBeeAPIType.AT_COMMAND_RESPONSE);
+		super(APIFrameType.AT_COMMAND_RESPONSE);
+		
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		if (status == null)
+			throw new NullPointerException("Command status cannot be null.");
+		if (frameID < 0 || frameID > 255)
+			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
+		
 		this.frameID = frameID;
 		this.status = status;
 		this.command = command;
@@ -60,7 +73,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 			if (commandData != null)
 				os.write(commandData);
 		} catch (IOException e) {
-			e.printStackTrace();
+			// TODO: Revisit this when logging feature is implemented.
+			//e.printStackTrace();
 		}
 		return os.toByteArray();
 	}
@@ -69,18 +83,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
 	 */
-	public boolean hasAPIFrameID() {
+	public boolean needsAPIFrameID() {
 		return true;
-	}
-	
-	/**
-	 * Sets the AT command response status.
-	 * See {@link com.digi.xbee.models.ATCommandStatus}
-	 * 
-	 * @param status The AT command response status.
-	 */
-	public void setStatus(ATCommandStatus status) {
-		this.status = status;
 	}
 	
 	/**
@@ -91,15 +95,6 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 */
 	public ATCommandStatus getStatus() {
 		return status;
-	}
-	
-	/**
-	 * Sets the AT command.
-	 * 
-	 * @param command The AT command.
-	 */
-	public void setCommand(String command) {
-		this.command = command;
 	}
 	
 	/**

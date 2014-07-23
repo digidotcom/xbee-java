@@ -10,9 +10,9 @@ import com.digi.xbee.api.exceptions.PacketParsingException;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
-import com.digi.xbee.api.models.XBeeMode;
+import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.XBeeAPIType;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
 import com.digi.xbee.api.packet.common.ReceivePacket;
@@ -30,23 +30,31 @@ public class DataReader extends Thread {
 	
 	// Constants
 	private final static int ALL_FRAME_IDS = 99999;
+	private final static int MAXIMUM_PARALLEL_LISTENER_THREADS = 20;
 	
 	// Variables
 	private boolean running = false;
 	
 	private IConnectionInterface connectionInterface;
 	
-	private volatile XBeeMode mode;
+	private volatile OperatingMode mode;
 	
 	private ArrayList<ISerialDataReceiveListener> serialDataReceiveListeners = new ArrayList<ISerialDataReceiveListener>();
+	// The packetReceiveListeners requires to be a HashMap with an associated integer. The integer is used to determine 
+	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
 	
 	/**
 	 * Class constructor. Instances a new DataReader object for the given interface.
 	 * 
 	 * @param connectionInterface Connection interface to read from.
+	 * 
+	 * @throws NullPointerException if {@code connectionInterface == null}.
 	 */
 	public DataReader(IConnectionInterface connectionInterface) {
+		if (connectionInterface == null)
+			throw new NullPointerException("Connection interface cannot be null.");
+		
 		this.connectionInterface = connectionInterface;
 	}
 	
@@ -54,8 +62,13 @@ public class DataReader extends Thread {
 	 * Sets the mode of the reader.
 	 * 
 	 * @param mode XBee mode
+	 * 
+	 * @throws NullPointerException if {@code mode == null}.
 	 */
-	public void setXBeeReaderMode(XBeeMode mode) {
+	public void setXBeeReaderMode(OperatingMode mode) {
+		if (mode == null)
+			throw new NullPointerException("Operating mode cannot be null.");
+		
 		this.mode = mode;
 	}
 	
@@ -193,36 +206,41 @@ public class DataReader extends Thread {
 	 * @param packet The received packet.
 	 */
 	private void packetReceived(XBeePacket packet) {
+		// Notify that a packet has been received to the corresponding listeners.
 		notifyPacketReceived(packet);
+		
 		// Check if the packet is an API packet.
 		if (!(packet instanceof XBeeAPIPacket))
 			return;
+		
 		// Get the API packet type.
 		XBeeAPIPacket apiPacket = (XBeeAPIPacket)packet;
-		XBeeAPIType apiType = apiPacket.getAPIID();
+		APIFrameType apiType = apiPacket.getFrameType();
 		if (apiType == null)
 			return;
-		String address;
-		byte[] data;
+		
+		String address = null;
+		byte[] data = null;
+		
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			address = ((ReceivePacket)apiPacket).get64bitAddress().toString();
 			data = ((ReceivePacket)apiPacket).getReceivedData();
-			notifySerialDataReceived(address, data);
 			break;
 		case RX_64:
 			address = ((RX64Packet)apiPacket).getSourceAddress().toString();
 			data = ((RX64Packet)apiPacket).getReceivedData();
-			notifySerialDataReceived(address, data);
 			break;
 		case RX_16:
 			address = ((RX16Packet)apiPacket).getSourceAddress().toString();
 			data = ((RX16Packet)apiPacket).getReceivedData();
-			notifySerialDataReceived(address, data);
 			break;
 		default:
 			break;
 		}
+		// Notify that serial data was received to the corresponding listeners.
+		if (address != null && data != null)
+			notifySerialDataReceived(address, data);
 	}
 	
 	/**
@@ -234,7 +252,7 @@ public class DataReader extends Thread {
 	private void notifySerialDataReceived(final String address, final byte[] data) {
 		try {
 			synchronized (serialDataReceiveListeners) {
-				ScheduledExecutorService executor = Executors.newScheduledThreadPool(serialDataReceiveListeners.size());
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, packetReceiveListeners.size()));
 				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
 					executor.execute(new Runnable() {
 						public void run() {
@@ -258,13 +276,13 @@ public class DataReader extends Thread {
 		try {
 			synchronized (packetReceiveListeners) {
 				final ArrayList<IPacketReceiveListener> removeListeners = new ArrayList<IPacketReceiveListener>();
-				ScheduledExecutorService executor = Executors.newScheduledThreadPool(packetReceiveListeners.size());
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, packetReceiveListeners.size()));
 				for (final IPacketReceiveListener listener:packetReceiveListeners.keySet()) {
 					executor.execute(new Runnable() {
 						public void run() {
 							if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
 								listener.packetReceived(packet);
-							else if (((XBeeAPIPacket)packet).hasAPIFrameID() && ((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
+							else if (((XBeeAPIPacket)packet).needsAPIFrameID() && ((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
 								listener.packetReceived(packet);
 								removeListeners.add(listener);
 							}

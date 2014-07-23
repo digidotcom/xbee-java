@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.XBeeAPIType;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 import com.digi.xbee.api.models.ATStringCommands;
 
@@ -22,8 +22,8 @@ import com.digi.xbee.api.models.ATStringCommands;
  */
 public class ATCommandPacket extends XBeeAPIPacket {
 
-	// Variables	
-	private String command;
+	// Variables
+	private final String command;
 	
 	private byte[] parameter;
 	
@@ -34,9 +34,23 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @param frameID The XBee API frame ID.
 	 * @param command The AT command.
 	 * @param parameter The AT command parameter as String.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
+	 * @throws IllegalArgumentException if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255}.
 	 */
 	public ATCommandPacket(int frameID, String command, String parameter) {
-		this(frameID, command, parameter.getBytes());
+		super(APIFrameType.AT_COMMAND);
+		
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		if (frameID < 0 || frameID > 255)
+			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
+		
+		this.frameID = frameID;
+		this.command = command;
+		if (parameter != null)
+			this.parameter = parameter.getBytes();
 	}
 	
 	/**
@@ -46,9 +60,19 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @param frameID The XBee API frame ID.
 	 * @param command The AT command.
 	 * @param parameter The AT command parameter.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
+	 * @throws IllegalArgumentException if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255}.
 	 */
 	public ATCommandPacket(int frameID, String command, byte[] parameter) {
-		super(XBeeAPIType.AT_COMMAND);
+		super(APIFrameType.AT_COMMAND);
+		
+		if (command == null)
+			throw new NullPointerException("Command cannot be null.");
+		if (frameID < 0 || frameID > 255)
+			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
+		
 		this.frameID = frameID;
 		this.command = command;
 		this.parameter = parameter;
@@ -66,7 +90,8 @@ public class ATCommandPacket extends XBeeAPIPacket {
 			if (parameter != null)
 				os.write(parameter);
 		} catch (IOException e) {
-			e.printStackTrace();
+			// TODO: Revisit this when logging feature is implemented.
+			//e.printStackTrace();
 		}
 		return os.toByteArray();
 	}
@@ -75,17 +100,8 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
 	 */
-	public boolean hasAPIFrameID() {
+	public boolean needsAPIFrameID() {
 		return true;
-	}
-	
-	/**
-	 * Sets the AT command.
-	 * 
-	 * @param command The AT command.
-	 */
-	public void setCommand(String command) {
-		this.command = command;
 	}
 	
 	/**

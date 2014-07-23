@@ -6,14 +6,17 @@ package com.digi.xbee.api.connection.serial;
  * Parameters are stored as public variables so that can be accessed and read
  * from any class.
  */
-public class SerialPortParameters {
-
+public final class SerialPortParameters {
+	
+	// Constants.
+	private static final int HASH_SEED = 23;
+	
 	// Variables
-	public int baudrate;
-	public int dataBits;
-	public int stopBits;
-	public int parity;
-	public int flowControl;
+	public final int baudrate;
+	public final int dataBits;
+	public final int stopBits;
+	public final int parity;
+	public final int flowControl;
 	
 	/**
 	 * Class constructor. Instances a new object of type XBeeSerialPortParameters with
@@ -24,21 +27,25 @@ public class SerialPortParameters {
 	 * @param stopBits Serial connection stop bits.
 	 * @param parity Serial connection parity.
 	 * @param flowControl Serial connection flow control.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudrate < 0} or
+	 *                                  if {@code dataBits < 0} or
+	 *                                  if {@code stopBits < 0} or
+	 *                                  if {@code parity < 0} or
+	 *                                  if {@code flowControl < 0}.
 	 */
 	public SerialPortParameters(int baudrate, int dataBits, int stopBits, int parity, int flowControl) {
-		setParams(baudrate, dataBits, stopBits, parity, flowControl);
-	}
-	
-	/**
-	 * Sets the serial port configuration parameters.
-	 * 
-	 * @param baudrate Serial connection baud rate.
-	 * @param dataBits Serial connection data bits.
-	 * @param stopBits Serial connection stop bits.
-	 * @param parity Serial connection parity.
-	 * @param flowControl Serial connection flow control.
-	 */
-	public void setParams(int baudrate, int dataBits, int stopBits, int parity, int flowControl) {
+		if (baudrate < 0)
+			throw new IllegalArgumentException("Baudrate cannot be less than 0.");
+		if (dataBits < 0)
+			throw new IllegalArgumentException("Number of data bits cannot be less than 0.");
+		if (stopBits < 0)
+			throw new IllegalArgumentException("Number of stop bits cannot be less than 0.");
+		if (parity < 0)
+			throw new IllegalArgumentException("Illegal parity value.");
+		if (flowControl < 0)
+			throw new IllegalArgumentException("Illegal flow control value.");
+		
 		this.baudrate = baudrate;
 		this.dataBits = dataBits;
 		this.stopBits = stopBits;
@@ -46,10 +53,7 @@ public class SerialPortParameters {
 		this.flowControl = flowControl;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof SerialPortParameters)
 			return ((SerialPortParameters)obj).baudrate == baudrate 
@@ -61,10 +65,18 @@ public class SerialPortParameters {
 			return false;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
+	public int hashCode() {
+		int hash = HASH_SEED;
+		hash = hash * (hash + baudrate);
+		hash = hash * (hash + dataBits);
+		hash = hash * (hash + stopBits);
+		hash = hash * (hash + parity);
+		hash = hash * (hash + flowControl);
+		return hash;
+	}
+	
+	@Override
 	public String toString() {
 		return "Baud Rate: "+ baudrate + ", Data Bits: " + dataBits + ", Stop Bits:" + stopBits + ", Parity: " + parity + ", Flow Control: " + flowControl;
 	}

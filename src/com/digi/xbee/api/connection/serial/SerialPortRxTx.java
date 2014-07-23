@@ -39,6 +39,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code parameters == null}.
+	 * 
+	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters) {
 		super(port, parameters, DEFAULT_PORT_TIMEOUT);
@@ -50,7 +55,13 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
-	 * @param receiveTimeout Serial port receive timeout.
+	 * @param receiveTimeout Serial port receive timeout in milliseconds.
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code parameters == null}.
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 *
+	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters, int receiveTimeout) {
 		super(port, parameters, receiveTimeout);
@@ -62,6 +73,14 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
+	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
+	 * @see AbstractSerialPort#DEFAULT_PARITY
+	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
+	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
 	 */
 	public SerialPortRxTx(String port, int baudRate) {
 		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
@@ -73,7 +92,15 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
-	 * @param receiveTimeout Serial port receive timeout.
+	 * @param receiveTimeout Serial port receive timeout in milliseconds.
+	 * 
+	 * @throws NullPointerException if {@code port == null}.
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * 
+	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
+	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
+	 * @see AbstractSerialPort#DEFAULT_PARITY
+	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
 	 */
 	public SerialPortRxTx(String port, int baudRate, int receiveTimeout) {
 		super(port, baudRate, receiveTimeout);
@@ -142,7 +169,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		if (serialPort != null) {
 			try {
 				serialPort.notifyOnDataAvailable(false);
-				//serialPort.removeEventListener();
+				serialPort.removeEventListener();
 				portIdentifier.removePortOwnershipListener(this);
 				Thread closeThread = new Thread("Closing thread for " + port) {
 					public void run() {
@@ -272,12 +299,18 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		serialPort.setRTS(state);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#setPortParameters(int, int, int, int, int)
+	@Override
+	/**
+	 * @throws IllegalArgumentException if {@code baudRate < 0} or
+	 *                                  if {@code dataBits < 0} or
+	 *                                  if {@code stopBits < 0} or
+	 *                                  if {@code parity < 0} or
+	 *                                  if {@code flowControl < 0}.
 	 */
 	public void setPortParameters(int baudRate, int dataBits, int stopBits,
 			int parity, int flowControl) throws XBeeException {
+		parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
+		
 		if (serialPort != null) {
 			try {
 				serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
@@ -336,12 +369,18 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @return List of available serial ports.
 	 */
-	@SuppressWarnings("unchecked")
 	public static String[] listSerialPorts() {
 		ArrayList<String> serialPorts = new ArrayList<String>();
+		
+		@SuppressWarnings("unchecked")
 		Enumeration<CommPortIdentifier> comPorts = CommPortIdentifier.getPortIdentifiers();
+		if (comPorts == null)
+			return serialPorts.toArray(new String[serialPorts.size()]);
+		
 		while (comPorts.hasMoreElements()) {
 			CommPortIdentifier identifier = (CommPortIdentifier)comPorts.nextElement();
+			if (identifier == null)
+				continue;
 			String strName = identifier.getName();
 			serialPorts.add(strName);
 		}
@@ -353,12 +392,18 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @return List of available serial ports with their description.
 	 */
-	@SuppressWarnings("unchecked")
 	public static ArrayList<SerialPortInfo> listSerialPortsInfo() {
 		ArrayList<SerialPortInfo> ports = new ArrayList<SerialPortInfo>();
+		
+		@SuppressWarnings("unchecked")
 		Enumeration<CommPortIdentifier> comPorts = CommPortIdentifier.getPortIdentifiers();
+		if (comPorts == null)
+			return ports;
+		
 		while (comPorts.hasMoreElements()) {
 			CommPortIdentifier identifier = (CommPortIdentifier)comPorts.nextElement();
+			if (identifier == null)
+				continue;
 			ports.add(new SerialPortInfo(identifier.getName()));
 		}
 		return ports;

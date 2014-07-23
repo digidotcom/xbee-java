@@ -45,8 +45,13 @@ public class HexUtils {
 	 * 
 	 * @param value Hex string to convert to.
 	 * @return Byte array of the given hex string.
+	 * 
+	 * @throws NullPointerException if {@code value == null}.
 	 */
 	public static byte[] hexStringToByteArray(String value) {
+		if (value == null)
+			throw new NullPointerException("Value cannot be null.");
+		
 		value = value.trim();
 		if (value.startsWith(HEX_HEADER))
 			value = value.substring((HEX_HEADER).length());
@@ -67,10 +72,15 @@ public class HexUtils {
 	 * Internal function to check if the parameter is a string or a
 	 * numeric value
 	 * 
-	 * @param parameter parameter to check
-	 * @return true if contains letters, false otherwise
+	 * @param parameter parameter to check.
+	 * @return true if contains letters, false otherwise.
+	 * 
+	 * @throws NullPointerException if {@code parameter == null}.
 	 */
 	public static boolean containsLetters(String parameter) {
+		if (parameter == null)
+			throw new NullPointerException("Parameter cannot be null.");
+		
 		byte[] byteArray = parameter.getBytes();
 		for (int i = 0; i < byteArray.length; i++){
 			if (!((byteArray[i] >= '0') && (byteArray[i] <= '9')))
@@ -104,8 +114,13 @@ public class HexUtils {
 	 * 
 	 * @param hexString The hexadecimal string to split.
 	 * @return The hexadecimal string with the bytes split.
+	 * 
+	 * @throws NullPointerException if {@code hexString == null}.
 	 */
 	public static String prettyHexString(String hexString) {
+		if (hexString == null)
+			throw new NullPointerException("Hexadecimal string cannot be null.");
+		
 		String prettyHexString = "";
 		if (hexString.length() % 2 != 0)
 			hexString = "0" + hexString;

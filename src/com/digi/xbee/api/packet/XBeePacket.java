@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import com.digi.xbee.api.exceptions.PacketParsingException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.SpecialByte;
-import com.digi.xbee.api.models.XBeeMode;
+import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -37,7 +37,6 @@ public abstract class XBeePacket {
 	 * @return The XBee packet byte array.
 	 */
 	public byte[] generateByteArray() {
-		checksum = new XBeeChecksum();
 		checksum.reset();
 		byte[] packetData = getPacketData();
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -151,10 +150,14 @@ public abstract class XBeePacket {
 	 * 
 	 * @param packet The hexadecimal string to parse.
 	 * @return The generated Generic XBee Packet.
-	 * @throws XBeeException
 	 * @throws PacketParsingException 
+	 * 
+	 * @throws NullPointerException if {@code packet == null}.
 	 */
-	public static XBeePacket parsePacket(String packet) throws XBeeException, PacketParsingException {
+	public static XBeePacket parsePacket(String packet) throws PacketParsingException {
+		if (packet == null)
+			throw new NullPointerException("Packet cannot be null.");
+			
 		return parsePacket(HexUtils.hexStringToByteArray(packet.trim().replace(" ",  "")));
 	}
 	
@@ -163,10 +166,14 @@ public abstract class XBeePacket {
 	 * 
 	 * @param packet The byte array to parse.
 	 * @return The generated Generic XBee Packet.
-	 * @throws XBeeException
 	 * @throws PacketParsingException 
+	 * 
+	 * @throws NullPointerException if {@code packet == null}.
 	 */
 	public static XBeePacket parsePacket(byte[] packet) throws PacketParsingException {
+		if (packet == null)
+			throw new NullPointerException("Packet byte array cannot be null.");
+		
 		if (packet.length > 1 && ((packet[0] &0xFF) != SpecialByte.HEADER_BYTE.getValue()))
 			throw new PacketParsingException("Invalid start delimiter.");
 		
@@ -187,7 +194,7 @@ public abstract class XBeePacket {
 		if (packetChecksum != generatedChecksum)
 			throw new PacketParsingException("Invalid '" + packetChecksum + "' checksum. It should be " + generatedChecksum);
 		
-		XBeePacketParser parser = new XBeePacketParser(new ByteArrayInputStream(packet, 1, packet.length - 1), XBeeMode.API);
+		XBeePacketParser parser = new XBeePacketParser(new ByteArrayInputStream(packet, 1, packet.length - 1), OperatingMode.API);
 		XBeePacket xbeePacket = parser.parsePacket();
 		return xbeePacket;
 	}

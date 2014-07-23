@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * This class enumerates all the special bytes of the XBee protocol
  * that must be escaped when working on API 2 mode.
- * See {@link com.digi.xbee.models.XBeeMode}.
+ * See {@link com.digi.xbee.OperatingMode.XBeeMode}.
  */
 public enum SpecialByte {
 
@@ -16,14 +16,14 @@ public enum SpecialByte {
 	XOFF_BYTE(0x13);
 	
 	// Variables
-	private static HashMap<Integer, SpecialByte> lookupTable = new HashMap<Integer, SpecialByte>();
+	private static final HashMap<Integer, SpecialByte> lookupTable = new HashMap<Integer, SpecialByte>();
 	
 	static {
 		for (SpecialByte sb:values())
 			lookupTable.put(sb.getValue(), sb);
 	}
 	
-	private int value;
+	private final int value;
 	
 	/**
 	 * Class constructor. Instances a new Special Byte with the given value.

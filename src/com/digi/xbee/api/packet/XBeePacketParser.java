@@ -75,7 +75,7 @@ public class XBeePacketParser {
 			throw new NullPointerException("Input stream cannot be null.");
 		if (mode == null)
 			throw new NullPointerException("Operating mode cannot be null.");
-		if (mode != OperatingMode.API || mode != OperatingMode.API_ESCAPE)
+		if (mode != OperatingMode.API && mode != OperatingMode.API_ESCAPE)
 			throw new IllegalArgumentException("Operating mode must be API or API Escaped.");
 		
 		this.inputStream = inputStream;

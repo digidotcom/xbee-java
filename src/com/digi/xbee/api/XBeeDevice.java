@@ -531,7 +531,7 @@ public class XBeeDevice {
 	 * 
 	 * @param listener Listener to be notified when new packets are received.
 	 */
-	public void startlisteningForPackets(IPacketReceiveListener listener) {
+	public void startListeningForPackets(IPacketReceiveListener listener) {
 		if (dataReader == null)
 			return;
 		dataReader.addPacketReceiveListener(listener);
@@ -543,7 +543,7 @@ public class XBeeDevice {
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 */
-	public void stoplisteningForPackets(IPacketReceiveListener listener) {
+	public void stopListeningForPackets(IPacketReceiveListener listener) {
 		if (dataReader == null)
 			return;
 		dataReader.removePacketReceiveListener(listener);
@@ -556,7 +556,7 @@ public class XBeeDevice {
 	 * 
 	 * @param listener Listener to be notified when new serial data is received.
 	 */
-	public void startlisteningForSerialData(ISerialDataReceiveListener listener) {
+	public void startListeningForSerialData(ISerialDataReceiveListener listener) {
 		if (dataReader == null)
 			return;
 		dataReader.addSerialDatatReceiveListener(listener);
@@ -568,7 +568,7 @@ public class XBeeDevice {
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 */
-	public void stoplisteningForSerialData(ISerialDataReceiveListener listener) {
+	public void stopListeningForSerialData(ISerialDataReceiveListener listener) {
 		if (dataReader == null)
 			return;
 		dataReader.removeSerialDataReceiveListener(listener);

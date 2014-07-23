@@ -24,6 +24,8 @@ public final class XBee64BitAddress {
 	// Constants
 	public static final XBee64BitAddress COORDINATOR_ADDRESS = new XBee64BitAddress("0000");
 	public static final XBee64BitAddress BROADCAST_ADDRESS = new XBee64BitAddress("FFFF");
+	public static final XBee64BitAddress UNKNOWN_ADDRESS = new XBee64BitAddress("FFFE");
+	
 	private static final String DEVICE_ID_SEPARATOR = "-";
 	private static final String DEVICE_ID_MAC_SEPARATOR = "FF";
 	

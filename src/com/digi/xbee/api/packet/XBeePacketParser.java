@@ -20,12 +20,19 @@ import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeDiscoveryStatus;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBeeTransmitStatus;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
+import com.digi.xbee.api.packet.common.TransmitPacket;
+import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.packet.raw.TX16Packet;
+import com.digi.xbee.api.packet.raw.TX64Packet;
+import com.digi.xbee.api.packet.raw.TXStatusPacket;
 
 /**
  * This class reads and parses XBee packets from the input stream returning
@@ -110,8 +117,17 @@ public class XBeePacketParser {
 				packet = new UnknownXBeePacket(apiID, payload);
 			} else {
 				switch (apiType) {
+				case TX_64:
+					packet = parseTX64Packet();
+					break;
+				case TX_16:
+					packet = parseTX16Packet();
+					break;
 				case AT_COMMAND:
 					packet = parseATCommandPacket();
+					break;
+				case TRANSMIT_REQUEST:
+					packet = parseTransmitRequestPacket();
 					break;
 				case AT_COMMAND_RESPONSE:
 					packet = parseATCommandResponsePacket();
@@ -121,6 +137,12 @@ public class XBeePacketParser {
 					break;
 				case RX_16:
 					packet = parseRX16Packet();
+					break;
+				case TX_STATUS:
+					packet = parseTXStatusPacket();
+					break;
+				case TRANSMIT_STATUS:
+					packet = parseTransmitStatusPacket();
 					break;
 				case RECEIVE_PACKET:
 					packet = parseZigBeeReceivePacket();
@@ -290,6 +312,40 @@ public class XBeePacketParser {
 	}
 	
 	/**
+	 * Parses the input stream and returns a packet of type TX (transmit) 16 Request.
+	 * 
+	 * @return Parsed TX (transmit) 16 Request packet.
+	 * @throws IOException
+	 * @throws ParsingException
+	 */
+	private XBeePacket parseTX16Packet() throws IOException, PacketParsingException {
+		int frameID = readByte();
+		XBee16BitAddress destAddress16 = readXBee16BitAddress();
+		int transmitOptions = readByte();
+		byte[] data = null;
+		if (readBytes < length)
+			data = readBytes(length - readBytes);
+		return new TX16Packet(frameID, destAddress16, transmitOptions, data);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type TX (transmit) 64 Request.
+	 * 
+	 * @return Parsed TX (transmit) 64 Request packet.
+	 * @throws IOException
+	 * @throws ParsingException
+	 */
+	private XBeePacket parseTX64Packet() throws IOException, PacketParsingException {
+		int frameID = readByte();
+		XBee64BitAddress destAddress64 = readXBee64BitAddress();
+		int transmitOptions = readByte();
+		byte[] data = null;
+		if (readBytes < length)
+			data = readBytes(length - readBytes);
+		return new TX64Packet(frameID, destAddress64, transmitOptions, data);
+	}
+	
+	/**
 	 * Parses the input stream and returns a packet of type AT Command.
 	 * 
 	 * @return Parsed AT Command packet.
@@ -303,6 +359,25 @@ public class XBeePacketParser {
 		if (readBytes < length)
 			parameterData = readBytes(length - readBytes);
 		return new ATCommandPacket(frameID, command, parameterData);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type Transmit Request.
+	 * 
+	 * @return Parsed Transmit Request packet.
+	 * @throws IOException
+	 * @throws ParsingException
+	 */
+	private XBeePacket parseTransmitRequestPacket() throws IOException, PacketParsingException {
+		int frameID = readByte();
+		XBee64BitAddress destAddress64 = readXBee64BitAddress();
+		XBee16BitAddress destAddress16 = readXBee16BitAddress();
+		int broadcastRadius = readByte();
+		int options = readByte();
+		byte[] rfData = null;
+		if (readBytes < length)
+			rfData = readBytes(length - readBytes);
+		return new TransmitPacket(frameID, destAddress64, destAddress16, broadcastRadius, options, rfData);
 	}
 	
 	/**
@@ -320,6 +395,35 @@ public class XBeePacketParser {
 		if (readBytes < length)
 			commandData = readBytes(length - readBytes);
 		return new ATCommandResponsePacket(frameID, ATCommandStatus.get(status), command, commandData);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type TX status.
+	 * 
+	 * @return Parsed TX status packet.
+	 * @throws IOException
+	 * @throws ParsingException
+	 */
+	private XBeePacket parseTXStatusPacket() throws IOException, PacketParsingException {
+		int frameID = readByte();
+		int status = readByte();
+		return new TXStatusPacket(frameID, XBeeTransmitStatus.get(status));
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type Transmit Status.
+	 * 
+	 * @return Parsed Transmit Status packet.
+	 * @throws IOException
+	 * @throws ParsingException
+	 */
+	private XBeePacket parseTransmitStatusPacket() throws IOException, PacketParsingException {
+		int frameID = readByte();
+		XBee16BitAddress address = readXBee16BitAddress();
+		int retryCount = readByte();
+		int deliveryStatus = readByte();
+		int discoveryStatus = readByte();
+		return new TransmitStatusPacket(frameID, address, retryCount, XBeeTransmitStatus.get(deliveryStatus), XBeeDiscoveryStatus.get(discoveryStatus));
 	}
 	
 	/**

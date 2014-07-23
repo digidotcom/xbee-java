@@ -23,13 +23,22 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
+import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBeeProtocol;
+import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.GenericXBeePacket;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.TransmitPacket;
+import com.digi.xbee.api.packet.common.TransmitStatusPacket;
+import com.digi.xbee.api.packet.raw.TX16Packet;
+import com.digi.xbee.api.packet.raw.TX64Packet;
+import com.digi.xbee.api.packet.raw.TXStatusPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 public class XBeeDevice {
@@ -42,7 +51,11 @@ public class XBeeDevice {
 	
 	protected DataReader dataReader = null;
 	
+	protected XBeeProtocol xbeeProtocol = XBeeProtocol.UNKNOWN;
+	
 	protected OperatingMode operatingMode = OperatingMode.UNKNOWN;
+	
+	protected XBee64BitAddress xbee64BitAddress;
 	
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
@@ -218,6 +231,17 @@ public class XBeeDevice {
 	}
 	
 	/**
+	 * Retrieves the 64-Bit address of the XBee device.
+	 * 
+	 * @return The 64-Bit address of the XBee device.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public XBee64BitAddress get64BitAddress() {
+		return xbee64BitAddress;
+	}
+	
+	/**
 	 * Retrieves the Operating mode (AT, API or API escaped) of the XBee device.
 	 * 
 	 * @return The operating mode of the XBee device.
@@ -226,6 +250,28 @@ public class XBeeDevice {
 	 */
 	public OperatingMode getOperatingMode() {
 		return operatingMode;
+	}
+	
+	/**
+	 * Retrieves the XBee Protocol of the XBee device.
+	 * 
+	 * @return The XBee device protocol.
+	 * 
+	 * @see XBeeProtocol
+	 */
+	public XBeeProtocol getXBeeProtocol() {
+		return xbeeProtocol;
+	}
+	
+	/**
+	 * Sets the XBee protocol of the XBee device.
+	 * 
+	 * @param xbeeProtocol The XBee protocol to set.
+	 * 
+	 * @see XBeeProtocol
+	 */
+	protected void setXBeeProtocol(XBeeProtocol xbeeProtocol) {
+		this.xbeeProtocol = xbeeProtocol;
 	}
 	
 	/**
@@ -572,5 +618,121 @@ public class XBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeSerialDataReceiveListener(listener);
+	}
+	
+	/**
+	 * Sends the provided data to the XBee device of the network corresponding to the 
+	 * provided 64-Bit address.
+	 * See {@link com.digi.xbee.api.models.XBee64BitAddress}.
+	 * 
+	 * @param address The 64-Bit address of the XBee that will receive the data.
+	 * @param data Byte array containing data to be sent.
+	 * @return True if the data was sent successfully, false otherwise.
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 */
+	public boolean sendSerialData(XBee64BitAddress address, byte[] data) throws InvalidOperatingModeException, XBeeException {
+		XBeePacket xbeePacket;
+		XBeePacket receivedPacket;
+		
+		// Verify the parameters are not null, if they are null, throw an exception.
+		if (address == null || data == null)
+			throw new XBeeException(XBeeException.INVALID_ARGUMENT, "Address and data cannot be null");
+		
+		// Depending on the protocol of the XBee device, the packet to send may vary.
+		switch (getXBeeProtocol()) {
+		case RAW_802_15_4:
+			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
+			receivedPacket = sendXBeePacket(xbeePacket);
+			// Verify that the packet was sent successfully checking the received transmit status.
+			if (receivedPacket instanceof TXStatusPacket) {
+				switch (((TXStatusPacket)receivedPacket).getStatus()) {
+				case SUCCESS:
+					return true;
+				default:
+					return false;
+				}
+			} else
+				return false;
+		default:
+			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
+			receivedPacket = sendXBeePacket(xbeePacket);
+			// Verify that the packet was sent successfully checking the received transmit status.
+			if (receivedPacket instanceof TransmitStatusPacket) {
+				switch (((TransmitStatusPacket)receivedPacket).getDeliveryStatus()) {
+				case SUCCESS:
+					return true;
+				default:
+					return false;
+				}
+			} else
+				return false;
+		}
+	}
+	
+	/**
+	 * Sends the provided data to the XBee device of the network corresponding to the 
+	 * provided 16-Bit address.
+	 * See {@link com.digi.xbee.api.models.XBee16BitAddress}.
+	 * 
+	 * @param address The 16-Bit address of the XBee that will receive the data.
+	 * @param data Byte array containing data to be sent.
+	 * @return True if the data was sent successfully, false otherwise.
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 */
+	public boolean sendSerialData(XBee16BitAddress address, byte[] data) throws InvalidOperatingModeException, XBeeException {
+		XBeePacket xbeePacket;
+		XBeePacket receivedPacket;
+		
+		// Verify the parameters are not null, if they are null, throw an exception.
+		if (address == null || data == null)
+			throw new XBeeException(XBeeException.INVALID_ARGUMENT, "Address and data cannot be null");
+		
+		// Depending on the protocol of the XBee device, the packet to send may vary.
+		switch (getXBeeProtocol()) {
+		case RAW_802_15_4:
+			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
+			receivedPacket = sendXBeePacket(xbeePacket);
+			// Verify that the packet was sent successfully checking the received transmit status.
+			if (receivedPacket instanceof TXStatusPacket) {
+				switch (((TXStatusPacket)receivedPacket).getStatus()) {
+				case SUCCESS:
+					return true;
+				default:
+					return false;
+				}
+			} else
+				return false;
+		default:
+			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
+			receivedPacket = sendXBeePacket(xbeePacket);
+			// Verify that the packet was sent successfully checking the received transmit status.
+			if (receivedPacket instanceof TransmitStatusPacket) {
+				switch (((TransmitStatusPacket)receivedPacket).getDeliveryStatus()) {
+				case SUCCESS:
+					return true;
+				default:
+					return false;
+				}
+			} else
+				return false;
+		}
+	}
+	
+	/**
+	 * Sends the provided data to the provided XBee device.
+	 * See {@link com.digi.xbee.api.XBeeDevice}.
+	 * 
+	 * @param xbeeDevice The XBee device of the network that will receive the data.
+	 * @param data Byte array containing data to be sent.
+	 * @return True if the data was sent successfully, false otherwise.
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 */
+	public boolean sendSerialData(XBeeDevice xbeeDevice, byte[] data) throws InvalidOperatingModeException, XBeeException {
+		if (xbeeDevice == null)
+			throw new XBeeException(XBeeException.INVALID_ARGUMENT, "XBee device cannot be null");
+		return sendSerialData(xbeeDevice.get64BitAddress(), data);
 	}
 }

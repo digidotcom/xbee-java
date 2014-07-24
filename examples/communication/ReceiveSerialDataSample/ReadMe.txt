@@ -28,13 +28,16 @@
 
   Example setup
   -------------
-    1) Plug the XBee radios into the XBee adapters and connect them to your
+    1) Look for the 64-bit address labeled on the back of the device, a 16 
+       character string that follows the format 0013A20040XXXXXX.
+       
+    2) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
        
-    2) Ensure that the modules are in API mode and on the same network.
+    3) Ensure that the modules are in API mode and on the same network.
        For further information on how to perform this task, go to [...]
        
-    3) Set the port and baud rate of the receiver XBee radio in the MainApp 
+    4) Set the port and baud rate of the receiver XBee radio in the MainApp 
        class.
        If you do not know the serial/USB port where your module is connected to,
        see [...]
@@ -54,39 +57,24 @@
        
        1) Launch the XCTU application.
           
-       2) First, you need to know the 64-bit address of the destination device 
-          (receiver). Use the XCTU to get it.
-          Add the receiver XBee module to the XCTU, specifying its port 
-          settings.
+       2) Add the sender XBee module to the XCTU, specifying its port settings.
           
-       3) In the 'Configuration' working mode, select the module you have just 
-          added to read the parameters.
-          
-          To get the 64-bit address of the receiver module look for the 'SH' 
-          and 'SL' parameters and copy their value without spaces, starting 
-          from the 'SH' parameter and immediately followed by the 'SL' 
-          parameter.
-          
-       4) Remove this module from the XCTU.
-          
-       5) Add the sender XBee module to the XCTU, specifying its port settings.
-          
-       6) Once the module is added, change to the 'Consoles' working mode and 
+       3) Once the module is added, change to the 'Consoles' working mode and 
           open the serial connection.
           
-       7) Create and add a frame using the 'Frames Generator' tool with the 
+       4) Create and add a frame using the 'Frames Generator' tool with the 
           following parameters:
           
           - Protocol:                               Select the protocol of your device.
           - Frame type:                             Select a 64-bit Transmit Request frame.
           - Frame ID:                               01
-          - 64-bit dest. address:                   Use the SH and SL values you copied before.
+          - 64-bit dest. address:                   Use the 64-bit address you copied before.
           - 16-bit dest. address (only if present): FF FE
           - Broadcast radius (only if present):     00
           - Options:                                00
           - RF data (ASCII):                        Hello XBee!
           
-       8) Send this frame and check the launched application output console: 
+       5) Send this frame and check the launched application output console: 
           The packet has been received and a line containing the data included 
           in the 'RF data' field of the sent frame is printed out:
           

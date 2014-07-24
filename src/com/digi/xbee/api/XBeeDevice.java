@@ -67,11 +67,10 @@ public class XBeeDevice {
 	 * @param baudRate Serial port baud rate to communicate with the device. Other 
 	 * 					connection parameters will be set as default (8 data bits, 
 	 * 					1 stop bit, no parity, no flow control).
-	 * @throws XBeeException
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 */
-	public XBeeDevice(String port, int baudRate) throws XBeeException {
+	public XBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
 	}
 	
@@ -85,7 +84,6 @@ public class XBeeDevice {
 	 * @param stopBits Serial port data bits.
 	 * @param parity Serial port data bits.
 	 * @param flowControl Serial port data bits.
-	 * @throws XBeeException 
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
@@ -94,7 +92,7 @@ public class XBeeDevice {
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
 	 */
-	public XBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) throws XBeeException {
+	public XBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
 	}
 	
@@ -104,14 +102,13 @@ public class XBeeDevice {
 	 * 
 	 * @param port Serial port name where XBee device is attached to.
 	 * @param serialPortParameters Object containing the serial port parameters.
-	 * @throws XBeeException 
 	 * 
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code serialPortParameters == null}.
 	 * 
 	 * @see SerialPortParameters
 	 */
-	public XBeeDevice(String port, SerialPortParameters serialPortParameters) throws XBeeException {
+	public XBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
 	}
 	
@@ -120,13 +117,12 @@ public class XBeeDevice {
 	 * interface.
 	 * 
 	 * @param connectionInterface The connection interface with the physical XBee device.
-	 * @throws XBeeException 
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null}
 	 * 
 	 * @see IConnectionInterface
 	 */
-	public XBeeDevice(IConnectionInterface connectionInterface) throws XBeeException {
+	public XBeeDevice(IConnectionInterface connectionInterface) {
 		if (connectionInterface == null)
 			throw new IllegalArgumentException("ConnectionInterface cannot be null.");
 		

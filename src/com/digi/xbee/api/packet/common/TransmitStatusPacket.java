@@ -37,34 +37,37 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	private final XBee16BitAddress destAddress16;
 	
 	private final int tranmistRetryCount;
-	private final XBeeTransmitStatus deliveryStatus;
+	private final XBeeTransmitStatus transmitStatus;
 	private final XBeeDiscoveryStatus discoveryStatus;
 	
 	/**
 	 * Class constructor. Instances a new object of type ZigBeeTransmitStatus with
 	 * the given parameters.
 	 * 
-	 * @param frameID Frame ID
-	 * @param destAddress16 16-bit Network address the packet was delivered to
-	 * @param tranmistRetryCount The number of application transmission retries that took place
-	 * @param deliveryStatus Delivery status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
-	 * @param discoveryStatus Discovery status
+	 * @param frameID Frame ID.
+	 * @param destAddress16 16-bit Network address the packet was delivered to.
+	 * @param tranmistRetryCount The number of application transmission retries that took place.
+	 * @param transmitStatus Transmit status.
+	 * @param discoveryStatus Discovery status.
 	 * 
 	 * @throws NullPointerException if {@code destAddress16 == null} or
-	 *                              if {@code deliveryStatus == null} or
+	 *                              if {@code transmitStatus == null} or
 	 *                              if {@code discoveryStatus == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code tranmistRetryCount < 0} or
 	 *                                  if {@code tranmistRetryCount > 255} .
+	 * 
+	 * @see XBeeTransmitStatus
+	 * @see XBeeDiscoveryStatus
 	 */
-	public TransmitStatusPacket(int frameID, XBee16BitAddress destAddress16, int tranmistRetryCount, XBeeTransmitStatus deliveryStatus, 
+	public TransmitStatusPacket(int frameID, XBee16BitAddress destAddress16, int tranmistRetryCount, XBeeTransmitStatus transmitStatus, 
 			XBeeDiscoveryStatus discoveryStatus) {
 		super(APIFrameType.TRANSMIT_STATUS);
 		
 		if (destAddress16 == null)
 			throw new NullPointerException("16-bit destination address cannot be null.");
-		if (deliveryStatus == null)
+		if (transmitStatus == null)
 			throw new NullPointerException("Delivery status cannot be null.");
 		if (discoveryStatus == null)
 			throw new NullPointerException("Discovery status cannot be null.");
@@ -76,7 +79,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 		this.frameID = frameID;
 		this.destAddress16 = destAddress16;
 		this.tranmistRetryCount = tranmistRetryCount;
-		this.deliveryStatus = deliveryStatus;
+		this.transmitStatus = transmitStatus;
 		this.discoveryStatus = discoveryStatus;
 	}
 	
@@ -92,7 +95,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 			data.write(frameID);
 			data.write(destAddress16.getValue());
 			data.write(tranmistRetryCount);
-			data.write(deliveryStatus.getId());
+			data.write(transmitStatus.getId());
 			data.write(discoveryStatus.getId());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -113,7 +116,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The 16 bit destination address.
 	 */
-	public XBee16BitAddress get16bitAddress() {
+	public XBee16BitAddress get16BitDestinationAddress() {
 		return destAddress16;
 	}
 	
@@ -127,19 +130,22 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the delivery status.
-	 * See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
+	 * Retrieves the transmit status.
 	 * 
-	 * @return Delivery status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
+	 * @return Transmit status.
+	 * 
+	 * @see XBeeTransmitStatus
 	 */
-	public XBeeTransmitStatus getDeliveryStatus() {
-		return deliveryStatus;
+	public XBeeTransmitStatus getTransmitStatus() {
+		return transmitStatus;
 	}
 	
 	/**
 	 * Retrieves the discovery status.
 	 * 
 	 * @return Discovery status.
+	 * 
+	 * @see XBeeDiscoveryStatus
 	 */
 	public XBeeDiscoveryStatus getDiscoveryStatus() {
 		return discoveryStatus;
@@ -154,7 +160,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Tx. retry count", HexUtils.prettyHexString(HexUtils.integerToHexString(tranmistRetryCount, 1)) + " (" + tranmistRetryCount + ")");
-		parameters.put("Delivery status", HexUtils.prettyHexString(HexUtils.integerToHexString(deliveryStatus.getId(), 1)) + " (" + deliveryStatus.getDescription() + ")");
+		parameters.put("Delivery status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) + " (" + transmitStatus.getDescription() + ")");
 		parameters.put("Discovery status", HexUtils.prettyHexString(HexUtils.integerToHexString(discoveryStatus.getId(), 1)) + " (" + discoveryStatus.getDescription() + ")");
 		return parameters;
 	}

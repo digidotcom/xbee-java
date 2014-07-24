@@ -646,7 +646,7 @@ public class XBeeDevice {
 			receivedPacket = sendXBeePacket(xbeePacket);
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TXStatusPacket) {
-				switch (((TXStatusPacket)receivedPacket).getStatus()) {
+				switch (((TXStatusPacket)receivedPacket).getTransmitStatus()) {
 				case SUCCESS:
 					return true;
 				default:
@@ -659,7 +659,7 @@ public class XBeeDevice {
 			receivedPacket = sendXBeePacket(xbeePacket);
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TransmitStatusPacket) {
-				switch (((TransmitStatusPacket)receivedPacket).getDeliveryStatus()) {
+				switch (((TransmitStatusPacket)receivedPacket).getTransmitStatus()) {
 				case SUCCESS:
 					return true;
 				default:
@@ -700,7 +700,7 @@ public class XBeeDevice {
 			receivedPacket = sendXBeePacket(xbeePacket);
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TXStatusPacket) {
-				switch (((TXStatusPacket)receivedPacket).getStatus()) {
+				switch (((TXStatusPacket)receivedPacket).getTransmitStatus()) {
 				case SUCCESS:
 					return true;
 				default:
@@ -713,7 +713,7 @@ public class XBeeDevice {
 			receivedPacket = sendXBeePacket(xbeePacket);
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TransmitStatusPacket) {
-				switch (((TransmitStatusPacket)receivedPacket).getDeliveryStatus()) {
+				switch (((TransmitStatusPacket)receivedPacket).getTransmitStatus()) {
 				case SUCCESS:
 					return true;
 				default:

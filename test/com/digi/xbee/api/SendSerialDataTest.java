@@ -72,22 +72,22 @@ public class SendSerialDataTest {
 		
 		// Mock Tx Status packet SUCCESS.
 		txStatusSuccess = Mockito.mock(TXStatusPacket.class);
-		Mockito.when(txStatusSuccess.getStatus()).thenReturn(XBeeTransmitStatus.SUCCESS);
+		Mockito.when(txStatusSuccess.getTransmitStatus()).thenReturn(XBeeTransmitStatus.SUCCESS);
 		
 		// Mock Tx Status packet ERROR.
 		txStatusError = Mockito.mock(TXStatusPacket.class);
-		Mockito.when(txStatusError.getStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
+		Mockito.when(txStatusError.getTransmitStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
 		
 		// Mock Transmit Request packet.
 		transmitPacket = Mockito.mock(TransmitPacket.class);
 		
 		// Mock Transmit Status packet SUCCESS.
 		transmitStatusSuccess = Mockito.mock(TransmitStatusPacket.class);
-		Mockito.when(transmitStatusSuccess.getDeliveryStatus()).thenReturn(XBeeTransmitStatus.SUCCESS);
+		Mockito.when(transmitStatusSuccess.getTransmitStatus()).thenReturn(XBeeTransmitStatus.SUCCESS);
 		
 		// Mock Transmit Status packet ERROR.
 		transmitStatusError = Mockito.mock(TransmitStatusPacket.class);
-		Mockito.when(transmitStatusError.getDeliveryStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
+		Mockito.when(transmitStatusError.getTransmitStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
 		
 		// Mock an XBeeDevice to be used as parameter in the send serial data command.
 		mockedDevice = Mockito.mock(XBeeDevice.class);

@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -52,7 +53,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	private final XBee16BitAddress destAddress16;
 	
 	private final int broadcastRadius;
-	private final int options;
+	private final int transmitOptions;
 	
 	private byte[] rfData;
 	
@@ -64,7 +65,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * @param destAddress64 64-bit address of the destination device.
 	 * @param destAddress16 16-bit address of the destination device.
 	 * @param broadcastRadius maximum number of hops a broadcast transmission can occur.
-	 * @param options Bitfield of supported transmission options. See {@link com.digi.xbee.api.models.XBeeTransmitOptions}.
+	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param rfData RF Data that is sent to the destination device.
 	 * 
 	 * @throws NullPointerException if {@code destAddress64 == null} or
@@ -73,10 +74,12 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code broadcastRadius < 0} or
 	 *                                  if {@code broadcastRadius > 255} or
-	 *                                  if {@code options < 0} or
-	 *                                  if {@code options > 255}.
+	 *                                  if {@code transmitOptions < 0} or
+	 *                                  if {@code transmitOptions > 255}.
+	 * 
+	 * @see XBeeTransmitOptions
 	 */
-	public TransmitPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int broadcastRadius, int options, byte[] rfData) {
+	public TransmitPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int broadcastRadius, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TRANSMIT_REQUEST);
 		
 		if (destAddress64 == null)
@@ -87,14 +90,14 @@ public class TransmitPacket extends XBeeAPIPacket {
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		if (broadcastRadius < 0 || broadcastRadius > 255)
 			throw new IllegalArgumentException("Broadcast radius must be between 0 and 255.");
-		if (options < 0 || options > 255)
+		if (transmitOptions < 0 || transmitOptions > 255)
 			throw new IllegalArgumentException("Transmit options must be between 0 and 255.");
 		
 		this.frameID = frameID;
 		this.destAddress64 = destAddress64;
 		this.destAddress16 = destAddress16;
 		this.broadcastRadius = broadcastRadius;
-		this.options = options;
+		this.transmitOptions = transmitOptions;
 		this.rfData = rfData;
 	}
 
@@ -109,7 +112,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 			data.write(destAddress64.getValue());
 			data.write(destAddress16.getValue());
 			data.write(broadcastRadius);
-			data.write(options);
+			data.write(transmitOptions);
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
@@ -131,7 +134,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The 64 bit destination address.
 	 */
-	public XBee64BitAddress get64bitDestinationAddress() {
+	public XBee64BitAddress get64BitDestinationAddress() {
 		return destAddress64;
 	}
 	
@@ -140,7 +143,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The 16 bit destination address.
 	 */
-	public XBee16BitAddress get16bitAddress() {
+	public XBee16BitAddress get16BitDestinationAddress() {
 		return destAddress16;
 	}
 	
@@ -158,8 +161,8 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Transmit options bitfield.
 	 */
-	public int getOptions() {
-		return options;
+	public int getTransmitOptions() {
+		return transmitOptions;
 	}
 	
 	/**
@@ -190,7 +193,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 		parameters.put("64-bit dest. address", HexUtils.prettyHexString(destAddress64.toString()));
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Broadcast radius", HexUtils.prettyHexString(HexUtils.integerToHexString(broadcastRadius, 1)) + " (" + broadcastRadius + ")");
-		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1)));
+		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
 		if (rfData != null)
 			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
 		return parameters;

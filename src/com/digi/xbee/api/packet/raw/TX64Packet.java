@@ -25,29 +25,29 @@ public class TX64Packet extends XBeeAPIPacket {
 	// Variables
 	private final int transmitOptions;
 	
-	private final XBee64BitAddress destAddress;
+	private final XBee64BitAddress destAddress64;
 	
-	private byte[] data;
+	private byte[] rfData;
 	
 	/**
 	 * Class constructor. Instances a new object of type Transmit64Packet with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.
-	 * @param destAddress 64-bit address of the destination device.
+	 * @param destAddress64 64-bit address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options. See {@link com.digi.xbee.api.models.XBeeTransmitOptions}.
 	 * @param data RF Data that is sent to the destination device.
 	 * 
-	 * @throws NullPointerException if {@code destAddress == null}.
+	 * @throws NullPointerException if {@code destAddress64 == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
 	 */
-	public TX64Packet(int frameID, XBee64BitAddress destAddress, int transmitOptions, byte[] data) {
+	public TX64Packet(int frameID, XBee64BitAddress destAddress64, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TX_64);
 		
-		if (destAddress == null)
+		if (destAddress64 == null)
 			throw new NullPointerException("Destination address cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
@@ -55,9 +55,9 @@ public class TX64Packet extends XBeeAPIPacket {
 			throw new IllegalArgumentException("Transmit options must be between 0 and 255.");
 		
 		this.frameID = frameID;
-		this.destAddress = destAddress;
+		this.destAddress64 = destAddress64;
 		this.transmitOptions = transmitOptions;
-		this.data = data;
+		this.rfData = rfData;
 	}
 
 	/*
@@ -68,10 +68,10 @@ public class TX64Packet extends XBeeAPIPacket {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(frameID);
-			os.write(destAddress.getValue());
+			os.write(destAddress64.getValue());
 			os.write(transmitOptions);
-			if (data != null)
-				os.write(data);
+			if (rfData != null)
+				os.write(rfData);
 		} catch (IOException e) {
 			// TODO: Revisit this when logging feature is implemented.
 			//e.printStackTrace();
@@ -92,8 +92,8 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * 
 	 * @return The 64 bit destination address.
 	 */
-	public XBee64BitAddress getDestinationAddress() {
-		return destAddress;
+	public XBee64BitAddress get64BitDestinationAddress() {
+		return destAddress64;
 	}
 	
 	/**
@@ -101,26 +101,26 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * 
 	 * @return Transmit options bitfield.
 	 */
-	public int getOptions() {
+	public int getTransmitOptions() {
 		return transmitOptions;
 	}
 	
 	/**
-	 * Sets the data to send.
+	 * Sets the RF data to send.
 	 * 
 	 * @param data RF Data to send.
 	 */
-	public void setData(byte[] data) {
-		this.data = data;
+	public void setRFData(byte[] rfData) {
+		this.rfData = rfData;
 	}
 	
 	/**
 	 * Retrieves the RF Data to send.
 	 * 
-	 * @return Data to send.
+	 * @return RF data to send.
 	 */
-	public byte[] getData() {
-		return data;
+	public byte[] getRFData() {
+		return rfData;
 	}
 	
 	
@@ -131,10 +131,10 @@ public class TX64Packet extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
-		parameters.put("64-bit dest. address", HexUtils.prettyHexString(destAddress.toString()));
+		parameters.put("64-bit dest. address", HexUtils.prettyHexString(destAddress64.toString()));
 		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
-		if (data != null)
-			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
+		if (rfData != null)
+			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
 		return parameters;
 	}
 }

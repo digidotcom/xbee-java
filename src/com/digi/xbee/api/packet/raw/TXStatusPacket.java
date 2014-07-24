@@ -21,29 +21,29 @@ import com.digi.xbee.api.utils.HexUtils;
 public class TXStatusPacket extends XBeeAPIPacket {
 	
 	// Variables
-	private final XBeeTransmitStatus status;
+	private final XBeeTransmitStatus transmitStatus;
 	
 	/**
 	 * Class constructor. Instances a new object of type TransmitStatusPacket with
 	 * the given parameters.
 	 * 
 	 * @param frameID Packet frame ID.
-	 * @param status Transmit status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
+	 * @param transmitStatus Transmit status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
 	 * 
-	 * @throws NullPointerException if {@code status == null}.
+	 * @throws NullPointerException if {@code transmitStatus == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
 	 */
-	public TXStatusPacket(int frameID, XBeeTransmitStatus status) {
+	public TXStatusPacket(int frameID, XBeeTransmitStatus transmitStatus) {
 		super(APIFrameType.TX_STATUS);
 		
-		if (status == null)
+		if (transmitStatus == null)
 			throw new NullPointerException("Transmit status cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		
 		this.frameID = frameID;
-		this.status = status;
+		this.transmitStatus = transmitStatus;
 	}
 
 	/*
@@ -53,7 +53,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	public byte[] getAPIData() {
 		byte[] data = new byte[2];
 		data[0] = (byte)frameID;
-		data[1] = (byte)status.getId();
+		data[1] = (byte)transmitStatus.getId();
 		return data;
 	}
 
@@ -71,8 +71,8 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Transmit status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
 	 */
-	public XBeeTransmitStatus getStatus() {
-		return status;
+	public XBeeTransmitStatus getTransmitStatus() {
+		return transmitStatus;
 	}
 	
 	/*
@@ -82,7 +82,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
-		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1) + " (" + status.getDescription() + ")"));
+		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1) + " (" + transmitStatus.getDescription() + ")"));
 		return parameters;
 	}
 }

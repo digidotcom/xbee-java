@@ -628,6 +628,10 @@ public class XBeeDevice {
 	 * @throws XBeeException
 	 */
 	public boolean sendSerialData(XBee64BitAddress address, byte[] data) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
 		
@@ -678,6 +682,10 @@ public class XBeeDevice {
 	 * @throws XBeeException
 	 */
 	public boolean sendSerialData(XBee16BitAddress address, byte[] data) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
 		

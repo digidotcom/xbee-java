@@ -61,6 +61,8 @@ public class SendSerialDataTest {
 	public void setup() throws Exception {
 		// Instantiate an XBeeDevice object with basic parameters.
 		xbeeDevice = PowerMockito.spy(new XBeeDevice(Mockito.mock(SerialPortRxTx.class)));
+		// When checking if the connection is open, return true.
+		Mockito.when(xbeeDevice.isOpen()).thenReturn(true);
 		
 		// Mock Tx16 packet.
 		tx16Packet = Mockito.mock(TX16Packet.class);
@@ -209,9 +211,8 @@ public class SendSerialDataTest {
 		// Return that the protocol of the device is 802.15.4 when asked.
 		PowerMockito.doReturn(XBeeProtocol.RAW_802_15_4).when(xbeeDevice, "getXBeeProtocol");
 		
-		// Throw a connection closed exception when sending the mocked tx16Packet or tx64Packet packets.
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_NOT_OPEN)).when(xbeeDevice, "sendXBeePacket", tx16Packet);
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_NOT_OPEN)).when(xbeeDevice, "sendXBeePacket", tx64Packet);
+		// When checking if the connection is open, return false.
+		Mockito.when(xbeeDevice.isOpen()).thenReturn(false);
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -354,8 +355,8 @@ public class SendSerialDataTest {
 		// Return that the protocol of the device is ZigBee when asked.
 		PowerMockito.doReturn(XBeeProtocol.ZIGBEE).when(xbeeDevice, "getXBeeProtocol");
 		
-		// Throw a connection closed exception when sending the mocked transmitPacket packet.
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_NOT_OPEN)).when(xbeeDevice, "sendXBeePacket", transmitPacket);
+		// When checking if the connection is open, return false.
+		Mockito.when(xbeeDevice.isOpen()).thenReturn(false);
 		
 		// Send serial data using the 16-bit address.
 		try {

@@ -23,10 +23,15 @@ import com.digi.xbee.api.utils.HexUtils;
 public enum APIFrameType {
 
 	// Enumeration elements
+	TX_64 (0x00, "TX (Transmit) Request 64-bit address"),
+	TX_16 (0x01, "TX (Transmit) Request 16-bit address"),
 	AT_COMMAND (0x08, "AT Command"),
+	TRANSMIT_REQUEST (0x10, "Transmit Request"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),
 	AT_COMMAND_RESPONSE (0x88, "AT Command Response"),
+	TX_STATUS (0x89, "TX (Transmit) Status"),
+	TRANSMIT_STATUS (0x8B, "Transmit Status"),
 	RECEIVE_PACKET (0x90, "Receive Packet"),
 	GENERIC (0xFF, "Generic");
 	

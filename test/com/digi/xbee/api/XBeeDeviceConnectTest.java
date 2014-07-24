@@ -218,10 +218,25 @@ public class XBeeDeviceConnectTest {
 		assertEquals(xbeeDevice.getOperatingMode(), OperatingMode.UNKNOWN);
 	}
 	
-	// TODO: Complete with more tests:
-	//  - Connect with port name is null
-	//  - Connect with port name is invalid
-	//  - Connect with baud rate is invalid
-	//  - Connect with serial params are null
-	//  - etc.
+	@Test
+	/**
+	 * Verify that when the connection is already open and the connect method is called an 
+	 * exception is thrown.
+	 * @throws Exception
+	 */
+	public void testConnectAlreadyConnected() throws Exception {
+		// Configure the isOpen method of the XBee device to return true when asked.
+		PowerMockito.when(connectionInterface, "isOpen").thenReturn(true);
+		
+		// Execute the connect method.
+		try {
+			xbeeDevice.open();
+			fail("Device shouldn't have connected");
+		} catch (XBeeException e) {
+			// This is the exception we should have received. Verify it is a connection already open exception.
+			assertEquals(XBeeException.CONNECTION_ALREADY_OPEN, e.getErrorCode());
+		} catch (InvalidOperatingModeException e) {
+			fail("This exception shouldn't be thrown now.");
+		}
+	}
 }

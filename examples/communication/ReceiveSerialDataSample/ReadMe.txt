@@ -31,7 +31,7 @@
     1) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
        
-    2) Ensure that both modules are in API mode and in the same network.
+    2) Ensure that the modules are in API mode and in the same network.
        For further information on how to do this, go to [...]
        
     3) Set the port and baud rate of the receiver XBee radio in the MainApp 
@@ -48,7 +48,7 @@
   you could follow these steps:
   
     a) Use the 'SendSerialDataSample' example included in the library.
-       Follow the instructions on its ReadMe file to do it.
+       Follow the instructions on its 'ReadMe' file to do it.
        
     b) Use the XCTU:
        

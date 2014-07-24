@@ -28,7 +28,6 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
-import com.digi.xbee.api.packet.GenericXBeePacket;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
@@ -350,8 +349,13 @@ public class XBeeDevice {
 			// Build response container.
 			ArrayList<XBeePacket> responseList = new ArrayList<XBeePacket>();
 			
-			// If the packet is generic we don't wait for answer, send it as an async. packet.
-			if (packet instanceof GenericXBeePacket) {
+			// If the packet does not need frame ID, send it async. and return null.
+			if (packet instanceof XBeeAPIPacket) {
+				if (!((XBeeAPIPacket)packet).needsAPIFrameID()) {
+					sendXBeePacketAsync(packet);
+					return null;
+				}
+			} else {
 				sendXBeePacketAsync(packet);
 				return null;
 			}
@@ -644,6 +648,9 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
 			receivedPacket = sendXBeePacket(xbeePacket);
+			// If receivedPacket is null it means that packet was sent asynchronously, return true.
+			if (receivedPacket == null)
+				return true;
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TXStatusPacket) {
 				switch (((TXStatusPacket)receivedPacket).getTransmitStatus()) {
@@ -657,6 +664,9 @@ public class XBeeDevice {
 		default:
 			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
 			receivedPacket = sendXBeePacket(xbeePacket);
+			// If receivedPacket is null it means that packet was sent asynchronously, return true.
+			if (receivedPacket == null)
+				return true;
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TransmitStatusPacket) {
 				switch (((TransmitStatusPacket)receivedPacket).getTransmitStatus()) {
@@ -698,6 +708,9 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
 			receivedPacket = sendXBeePacket(xbeePacket);
+			// If receivedPacket is null it means that packet was sent asynchronously, return true.
+			if (receivedPacket == null)
+				return true;
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TXStatusPacket) {
 				switch (((TXStatusPacket)receivedPacket).getTransmitStatus()) {
@@ -711,6 +724,9 @@ public class XBeeDevice {
 		default:
 			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
 			receivedPacket = sendXBeePacket(xbeePacket);
+			// If receivedPacket is null it means that packet was sent asynchronously, return true.
+			if (receivedPacket == null)
+				return true;
 			// Verify that the packet was sent successfully checking the received transmit status.
 			if (receivedPacket instanceof TransmitStatusPacket) {
 				switch (((TransmitStatusPacket)receivedPacket).getTransmitStatus()) {

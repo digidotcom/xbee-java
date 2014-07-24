@@ -120,12 +120,14 @@ public class ISerialDataReceiveListenerTest {
 	 * @throws Exception
 	 */
 	public void testSerialDataReceiveNotSubscribed() throws Exception {
-		// Verify that if the listener is not subscribed, the callback is not executed when a Rx16 packet is received.
+		// Fire the private packetReceived method of the dataReader with a RX64Packet.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx16Packet);
 		
-		// Verify that the notifySerialDataReceived private method was not called.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", Mockito.anyString(), Mockito.anyObject());
+		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_16BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
+		// As the receiveSerialDataListener was not subscribed in the serialDataReceiveListeners of the dataReader object, the 
+		// address and serial data of the receiveSerialDataListener should be null.
 		assertNull(receiveSerialDataListener.getAddress());
 		assertNull(receiveSerialDataListener.getSerialData());
 	}
@@ -139,10 +141,11 @@ public class ISerialDataReceiveListenerTest {
 	public void testSerialDataReceiveSubscribedRx16() throws Exception {
 		dataReader.addSerialDatatReceiveListener(receiveSerialDataListener);
 		
+		// Fire the private packetReceived method of the dataReader with a RX16Packet.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx16Packet);
 		
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", XBEE_16BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_16BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
 		assertEquals(receiveSerialDataListener.getAddress(), XBEE_16BIT_ADDRESS.toString());
 		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
@@ -157,10 +160,11 @@ public class ISerialDataReceiveListenerTest {
 	public void testSerialDataReceiveSubscribedRx64() throws Exception {
 		dataReader.addSerialDatatReceiveListener(receiveSerialDataListener);
 		
+		// Fire the private packetReceived method of the dataReader with a RX64Packet.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx64Packet);
 		
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
 		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
 		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
@@ -175,10 +179,11 @@ public class ISerialDataReceiveListenerTest {
 	public void testSerialDataReceiveSubscribedReceive() throws Exception {
 		dataReader.addSerialDatatReceiveListener(receiveSerialDataListener);
 		
+		// Fire the private packetReceived method of the dataReader with a ReceivePacket.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, receivePacket);
 		
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke("notifySerialDataReceived", XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
 		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
 		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
@@ -193,10 +198,11 @@ public class ISerialDataReceiveListenerTest {
 	public void testSerialDataReceiveSubscribedInvalid() throws Exception {
 		dataReader.addSerialDatatReceiveListener(receiveSerialDataListener);
 		
+		// Fire the private packetReceived method of the dataReader with an invalid packet.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, invalidPacket);
 		
 		// Verify that the notifySerialDataReceived private method was not called.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(0)).invoke("notifySerialDataReceived", Mockito.anyString(), Mockito.anyObject());
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(0)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, Mockito.anyString(), Mockito.anyObject());
 		
 		assertNull(receiveSerialDataListener.getAddress());
 		assertNull(receiveSerialDataListener.getSerialData());

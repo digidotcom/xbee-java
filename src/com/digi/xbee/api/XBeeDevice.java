@@ -292,7 +292,7 @@ public class XBeeDevice {
 			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
 		
 		// Check if command is null.
-		if (!connectionInterface.isOpen())
+		if (command == null)
 			throw new NullPointerException("AT command cannot be null.");
 		
 		ATCommandResponse response = null;
@@ -565,8 +565,13 @@ public class XBeeDevice {
 	 * Configures the timeout for receiving packets in synchronous operations.
 	 *  
 	 * @param receiveTimeout The new receive timeout.
+	 * 
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 */
 	public void setReceiveTimeout(int receiveTimeout) {
+		if (receiveTimeout < 0)
+			throw new IllegalArgumentException("Receive timeout cannot be less than 0.");
+		
 		this.receiveTimeout = receiveTimeout;
 	}
 	

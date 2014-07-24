@@ -89,6 +89,8 @@ public enum XBeeProtocol {
 	 * @return The XBeeProtocol corresponding to the ID.
 	 */
 	public static XBeeProtocol get(int id) {
+		if (!lookupTable.containsKey(id))
+			return UNKNOWN;
 		return lookupTable.get(id);
 	}
 }

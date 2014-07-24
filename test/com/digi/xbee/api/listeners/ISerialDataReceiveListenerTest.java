@@ -28,6 +28,7 @@ import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -66,7 +67,7 @@ public class ISerialDataReceiveListenerTest {
 		receiveSerialDataListener = new MyReceiveListener();
 		
 		// Data reader.
-		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class)));
+		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN));
 		// Stub the 'notifySerialDataReceived' method of the dataReader instance so it directly notifies the 
 		// listeners instead of opening a new thread per listener (which is what the real method does).
 		PowerMockito.doAnswer(new Answer<Object>() {

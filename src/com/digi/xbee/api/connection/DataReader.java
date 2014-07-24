@@ -59,14 +59,19 @@ public class DataReader extends Thread {
 	 * Class constructor. Instances a new DataReader object for the given interface.
 	 * 
 	 * @param connectionInterface Connection interface to read from.
+	 * @param mode XBee operating mode.
 	 * 
-	 * @throws NullPointerException if {@code connectionInterface == null}.
+	 * @throws NullPointerException if {@code connectionInterface == null} or
+	 *                                 {@code mode == null}.
 	 */
-	public DataReader(IConnectionInterface connectionInterface) {
+	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode) {
 		if (connectionInterface == null)
 			throw new NullPointerException("Connection interface cannot be null.");
+		if (mode == null)
+			throw new NullPointerException("Operating mode cannot be null.");
 		
 		this.connectionInterface = connectionInterface;
+		this.mode = mode;
 	}
 	
 	/**

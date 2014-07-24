@@ -156,7 +156,7 @@ public class XBeeDevice {
 		connectionInterface.open();
 		
 		// Initialize the data reader.
-		dataReader = new DataReader(connectionInterface);
+		dataReader = new DataReader(connectionInterface, operatingMode);
 		dataReader.start();
 		
 		// Determine the operating mode of the XBee device if it is unknown.

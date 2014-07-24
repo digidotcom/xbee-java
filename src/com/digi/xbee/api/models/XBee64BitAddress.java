@@ -64,7 +64,7 @@ public final class XBee64BitAddress {
 	public XBee64BitAddress(int[] address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
-		if (address.length > 2)
+		if (address.length > 8)
 			throw new IllegalArgumentException("Address cannot contain more than 8 integers.");
 		
 		this.address = new byte[address.length];

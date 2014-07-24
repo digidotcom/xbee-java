@@ -1,19 +1,20 @@
   Introduction
   ------------
-  This is a sample Java application to show how to send data from the connected 
-  XBee device to another remote device in the same network.
+  This is a sample Java application to show how to send data from the XBee 
+  device to another remote device in the same network using the XBee Java 
+  Library.
   
-  The application sends data from an XBee device to another specified by its 
-  address in the application. It prints in the standard output the destination 
-  address followed by the sent data and finally the result of this sent 
-  operation.
+  The application sends data to a remote XBee device in the network, by using 
+  its 64-bit/16-bit address. Note that the address of the remote device has to 
+  be written in the code before running the application.
 
 
-  Main files
+  Files
   ----------
     * com.digi.xbee.api.sendserialdata.MainApp1.java:
       Main application class. Instantiates an XBee device, establishes a serial 
       connection with it and sends the serial data to the specified XBee device.
+      Finally it prints out the result of the sent operation.
 
 
   Requirements
@@ -27,7 +28,8 @@
 
   Example setup
   -------------
-    1) Type the 64-bit address of the receiver XBee module in the MainApp class.
+    1) Insert the 64-bit address of the receiver XBee module in the MainApp 
+       class.
        Find the 64-bit address labeled on the back of the device, a 16 
        characters string that follows the format 0013A20040XXXXXX.
        
@@ -65,7 +67,7 @@
           destination address and a line with the result of the operation is 
           printed out to the standard output:
           
-          Sending data to 0013A20040A6A0DB >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
+          Sending data to 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
           
           Also, in the XCTU console a new RX frame has been received. Select it 
           and review its details, some of them will be similar to:

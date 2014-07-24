@@ -209,7 +209,7 @@ public class XBeeDevice {
 			operatingMode = OperatingMode.API;
 			dataReader.setXBeeReaderMode(operatingMode);
 			ATCommandResponse response = sendATCommand(new ATCommand("AP"));
-			if (response.getResponse() != null) {
+			if (response.getResponse() != null && response.getResponse().length > 0) {
 				if (response.getResponse()[0] == OperatingMode.API.getID())
 					return OperatingMode.API;
 				else

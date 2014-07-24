@@ -1,13 +1,13 @@
   Introduction
   ------------
   This is a sample Java application to show how to receive data packets from 
-  another XBee device in the same network.
+  another XBee device on the same network.
   
   The application prints the received data to the standard output in ASCII and 
   hexadecimal formats after the sender address.
 
 
-  Main files
+  Files
   ----------
     * com.digi.xbee.api.receiveserialdata.MainApp.java:
       Main application class. Instantiates an XBee device and establishes a 
@@ -21,9 +21,9 @@
   ------------
   To run this example you will need:
   
-    * Al least, two XBee radios in API mode and their corresponding carrier
+    * At least two XBee radios in API mode and their corresponding carrier
       board (XBIB or equivalent).
-    * The XCTU application, available at www.digi.com/xctu.
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
@@ -31,8 +31,8 @@
     1) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
        
-    2) Ensure that the modules are in API mode and in the same network.
-       For further information on how to do this, go to [...]
+    2) Ensure that the modules are in API mode and on the same network.
+       For further information on how to perform this task, go to [...]
        
     3) Set the port and baud rate of the receiver XBee radio in the MainApp 
        class.
@@ -42,29 +42,30 @@
 
   Running the example
   -------------------
-  All you need to do is build and launch the application.
-  To test its functionality you need some other device in the network to send 
-  unicast data to the receiver module. If you want to send data to this module 
-  you could follow these steps:
+  First, build and launch the application.
+  To test its functionality you need other device on the network to send unicast 
+  data to the receiver module. If you want to send data to this module, follow 
+  these steps:
   
     a) Use the 'SendSerialDataSample' example included in the library.
-       Follow the instructions on its 'ReadMe' file to do it.
+       Follow the instructions on its 'ReadMe' file to perform the task.
        
     b) Use the XCTU:
        
        1) Launch the XCTU application.
           
        2) First, you need to know the 64-bit address of the destination device 
-          (receiver) you will use the XCTU to get it.
+          (receiver). Use the XCTU to get it.
           Add the receiver XBee module to the XCTU, specifying its port 
           settings.
           
        3) In the 'Configuration' working mode, select the module you have just 
-          added to read its parameters.
+          added to read the parameters.
           
           To get the 64-bit address of the receiver module look for the 'SH' 
           and 'SL' parameters and copy their value without spaces, starting 
-          from the 'SH' parameter and immediately followed by the 'SL'.
+          from the 'SH' parameter and immediately followed by the 'SL' 
+          parameter.
           
        4) Remove this module from the XCTU.
           
@@ -89,5 +90,5 @@
           The packet has been received and a line containing the data included 
           in the 'RF data' field of the sent frame is printed out:
           
-          Data received from 0013A20040A198B4 >> 48656C6C6F205842656521 | Hello XBee!
+          Data received from 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
           

@@ -169,8 +169,8 @@ public class SendSerialDataTest {
 		
 		// Send serial data using the 16-bit address.
 		try {
-			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("Tx64 frame shouldn't have been sent successfully.");
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx16 frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (XBeeException e) {
@@ -179,8 +179,8 @@ public class SendSerialDataTest {
 		}
 		// Send serial data using the 64-bit address.
 		try {
-			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (XBeeException e) {
@@ -216,8 +216,8 @@ public class SendSerialDataTest {
 		
 		// Send serial data using the 16-bit address.
 		try {
-			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("Tx64 frame shouldn't have been sent successfully.");
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx16 frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (XBeeException e) {
@@ -226,8 +226,8 @@ public class SendSerialDataTest {
 		}
 		// Send serial data using the 64-bit address.
 		try {
-			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (XBeeException e) {
@@ -322,7 +322,7 @@ public class SendSerialDataTest {
 		}
 		// Send serial data using the 64-bit address.
 		try {
-			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
@@ -370,7 +370,7 @@ public class SendSerialDataTest {
 		}
 		// Send serial data using the 64-bit address.
 		try {
-			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");

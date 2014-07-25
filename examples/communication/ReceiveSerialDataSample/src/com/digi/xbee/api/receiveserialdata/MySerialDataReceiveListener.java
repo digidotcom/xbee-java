@@ -32,7 +32,7 @@ public class MySerialDataReceiveListener implements ISerialDataReceiveListener {
 	 */
 	@Override
 	public void serialDataReceived(String address, byte[] data) {
-		System.out.format("Data received from %s >> %s | %s%n", address, 
+		System.out.format("From %s >> %s | %s%n", address, 
 				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)), 
 				new String(data));
 	}

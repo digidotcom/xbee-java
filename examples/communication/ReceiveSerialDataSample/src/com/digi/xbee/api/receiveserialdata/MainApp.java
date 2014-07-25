@@ -38,6 +38,9 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
+		System.out.println(" +-----------------------------------------+");
+		System.out.println(" |  XBee Java Library Receive Data Sample  |");
+		System.out.println(" +-----------------------------------------+\n");
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		try {
 			myDevice.open();
@@ -48,5 +51,6 @@ public class MainApp {
 		}
 		
 		myDevice.startListeningForSerialData(new MySerialDataReceiveListener());
+		System.out.println("\n>> Waiting for data...");
 	}
 }

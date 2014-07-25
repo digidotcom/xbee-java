@@ -78,5 +78,5 @@
           The packet has been received and a line containing the data included 
           in the 'RF data' field of the sent frame is printed out:
           
-          Data received from 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
+          From 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
           

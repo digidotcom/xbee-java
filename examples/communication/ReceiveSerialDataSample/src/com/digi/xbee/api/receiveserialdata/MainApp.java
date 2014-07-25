@@ -41,7 +41,9 @@ public class MainApp {
 		System.out.println(" +-----------------------------------------+");
 		System.out.println(" |  XBee Java Library Receive Data Sample  |");
 		System.out.println(" +-----------------------------------------+\n");
+		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
+		
 		try {
 			myDevice.open();
 		} catch (XBeeException e) {

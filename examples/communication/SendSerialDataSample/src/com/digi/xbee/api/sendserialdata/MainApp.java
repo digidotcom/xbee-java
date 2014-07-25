@@ -37,7 +37,7 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	
 	// TODO Replace with the 64-bit address of your receiver module.
-	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040000000");
+	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
 	// TODO Replace with the 16-bit address of your receiver module.
 	//private static final XBee16BitAddress DESTINATION_16_BIT_ADDRESS = new XBee16BitAddress("XXXX");
 	
@@ -55,15 +55,14 @@ public class MainApp {
 		System.out.println(" +--------------------------------------+\n");
 		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
+		byte[] dataToSend = DATA_TO_SEND.getBytes();
+		boolean success = false;
 		
 		// Use an XBee64BitAddress object when using a 64-bit destination address.
 		XBee64BitAddress destinationAddress = DESTINATION_64_BIT_ADDRESS;
 		// Use an XBee16BitAddress object when using a 16-bit destination address.
 		//XBee16BitAddress destinationAddress = DESTINATION_16_BIT_ADDRESS;
 		
-		byte[] dataToSend = DATA_TO_SEND.getBytes();
-		
-		boolean success = false;
 		try {
 			// Open the local device.
 			myDevice.open();
@@ -74,6 +73,7 @@ public class MainApp {
 			
 			// Send the data to the destination address.
 			success = myDevice.sendSerialData(destinationAddress, dataToSend);
+			
 		} catch (XBeeException e) {
 			e.printStackTrace();
 		} catch (InvalidOperatingModeException e) {

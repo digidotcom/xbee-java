@@ -11,7 +11,7 @@
 
   Files
   ----------
-    * com.digi.xbee.api.sendserialdata.MainApp1.java:
+    * com.digi.xbee.api.sendserialdata.MainApp.java:
       Main application class. Instantiates an XBee device, establishes a serial 
       connection with it and sends the serial data to the specified XBee device.
       Finally it prints out the result of the sent operation.

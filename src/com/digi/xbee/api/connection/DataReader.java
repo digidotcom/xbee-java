@@ -268,7 +268,7 @@ public class DataReader extends Thread {
 	private void notifySerialDataReceived(final String address, final byte[] data) {
 		try {
 			synchronized (serialDataReceiveListeners) {
-				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, packetReceiveListeners.size()));
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, serialDataReceiveListeners.size()));
 				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
 					executor.execute(new Runnable() {
 						public void run() {

@@ -37,7 +37,7 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	
 	// TODO Replace with the 64-bit address of your receiver module.
-	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
+	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040000000");
 	// TODO Replace with the 16-bit address of your receiver module.
 	//private static final XBee16BitAddress DESTINATION_16_BIT_ADDRESS = new XBee16BitAddress("XXXX");
 	
@@ -50,6 +50,10 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
+		System.out.println(" +--------------------------------------+");
+		System.out.println(" |  XBee Java Library Send Data Sample  |");
+		System.out.println(" +--------------------------------------+\n");
+		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
 		// Use an XBee64BitAddress object when using a 64-bit destination address.

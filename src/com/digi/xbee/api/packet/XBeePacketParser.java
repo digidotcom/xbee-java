@@ -278,9 +278,9 @@ public class XBeePacketParser {
 	 * @throws IOException 
 	 */
 	private XBee64BitAddress readXBee64BitAddress() throws IOException, PacketParsingException {
-		int[] address = new int[8];
+		byte[] address = new byte[8];
 		for (int i = 0; i < 8; i++)
-			address[i] = readByte();
+			address[i] = (byte)readByte();
 		return new XBee64BitAddress(address);
 	}
 	

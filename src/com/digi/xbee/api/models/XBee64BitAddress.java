@@ -29,6 +29,8 @@ public final class XBee64BitAddress {
 	private static final String DEVICE_ID_SEPARATOR = "-";
 	private static final String DEVICE_ID_MAC_SEPARATOR = "FF";
 	
+	private static final String XBEE_64_BIT_ADDRESS_PATTERN = "(0[xX])?[0-9a-fA-F]{1,16}";
+	
 	private static final int HASH_SEED = 23;
 	
 	// Variables
@@ -49,27 +51,12 @@ public final class XBee64BitAddress {
 		if (address.length > 8)
 			throw new IllegalArgumentException("Address cannot contain more than 8 bytes.");
 		
-		this.address = address;
-	}
-	
-	/**
-	 * Class constructor. Instances a new object of type XBee64BitAddress
-	 * with the given parameters-
-	 * 
-	 * @param address The XBee 64 bit address as integer array.
-	 * 
-	 * @throws NullPointerException if {@code address == null}.
-	 * @throws IllegalArgumentException if {@code address.length > 8}.
-	 */
-	public XBee64BitAddress(int[] address) {
-		if (address == null)
-			throw new NullPointerException("Address cannot be null.");
-		if (address.length > 8)
-			throw new IllegalArgumentException("Address cannot contain more than 8 integers.");
-		
-		this.address = new byte[address.length];
-		for (int i = 0; i < address.length; i++)
-			this.address[i] = (byte)address[i];
+		this.address = new byte[8];
+		int diff = 8 - address.length;
+		for (int i = 0; i < diff; i++)
+			this.address[i] = 0;
+		for (int i = diff; i < 8; i++)
+			this.address[i] = address[i - diff];
 	}
 	
 	/**
@@ -83,6 +70,8 @@ public final class XBee64BitAddress {
 	public XBee64BitAddress(String address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
+		if (!address.matches(XBEE_64_BIT_ADDRESS_PATTERN))
+			throw new IllegalArgumentException("Address must follow this pattern: (0x)0013A20040XXXXXX.");
 		
 		byte[] byteAddress = HexUtils.hexStringToByteArray(address);
 		this.address = new byte[8];
@@ -192,7 +181,6 @@ public final class XBee64BitAddress {
 			return false;
 		XBee64BitAddress addr = (XBee64BitAddress)obj;
 		return Arrays.equals(addr.getValue(), getValue());
-		// TODO: Does this compare really work?
 	}
 	
 	@Override

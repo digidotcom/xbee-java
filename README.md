@@ -53,7 +53,7 @@ To run the Unit Tests, the following additional Software Package are also requir
 
 Note that by installing Power Mockito from the provided link it already includes Mockito and Java Assist.
 
-[XCTU]: www.digi.com/xctu
+[XCTU]: http://www.digi.com/xctu
 [Java Development Kit]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 [RxTx]: http://www.jcontrol.org/download/files/rxtx-2.1-7-bins-r2.zip
 [Power Mockito]: http://dl.bintray.com/johanhaleby/generic/powermock-mockito-junit-1.5.5.zip

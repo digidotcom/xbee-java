@@ -25,6 +25,8 @@ public final class XBee16BitAddress {
 	public static final XBee16BitAddress BROADCAST_ADDRESS = new XBee16BitAddress("FFFF");
 	public static final XBee16BitAddress UNKNOWN_ADDRESS = new XBee16BitAddress("FFFE");
 	
+	private static final String XBEE_16_BIT_ADDRESS_PATTERN = "(0[xX])?[0-9a-fA-F]{1,4}";
+	
 	private static final int HASH_SEED = 23;
 	
 	// Variables
@@ -68,29 +70,17 @@ public final class XBee16BitAddress {
 		if (address.length > 2)
 			throw new IllegalArgumentException("Address cannot contain more than 2 bytes.");
 		
-		// TODO: This needs to be revisited, what happens if address.length is 1 or 0?
-		this.hsb = address[0];
-		this.lsb = address[1];
-	}
-	
-	/**
-	 * Class constructor. Instances a new object of type XBee16BitAddress
-	 * with the given parameters.
-	 * 
-	 * @param address Address as integer array.
-	 * 
-	 * @throws NullPointerException if {@code address == null}.
-	 * @throws IllegalArgumentException if {@code address.length > 2}.
-	 */
-	public XBee16BitAddress(int[] address) {
-		if (address == null)
-			throw new NullPointerException("Address cannot be null.");
-		if (address.length > 2)
-			throw new IllegalArgumentException("Address cannot contain more than 2 integers.");
-		
-		// TODO: This needs to be revisited, what happens if address.length is 1 or 0?
-		this.hsb = address[0];
-		this.lsb = address[1];
+		// Check array size.
+		if (address.length == 0) {
+			hsb = 0;
+			lsb = 0;
+		} else if (address.length == 1) {
+			hsb = 0;
+			lsb = address[0];
+		} else {
+			hsb = address[0];
+			lsb = address[1];
+		}
 	}
 	
 	/**
@@ -100,15 +90,27 @@ public final class XBee16BitAddress {
 	 * @param address String containing the address.
 	 * 
 	 * @throws NullPointerException if {@code address == null}.
+	 * @throws IllegalArgumentException if {@code address} is not valid.
 	 */
 	public XBee16BitAddress(String address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
+		if (!address.matches(XBEE_16_BIT_ADDRESS_PATTERN))
+			throw new IllegalArgumentException("Address must follow this pattern: (0x)XXXX.");
 		
-		// TODO: This needs to be revisited, what happens if address.length is 1 or 0?
+		// Convert the string into a byte array.
 		byte[] byteAddress = HexUtils.hexStringToByteArray(address);
-		hsb = byteAddress[0];
-		lsb = byteAddress[1];
+		// Check array size.
+		if (byteAddress.length == 0) {
+			hsb = 0;
+			lsb = 0;
+		} else if (byteAddress.length == 1) {
+			hsb = 0;
+			lsb = byteAddress[0];
+		} else {
+			hsb = byteAddress[0];
+			lsb = byteAddress[1];
+		}
 	}
 	
 	/**

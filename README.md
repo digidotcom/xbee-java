@@ -5,7 +5,7 @@ Introduction
 ------------
 This project contains the source code of the XBee Java Library which allows
 to easily write Java applications for communicating with Digi International's
-[XBee] wireless radio modules in API mode.
+[XBee](http://www.digi.com/xbee/) wireless radio modules in API mode.
 
 The project includes the Java source code for the library and also multiple
 examples, also available in source code format, that show how to use the
@@ -17,15 +17,11 @@ The main features provided by the library are:
 - Feature 2
 - etc
 
-This source code has been contributed by [Digi International] under the Mozilla
+This source code has been contributed by [Digi International](http://www.digi.com/) under the Mozilla
 Public License v2.0.
 
-Contact [missing email] to report bugs, request features or contribute
+Contact <missing@email.digi.com> to report bugs, request features or contribute
 code to this project.
-
-[Digi International]: http://www.digi.com/
-[XBee]: http://www.digi.com/xbee/
-[missing email]: missing@email.digi.com
 
 
 Supported modules
@@ -41,34 +37,29 @@ Requirements
 The following software components are required to use the XBee Java Library:
 
 - A computer running Windows, Mac OS X or Linux.
-- [Java Development Kit] version 6 or greater.
-- [RxTx] serial communication library.
-- [XCTU], optional but highly recommended.
+- [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/index.html) version 6 or greater.
+- [RxTx](http://www.jcontrol.org/download/files/rxtx-2.1-7-bins-r2.zip) serial communication library.
+- [XCTU](http://www.digi.com/xctu), optional but highly recommended.
 
-To run the Unit Tests, the following additional Software Package are also required:
+To run the Unit Tests, the following additional software packages are also required:
 
-- [Power Mockito] (tested with v1.5.5).
+- [Power Mockito](http://dl.bintray.com/johanhaleby/generic/powermock-mockito-junit-1.5.5.zip) (tested with v1.5.5).
 - Mockito (tested with v1.9.5).
 - Java Assist (tested with v3.18.2).
 
 Note that by installing Power Mockito from the provided link it already includes Mockito and Java Assist.
-
-[XCTU]: http://www.digi.com/xctu
-[Java Development Kit]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
-[RxTx]: http://www.jcontrol.org/download/files/rxtx-2.1-7-bins-r2.zip
-[Power Mockito]: http://dl.bintray.com/johanhaleby/generic/powermock-mockito-junit-1.5.5.zip
 
 
 Repository structure
 --------------------
 - src: contains the XBee Java Library source code.
 - test: contains the XBee Java Library unit tests.
-- examples: contains the several sample applications using the XBee Java Library organized in categories.
+- examples: contains several sample applications using the XBee Java Library organized in categories.
 
 
 Installation
 ------------
-Check out the project or download a zip file by clicking  on the "Download ZIP" button. If you downloaded
+Check out the project or download a zip file by clicking on the "Download ZIP" button. If you downloaded
 the zip file, uncompress it. In any case you will end with a directory called XBeeJavaLibrary-master,
 containing all the project files and directories.
 
@@ -78,7 +69,7 @@ in your computer.
 
 Creating, building and running an application
 ---------------------------------------------
-Create a java project using your preferred development environment (Eclipse, NetBeans, ...).
+Create a Java project using your preferred development environment (Eclipse, NetBeans, ...).
 The next steps describe the process using Eclipse.
 
 - Start your Eclipse IDE and select a workspace location (by default "C:\Users\<username>\workspace"). 
@@ -97,11 +88,11 @@ The next steps describe the process using Eclipse.
   For further information about how to use the Unit Test framework included with the XBee Java Library 
   project, refer to [missing link].
 
-To build the project, follow this steps:
+To build the project, do the following:
 
 - From the Eclipse menu, select "Project > Build Project".
 
-To configure and run any of the application examples, follow this steps:
+To configure and run any of the application examples, follow these steps:
 
 - Read the Readme.txt file included in the directory of each example to modify the code as needed.
 - Once the code is completed, right click on the MainApp.java file and select "Run as > Java application".
@@ -116,7 +107,7 @@ Additional documentation can be found at [missing link].
 
 License
 -------
-This software is open-source software.  Copyright Digi International, 2014.
+This software is open-source software. Copyright Digi International, 2014.
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this file,

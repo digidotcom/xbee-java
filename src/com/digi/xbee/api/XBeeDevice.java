@@ -45,6 +45,9 @@ public class XBeeDevice {
 	// Constants.
 	protected static int DEFAULT_RECEIVE_TIMETOUT = 2000; // 2.0 seconds of timeout to receive packet and command responses.
 	
+	private static byte COMMAND_MODE_CHAR = '+';
+	private static String COMMAND_MODE_OK = "OK\r";
+	
 	// Variables.
 	protected IConnectionInterface connectionInterface;
 	
@@ -216,13 +219,75 @@ public class XBeeDevice {
 					return OperatingMode.API_ESCAPE;
 			}
 		} catch (XBeeException e) {
-			// TODO: Check if device is in AT mode here and return it if so!!.
-			e.printStackTrace();
+			operatingMode = OperatingMode.AT;
+			dataReader.setXBeeReaderMode(operatingMode);
+			
+			try {
+				// It is necessary to wait at least 1 second to enter in command mode after 
+				// sending any data to the device.
+				Thread.sleep(1200);
+				
+				// Try to enter in AT command mode, if so the module is in AT mode.
+				boolean success = enterATCommandMode();
+				if (success)
+					return OperatingMode.AT;
+			} catch (InvalidOperatingModeException e1) {
+				// TODO Log this exception.
+			} catch (XBeeException e1) {
+				// TODO Log this exception
+			} catch (InterruptedException e2) {
+				// TODO Log this exception
+			}
 			return OperatingMode.UNKNOWN;
 		} catch (InvalidOperatingModeException e) {
+			// TODO Log this exception.
 			return OperatingMode.UNKNOWN;
 		}
 		return OperatingMode.UNKNOWN;
+	}
+	
+	/**
+	 * Retrieves whether or not the device could enter in AT Command mode. Only valid if device is 
+	 * working in AT mode.
+	 * 
+	 * @return True if the device entered in command mode successfully, false otherwise.
+	 * @throws XBeeException
+	 * @throws InvalidModeException 
+	 */
+	public boolean enterATCommandMode() throws InvalidOperatingModeException, XBeeException {
+		if (operatingMode != OperatingMode.AT)
+			throw new InvalidOperatingModeException("Invalid mode. Command mode can only be accesses while in AT mode.");
+		
+		// Enter in AT command mode (send '+++'). The process waits 1,5 seconds for the 'OK\n'.
+		byte[] readData = new byte[256];
+		try {
+			// Send the command mode sequence.
+			connectionInterface.writeData(new byte[]{COMMAND_MODE_CHAR});
+			connectionInterface.writeData(new byte[]{COMMAND_MODE_CHAR});
+			connectionInterface.writeData(new byte[]{COMMAND_MODE_CHAR});
+			
+			// Wait some time to let the module generate a response.
+			Thread.sleep(1500);
+			
+			// Read data from the device (it should answer with 'OK\r').
+			int readBytes = connectionInterface.readData(readData);
+			if (readBytes < 3)
+				throw new XBeeException(XBeeException.CONNECTION_TIMEOUT);
+			
+			// Check if the read data is 'OK\r'.
+			for (int i = 0; i < 3; i++) {
+				if (readData[i] != COMMAND_MODE_OK.getBytes()[i])
+					return false;
+			}
+			// Read data was 'OK\r'.
+			return true;
+		} catch (IOException e) {
+			// TODO Log this exception.
+			return false;
+		} catch (InterruptedException e) {
+			// TODO Log this exception.
+			return false;
+		}
 	}
 	
 	/**

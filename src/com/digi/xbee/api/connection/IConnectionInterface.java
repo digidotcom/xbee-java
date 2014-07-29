@@ -70,5 +70,13 @@ public interface IConnectionInterface {
 	 */
 	public void writeData(byte[] data) throws IOException;
 	
-	// TODO: Add a read method.
+	/**
+	 * Reads data from the connection interface and stores it in the provided 
+	 * byte array. Returns the number of read bytes.
+	 * 
+	 * @param data The byte array to store the read data.
+	 * @return The number of bytes read.
+	 * @throws IOException;
+	 */
+	public int readData(byte[] data) throws IOException;
 }

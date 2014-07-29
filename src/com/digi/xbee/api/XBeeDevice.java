@@ -126,7 +126,7 @@ public class XBeeDevice {
 	 */
 	public XBeeDevice(IConnectionInterface connectionInterface) {
 		if (connectionInterface == null)
-			throw new IllegalArgumentException("ConnectionInterface cannot be null.");
+			throw new NullPointerException("ConnectionInterface cannot be null.");
 		
 		this.connectionInterface = connectionInterface;
 	}

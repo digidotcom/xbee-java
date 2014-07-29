@@ -71,6 +71,7 @@ public class XBeeDevice {
 	 * 					1 stop bit, no parity, no flow control).
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
+	 * @throws IllegalArgumentException if {@code baudRate < 0}.
 	 */
 	public XBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -164,7 +165,7 @@ public class XBeeDevice {
 		
 		// Determine the operating mode of the XBee device if it is unknown.
 		if (operatingMode == OperatingMode.UNKNOWN)
-			operatingMode = determineConnectionMode();
+			operatingMode = determineOperatingMode();
 		
 		// Check if the operating mode is a valid and supported one.
 		if (operatingMode == OperatingMode.UNKNOWN) {
@@ -200,17 +201,18 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Determines the connection mode of the XBee device.
+	 * Determines the operating mode of the XBee device.
 	 * 
 	 * @return The operating mode of the XBee device.
 	 * 
 	 * @see OperatingMode
 	 */
-	protected OperatingMode determineConnectionMode() {
-		// Check if device is in API or API Escaped operating modes.
+	protected OperatingMode determineOperatingMode() {
 		try {
+			// Check if device is in API or API Escaped operating modes.
 			operatingMode = OperatingMode.API;
 			dataReader.setXBeeReaderMode(operatingMode);
+			
 			ATCommandResponse response = sendATCommand(new ATCommand("AP"));
 			if (response.getResponse() != null && response.getResponse().length > 0) {
 				if (response.getResponse()[0] == OperatingMode.API.getID())
@@ -219,6 +221,7 @@ public class XBeeDevice {
 					return OperatingMode.API_ESCAPE;
 			}
 		} catch (XBeeException e) {
+			// Check if device is in AT operating mode.
 			operatingMode = OperatingMode.AT;
 			dataReader.setXBeeReaderMode(operatingMode);
 			
@@ -226,7 +229,6 @@ public class XBeeDevice {
 				// It is necessary to wait at least 1 second to enter in command mode after 
 				// sending any data to the device.
 				Thread.sleep(1200);
-				
 				// Try to enter in AT command mode, if so the module is in AT mode.
 				boolean success = enterATCommandMode();
 				if (success)
@@ -238,10 +240,8 @@ public class XBeeDevice {
 			} catch (InterruptedException e2) {
 				// TODO Log this exception
 			}
-			return OperatingMode.UNKNOWN;
 		} catch (InvalidOperatingModeException e) {
 			// TODO Log this exception.
-			return OperatingMode.UNKNOWN;
 		}
 		return OperatingMode.UNKNOWN;
 	}
@@ -283,11 +283,10 @@ public class XBeeDevice {
 			return true;
 		} catch (IOException e) {
 			// TODO Log this exception.
-			return false;
 		} catch (InterruptedException e) {
 			// TODO Log this exception.
-			return false;
 		}
+		return false;
 	}
 	
 	/**

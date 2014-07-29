@@ -92,8 +92,8 @@ public class XBeeDeviceConnectTest {
 	 * @throws Exception
 	 */
 	public void testConnectAPIMode() throws Exception {
-		// Configure the determineConnectionMode method to return 'API'.
-		PowerMockito.doReturn(OperatingMode.API).when(xbeeDevice, "determineConnectionMode");
+		// Configure the determineOperatingMode method to return 'API'.
+		PowerMockito.doReturn(OperatingMode.API).when(xbeeDevice, "determineOperatingMode");
 		
 		// Execute the connect method.
 		try {
@@ -119,8 +119,8 @@ public class XBeeDeviceConnectTest {
 	 * @throws Exception
 	 */
 	public void testConnectAPIEscapedMode() throws Exception {
-		// Configure the determineConnectionMode method to return 'API'.
-		PowerMockito.doReturn(OperatingMode.API_ESCAPE).when(xbeeDevice, "determineConnectionMode");
+		// Configure the determineOperatingMode method to return 'API'.
+		PowerMockito.doReturn(OperatingMode.API_ESCAPE).when(xbeeDevice, "determineOperatingMode");
 		
 		// Execute the connect method.
 		try {
@@ -146,8 +146,8 @@ public class XBeeDeviceConnectTest {
 	 * @throws Exception
 	 */
 	public void testConnectATMode() throws Exception {
-		// Configure the determineConnectionMode method to return 'API'.
-		PowerMockito.doReturn(OperatingMode.AT).when(xbeeDevice, "determineConnectionMode");
+		// Configure the determineOperatingMode method to return 'API'.
+		PowerMockito.doReturn(OperatingMode.AT).when(xbeeDevice, "determineOperatingMode");
 		
 		// Execute the connect method.
 		try {
@@ -174,8 +174,8 @@ public class XBeeDeviceConnectTest {
 	 * @throws Exception
 	 */
 	public void testConnectUnknownMode() throws Exception {
-		// Configure the determineConnectionMode method to return 'API'.
-		PowerMockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice, "determineConnectionMode");
+		// Configure the determineOperatingMode method to return 'API'.
+		PowerMockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice, "determineOperatingMode");
 		
 		// Execute the connect method.
 		try {
@@ -202,7 +202,7 @@ public class XBeeDeviceConnectTest {
 	 * @throws Exception
 	 */
 	public void testConnectTimeout() throws Exception {
-		// Configure the determineConnectionMode method to return 'API'.
+		// Configure the determineOperatingMode method to return 'API'.
 		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "open");
 		
 		// Execute the connect method.

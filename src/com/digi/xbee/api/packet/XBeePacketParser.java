@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import com.digi.xbee.api.exceptions.PacketParsingException;
+import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -89,7 +89,7 @@ public class XBeePacketParser {
 	 * @return Parsed packet.
 	 * @throws PacketParsingException 
 	 */
-	public XBeePacket parsePacket() throws PacketParsingException {
+	public XBeePacket parsePacket() throws InvalidPacketException {
 		try {
 			// Reset variables.
 			readBytes = 0;
@@ -156,7 +156,7 @@ public class XBeePacketParser {
 			readByte();
 			return packet;
 		} catch (IOException e) {
-			throw new PacketParsingException("Error parsing packet: " + e.getMessage());
+			throw new InvalidPacketException("Error parsing packet: " + e.getMessage());
 		}
 	}
 	
@@ -168,7 +168,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws PacketParsingException
 	 */
-	private int readByte() throws IOException, PacketParsingException {
+	private int readByte() throws IOException, InvalidPacketException {
 		// Give a bit of time to fill stream if read byte is -1.
 		long deadline = new Date().getTime() + 200;
 		int b = inputStream.read();
@@ -179,7 +179,7 @@ public class XBeePacketParser {
 			} catch (InterruptedException e) {}
 		}
 		if (b == -1)
-			throw new PacketParsingException("Read -1 from stream.");
+			throw new InvalidPacketException("Read -1 from stream.");
 		if (mode == OperatingMode.API_ESCAPE) {
 			// Check if the byte is special.
 			if (SpecialByte.isSpecialByte(b)) {
@@ -196,7 +196,7 @@ public class XBeePacketParser {
 						} catch (InterruptedException e) {}
 					}
 					if (b == -1)
-						throw new PacketParsingException("Read -1 from stream.");
+						throw new InvalidPacketException("Read -1 from stream.");
 					b ^= 0x20;
 				} else {
 					// TODO: Log some kind of information here when logging is implemented.
@@ -213,7 +213,7 @@ public class XBeePacketParser {
 			if (readBytes >= length + 1) {
 				// Was checksum byte, verify it!
 				if (!checksum.validate())
-					throw new PacketParsingException("Error verifying packet checksum.");
+					throw new InvalidPacketException("Error verifying packet checksum.");
 			}
 		}
 		return b;
@@ -228,7 +228,7 @@ public class XBeePacketParser {
 	 * @throws PacketParsingException 
 	 * @throws IOException 
 	 */
-	private byte[] readBytes(int numBytes) throws IOException, PacketParsingException {
+	private byte[] readBytes(int numBytes) throws IOException, InvalidPacketException {
 		byte[] data = new byte[numBytes];
 		switch (mode) {
 		case API:
@@ -238,7 +238,7 @@ public class XBeePacketParser {
 			while (new Date().getTime() < deadline) {
 				currentRead =  inputStream.read(data, numBytesRead, numBytes - numBytesRead);
 				if (currentRead == -1)
-					throw new PacketParsingException("Read -1 from stream.");
+					throw new InvalidPacketException("Read -1 from stream.");
 				numBytesRead = numBytesRead + currentRead;
 				if (numBytesRead < numBytes) {
 					try {
@@ -248,7 +248,7 @@ public class XBeePacketParser {
 					break;
 			}
 			if (numBytesRead < numBytes)
-				throw new PacketParsingException("Not enough data in the stream.");
+				throw new InvalidPacketException("Not enough data in the stream.");
 			if (lengthRead) {
 				checksum.add(data);
 				readBytes += numBytes;
@@ -256,7 +256,7 @@ public class XBeePacketParser {
 				if (readBytes >= length + 1) {
 					// Was checksum byte, verify it!
 					if (!checksum.validate())
-						throw new PacketParsingException("Error verifying packet checksum.");
+						throw new InvalidPacketException("Error verifying packet checksum.");
 				}
 			}
 			break;
@@ -277,7 +277,7 @@ public class XBeePacketParser {
 	 * @throws PacketParsingException 
 	 * @throws IOException 
 	 */
-	private XBee64BitAddress readXBee64BitAddress() throws IOException, PacketParsingException {
+	private XBee64BitAddress readXBee64BitAddress() throws IOException, InvalidPacketException {
 		byte[] address = new byte[8];
 		for (int i = 0; i < 8; i++)
 			address[i] = (byte)readByte();
@@ -291,7 +291,7 @@ public class XBeePacketParser {
 	 * @throws PacketParsingException 
 	 * @throws IOException 
 	 */
-	private XBee16BitAddress readXBee16BitAddress() throws IOException, PacketParsingException {
+	private XBee16BitAddress readXBee16BitAddress() throws IOException, InvalidPacketException {
 		int hsb = readByte();
 		int lsb = readByte();
 		return new XBee16BitAddress(hsb, lsb);
@@ -304,7 +304,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws PacketParsingException
 	 */
-	private XBeePacket parseGenericPacket() throws IOException, PacketParsingException {
+	private XBeePacket parseGenericPacket() throws IOException, InvalidPacketException {
 		byte[] commandData = null;
 		if (readBytes < length)
 			commandData = readBytes(length - readBytes);
@@ -318,7 +318,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseTX16Packet() throws IOException, PacketParsingException {
+	private XBeePacket parseTX16Packet() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		XBee16BitAddress destAddress16 = readXBee16BitAddress();
 		int transmitOptions = readByte();
@@ -335,7 +335,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseTX64Packet() throws IOException, PacketParsingException {
+	private XBeePacket parseTX64Packet() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		XBee64BitAddress destAddress64 = readXBee64BitAddress();
 		int transmitOptions = readByte();
@@ -352,7 +352,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseATCommandPacket() throws IOException, PacketParsingException {
+	private XBeePacket parseATCommandPacket() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		String command = new String(readBytes(2));
 		byte[] parameterData = null;
@@ -368,7 +368,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseTransmitRequestPacket() throws IOException, PacketParsingException {
+	private XBeePacket parseTransmitRequestPacket() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		XBee64BitAddress destAddress64 = readXBee64BitAddress();
 		XBee16BitAddress destAddress16 = readXBee16BitAddress();
@@ -387,7 +387,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseATCommandResponsePacket() throws IOException, PacketParsingException {
+	private XBeePacket parseATCommandResponsePacket() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		String command = new String(readBytes(2));
 		int status = readByte();
@@ -404,7 +404,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseTXStatusPacket() throws IOException, PacketParsingException {
+	private XBeePacket parseTXStatusPacket() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		int status = readByte();
 		return new TXStatusPacket(frameID, XBeeTransmitStatus.get(status));
@@ -417,7 +417,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws ParsingException
 	 */
-	private XBeePacket parseTransmitStatusPacket() throws IOException, PacketParsingException {
+	private XBeePacket parseTransmitStatusPacket() throws IOException, InvalidPacketException {
 		int frameID = readByte();
 		XBee16BitAddress address = readXBee16BitAddress();
 		int retryCount = readByte();
@@ -433,7 +433,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws PacketParsingException
 	 */
-	private XBeePacket parseZigBeeReceivePacket() throws IOException, PacketParsingException {
+	private XBeePacket parseZigBeeReceivePacket() throws IOException, InvalidPacketException {
 		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
 		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
 		int receiveOptions = readByte();
@@ -450,7 +450,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws PacketParsingException
 	 */
-	private XBeePacket parseRX16Packet() throws IOException, PacketParsingException {
+	private XBeePacket parseRX16Packet() throws IOException, InvalidPacketException {
 		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
 		int signalStrength = readByte();
 		int receiveOptions = readByte();
@@ -467,7 +467,7 @@ public class XBeePacketParser {
 	 * @throws IOException
 	 * @throws PacketParsingException
 	 */
-	private XBeePacket parseRX64Packet() throws IOException, PacketParsingException {
+	private XBeePacket parseRX64Packet() throws IOException, InvalidPacketException {
 		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
 		int signalStrength = readByte();
 		int receiveOptions = readByte();

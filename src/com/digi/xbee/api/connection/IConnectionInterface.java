@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
-import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.exceptions.ConnectionException;
+import com.digi.xbee.api.exceptions.XBeeDeviceException;
 
 /**
  * This interface represents a protocol independent connection with an XBee device.
@@ -31,10 +31,10 @@ public interface IConnectionInterface {
 	/**
 	 * Attempts to open the connection interface.
 	 * 
-	 * @throws XBeeException;
-	 * @throws InvalidOperatingModeException;
+	 * @throws ConnectionException
+	 * @throws XBeeDeviceException
 	 */
-	public void open() throws XBeeException, InvalidOperatingModeException;
+	public void open() throws ConnectionException, XBeeDeviceException;
 	
 	/**
 	 * Attempts to close the connection interface.
@@ -66,7 +66,7 @@ public interface IConnectionInterface {
 	 * Writes the given data in the connection interface.
 	 * 
 	 * @param data The data to be written in the connection interface.
-	 * @throws IOException;
+	 * @throws IOException
 	 */
 	public void writeData(byte[] data) throws IOException;
 	

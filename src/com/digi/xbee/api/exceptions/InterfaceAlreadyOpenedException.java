@@ -12,20 +12,29 @@
 package com.digi.xbee.api.exceptions;
 
 /**
- * This exception is thrown when there is an error parsing an API
- * packet from the input stream.
+ * This exception will be thrown when trying to open an interface that is
+ * already opened by the application.
  */
-public class PacketParsingException extends Exception {
-	
+public class InterfaceAlreadyOpenedException extends ConnectionException {
+
 	// Constants
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates an ParsingException with the specified message.
+	 * Creates an {@code InterfaceAlreadyOpenedException} with {@code null} as 
+	 * its error detail message.
+	 */
+	public InterfaceAlreadyOpenedException() {
+		super();
+	}
+	
+	/**
+	 * Creates an {@code InterfaceAlreadyOpenedException} with the specified 
+	 * message.
 	 * 
 	 * @param message The associated message.
 	 */
-	public PacketParsingException(String message) {
+	public InterfaceAlreadyOpenedException(String message) {
 		super(message);
 	}
 }

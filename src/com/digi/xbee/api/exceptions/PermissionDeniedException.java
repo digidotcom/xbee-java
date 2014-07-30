@@ -11,34 +11,29 @@
 */
 package com.digi.xbee.api.exceptions;
 
-import com.digi.xbee.api.models.OperatingMode;
-
 /**
- * This exception will be thrown if the operating mode is different than
- * {@link OperatingMode#API} and {@link OperatingMode#API_ESCAPE}.
- * 
- * @see OperatingMode
+ * This exception will be thrown when the user does not have the appropriate
+ * access to the interface.
  */
-public class InvalidOperatingModeException extends XBeeDeviceException {
+public class PermissionDeniedException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates an {@code InvalidOperatingModeException} with {@code null} as its 
+	 * Creates a {@code PermissionDeniedException} with {@code null} as its 
 	 * error detail message.
 	 */
-	public InvalidOperatingModeException() {
+	public PermissionDeniedException() {
 		super();
 	}
 	
 	/**
-	 * Creates an {@code InvalidOperatingModeException} with the specified 
-	 * message.
+	 * Creates a {@code PermissionDeniedException} with the specified message.
 	 * 
 	 * @param message The associated message.
 	 */
-	public InvalidOperatingModeException(String message) {
+	public PermissionDeniedException(String message) {
 		super(message);
 	}
 }

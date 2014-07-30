@@ -12,7 +12,6 @@
 package com.digi.xbee.api.receiveserialdata;
 
 import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 /**
@@ -47,8 +46,6 @@ public class MainApp {
 		try {
 			myDevice.open();
 		} catch (XBeeException e) {
-			e.printStackTrace();
-		} catch (InvalidOperatingModeException e) {
 			e.printStackTrace();
 		}
 		

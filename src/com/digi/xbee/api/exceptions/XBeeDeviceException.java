@@ -12,57 +12,48 @@
 package com.digi.xbee.api.exceptions;
 
 /**
- * Generic XBee API exception. This class and its subclasses indicate
- * conditions that an application might want to catch.
+ * This exception will be thrown when any problem related to the XBee device
+ * occurs.
  */
-public class XBeeException extends Exception {
+public class XBeeDeviceException extends XBeeException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
 	
 	/**
-	 * Creates an {@code XBeeException} with {@code null} as its error 
+	 * Creates an {@code XBeeDeviceException} with {@code null} as its error 
 	 * detail message.
 	 */
-	public XBeeException() {
+	public XBeeDeviceException() {
 		super();
 	}
 	
 	/**
-	 * Creates an {@code XBeeException} with the specified cause.
+	 * Creates an {@code XBeeDeviceException} with the specified cause.
 	 * 
 	 * @param cause The cause of this exception.
 	 */
-	public XBeeException(Throwable cause) {
+	public XBeeDeviceException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * Creates an {@code XBeeException} with the specified message.
+	 * Creates an {@code XBeeDeviceException} with the specified message.
 	 * 
 	 * @param message The associated message.
 	 */
-	public XBeeException(String message) {
+	public XBeeDeviceException(String message) {
 		super(message);
 	}
 
 	/**
-	 * Creates an {@code XBeeException} with the specified message and cause.
+	 * Creates an {@code XBeeDeviceException} with the specified message and 
+	 * cause.
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
 	 */
-	public XBeeException(String message, Throwable cause) {
+	public XBeeDeviceException(String message, Throwable cause) {
 		super(message, cause);
-	}
-
-	/**
-	 * Returns the cause of this exception or null if no cause was
-	 * set.
-	 * 
-	 * @return The cause of this exception or null if no cause was set.
-	 */
-	public Throwable getCause() {
-		return super.getCause();
 	}
 }

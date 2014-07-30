@@ -11,34 +11,30 @@
 */
 package com.digi.xbee.api.exceptions;
 
-import com.digi.xbee.api.models.OperatingMode;
-
 /**
- * This exception will be thrown if the operating mode is different than
- * {@link OperatingMode#API} and {@link OperatingMode#API_ESCAPE}.
- * 
- * @see OperatingMode
+ * This exception will be thrown when the operation performed is not supported
+ * by the XBee device.
  */
-public class InvalidOperatingModeException extends XBeeDeviceException {
+public class OperationNotSupportedException extends XBeeDeviceException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates an {@code InvalidOperatingModeException} with {@code null} as its 
-	 * error detail message.
+	 * Creates an {@code OperationNotSupportedException} with {@code null} as 
+	 * its error detail message.
 	 */
-	public InvalidOperatingModeException() {
+	public OperationNotSupportedException() {
 		super();
 	}
 	
 	/**
-	 * Creates an {@code InvalidOperatingModeException} with the specified 
+	 * Creates an {@code OperationNotSupportedException} with the specified 
 	 * message.
 	 * 
 	 * @param message The associated message.
 	 */
-	public InvalidOperatingModeException(String message) {
+	public OperationNotSupportedException(String message) {
 		super(message);
 	}
 }

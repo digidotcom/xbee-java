@@ -16,7 +16,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
+import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 public abstract class AbstractSerialPort implements IConnectionInterface {
@@ -139,7 +141,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public abstract void open() throws XBeeException, InvalidOperatingModeException;
+	public abstract void open() throws ConnectionException, XBeeDeviceException;
 	
 	/*
 	 * (non-Javadoc)

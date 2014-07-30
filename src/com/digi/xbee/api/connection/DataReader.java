@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.digi.xbee.api.exceptions.PacketParsingException;
+import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
@@ -180,7 +180,7 @@ public class DataReader extends Thread {
 							try {
 								XBeePacket packet = parser.parsePacket();
 								packetReceived(packet);
-							} catch (PacketParsingException e) {
+							} catch (InvalidPacketException e) {
 								e.printStackTrace();
 							}
 						}

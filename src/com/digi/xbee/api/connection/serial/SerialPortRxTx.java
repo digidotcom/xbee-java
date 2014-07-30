@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
-import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.exceptions.InterfaceInUseException;
+import com.digi.xbee.api.exceptions.InvalidConfigurationException;
+import com.digi.xbee.api.exceptions.InvalidInterfaceException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
@@ -121,12 +124,12 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public void open() throws XBeeException {
+	public void open() throws InvalidInterfaceException, InterfaceInUseException, OperationNotSupportedException, InvalidConfigurationException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 		} catch (NoSuchPortException e) {
-			throw new XBeeException(XBeeException.INVALID_PORT, "No such port: " + port);
+			throw new InvalidInterfaceException("No such port: " + port);
 		}
 		try {
 			// Get the serial port.
@@ -152,11 +155,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			// Register serial port event listener to be notified when data is available.
 			serialPort.addEventListener(this);
 		} catch (PortInUseException e) {
-			throw new XBeeException(XBeeException.PORT_IN_USE);
+			throw new InterfaceInUseException("Port in use: " + port);
 		} catch (UnsupportedCommOperationException e) {
-			throw new XBeeException(XBeeException.INVALID_OPERATION, e.getMessage());
+			throw new OperationNotSupportedException(e.getMessage());
 		} catch (TooManyListenersException e) {
-			throw new XBeeException(XBeeException.GENERIC, e.getMessage());
+			throw new InvalidConfigurationException(e.getMessage());
 		}
 	}
 	
@@ -319,7 +322,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 *                                  if {@code flowControl < 0}.
 	 */
 	public void setPortParameters(int baudRate, int dataBits, int stopBits,
-			int parity, int flowControl) throws XBeeException {
+			int parity, int flowControl) throws OperationNotSupportedException {
 		parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
 		
 		if (serialPort != null) {
@@ -327,7 +330,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
 				serialPort.setFlowControlMode(flowControl);
 			} catch (UnsupportedCommOperationException e) {
-				throw new XBeeException(XBeeException.INVALID_OPERATION, e.getMessage());
+				throw new OperationNotSupportedException(e.getMessage());
 			}
 		}
 	}

@@ -109,8 +109,8 @@ public class ISerialDataReceiveListenerTest {
 	public void testSerialDataReceiveEvent() {
 		receiveSerialDataListener.serialDataReceived(XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
-		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
-		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
+		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
+		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
 	}
 	
 	@Test
@@ -147,8 +147,8 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_16BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
-		assertEquals(receiveSerialDataListener.getAddress(), XBEE_16BIT_ADDRESS.toString());
-		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
+		assertEquals(XBEE_16BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
+		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
 	}
 	
 	@Test
@@ -166,8 +166,8 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
-		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
-		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
+		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
+		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
 	}
 	
 	@Test
@@ -185,8 +185,8 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the notifySerialDataReceived private method was called with the correct address and data.
 		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_SERIAL_DATA_RECEIVED_METHOD, XBEE_64BIT_ADDRESS.toString(), RECEIVED_DATA_BYTES);
 		
-		assertEquals(receiveSerialDataListener.getAddress(), XBEE_64BIT_ADDRESS.toString());
-		assertEquals(receiveSerialDataListener.getSerialData(), RECEIVED_DATA_BYTES);
+		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
+		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
 	}
 	
 	@Test

@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
@@ -51,6 +54,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	protected SerialPortParameters parameters;
 	
 	protected boolean connectionOpen = false;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instantiates a new object of type AbstractXBeeSerialPort with
@@ -135,6 +140,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		this.baudRate = parameters.baudrate;
 		this.receiveTimeout = receiveTimeout;
 		this.parameters = parameters;
+		this.logger = LoggerFactory.getLogger(AbstractSerialPort.class);
 	}
 	
 	/*
@@ -298,7 +304,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 				if (getInputStream().available() > 0)
 					getInputStream().read(availableBytes, 0, getInputStream().available());
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -311,7 +317,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 			try {
 				getOutputStream().flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}

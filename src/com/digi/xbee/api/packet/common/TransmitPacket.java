@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
@@ -56,6 +59,8 @@ public class TransmitPacket extends XBeeAPIPacket {
 	private final int transmitOptions;
 	
 	private byte[] rfData;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instances a new object of type ZigBeeTransmitRequest with
@@ -99,6 +104,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 		this.broadcastRadius = broadcastRadius;
 		this.transmitOptions = transmitOptions;
 		this.rfData = rfData;
+		this.logger = LoggerFactory.getLogger(TransmitPacket.class);
 	}
 
 	/*
@@ -116,7 +122,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return data.toByteArray();
 	}

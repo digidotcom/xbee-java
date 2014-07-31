@@ -14,6 +14,9 @@ package com.digi.xbee.api;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
@@ -62,6 +65,8 @@ public class XBeeDevice {
 	
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instantiates a new XBeeDevice object in the given port name and baud rate.
@@ -130,6 +135,7 @@ public class XBeeDevice {
 			throw new IllegalArgumentException("ConnectionInterface cannot be null.");
 		
 		this.connectionInterface = connectionInterface;
+		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
 	}
 	
 	/**
@@ -151,12 +157,16 @@ public class XBeeDevice {
 	 * @throws TimeoutException if the configured time expires.
 	 */
 	public void open() throws ConnectionException, XBeeDeviceException, TimeoutException {
+		logger.info("Opening the connection interface...");
+		
 		// First, verify that the connection is not already open.
 		if (connectionInterface.isOpen())
 			throw new InterfaceAlreadyOpenException();
 		
 		// Connect the interface.
 		connectionInterface.open();
+		
+		logger.info("Connection interface open.");
 		
 		// Initialize the data reader.
 		dataReader = new DataReader(connectionInterface, operatingMode);
@@ -172,7 +182,7 @@ public class XBeeDevice {
 			throw new InvalidOperatingModeException("Could not determine operating mode.");
 		} else if (operatingMode == OperatingMode.AT) {
 			close();
-			throw new InvalidOperatingModeException("Unsupported operating mode AT.");
+			throw new InvalidOperatingModeException("Unsupported operating mode: AT.");
 		}
 	}
 	
@@ -185,6 +195,7 @@ public class XBeeDevice {
 			dataReader.stopReader();
 		// Close interface.
 		connectionInterface.close();
+		logger.info("Connection interface closed.");
 	}
 	
 	/**
@@ -216,16 +227,19 @@ public class XBeeDevice {
 			dataReader.setXBeeReaderMode(operatingMode);
 			ATCommandResponse response = sendATCommand(new ATCommand("AP"));
 			if (response.getResponse() != null && response.getResponse().length > 0) {
-				if (response.getResponse()[0] == OperatingMode.API.getID())
+				if (response.getResponse()[0] == OperatingMode.API.getID()) {
+					logger.debug("Using API operating mode.");
 					return OperatingMode.API;
-				else
+				} else {
+					logger.debug("Using API Escaped operating mode.");
 					return OperatingMode.API_ESCAPE;
+				}
 			}
 		} catch (InvalidOperatingModeException e) {
 			// TODO: Check if device is in AT mode here and return it if so!!.
-			e.printStackTrace();
+			logger.error("Invalid operating mode", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return OperatingMode.UNKNOWN;
 	}
@@ -314,15 +328,16 @@ public class XBeeDevice {
 		case API_ESCAPE:
 			// Create AT command packet
 			XBeeAPIPacket packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+			logger.debug("Sending AT command [{} {}].", command.getCommand(), command.getParameter());
 			try {
 				// Send the packet and build response.
 				ATCommandResponsePacket answerPacket = (ATCommandResponsePacket)sendXBeePacket(packet);
 				response = new ATCommandResponse(command, answerPacket.getCommandData(), answerPacket.getStatus());
+				logger.debug("AT command response: {}.", response.getResponseString());
 			} catch (InvalidOperatingModeException e) {
-				// Ignore, we will never enter here.
-			} catch (ClassCastException e1) {
-				System.err.println("Received an invalid packet type after sending an AT Command packet.");
-				e1.printStackTrace();
+				logger.error(e.getMessage(), e);
+			} catch (ClassCastException e) {
+				logger.error("Received an invalid packet type after sending an AT command packet." + e);
 			}
 		}
 		return response;
@@ -381,6 +396,9 @@ public class XBeeDevice {
 			
 			// Add the packet listener to the data reader.
 			dataReader.addPacketReceiveListener(packetReceiveListener);
+			
+			logger.debug("Sending XBee packet: \n{}", packet.toPrettyString());
+			
 			// Write the packet data.
 			writePacket(packet);
 			try {
@@ -512,6 +530,8 @@ public class XBeeDevice {
 				} else if (packetReceiveListener != null)
 					dataReader.addPacketReceiveListener(packetReceiveListener);
 			}
+			
+			logger.debug("Sending XBee packet: \n{}", packet.toPrettyString());
 			
 			// Write packet data.
 			writePacket(packet);
@@ -671,6 +691,8 @@ public class XBeeDevice {
 		if (address == null || data == null)
 			throw new NullPointerException("Address and data cannot be null");
 		
+		logger.info("Sending data to {} >> {}.", address, HexUtils.byteArrayToHexString(data));
+		
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {
 		case RAW_802_15_4:
@@ -736,6 +758,8 @@ public class XBeeDevice {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address == null || data == null)
 			throw new NullPointerException("Address and data cannot be null");
+		
+		logger.info("Sending data to {} >> {}.", address, HexUtils.byteArrayToHexString(data));
 		
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {

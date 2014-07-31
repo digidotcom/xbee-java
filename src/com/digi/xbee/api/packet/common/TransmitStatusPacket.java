@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBeeDiscoveryStatus;
 import com.digi.xbee.api.models.XBeeTransmitStatus;
@@ -39,6 +42,8 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	private final int tranmistRetryCount;
 	private final XBeeTransmitStatus transmitStatus;
 	private final XBeeDiscoveryStatus discoveryStatus;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instances a new object of type ZigBeeTransmitStatus with
@@ -81,6 +86,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 		this.tranmistRetryCount = tranmistRetryCount;
 		this.transmitStatus = transmitStatus;
 		this.discoveryStatus = discoveryStatus;
+		this.logger = LoggerFactory.getLogger(TransmitStatusPacket.class);
 	}
 	
 
@@ -98,7 +104,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 			data.write(transmitStatus.getId());
 			data.write(discoveryStatus.getId());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return data.toByteArray();
 	}

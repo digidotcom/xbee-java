@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -28,6 +31,8 @@ public class TX64Packet extends XBeeAPIPacket {
 	private final XBee64BitAddress destAddress64;
 	
 	private byte[] rfData;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instances a new object of type Transmit64Packet with
@@ -58,6 +63,7 @@ public class TX64Packet extends XBeeAPIPacket {
 		this.destAddress64 = destAddress64;
 		this.transmitOptions = transmitOptions;
 		this.rfData = rfData;
+		this.logger = LoggerFactory.getLogger(TX64Packet.class);
 	}
 
 	/*
@@ -73,8 +79,7 @@ public class TX64Packet extends XBeeAPIPacket {
 			if (rfData != null)
 				os.write(rfData);
 		} catch (IOException e) {
-			// TODO: Revisit this when logging feature is implemented.
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return os.toByteArray();
 	}

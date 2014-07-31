@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.exceptions.InterfaceInUseException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
@@ -47,6 +50,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	private CommPortIdentifier portIdentifier = null;
 	
+	private Logger logger;
+	
 	/**
 	 * Class constructor. Instances a new object of type SerialPort with
 	 * the given parameters.
@@ -61,6 +66,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters) {
 		super(port, parameters, DEFAULT_PORT_TIMEOUT);
+		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
 	/**
@@ -79,6 +85,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters, int receiveTimeout) {
 		super(port, parameters, receiveTimeout);
+		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
 	/**
@@ -98,6 +105,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 */
 	public SerialPortRxTx(String port, int baudRate) {
 		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
+		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
 	/**
@@ -118,6 +126,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 */
 	public SerialPortRxTx(String port, int baudRate, int receiveTimeout) {
 		super(port, baudRate, receiveTimeout);
+		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
 	/*
@@ -178,7 +187,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				outputStream = null;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		if (serialPort != null) {
 			try {
@@ -226,7 +235,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 			break;
 		}
@@ -374,7 +383,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			String myPackage = this.getClass().getPackage().getName();
 			if (requester.startsWith(myPackage))
 				requester = "another AT connection";
-			System.out.println("Connection for port " + port + " canceled due to ownership request from " + requester + ".");
+			logger.debug("Connection for port {} canceled due to ownership request from {}.", port, requester);
 		}
 	}
 	

@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
@@ -43,6 +46,8 @@ public class ReceivePacket extends XBeeAPIPacket {
 	private final int receiveOptions;
 	
 	private byte[] receivedData;
+	
+	private Logger logger;
 
 	/**
 	 * Class constructor. Instances a new object of type ZigBeeReceivePacket with
@@ -72,6 +77,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.receiveOptions = receiveOptions;
 		this.receivedData = receivedData;
+		this.logger = LoggerFactory.getLogger(ReceivePacket.class);
 	}
 
 
@@ -88,8 +94,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 			if (receivedData != null)
 				data.write(receivedData);
 		} catch (IOException e) {
-			// TODO: Revisit this when logging feature is implemented.
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return data.toByteArray();
 	}

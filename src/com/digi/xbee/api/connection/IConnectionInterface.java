@@ -67,8 +67,26 @@ public interface IConnectionInterface {
 	 * 
 	 * @param data The data to be written in the connection interface.
 	 * @throws IOException;
+	 * 
+	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public void writeData(byte[] data) throws IOException;
+	
+	/**
+	 * Writes the given data in the connection interface.
+	 * 
+	 * @param data he data to be written in the connection interface.
+	 * @param offset The start offset in the data.
+	 * @param length The number of bytes to write.
+	 * @throws IOException
+	 * 
+	 * @throws NullPointerException if {@code data == null}.
+	 * @throws IllegalArgumentException if {@code offset < 0} or
+	 *                                  if {@code length < 1} or
+	 *                                  if {@code offset >= data.length} or
+	 *                                  if {@code offset + length > data.length}.
+	 */
+	public void writeData(byte[] data, int offset, int length) throws IOException;
 	
 	/**
 	 * Reads data from the connection interface and stores it in the provided 
@@ -77,6 +95,26 @@ public interface IConnectionInterface {
 	 * @param data The byte array to store the read data.
 	 * @return The number of bytes read.
 	 * @throws IOException;
+	 * 
+	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public int readData(byte[] data) throws IOException;
+	
+	/**
+	 * Reads data from the connection interface and stores it in the provided 
+	 * byte array. Returns the number of read bytes.
+	 * 
+	 * @param data The byte array to store the read data.
+	 * @param offset The start offset in data array at which the data is written.
+	 * @param length Maximum number of bytes to read.
+	 * @return The number of bytes read.
+	 * @throws IOException
+	 * 
+	 * @throws NullPointerException if {@code data == null}.
+	 * @throws IllegalArgumentException if {@code offset < 0} or
+	 *                                  if {@code length < 1} or
+	 *                                  if {@code offset >= data.length} or
+	 *                                  if {@code offset + length > data.length}.
+	 */
+	public int readData(byte[] data, int offset, int length) throws IOException;
 }

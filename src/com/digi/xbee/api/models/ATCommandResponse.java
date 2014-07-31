@@ -24,11 +24,11 @@ import com.digi.xbee.api.utils.HexUtils;
 public class ATCommandResponse {
 	
 	// Variables
-	private ATCommand command;
+	private final ATCommand command;
 	
-	private byte[] response;
+	private final byte[] response;
 	
-	private ATCommandStatus status = ATCommandStatus.OK;
+	private final ATCommandStatus status;
 	
 	/**
 	 * Class constructor. Instances a new object of type ATCommandResponse
@@ -53,7 +53,6 @@ public class ATCommandResponse {
 	 * @param status Response status.
 	 * 
 	 * @throws NullPointerException if {@code command == null} or 
-	 *                              if {@code response == null} or
 	 *                              if {@code status == null}.
 	 * 
 	 * @see ATCommandStatus
@@ -61,8 +60,6 @@ public class ATCommandResponse {
 	public ATCommandResponse(ATCommand command, byte[] response, ATCommandStatus status) {
 		if (command == null)
 			throw new NullPointerException("Command cannot be null.");
-		if (response == null)
-			throw new NullPointerException("Response cannot be null.");
 		if (status == null)
 			throw new NullPointerException("Status cannot be null.");
 		

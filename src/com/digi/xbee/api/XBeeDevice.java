@@ -19,10 +19,15 @@ import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.io.IOLine;
+import com.digi.xbee.api.io.IOMode;
+import com.digi.xbee.api.io.IOSample;
+import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
+import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
@@ -38,6 +43,7 @@ import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 public class XBeeDevice {
@@ -826,5 +832,235 @@ public class XBeeDevice {
 		if (xbeeDevice == null)
 			throw new XBeeException(XBeeException.INVALID_ARGUMENT, "XBee device cannot be null");
 		return sendSerialData(xbeeDevice.get64BitAddress(), data);
+	}
+	
+	/**
+	 * Sets the configuration of the given IO line.
+	 * 
+	 * @param ioLine The IO line to configure.
+	 * @param mode The IO mode to set to the IO line.
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null} or
+	 *                              if {@code ioMode == null}.
+	 * 
+	 * @see IOLine
+	 * @see IOMode
+	 */
+	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		if (ioMode == null)
+			throw new NullPointerException("IO mode cannot be null.");
+		
+		String atCommand = ioLine.getATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+	}
+	
+	/**
+	 * Retrieves the configuration mode of the provided IO line.
+	 * 
+	 * @param ioLine The IO line to get its configuration.
+	 * @return The IO mode (configuration) of the provided IO line.
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @see IOLine
+	 * @see IOMode
+	 */
+	public IOMode getIOConfiguration(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check DIO pin.
+		if (ioLine == null)
+			throw new NullPointerException("DIO pin cannot be null.");
+		
+		String atCommand = ioLine.getATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+		
+		int ioModeValue = response.getResponse()[0];
+		IOMode dioMode = IOMode.getIOMode(ioModeValue, ioLine);
+		if (dioMode != null)
+			return dioMode;
+		throw new XBeeException(XBeeException.INVALID_OPERATION);
+	}
+	
+	/**
+	 * Sets the digital value (high or low) to the provided IO line.
+	 * 
+	 * @param ioLine The IO line to set its value.
+	 * @param value The IOValue to set to the IO line (HIGH or LOW).
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null} or 
+	 *                              if {@code ioValue == null}.
+	 * 
+	 * @see IOLine
+	 * @see IOValue
+	 */
+	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check IO value.
+		if (ioValue == null)
+			throw new NullPointerException("IO value cannot be null.");
+		
+		String atCommand = ioLine.getATCommand();
+		byte[] valueByte = new byte[]{(byte)ioValue.getID()};
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, valueByte));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+	}
+	
+	/**
+	 * Retrieves the digital value of the provided IO line (must be configured as digital I/O).
+	 * 
+	 * @param ioLine The IO line to get its digital value.
+	 * @return The digital value corresponding to the provided IO line.
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @see IOLine
+	 */
+	public IOValue getDIOValue(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		
+		ATCommandResponse response = sendATCommand(new ATCommand("IS"));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+		
+		IOSample ioSample = new IOSample(response.getResponse());
+		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+		
+		return ioSample.getDigitalValues().get(ioLine);
+	}
+	
+	/**
+	 * Sets the duty cycle (in %) of the provided IO line. IO line must be PWM capable and it must 
+	 * be configured as PWM Output.
+	 * 
+	 * @param ioLine The IO line to set its duty cycle value.
+	 * @param value The duty cycle of the PWM. 
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false} or 
+	 *                                  if {@code value < 0} or
+	 *                                  if {@code value > 1023}.
+	 * 
+	 * @see IOLine
+	 */
+	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check if the IO line has PWM capability.
+		if (!ioLine.hasPWMCapability())
+			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
+		// Check duty cycle limits.
+		if (dutyCycle < 0 || dutyCycle > 100)
+			throw new IllegalArgumentException("Duty Cycle must be between 0% and 100%.");
+		
+		// Convert the value.
+		int finaldutyCycle = (int)(dutyCycle * 1023.0/100.0);
+		
+		String atCommand = ioLine.getPWMATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+	}
+	
+	/**
+	 * Gets the PWM duty cycle (in %) corresponding to the provided IO line. IO line must be PWM 
+	 * capable and it must be configured as PWM Output.
+	 * 
+	 * @param ioLine The IO line to get its PWM duty cycle.
+	 * @return The PWM duty cycle value corresponding to the provided IO line (0% - 100%).
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
+	 * 
+	 * @see IOLine
+	 */
+	public double getPWMDutyCycle(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check if the IO line has PWM capability.
+		if (!ioLine.hasPWMCapability())
+			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
+		
+		String atCommand = ioLine.getPWMATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+		
+		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
+		return readValue * 100.0/1023.0;
+	}
+	
+	/**
+	 * Retrieves the analog value of the provided IO line (must be configured as ADC).
+	 * 
+	 * @param ioLine The IO line to get its analog value.
+	 * @return The analog value corresponding to the provided IO line.
+	 * @throws InvalidOperatingModeException
+	 * @throws XBeeException
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @see IOLine
+	 */
+	public int getADCValue(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		
+		ATCommandResponse response = sendATCommand(new ATCommand("IS"));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+		
+		IOSample ioSample = new IOSample(response.getResponse());
+		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
+			throw new XBeeException(XBeeException.INVALID_OPERATION);
+		
+		return ioSample.getAnalogValues().get(ioLine);
 	}
 }

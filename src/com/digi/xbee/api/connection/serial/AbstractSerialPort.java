@@ -314,13 +314,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		}
 	}
 	
-	/**
-	 * Sends the given byte array to the serial port.
-	 * 
-	 * @param data The byte array to be sent.
-	 * @throws IOException 
-	 * 
-	 * @throws NullPointerException if {@code data == null}.
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#writeData(byte[])
 	 */
 	public void writeData(byte[] data) throws IOException {
 		if (data == null)
@@ -353,49 +349,82 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		}
 	}
 	
-	/**
-	 * Reads the given number of bytes from the serial port.
-	 * 
-	 * @param buffer The buffer where the read bytes will be placed.
-	 * @param numBytes The number of bytes to read.
-	 * @return The number of bytes read.
-	 * @throws IOException
-	 * 
-	 * @throws NullPointerException if {@code buffer == null}.
-	 * @throws IllegalArgumentException if {@code numBytes < 1}.
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#writeData(byte[], int, int)
 	 */
-	public int readData(byte[] buffer, int numBytes) throws IOException {
-		if (buffer == null)
+	public void writeData(byte[] data, int offset, int length) throws IOException {
+		if (data == null)
+			throw new NullPointerException("Data to be sent cannot be null.");
+		if (offset < 0)
+			throw new IllegalArgumentException("Offset cannot be less than 0.");
+		if (length < 1)
+			throw new IllegalArgumentException("Length cannot be less than 0.");
+		if (offset >= data.length)
+			throw new IllegalArgumentException("Offset must be less than the data length.");
+		if (offset + length > data.length)
+			throw new IllegalArgumentException("Offset + length cannot be great than the data length.");
+		
+		if (getOutputStream() != null) {
+			// Writing data in ports without any device connected and configured with 
+			// hardware flow-control causes the majority of serial libraries to hang.
+			
+			// Before writing any data, check if the port is configured with hardware 
+			// flow-control and, if so, try to write the data up to 3 times verifying 
+			// that the CTS line is high (there is a device connected to the other side 
+			// ready to receive data).
+			if (isHardwareFlowControl()) {
+				int tries = 0;
+				while (tries < 3 && !isCTS()) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) { }
+					tries += 1;
+				}
+				if (isCTS()) {
+					getOutputStream().write(data, offset, length);
+					getOutputStream().flush();
+				}
+			} else {
+				getOutputStream().write(data, offset, length);
+				getOutputStream().flush();
+			}
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#readData(byte[])
+	 */
+	public int readData(byte[] data) throws IOException {
+		if (data == null)
 			throw new NullPointerException("Buffer cannot be null.");
-		if (numBytes < 1)
-			throw new IllegalArgumentException("Bytes to read cannot be less than 1.");
 		
 		int readBytes = 0;
 		if (getInputStream() != null)
-			readBytes = getInputStream().read(buffer, 0, numBytes);
+			readBytes = getInputStream().read(data);
 		return readBytes;
 	}
 	
-	/**
-	 * Reads the given number of bytes from the serial port.
-	 * 
-	 * @param buffer The buffer where the read bytes will be placed.
-	 * @return The number of bytes read.
-	 * @throws IOException
-	 * 
-	 * @throws NullPointerException if {@code buffer == null}.
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#readData(byte[], int, int)
 	 */
-	public int readData(byte[] buffer) throws IOException {
-		if (buffer == null)
+	public int readData(byte[] data, int offset, int length) throws IOException {
+		if (data == null)
 			throw new NullPointerException("Buffer cannot be null.");
+		if (offset < 0)
+			throw new IllegalArgumentException("Offset cannot be less than 0.");
+		if (length < 1)
+			throw new IllegalArgumentException("Length cannot be less than 0.");
+		if (offset >= data.length)
+			throw new IllegalArgumentException("Offset must be less than the buffer length.");
+		if (offset + length > data.length)
+			throw new IllegalArgumentException("Offset + length cannot be great than the buffer length.");
 		
 		int readBytes = 0;
-		if (getInputStream() != null && getInputStream().available() > 0) {
-			int numBytesToRead = getInputStream().available();
-			if (numBytesToRead > buffer.length)
-				numBytesToRead = buffer.length;
-			readBytes = getInputStream().read(buffer, 0, numBytesToRead);
-		}
+		if (getInputStream() != null)
+			readBytes = getInputStream().read(data, offset, length);
 		return readBytes;
 	}
 	

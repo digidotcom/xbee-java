@@ -24,7 +24,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
-import com.digi.xbee.api.exceptions.InterfaceNotOpenedException;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
@@ -221,7 +221,7 @@ public class SendSerialDataTest {
 			fail("Tx16 frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InterfaceNotOpenedException e) {
+		} catch (InterfaceNotOpenException e) {
 			// Verify that we have received a connection closed exception.
 		}
 		// Send serial data using the 64-bit address.
@@ -230,7 +230,7 @@ public class SendSerialDataTest {
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InterfaceNotOpenedException e) {
+		} catch (InterfaceNotOpenException e) {
 			// Verify that we have received a connection closed exception.
 		}
 		// Send serial data using an XBeeDevice as parameter.
@@ -239,7 +239,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InterfaceNotOpenedException e) {
+		} catch (InterfaceNotOpenException e) {
 			// Verify that we have received a connection closed exception.
 		}
 	}
@@ -359,7 +359,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InterfaceNotOpenedException e) {
+		} catch (InterfaceNotOpenException e) {
 			// Verify that we have received a connection closed exception.
 		}
 		// Send serial data using the 64-bit address.
@@ -368,7 +368,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InterfaceNotOpenedException e) {
+		} catch (InterfaceNotOpenException e) {
 			// Verify that we have received a connection closed exception.
 		}
 		// Send serial data using an XBeeDevice as parameter.
@@ -377,7 +377,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InterfaceNotOpenedException e) {
+		} catch (InterfaceNotOpenException e) {
 			// Verify that we have received a connection closed exception.
 		}
 	}

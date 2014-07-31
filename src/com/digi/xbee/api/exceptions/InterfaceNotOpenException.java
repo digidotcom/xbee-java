@@ -12,29 +12,29 @@
 package com.digi.xbee.api.exceptions;
 
 /**
- * This exception will be thrown when trying to open an interface that is
- * already opened by the application.
+ * This exception will be thrown when trying to perform any operation over a 
+ * closed interface.
  */
-public class InterfaceAlreadyOpenedException extends ConnectionException {
+public class InterfaceNotOpenException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates an {@code InterfaceAlreadyOpenedException} with {@code null} as 
-	 * its error detail message.
+	 * Creates an {@code InterfaceNotOpenedException} with {@code null} as its 
+	 * error detail message.
 	 */
-	public InterfaceAlreadyOpenedException() {
+	public InterfaceNotOpenException() {
 		super();
 	}
 	
 	/**
-	 * Creates an {@code InterfaceAlreadyOpenedException} with the specified 
+	 * Creates an {@code InterfaceNotOpenedException} with the specified 
 	 * message.
 	 * 
 	 * @param message The associated message.
 	 */
-	public InterfaceAlreadyOpenedException(String message) {
+	public InterfaceNotOpenException(String message) {
 		super(message);
 	}
 }

@@ -18,8 +18,8 @@ import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ConnectionException;
-import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenedException;
-import com.digi.xbee.api.exceptions.InterfaceNotOpenedException;
+import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
@@ -153,7 +153,7 @@ public class XBeeDevice {
 	public void open() throws ConnectionException, XBeeDeviceException, TimeoutException {
 		// First, verify that the connection is not already open.
 		if (connectionInterface.isOpen())
-			throw new InterfaceAlreadyOpenedException();
+			throw new InterfaceAlreadyOpenException();
 		
 		// Connect the interface.
 		connectionInterface.open();
@@ -205,11 +205,11 @@ public class XBeeDevice {
 	 * @return The operating mode of the XBee device.
 	 * 
 	 * @throws TimeoutException if the configured time expires.
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * 
 	 * @see OperatingMode
 	 */
-	protected OperatingMode determineConnectionMode() throws InterfaceNotOpenedException, TimeoutException {
+	protected OperatingMode determineConnectionMode() throws InterfaceNotOpenException, TimeoutException {
 		// Check if device is in API or API Escaped operating modes.
 		try {
 			operatingMode = OperatingMode.API;
@@ -281,7 +281,7 @@ public class XBeeDevice {
 	 * @param command AT command to be sent.
 	 * @return An {@code ATCommandResponse} object containing the response of the command.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
@@ -295,10 +295,10 @@ public class XBeeDevice {
 	 * @see ATCommandResponse
 	 */
 	public ATCommandResponse sendATCommand(ATCommand command) 
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, TimeoutException, IOException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenedException();
+			throw new InterfaceNotOpenException();
 		
 		// Check if command is null.
 		if (command == null)
@@ -335,7 +335,7 @@ public class XBeeDevice {
 	 * @param packet XBee packet to be sent.
 	 * @return XBeePacket object containing the response of the sent packet.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
@@ -347,10 +347,10 @@ public class XBeeDevice {
 	 * @see XBeePacket
 	 */
 	public XBeePacket sendXBeePacket(final XBeePacket packet) 
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, IOException, TimeoutException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, IOException, TimeoutException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenedException();
+			throw new InterfaceNotOpenException();
 		
 		switch (getOperatingMode()) {
 		case AT:
@@ -484,16 +484,16 @@ public class XBeeDevice {
 	 * @param packet XBee packet to be sent.
 	 * @param packetReceiveListener Listener for the operation, may be null.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an error occurs while writing the XBee packet to the connection interface.
 	 */
 	public void sendXBeePacket(XBeePacket packet,IPacketReceiveListener packetReceiveListener)
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, IOException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, IOException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenedException();
+			throw new InterfaceNotOpenException();
 		
 		switch (getOperatingMode()) {
 		case AT:
@@ -524,13 +524,13 @@ public class XBeeDevice {
 	 * 
 	 * @param packet XBee packet to be sent asynchronously.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
 	 */
 	public void sendXBeePacketAsync(XBeePacket packet) 
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, IOException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, IOException {
 		sendXBeePacket(packet, null);
 	}
 	
@@ -651,7 +651,7 @@ public class XBeeDevice {
 	 * @param data Byte array containing data to be sent.
 	 * @return True if the data was sent successfully, false otherwise.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
 	 * @throws TimeoutException if the configured time expires.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
@@ -659,10 +659,10 @@ public class XBeeDevice {
 	 * @throws NullPointerException if {@address == null} or {@data == null}.
 	 */
 	public boolean sendSerialData(XBee64BitAddress address, byte[] data) 
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, TimeoutException, IOException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenedException();
+			throw new InterfaceNotOpenException();
 		
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
@@ -717,7 +717,7 @@ public class XBeeDevice {
 	 * @param data Byte array containing data to be sent.
 	 * @return True if the data was sent successfully, false otherwise.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
 	 * @throws TimeoutException if the configured time expires.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
@@ -725,10 +725,10 @@ public class XBeeDevice {
 	 * @throws NullPointerException if {@address == null} or {@data == null}.
 	 */
 	public boolean sendSerialData(XBee16BitAddress address, byte[] data) 
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, TimeoutException, IOException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenedException();
+			throw new InterfaceNotOpenException();
 		
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
@@ -782,7 +782,7 @@ public class XBeeDevice {
 	 * @param data Byte array containing data to be sent.
 	 * @return True if the data was sent successfully, false otherwise.
 	 * 
-	 * @throws InterfaceNotOpenedException if the interface is not opened.
+	 * @throws InterfaceNotOpenException if the interface is not opened.
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
 	 * @throws TimeoutException if the configured time expires.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
@@ -790,7 +790,7 @@ public class XBeeDevice {
 	 * @throws NullPointerException if {@code xbeeDevice == null}.
 	 */
 	public boolean sendSerialData(XBeeDevice xbeeDevice, byte[] data) 
-			throws InterfaceNotOpenedException, InvalidOperatingModeException, TimeoutException, IOException {
+			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
 		if (xbeeDevice == null)
 			throw new NullPointerException("XBee device cannot be null");
 		return sendSerialData(xbeeDevice.get64BitAddress(), data);

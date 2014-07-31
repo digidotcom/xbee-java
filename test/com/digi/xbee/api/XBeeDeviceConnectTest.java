@@ -26,7 +26,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.ConnectionException;
-import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenedException;
+import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.models.OperatingMode;
@@ -235,7 +235,7 @@ public class XBeeDeviceConnectTest {
 		try {
 			xbeeDevice.open();
 			fail("Device shouldn't have connected");
-		} catch (InterfaceAlreadyOpenedException e) {
+		} catch (InterfaceAlreadyOpenException e) {
 			// This is the exception we should have received.
 		} catch (XBeeDeviceException e) {
 			fail("This exception shouldn't be thrown now.");

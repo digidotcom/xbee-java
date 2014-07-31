@@ -35,6 +35,32 @@ public class ATCommandResponse {
 	 * with the given parameters.
 	 * 
 	 * @param command The AT command which generated the response.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
+	 */
+	public ATCommandResponse(ATCommand command) {
+		this(command, null, ATCommandStatus.OK);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type ATCommandResponse
+	 * with the given parameters.
+	 * 
+	 * @param command The AT command which generated the response.
+	 * @param status Response status.
+	 * 
+	 * @throws NullPointerException if {@code command == null} or 
+	 *                              if {@code status == null}..
+	 */
+	public ATCommandResponse(ATCommand command, ATCommandStatus status) {
+		this(command, null, status);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type ATCommandResponse
+	 * with the given parameters.
+	 * 
+	 * @param command The AT command which generated the response.
 	 * @param response The command response.
 	 * 
 	 * @throws NullPointerException if {@code command == null} or 
@@ -53,7 +79,6 @@ public class ATCommandResponse {
 	 * @param status Response status.
 	 * 
 	 * @throws NullPointerException if {@code command == null} or 
-	 *                              if {@code response == null} or
 	 *                              if {@code status == null}.
 	 * 
 	 * @see ATCommandStatus
@@ -61,8 +86,6 @@ public class ATCommandResponse {
 	public ATCommandResponse(ATCommand command, byte[] response, ATCommandStatus status) {
 		if (command == null)
 			throw new NullPointerException("Command cannot be null.");
-		if (response == null)
-			throw new NullPointerException("Response cannot be null.");
 		if (status == null)
 			throw new NullPointerException("Status cannot be null.");
 		
@@ -97,7 +120,7 @@ public class ATCommandResponse {
 	public String getResponseString() {
 		if (response == null)
 			return null;
-		return HexUtils.byteArrayToHexString(response).replace("\n", "");
+		return new String(response);
 	}
 	
 	/**

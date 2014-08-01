@@ -320,7 +320,7 @@ public class LocalIOConfigurationTest {
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
 		// The value of the AT command will be 5, which is the DIGITAL_OUT_HIGH mode.
-		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{5});
+		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{(byte)IOMode.DIGITAL_OUT_HIGH.getID()});
 		
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		

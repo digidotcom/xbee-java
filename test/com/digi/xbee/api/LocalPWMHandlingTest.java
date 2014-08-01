@@ -29,6 +29,11 @@ import com.digi.xbee.api.models.OperatingMode;
 
 public class LocalPWMHandlingTest {
 	
+	// Constants.
+	private static final int DUTY_CYCLE_VALID_VALUE = 75;
+	private static final int DUTY_CYCLE_INVALID_VALUE_LOW = -10;
+	private static final int DUTY_CYCLE_INVALID_VALUE_HIGH = 150;
+	
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	
@@ -54,7 +59,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
@@ -71,7 +76,7 @@ public class LocalPWMHandlingTest {
 	public void testSetDutyCycleInvalidParameters() {
 		// Set the duty cycle of a null IO line.
 		try {
-			xbeeDevice.setPWMDutyCycle(null, 75);
+			xbeeDevice.setPWMDutyCycle(null, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -79,7 +84,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to -10%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, -10);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_INVALID_VALUE_LOW);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (Exception e) {
 			assertEquals(IllegalArgumentException.class, e.getClass());
@@ -87,7 +92,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 150%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 150);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_INVALID_VALUE_HIGH);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (Exception e) {
 			assertEquals(IllegalArgumentException.class, e.getClass());
@@ -99,7 +104,7 @@ public class LocalPWMHandlingTest {
 				continue;
 			// Set duty cycle of ioLine to 75%.
 			try {
-				xbeeDevice.setPWMDutyCycle(ioLine, 75);
+				xbeeDevice.setPWMDutyCycle(ioLine, DUTY_CYCLE_VALID_VALUE);
 				fail("Duty cycle shouldn't have been set.");
 			} catch (Exception e) {
 				assertEquals(IllegalArgumentException.class, e.getClass());
@@ -118,7 +123,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -129,7 +134,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -152,7 +157,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
@@ -165,7 +170,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
@@ -187,7 +192,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 			fail("Duty cycle shouldn't have been set.");
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
@@ -211,7 +216,7 @@ public class LocalPWMHandlingTest {
 		
 		// Set duty cycle of PWM0 to 75%.
 		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, 75);
+			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 		} catch (InvalidOperatingModeException e) {
 			fail("This exception shouldn't be thrown now.");
 		} catch (XBeeException e) {

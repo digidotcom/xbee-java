@@ -34,6 +34,16 @@ public class InvalidOperatingModeException extends XBeeDeviceException {
 	}
 	
 	/**
+	 * Creates an {@code InvalidOperatingModeException} with the specified
+	 * mode.
+	 * 
+	 * @param mode The unsupported operating mode.
+	 */
+	public InvalidOperatingModeException(OperatingMode mode) {
+		super("Unsupported operating mode: " + mode);
+	}
+	
+	/**
 	 * Creates an {@code InvalidOperatingModeException} with the specified 
 	 * message.
 	 * 

@@ -186,7 +186,7 @@ public class XBeeDevice {
 			throw new InvalidOperatingModeException("Could not determine operating mode.");
 		} else if (operatingMode == OperatingMode.AT) {
 			close();
-			throw new InvalidOperatingModeException("Unsupported operating mode: " + operatingMode);
+			throw new InvalidOperatingModeException(operatingMode);
 		}
 	}
 	
@@ -321,11 +321,12 @@ public class XBeeDevice {
 			throw new NullPointerException("AT command cannot be null.");
 		
 		ATCommandResponse response = null;
-		switch (getOperatingMode()) {
+		OperatingMode operatingMode = getOperatingMode();
+		switch (operatingMode) {
 		case AT:
 		case UNKNOWN:
 		default:
-			throw new InvalidOperatingModeException();
+			throw new InvalidOperatingModeException(operatingMode);
 		case API:
 		case API_ESCAPE:
 			// Create AT command packet
@@ -371,11 +372,12 @@ public class XBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		switch (getOperatingMode()) {
+		OperatingMode operatingMode = getOperatingMode();
+		switch (operatingMode) {
 		case AT:
 		case UNKNOWN:
 		default:
-			throw new InvalidOperatingModeException();
+			throw new InvalidOperatingModeException(operatingMode);
 		case API:
 		case API_ESCAPE:
 			// Build response container.
@@ -516,11 +518,12 @@ public class XBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		switch (getOperatingMode()) {
+		OperatingMode operatingMode = getOperatingMode();
+		switch (operatingMode) {
 		case AT:
 		case UNKNOWN:
 		default:
-			throw new InvalidOperatingModeException();
+			throw new InvalidOperatingModeException(operatingMode);
 		case API:
 		case API_ESCAPE:
 			// Add the required frame ID and subscribe listener if given.

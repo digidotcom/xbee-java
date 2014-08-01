@@ -297,7 +297,7 @@ public class DataReader extends Thread {
 	 * @param packet The received packet.
 	 */
 	private void notifyPacketReceived(final XBeePacket packet) {
-		logger.debug("New packet received: \n{}", packet.toPrettyString());
+		logger.debug("Packet received: \n{}", packet.toPrettyString());
 		
 		try {
 			synchronized (packetReceiveListeners) {

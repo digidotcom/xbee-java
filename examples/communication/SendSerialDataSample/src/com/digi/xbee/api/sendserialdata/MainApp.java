@@ -15,6 +15,8 @@ import java.io.IOException;
 
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
+//TODO Uncomment this import if you are using a 16-bit destination address.
+//import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.utils.HexUtils;
 

@@ -27,6 +27,7 @@ import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
+import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.models.OperatingMode;
@@ -150,10 +151,8 @@ public class XBeeDeviceConnectTest {
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
-		} catch (ConnectionException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeDeviceException e) {
-			// This is the exception we should have received.
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
 		
 		// Verify the device is disconnected.
@@ -177,10 +176,8 @@ public class XBeeDeviceConnectTest {
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
-		} catch (ConnectionException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeDeviceException e) {
-			// This is the exception we should have received.
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
 		
 		// Verify the device is disconnected.
@@ -205,12 +202,8 @@ public class XBeeDeviceConnectTest {
 		try {
 			xbeeDevice.open();
 			fail("Device shouldn't have connected");
-		} catch (TimeoutException e) {
-			// This is the exception we should have received.
-		} catch (ConnectionException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeDeviceException e) {
-			fail("This exception shouldn't be thrown now.");
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 		
 		// Verify the device is disconnected.
@@ -235,10 +228,8 @@ public class XBeeDeviceConnectTest {
 		try {
 			xbeeDevice.open();
 			fail("Device shouldn't have connected");
-		} catch (InterfaceAlreadyOpenException e) {
-			// This is the exception we should have received.
-		} catch (XBeeDeviceException e) {
-			fail("This exception shouldn't be thrown now.");
+		} catch (Exception e) {
+			assertEquals(InterfaceAlreadyOpenException.class, e.getClass());
 		}
 	}
 }

@@ -383,7 +383,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			String myPackage = this.getClass().getPackage().getName();
 			if (requester.startsWith(myPackage))
 				requester = "another AT connection";
-			logger.debug("Connection for port {} canceled due to ownership request from {}.", port, requester);
+			logger.warn("Connection for port {} canceled due to ownership request from {}.", port, requester);
 		}
 	}
 	

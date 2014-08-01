@@ -136,6 +136,8 @@ public class XBeeDevice {
 		
 		this.connectionInterface = connectionInterface;
 		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
+		logger.debug("Using the connection interface {} with the configuration [{}]", 
+				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
 	}
 	
 	/**
@@ -328,12 +330,15 @@ public class XBeeDevice {
 		case API_ESCAPE:
 			// Create AT command packet
 			XBeeAPIPacket packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
-			logger.debug("Sending AT command [{} {}].", command.getCommand(), command.getParameter());
+			if (command.getParameter() == null)
+				logger.debug("Sending AT command '{}'.", command.getCommand());
+			else
+				logger.debug("Sending AT command '{} {}'.", command.getCommand(), HexUtils.prettyHexString(command.getParameter()));
 			try {
 				// Send the packet and build response.
 				ATCommandResponsePacket answerPacket = (ATCommandResponsePacket)sendXBeePacket(packet);
 				response = new ATCommandResponse(command, answerPacket.getCommandData(), answerPacket.getStatus());
-				logger.debug("AT command response: {}.", response.getResponseString());
+				logger.debug("AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
 			} catch (InvalidOperatingModeException e) {
 				logger.error(e.getMessage(), e);
 			} catch (ClassCastException e) {
@@ -396,8 +401,6 @@ public class XBeeDevice {
 			
 			// Add the packet listener to the data reader.
 			dataReader.addPacketReceiveListener(packetReceiveListener);
-			
-			logger.debug("Sending XBee packet: \n{}", packet.toPrettyString());
 			
 			// Write the packet data.
 			writePacket(packet);
@@ -531,8 +534,6 @@ public class XBeeDevice {
 					dataReader.addPacketReceiveListener(packetReceiveListener);
 			}
 			
-			logger.debug("Sending XBee packet: \n{}", packet.toPrettyString());
-			
 			// Write packet data.
 			writePacket(packet);
 			break;
@@ -562,6 +563,7 @@ public class XBeeDevice {
 	 * @throws IOException if an error occurs while writing the XBee packet in the connection interface.
 	 */
 	protected void writePacket(XBeePacket packet) throws IOException {
+		logger.debug("Sending XBee packet: \n{}", packet.toPrettyString());
 		// Write bytes with the required escaping mode.
 		switch (operatingMode) {
 		case API:
@@ -691,7 +693,7 @@ public class XBeeDevice {
 		if (address == null || data == null)
 			throw new NullPointerException("Address and data cannot be null");
 		
-		logger.info("Sending data to {} >> {}.", address, HexUtils.byteArrayToHexString(data));
+		logger.info("Sending serial data to {} >> {}.", address, HexUtils.byteArrayToHexString(data));
 		
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {

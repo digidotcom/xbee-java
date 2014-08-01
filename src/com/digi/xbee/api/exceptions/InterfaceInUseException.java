@@ -13,7 +13,7 @@ package com.digi.xbee.api.exceptions;
 
 /**
  * This exception will be thrown when trying to open the port/interface but
- * it is in used by other applications.
+ * it is in use by other applications.
  */
 public class InterfaceInUseException extends ConnectionException {
 

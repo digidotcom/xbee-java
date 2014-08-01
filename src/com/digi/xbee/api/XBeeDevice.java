@@ -858,7 +858,7 @@ public class XBeeDevice {
 		if (ioMode == null)
 			throw new NullPointerException("IO mode cannot be null.");
 		
-		String atCommand = ioLine.getATCommand();
+		String atCommand = ioLine.getConfigurationATCommand();
 		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
 		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
@@ -881,13 +881,13 @@ public class XBeeDevice {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new XBeeException(XBeeException.CONNECTION_NOT_OPEN);
-		// Check DIO pin.
+		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("DIO pin cannot be null.");
 		
-		String atCommand = ioLine.getATCommand();
-		ATCommandResponse response = sendATCommand(new ATCommand(atCommand));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getConfigurationATCommand()));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
 		
 		int ioModeValue = response.getResponse()[0];
@@ -922,7 +922,7 @@ public class XBeeDevice {
 		if (ioValue == null)
 			throw new NullPointerException("IO value cannot be null.");
 		
-		String atCommand = ioLine.getATCommand();
+		String atCommand = ioLine.getConfigurationATCommand();
 		byte[] valueByte = new byte[]{(byte)ioValue.getID()};
 		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, valueByte));
 		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
@@ -949,8 +949,9 @@ public class XBeeDevice {
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		
-		ATCommandResponse response = sendATCommand(new ATCommand("IS"));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
 		
 		IOSample ioSample = new IOSample(response.getResponse());
@@ -993,7 +994,7 @@ public class XBeeDevice {
 		// Convert the value.
 		int finaldutyCycle = (int)(dutyCycle * 1023.0/100.0);
 		
-		String atCommand = ioLine.getPWMATCommand();
+		String atCommand = ioLine.getPWMDutyCycleATCommand();
 		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
 		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
@@ -1024,9 +1025,10 @@ public class XBeeDevice {
 		if (!ioLine.hasPWMCapability())
 			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
 		
-		String atCommand = ioLine.getPWMATCommand();
+		String atCommand = ioLine.getPWMDutyCycleATCommand();
 		ATCommandResponse response = sendATCommand(new ATCommand(atCommand));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
 		
 		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
@@ -1053,8 +1055,9 @@ public class XBeeDevice {
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		
-		ATCommandResponse response = sendATCommand(new ATCommand("IS"));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
 		
 		IOSample ioSample = new IOSample(response.getResponse());

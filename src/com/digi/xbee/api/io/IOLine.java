@@ -16,18 +16,18 @@ import java.util.HashMap;
 public enum IOLine {
 
 	// Enumeration types.
-	DIO0_AD0("DIO0_AD0", 0, "D0", null),
-	DIO1_AD1("DIO1_AD1", 1, "D1", null),
-	DIO2_AD2("DIO2_AD2", 2, "D2", null),
-	DIO3_AD3("DIO3_AD3", 3, "D3", null),
-	DIO4_AD4("DIO4_AD4", 4, "D4", null),
-	DIO5_AD5("DIO5_AD5", 5, "D5", null),
+	DIO0_AD0("DIO0/AD0", 0, "D0", null),
+	DIO1_AD1("DIO1/AD1", 1, "D1", null),
+	DIO2_AD2("DIO2/AD2", 2, "D2", null),
+	DIO3_AD3("DIO3/AD3", 3, "D3", null),
+	DIO4_AD4("DIO4/AD4", 4, "D4", null),
+	DIO5_AD5("DIO5/AD5", 5, "D5", null),
 	DIO6("DIO6", 6, "D6", null),
 	DIO7("DIO7", 7, "D7", null),
 	DIO8("DIO8", 8, "D8", null),
 	DIO9("DIO9", 9, "D9", null),
-	DIO10_PWM0("DIO10_PWM0", 10, "P0", "M0"),
-	DIO11_PWM1("DIO11_PWM1", 11, "P1", "M1"),
+	DIO10_PWM0("DIO10/PWM0", 10, "P0", "M0"),
+	DIO11_PWM1("DIO11/PWM1", 11, "P1", "M1"),
 	DIO12("DIO12", 12, "P2", null),
 	DIO13("DIO13", 13, "P3", null),
 	DIO14("DIO14", 14, "P4", null),
@@ -36,6 +36,9 @@ public enum IOLine {
 	DIO17("DIO17", 17, "P7", null),
 	DIO18("DIO18", 18, "P8", null),
 	DIO19("DIO19", 19, "P9", null);
+	
+	// Constants.
+	private final static String READ_IO_AT_COMMAND = "IS";
 	
 	// Variables.
 	private final static HashMap <Integer, IOLine> lookupTableIndex = new HashMap<Integer, IOLine>();
@@ -86,11 +89,11 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the AT command associated to the IO line.
+	 * Retrieves the configuration AT command associated to the IO line.
 	 * 
-	 * @return The AT command associated to the IO line.
+	 * @return The configuration AT command associated to the IO line.
 	 */
-	public String getATCommand() {
+	public String getConfigurationATCommand() {
 		return atCommand;
 	}
 	
@@ -108,8 +111,18 @@ public enum IOLine {
 	 * 
 	 * @return The PWM AT command associated to the IO line.
 	 */
-	public String getPWMATCommand() {
+	public String getPWMDutyCycleATCommand() {
 		return atPWMCommand;
+	}
+	
+	/**
+	 * Retrieves the read IO AT command associated to the IO line. 
+	 * By default all the lines will return the same command.
+	 * 
+	 * @return The read IO AT command.
+	 */
+	public String getReadIOATCommand() {
+		return READ_IO_AT_COMMAND;
 	}
 	
 	/**

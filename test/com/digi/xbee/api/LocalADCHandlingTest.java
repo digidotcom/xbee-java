@@ -205,7 +205,7 @@ public class LocalADCHandlingTest {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
-		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[0]);
+		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[1]);
 		
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		

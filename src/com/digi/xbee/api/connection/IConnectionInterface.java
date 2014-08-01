@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.digi.xbee.api.exceptions.ConnectionException;
-import com.digi.xbee.api.exceptions.XBeeDeviceException;
 
 /**
  * This interface represents a protocol independent connection with an XBee device.
@@ -32,9 +31,8 @@ public interface IConnectionInterface {
 	 * Attempts to open the connection interface.
 	 * 
 	 * @throws ConnectionException
-	 * @throws XBeeDeviceException
 	 */
-	public void open() throws ConnectionException, XBeeDeviceException;
+	public void open() throws ConnectionException;
 	
 	/**
 	 * Attempts to close the connection interface.

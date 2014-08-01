@@ -179,7 +179,7 @@ public class XBeePacketParser {
 			} catch (InterruptedException e) {}
 		}
 		if (b == -1)
-			throw new InvalidPacketException("Read -1 from stream.");
+			throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
 		if (mode == OperatingMode.API_ESCAPE) {
 			// Check if the byte is special.
 			if (SpecialByte.isSpecialByte(b)) {
@@ -196,11 +196,11 @@ public class XBeePacketParser {
 						} catch (InterruptedException e) {}
 					}
 					if (b == -1)
-						throw new InvalidPacketException("Read -1 from stream.");
+						throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
 					b ^= 0x20;
 				} else {
-					// TODO: Log some kind of information here when logging is implemented.
-					// This should NEVER not occur!
+					throw new InvalidPacketException("Expecting a " + SpecialByte.ESCAPE_BYTE.getValue() + ", but got " + b);
+					// This should NEVER occur!
 					// rebootTheMatrix();
 				}
 			}
@@ -238,7 +238,7 @@ public class XBeePacketParser {
 			while (new Date().getTime() < deadline) {
 				currentRead =  inputStream.read(data, numBytesRead, numBytes - numBytesRead);
 				if (currentRead == -1)
-					throw new InvalidPacketException("Read -1 from stream.");
+					throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
 				numBytesRead = numBytesRead + currentRead;
 				if (numBytesRead < numBytes) {
 					try {

@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
-import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 public abstract class AbstractSerialPort implements IConnectionInterface {
@@ -147,7 +146,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public abstract void open() throws ConnectionException, XBeeDeviceException;
+	public abstract void open() throws ConnectionException;
 	
 	/*
 	 * (non-Javadoc)
@@ -471,9 +470,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 					|| parameters.flowControl == 8
 					|| parameters.flowControl == 12)
 				flowControl = "S";
-			return port + " - " + baudRate + "/" + parameters.dataBits + 
-					"/"  + parity + "/" + parameters.stopBits + "/" + flowControl;
+			return "[" + port + " - " + baudRate + "/" + parameters.dataBits + 
+					"/"  + parity + "/" + parameters.stopBits + "/" + flowControl + "] ";
 		} else
-			return port + " - " + baudRate + "/8/N/1/N";
+			return "[" + port + " - " + baudRate + "/8/N/1/N] ";
 	}
 }

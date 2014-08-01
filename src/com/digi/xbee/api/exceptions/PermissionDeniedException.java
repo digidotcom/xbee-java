@@ -13,19 +13,20 @@ package com.digi.xbee.api.exceptions;
 
 /**
  * This exception will be thrown when the user does not have the appropriate
- * access to the interface.
+ * access to the connection interface.
  */
 public class PermissionDeniedException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "You don't have the required permissions to access the connection interface.";
 
 	/**
-	 * Creates a {@code PermissionDeniedException} with {@code null} as its 
-	 * error detail message.
+	 * Creates a {@code PermissionDeniedException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public PermissionDeniedException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

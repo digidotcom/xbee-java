@@ -19,13 +19,14 @@ public class InterfaceAlreadyOpenException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The connection interface is already open.";
 
 	/**
-	 * Creates an {@code InterfaceAlreadyOpenedException} with {@code null} as 
-	 * its error detail message.
+	 * Creates an {@code InterfaceAlreadyOpenedException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public InterfaceAlreadyOpenException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

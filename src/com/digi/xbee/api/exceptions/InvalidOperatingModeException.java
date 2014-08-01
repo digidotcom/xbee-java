@@ -23,13 +23,14 @@ public class InvalidOperatingModeException extends XBeeDeviceException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The operating mode of the XBee device is not supported by the library.";
 
 	/**
-	 * Creates an {@code InvalidOperatingModeException} with {@code null} as its 
-	 * error detail message.
+	 * Creates an {@code InvalidOperatingModeException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public InvalidOperatingModeException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

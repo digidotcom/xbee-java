@@ -133,7 +133,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public void open() throws InvalidInterfaceException, InterfaceInUseException, OperationNotSupportedException, InvalidConfigurationException {
+	public void open() throws InvalidInterfaceException, InterfaceInUseException, InvalidConfigurationException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
@@ -164,9 +164,9 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			// Register serial port event listener to be notified when data is available.
 			serialPort.addEventListener(this);
 		} catch (PortInUseException e) {
-			throw new InterfaceInUseException("Port in use: " + port);
+			throw new InterfaceInUseException("Port " + port + " is already in use by other application(s)");
 		} catch (UnsupportedCommOperationException e) {
-			throw new OperationNotSupportedException(e.getMessage());
+			throw new InvalidConfigurationException(e.getMessage());
 		} catch (TooManyListenersException e) {
 			throw new InvalidConfigurationException(e.getMessage());
 		}

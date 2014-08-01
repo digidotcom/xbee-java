@@ -19,13 +19,14 @@ public class TimeoutException extends CommunicationException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "There was a timeout while executing the requested operation.";
 
 	/**
-	 * Creates a {@code TimeoutException} with {@code null} as its error detail 
-	 * message.
+	 * Creates a {@code TimeoutException} with {@value #DEFAULT_MESSAGE} as its 
+	 * error detail message.
 	 */
 	public TimeoutException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

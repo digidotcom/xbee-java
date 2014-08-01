@@ -19,13 +19,14 @@ public class OperationNotSupportedException extends XBeeDeviceException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The requested operation is not supported by either the connection interface or the XBee device.";
 
 	/**
-	 * Creates an {@code OperationNotSupportedException} with {@code null} as 
-	 * its error detail message.
+	 * Creates an {@code OperationNotSupportedException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public OperationNotSupportedException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

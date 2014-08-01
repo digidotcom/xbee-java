@@ -19,13 +19,14 @@ public class InterfaceInUseException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The connection interface is already in use by other application(s).";
 	
 	/**
-	 * Creates an {@code InterfaceInUseException} with {@code null} as its error 
-	 * detail message.
+	 * Creates an {@code InterfaceInUseException} with {@value #DEFAULT_MESSAGE} 
+	 * as its error detail message.
 	 */
 	public InterfaceInUseException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

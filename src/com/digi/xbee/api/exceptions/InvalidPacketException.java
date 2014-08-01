@@ -19,13 +19,14 @@ public class InvalidPacketException extends CommunicationException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The XBee API packet is not properly formed.";
 
 	/**
-	 * Creates a {@code InvalidPacketException} with {@code null} as its error 
-	 * detail message.
+	 * Creates a {@code InvalidPacketException} with {@value #DEFAULT_MESSAGE} 
+	 * as its error detail message.
 	 */
 	public InvalidPacketException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

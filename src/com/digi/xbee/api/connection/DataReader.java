@@ -166,7 +166,7 @@ public class DataReader extends Thread {
 	 * @see java.lang.Thread#run()
 	 */
 	public void run() {
-		logger.debug("Data reader started.");
+		logger.debug(connectionInterface.toString() + "Data reader started.");
 		running = true;
 		try {
 			synchronized (connectionInterface) {
@@ -271,7 +271,8 @@ public class DataReader extends Thread {
 	 * @param data The received data.
 	 */
 	private void notifySerialDataReceived(final String address, final byte[] data) {
-		logger.info("Serial data received from {} >> {}.", address, HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
+		logger.info(connectionInterface.toString() + 
+				"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		
 		try {
 			synchronized (serialDataReceiveListeners) {
@@ -297,7 +298,7 @@ public class DataReader extends Thread {
 	 * @param packet The received packet.
 	 */
 	private void notifyPacketReceived(final XBeePacket packet) {
-		logger.debug("Packet received: \n{}", packet.toPrettyString());
+		logger.debug(connectionInterface.toString() + "Packet received: \n{}", packet.toPrettyString());
 		
 		try {
 			synchronized (packetReceiveListeners) {
@@ -344,6 +345,6 @@ public class DataReader extends Thread {
 		synchronized (connectionInterface) {
 			connectionInterface.notify();
 		}
-		logger.debug("Data reader stopped.");
+		logger.debug(connectionInterface.toString() + "Data reader stopped.");
 	}
 }

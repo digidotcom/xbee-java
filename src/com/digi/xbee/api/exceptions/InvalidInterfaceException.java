@@ -18,13 +18,14 @@ public class InvalidInterfaceException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The connection interface you are trying to access is invalid or does not exist.";
 
 	/**
-	 * Creates an {@code InvalidInterfaceException} with {@code null} as its 
-	 * error detail message.
+	 * Creates an {@code InvalidInterfaceException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public InvalidInterfaceException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**

@@ -1030,7 +1030,7 @@ public class XBeeDevice {
 			throw new XBeeException(XBeeException.INVALID_OPERATION);
 		
 		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
-		return readValue * 100.0/1023.0;
+		return Math.round((readValue * 100.0/1023.0) * 100.0) / 100.0;
 	}
 	
 	/**

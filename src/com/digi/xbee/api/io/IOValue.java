@@ -11,6 +11,9 @@
 */
 package com.digi.xbee.api.io;
 
+/**
+ * Enumerates the possible values of a {@code IOLine} configured as digital I/O.
+ */
 public enum IOValue {
 
 	// Enumeration types.
@@ -55,6 +58,7 @@ public enum IOValue {
 	 * (non-Javadoc)
 	 * @see java.lang.Enum#toString()
 	 */
+	@Override
 	public String toString() {
 		return name;
 	}

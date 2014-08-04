@@ -20,47 +20,51 @@ import com.digi.xbee.api.utils.ByteUtils;
  * This class represents an IO Data Sample. The sample is built using the parameters of 
  * the constructor.
  * 
- * Digital Channel Mask
- * ------------------------------------------------------------------
- * Indicates which digital IO lines are configured in the module. Each
- * bit corresponds to one digital IO line on the module:
- * 
- * 		bit 0 =  DIO0/AD0 
- * 		bit 1 =  DIO1/AD1 
- * 		bit 2 =  DIO2/AD2
- * 		bit 3 =  DIO3/AD3
- * 		bit 4 =  DIO4/AD4
- * 		bit 5 =  DIO5/AD5/ASSOC
- * 		bit 6 =  DIO6/RTS
- * 		bit 7 =  DIO7/CTS
- * 		bit 8 =  DIO8/DTR/SLEEP_RQ 
- * 		bit 9 =  DIO9/ON_SLEEP 
- * 		bit 10 = DIO10/PWM0/RSSI
- * 		bit 11 = DIO11/PWM1
- * 		bit 12 = DIO12/CD
- * 		bit 13 = DIO13
- * 		bit 14 = DIO14
- * 		bit 15 = N/A
- * 
- * 		Example: mask of 0x040B means DIO0, DIO1, DIO2, DIO3 and DIO10 enabled.
- * 		0 0 0 0 0 1 0 0 0 0 0 0 1 0 1 1
- * 
- * Analog Channel Mask
- * -----------------------------------------------------------------------
- * Indicates which lines are configured as ADC. Each bit in the analog channel 
- * mask corresponds to one ADC line on the module.
- * 
- * 		bit 0 = AD0/DIO0
- * 		bit 1 = AD1/DIO1
- * 		bit 2 = AD2/DIO2
- * 		bit 3 = AD3/DIO3
- * 		bit 4 = AD4/DIO4
- * 		bit 5 = AD5/DIO5/ASSOC
- * 		bit 6 = N/A
- * 		bit 7 = Supply Voltage Value
- * 
- * 		Example: mask of 0x83 means AD0, and AD1 enabled.
- * 		0 0 0 0 0 0 1 1
+ * <p>Digital Channel Mask</p>
+ * <p>------------------------------------------------------------------</p>
+ * <p>Indicates which digital IO lines are configured in the module. Each
+ * bit corresponds to one digital IO line on the module:</p>
+ * <br>
+ * <BLOCKQUOTE>
+ *      <p>bit 0 =  DIO0/AD0</p>
+ *      <p>bit 1 =  DIO1/AD1</p> 
+ *      <p>bit 2 =  DIO2/AD2</p>
+ *      <p>bit 3 =  DIO3/AD3</p>
+ *      <p>bit 4 =  DIO4/AD4</p>
+ *      <p>bit 5 =  DIO5/AD5/ASSOC</p>
+ *      <p>bit 6 =  DIO6/RTS</p>
+ *      <p>bit 7 =  DIO7/CTS</p>
+ *      <p>bit 8 =  DIO8/DTR/SLEEP_RQ</p>
+ *      <p>bit 9 =  DIO9/ON_SLEEP</p>
+ *      <p>bit 10 = DIO10/PWM0/RSSI</p>
+ *      <p>bit 11 = DIO11/PWM1</p>
+ *      <p>bit 12 = DIO12/CD</p>
+ *      <p>bit 13 = DIO13</p>
+ *      <p>bit 14 = DIO14</p>
+ *      <p>bit 15 = N/A</p>
+ * <br>
+ *      <p>Example: mask of {@code 0x040B} means DIO0, DIO1, DIO2, DIO3 and DIO10 enabled.</p>
+ *      <p>0 0 0 0 0 1 0 0 0 0 0 0 1 0 1 1</p>
+ * <br><br>
+ * </BLOCKQUOTE>
+ * <p>Analog Channel Mask</p>
+ * <p>-----------------------------------------------------------------------</p>
+ * <p>Indicates which lines are configured as ADC. Each bit in the analog channel 
+ * mask corresponds to one ADC line on the module.</p>
+ * <br>
+ * <BLOCKQUOTE>
+ *      <p>bit 0 = AD0/DIO0</p>
+ *      <p>bit 1 = AD1/DIO1</p>
+ *      <p>bit 2 = AD2/DIO2</p>
+ *      <p>bit 3 = AD3/DIO3</p>
+ *      <p>bit 4 = AD4/DIO4</p>
+ *      <p>bit 5 = AD5/DIO5/ASSOC</p>
+ *      <p>bit 6 = N/A</p>
+ *      <p>bit 7 = Supply Voltage Value</p>
+ * <br>
+ *      <p>Example: mask of {@code 0x83} means AD0, and AD1 enabled.</p>
+ *      <p>0 0 0 0 0 0 1 1</p>
+ * </BLOCKQUOTE>
  */
 public class IOSample {
 	
@@ -161,6 +165,9 @@ public class IOSample {
 	 * Retrieves the HSB of the digital mask.
 	 * 
 	 * @return HSB of the digital mask.
+	 * 
+	 * @see #getDigitalLSBMask()
+	 * @see #getDigitalMask()
 	 */
 	public int getDigitalHSBMask() {
 		return digitalHSBMask;
@@ -170,6 +177,9 @@ public class IOSample {
 	 * Retrieves the LSB of the digital mask.
 	 * 
 	 * @return LSB of the digital mask.
+	 * 
+	 * @see #getDigitalHSBMask()
+	 * @see #getDigitalMask()
 	 */
 	public int getDigitalLSBMask() {
 		return digitalLSBMask;
@@ -179,15 +189,18 @@ public class IOSample {
 	 * Retrieves the combined (HSB + LSB) digital mask.
 	 * 
 	 * @return The combined digital mask.
+	 * 
+	 * @see #getDigitalLSBMask()
+	 * @see #getDigitalHSBMask()
 	 */
 	public int getDigitalMask() {
 		return digitalMask;
 	}
 	
 	/**
-	 * Checks whether or not the IOSample has digital values.
-	 *  
-	 * @return True if there are digital values, false otherwise.
+	 * Checks whether or not the {@code IOSample} has digital values.
+	 * 
+	 * @return {@code true} if there are digital values, {@code false} otherwise.
 	 */
 	public boolean hasDigitalValues() {
 		return digitalValuesMap.size() > 0;
@@ -208,8 +221,9 @@ public class IOSample {
 	/**
 	 * Retrieves the digital values map.
 	 * 
-	 * @return HashMap with the digital value of each configured IO line.
+	 * @return {@code HashMap} with the digital value of each configured IO line.
 	 * 
+	 * @see #getDigitalValue(IOLine)
 	 * @see IOLine
 	 * @see IOValue
 	 */
@@ -244,9 +258,12 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves whether or not the IOSample has analog values.
+	 * Retrieves whether or not the {@code IOSample} has analog values.
 	 *  
-	 * @return True if there are analog values, false otherwise.
+	 * @return {@code true} if there are analog values, {@code false} otherwise.
+	 * 
+	 * @see #getAnalogValues()
+	 * @see IOLine
 	 */
 	public boolean hasAnalogValues() {
 		return analogValuesMap.size() > 0;
@@ -267,7 +284,11 @@ public class IOSample {
 	/**
 	 * Retrieves the analog values map.
 	 * 
-	 * @return HashMap with the analog value of each configured IO line.
+	 * @return {@code HashMap} with the analog value of each configured IO line.
+	 * 
+	 * @see #hasAnalogValues()
+	 * @see #getAnalogValue()
+	 * @see IOLine
 	 */
 	public HashMap<IOLine, Integer> getAnalogValues() {
 		return analogValuesMap;

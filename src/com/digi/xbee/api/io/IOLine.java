@@ -13,6 +13,12 @@ package com.digi.xbee.api.io;
 
 import java.util.HashMap;
 
+/**
+ * Enumerates the different IO lines that can be found in the XBee devices. Depending on 
+ * the hardware and firmware of the device, the number of lines that it contains as well as 
+ * their functionality may vary. Refer to the product manual to learn more about the IO lines 
+ * of your XBee device.
+ */
 public enum IOLine {
 
 	// Enumeration types.
@@ -135,5 +141,14 @@ public enum IOLine {
 		if (lookupTableIndex.containsKey(index))
 			return lookupTableIndex.get(index);
 		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
+	@Override
+	public String toString() {
+		return name;
 	}
 }

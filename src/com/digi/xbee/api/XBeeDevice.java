@@ -845,6 +845,7 @@ public class XBeeDevice {
 	 * @throws NullPointerException if {@code ioLine == null} or
 	 *                              if {@code ioMode == null}.
 	 * 
+	 * @see #getIOConfiguration(IOLine)
 	 * @see IOLine
 	 * @see IOMode
 	 */
@@ -874,6 +875,7 @@ public class XBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode
 	 */
@@ -901,15 +903,18 @@ public class XBeeDevice {
 	 * Sets the digital value (high or low) to the provided IO line.
 	 * 
 	 * @param ioLine The IO line to set its value.
-	 * @param value The IOValue to set to the IO line (HIGH or LOW).
+	 * @param value The IOValue to set to the IO line ({@code HIGH} or {@code LOW}).
 	 * @throws InvalidOperatingModeException
 	 * @throws XBeeException
 	 * 
 	 * @throws NullPointerException if {@code ioLine == null} or 
 	 *                              if {@code ioValue == null}.
 	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOValue
+	 * @see IOMode.DIGITAL_OUT_HIGH
+	 * @see IOMode.DIGITAL_OUT_LOW
 	 */
 	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
@@ -939,7 +944,11 @@ public class XBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
+	 * @see IOMode.DIGITAL_IN
+	 * @see IOMode.DIGITAL_OUT_HIGH
+	 * @see IOMode.DIGITAL_OUT_LOW
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
@@ -962,8 +971,10 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sets the duty cycle (in %) of the provided IO line. IO line must be PWM capable and it must 
-	 * be configured as PWM Output.
+	 * Sets the duty cycle (in %) of the provided IO line. 
+	 * 
+	 * <p>IO line must be PWM capable({@code hasPWMCapability()}) and 
+     * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
 	 * 
 	 * @param ioLine The IO line to set its duty cycle value.
 	 * @param value The duty cycle of the PWM. 
@@ -975,7 +986,9 @@ public class XBeeDevice {
 	 *                                  if {@code value < 0} or
 	 *                                  if {@code value > 1023}.
 	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
+	 * @see IOMode.PWM
 	 */
 	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
@@ -1001,8 +1014,10 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Gets the PWM duty cycle (in %) corresponding to the provided IO line. IO line must be PWM 
-	 * capable and it must be configured as PWM Output.
+	 * Gets the PWM duty cycle (in %) corresponding to the provided IO line.
+	 * 
+	 * <p>IO line must be PWM capable ({@code hasPWMCapability()}) and 
+	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
 	 * 
 	 * @param ioLine The IO line to get its PWM duty cycle.
 	 * @return The PWM duty cycle value corresponding to the provided IO line (0% - 100%).
@@ -1012,7 +1027,9 @@ public class XBeeDevice {
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
 	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
+	 * @see IOMode.PWM
 	 */
 	public double getPWMDutyCycle(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.
@@ -1045,7 +1062,9 @@ public class XBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
+	 * @see IOMode.ADC
 	 */
 	public int getADCValue(IOLine ioLine) throws InvalidOperatingModeException, XBeeException {
 		// Check connection.

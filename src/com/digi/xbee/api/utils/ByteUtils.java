@@ -225,7 +225,7 @@ public class ByteUtils {
 	 * 
 	 * @param containerInteger Integer to check bit position enablement.
 	 * @param bitPosition Position of the bit to check in the integer.
-	 * @return True if the given bit position is set to 1 in the integer, false otherwise.
+	 * @return {@code true} if the given bit position is set to {@code 1} in the {@code containerInteger}, {@code false} otherwise.
 	 */
 	public static boolean isBitEnabled(int containerInteger, int bitPosition) {
 		return (((containerInteger & 0xFFFFFFFF) >> bitPosition) & 0x01) == 0x01;

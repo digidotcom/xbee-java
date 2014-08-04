@@ -11,8 +11,6 @@
 */
 package com.digi.xbee.api.models;
 
-import com.digi.xbee.api.utils.HexUtils;
-
 /**
  * This class represents the response of an AT Command sent from the
  * connected XBee device or from a remote device after executing an

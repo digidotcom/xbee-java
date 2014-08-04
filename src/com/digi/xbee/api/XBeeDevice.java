@@ -225,8 +225,8 @@ public class XBeeDevice {
 	 * 
 	 * @return The operating mode of the XBee device.
 	 * 
-	 * @throws TimeoutException if the configured time expires.
 	 * @throws InterfaceNotOpenException if the interface is not open.
+	 * @throws TimeoutException if the configured time expires.
 	 * 
 	 * @see OperatingMode
 	 */
@@ -243,7 +243,7 @@ public class XBeeDevice {
 				logger.debug(toString() + "Using {}.", operatingMode.getName());
 				return operatingMode;
 			}
-			if (e.getErrorCode() == XBeeException.CONNECTION_TIMEOUT) {
+		} catch (TimeoutException e) {
 				// Check if device is in AT operating mode.
 				operatingMode = OperatingMode.AT;
 				dataReader.setXBeeReaderMode(operatingMode);
@@ -257,15 +257,11 @@ public class XBeeDevice {
 					if (success)
 						return OperatingMode.AT;
 				} catch (InvalidOperatingModeException e1) {
-					// TODO Log this exception.
-				} catch (XBeeException e1) {
-					// TODO Log this exception
-				} catch (InterruptedException e2) {
-					// TODO Log this exception
+					logger.error(e1.getMessage(), e1);
+				} catch (InterruptedException e1) {
+					logger.error(e1.getMessage(), e1);
 				}
-			}
 		} catch (InvalidOperatingModeException e) {
-			// TODO Log this exception.
 			logger.error("Invalid operating mode", e);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
@@ -277,10 +273,11 @@ public class XBeeDevice {
 	 * Attempts to put the device in AT Command mode. Only valid if device is working in AT mode.
 	 * 
 	 * @return {@code true} if the device entered in AT command mode, {@code false} otherwise.
-	 * @throws XBeeException
-	 * @throws InvalidModeException 
+	 * 
+	 * @throws InvalidOperatingModeException if the operating mode cannot be determined or is not supported.
+	 * @throws TimeoutException if the configured time expires.
 	 */
-	public boolean enterATCommandMode() throws InvalidOperatingModeException, XBeeException {
+	public boolean enterATCommandMode() throws InvalidOperatingModeException, TimeoutException {
 		if (operatingMode != OperatingMode.AT)
 			throw new InvalidOperatingModeException("Invalid mode. Command mode can only be accesses while in AT mode.");
 		
@@ -298,7 +295,7 @@ public class XBeeDevice {
 			// Read data from the device (it should answer with 'OK\r').
 			int readBytes = connectionInterface.readData(readData);
 			if (readBytes < COMMAND_MODE_OK.length())
-				throw new XBeeException(XBeeException.CONNECTION_TIMEOUT);
+				throw new TimeoutException();
 			
 			// Check if the read data is 'OK\r'.
 			String readString = new String(readData, 0, readBytes);
@@ -308,9 +305,9 @@ public class XBeeDevice {
 			// Read data was 'OK\r'.
 			return true;
 		} catch (IOException e) {
-			// TODO Log this exception.
+			logger.error(e.getMessage(), e);
 		} catch (InterruptedException e) {
-			// TODO Log this exception.
+			logger.error(e.getMessage(), e);
 		}
 		return false;
 	}

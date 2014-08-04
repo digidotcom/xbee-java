@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -26,6 +29,8 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	// Variables.
 	byte[] rfData;
 	
+	private Logger logger;
+	
 	/**
 	 * Class constructor. Instances an XBee packet with the given packet data.
 	 * 
@@ -34,6 +39,7 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	public GenericXBeePacket(byte[] rfData) {
 		super(APIFrameType.GENERIC);
 		this.rfData = rfData;
+		this.logger = LoggerFactory.getLogger(GenericXBeePacket.class);
 	}
 	
 	/*
@@ -46,8 +52,7 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
-			// TODO: Log this exception.
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return data.toByteArray();
 	}

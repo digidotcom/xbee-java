@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
@@ -23,7 +26,7 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a ZigBee Transmit Request packet. Packet is built
+ * This class represents a Transmit Packet. Packet is built
  * using the parameters of the constructor.
  * 
  * A Transmit Request API frame causes the module to send data as an RF packet to the specified destination.
@@ -57,8 +60,10 @@ public class TransmitPacket extends XBeeAPIPacket {
 	
 	private byte[] rfData;
 	
+	private Logger logger;
+	
 	/**
-	 * Class constructor. Instances a new object of type ZigBeeTransmitRequest with
+	 * Class constructor. Instances a new object of type TransmitPacket with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.
@@ -99,6 +104,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 		this.broadcastRadius = broadcastRadius;
 		this.transmitOptions = transmitOptions;
 		this.rfData = rfData;
+		this.logger = LoggerFactory.getLogger(TransmitPacket.class);
 	}
 
 	/*
@@ -116,7 +122,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return data.toByteArray();
 	}

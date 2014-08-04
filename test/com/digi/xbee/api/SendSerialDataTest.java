@@ -22,8 +22,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
-import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
-import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -164,38 +164,29 @@ public class SendSerialDataTest {
 		PowerMockito.doReturn(XBeeProtocol.RAW_802_15_4).when(xbeeDevice, "getXBeeProtocol");
 		
 		// Throw a timeout exception when sending the mocked tx16Packet or tx64Packet packets.
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "sendXBeePacket", tx16Packet);
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "sendXBeePacket", tx64Packet);
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, "sendXBeePacket", tx16Packet);
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, "sendXBeePacket", tx64Packet);
 		
 		// Send serial data using the 16-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx16 frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a timeout exception.
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a timeout exception.
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a timeout exception.
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 	}
 	
@@ -218,31 +209,22 @@ public class SendSerialDataTest {
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx16 frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a connection closed exception.
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a connection closed exception.
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a connection closed exception.
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
 	}
 	
@@ -308,37 +290,28 @@ public class SendSerialDataTest {
 		PowerMockito.doReturn(XBeeProtocol.ZIGBEE).when(xbeeDevice, "getXBeeProtocol");
 		
 		// Throw a timeout exception when sending the mocked transmitPacket packet.
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "sendXBeePacket", transmitPacket);
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, "sendXBeePacket", transmitPacket);
 		
 		// Send serial data using the 16-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a timeout exception.
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a timeout exception.
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a timeout exception.
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 	}
 	
@@ -362,31 +335,22 @@ public class SendSerialDataTest {
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a connection closed exception.
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a connection closed exception.
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received a connection closed exception.
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
 	}
 	
@@ -402,41 +366,29 @@ public class SendSerialDataTest {
 		try {
 			xbeeDevice.sendSerialData((XBee16BitAddress)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received an invalid argument exception.
-			assertEquals(XBeeException.INVALID_ARGUMENT, e.getErrorCode());
-		}
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
 		// Try to send serial data with a null 64-bit address.
 		try {
 			xbeeDevice.sendSerialData((XBee64BitAddress)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received an invalid argument exception.
-			assertEquals(XBeeException.INVALID_ARGUMENT, e.getErrorCode());
-		}
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
 		// Try to send serial data with a null XBeeDevice.
 		try {
 			xbeeDevice.sendSerialData((XBeeDevice)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received an invalid argument exception.
-			assertEquals(XBeeException.INVALID_ARGUMENT, e.getErrorCode());
-		}
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
 		// Try to send serial data with null data.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, null);
 			fail("Serial data shouldn't have been sent successfully.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			// Verify that we have received an invalid argument exception.
-			assertEquals(XBeeException.INVALID_ARGUMENT, e.getErrorCode());
-		}
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
 	}
 }

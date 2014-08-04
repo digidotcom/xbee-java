@@ -33,10 +33,13 @@ public class ATCommand {
 	 * @param command The AT Command.
 	 * 
 	 * @throws NullPointerException if {@code command == null}.
+	 * @throws IllegalArgumentException if {@code command.length() != 2}.
 	 */
 	public ATCommand(String command) {
 		if (command == null)
 			throw new NullPointerException("Command cannot be null.");
+		if (command.length() != 2)
+			throw new IllegalArgumentException("Command lenght must be 2.");
 		
 		this.command = command;
 		this.parameter = null;
@@ -50,10 +53,13 @@ public class ATCommand {
 	 * @param parameter The command parameter as string, null if no parameter is required.
 	 * 
 	 * @throws NullPointerException if {@code command == null}.
+	 * @throws IllegalArgumentException if {@code command.length() != 2}.
 	 */
 	public ATCommand(String command, String parameter) {
 		if (command == null)
 			throw new NullPointerException("Command cannot be null.");
+		if (command.length() != 2)
+			throw new IllegalArgumentException("Command lenght must be 2.");
 		
 		this.command = command;
 		if (parameter != null)
@@ -68,10 +74,13 @@ public class ATCommand {
 	 * @param parameter The command parameter as byte array, null if no parameter is required.
 	 * 
 	 * @throws NullPointerException if {@code command == null}.
+	 * @throws IllegalArgumentException if {@code command.length() != 2}.
 	 */
 	public ATCommand(String command, byte[] parameter) {
 		if (command == null)
 			throw new NullPointerException("Command cannot be null.");
+		if (command.length() != 2)
+			throw new IllegalArgumentException("Command lenght must be 2.");
 		
 		this.command = command;
 		this.parameter = parameter;

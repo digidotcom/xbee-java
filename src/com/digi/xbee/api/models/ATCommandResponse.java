@@ -11,8 +11,6 @@
 */
 package com.digi.xbee.api.models;
 
-import com.digi.xbee.api.utils.HexUtils;
-
 /**
  * This class represents the response of an AT Command sent from the
  * connected XBee device or from a remote device after executing an
@@ -29,6 +27,32 @@ public class ATCommandResponse {
 	private final byte[] response;
 	
 	private final ATCommandStatus status;
+	
+	/**
+	 * Class constructor. Instances a new object of type ATCommandResponse
+	 * with the given parameters.
+	 * 
+	 * @param command The AT command which generated the response.
+	 * 
+	 * @throws NullPointerException if {@code command == null}.
+	 */
+	public ATCommandResponse(ATCommand command) {
+		this(command, null, ATCommandStatus.OK);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type ATCommandResponse
+	 * with the given parameters.
+	 * 
+	 * @param command The AT command which generated the response.
+	 * @param status Response status.
+	 * 
+	 * @throws NullPointerException if {@code command == null} or 
+	 *                              if {@code status == null}..
+	 */
+	public ATCommandResponse(ATCommand command, ATCommandStatus status) {
+		this(command, null, status);
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type ATCommandResponse
@@ -94,7 +118,7 @@ public class ATCommandResponse {
 	public String getResponseString() {
 		if (response == null)
 			return null;
-		return HexUtils.byteArrayToHexString(response).replace("\n", "");
+		return new String(response);
 	}
 	
 	/**

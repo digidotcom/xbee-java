@@ -13,7 +13,7 @@ package com.digi.xbee.api.io;
 
 import java.util.HashMap;
 
-import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.utils.ByteUtils;
 
 /**
@@ -323,11 +323,11 @@ public class IOSample {
 	 * Retrieves the value of the power supply voltage.
 	 * 
 	 * @return The value of the power supply voltage.
-	 * @throws XBeeException if the IOSample does not have power supply value.
+	 * @throws OperationNotSupportedException if the IOSample does not have power supply value.
 	 */
-	public int getPowerSupplyValue() throws XBeeException {
+	public int getPowerSupplyValue() throws OperationNotSupportedException {
 		if (!ByteUtils.isBitEnabled(analogMask, 7))
-			throw new XBeeException(XBeeException.INVALID_OPERATION);
+			throw new OperationNotSupportedException();
 		return powerSupplyVoltage;
 	}
 }

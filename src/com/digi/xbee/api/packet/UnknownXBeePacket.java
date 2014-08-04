@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -26,6 +29,8 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	// Variables
 	protected byte[] rfData;
 	
+	private Logger logger;
+	
 	/**
 	 * Class constructor. Instances an XBee packet with the given packet data.
 	 * 
@@ -35,6 +40,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	public UnknownXBeePacket(int apiIDValue, byte[] rfData) {
 		super(apiIDValue);
 		this.rfData = rfData;
+		this.logger = LoggerFactory.getLogger(UnknownXBeePacket.class);
 	}
 	
 	/*
@@ -47,8 +53,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 			if (rfData != null)
 				data.write(rfData);
 		} catch (IOException e) {
-			// TODO: Log this exception.
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return data.toByteArray();
 	}

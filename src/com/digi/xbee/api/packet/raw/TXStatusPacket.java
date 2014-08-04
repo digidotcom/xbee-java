@@ -24,7 +24,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	private final XBeeTransmitStatus transmitStatus;
 	
 	/**
-	 * Class constructor. Instances a new object of type TransmitStatusPacket with
+	 * Class constructor. Instances a new object of type TXStatusPacket with
 	 * the given parameters.
 	 * 
 	 * @param frameID Packet frame ID.

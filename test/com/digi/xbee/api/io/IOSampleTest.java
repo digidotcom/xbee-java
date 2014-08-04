@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 
 public class IOSampleTest {
 
@@ -149,10 +149,10 @@ public class IOSampleTest {
 	 * Verify that power supply value not retrieved from the sample when it 
 	 * only contains digital information.
 	 * 
-	 * @throws XBeeException 
+	 * @throws OperationNotSupportedException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testGetPowerSupplyValueFromDigitalData() throws XBeeException {
+	@Test(expected=OperationNotSupportedException.class)
+	public void testGetPowerSupplyValueFromDigitalData() throws OperationNotSupportedException {
 		// Create an IO sample with the analog data.
 		IOSample ioSample = new IOSample(IO_DATA_ONLY_DIGITAL);
 		
@@ -233,10 +233,10 @@ public class IOSampleTest {
 	 * Verify that power supply value is successfully parsed and stored in the sample 
 	 * when it only contains analog and power supply information.
 	 * 
-	 * @throws XBeeException 
+	 * @throws OperationNotSupportedException 
 	 */
 	@Test
-	public void testGetPowerSupplyValueFromAnalogData() throws XBeeException {
+	public void testGetPowerSupplyValueFromAnalogData() throws OperationNotSupportedException {
 		// Create an IO sample with the analog data.
 		IOSample ioSample = new IOSample(IO_DATA_ONLY_ANALOG);
 		
@@ -332,10 +332,10 @@ public class IOSampleTest {
 	 * Verify that power supply value is successfully parsed and stored in the sample 
 	 * when it contains digital, analog and power supply information.
 	 * 
-	 * @throws XBeeException 
+	 * @throws OperationNotSupportedException 
 	 */
 	@Test
-	public void testGetPowerSupplyValueFromMixedData() throws XBeeException {
+	public void testGetPowerSupplyValueFromMixedData() throws OperationNotSupportedException {
 		// Create an IO sample with mixed (digital + analog) data.
 		IOSample ioSample = new IOSample(IO_DATA_MIXED);
 		

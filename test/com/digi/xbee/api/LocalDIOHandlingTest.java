@@ -13,6 +13,7 @@ package com.digi.xbee.api;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.junit.Before;
@@ -24,7 +25,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
+import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOSample;
@@ -57,10 +61,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the connection is closed.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testSetDIOConnectionClosed() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=InterfaceNotOpenException.class)
+	public void testSetDIOConnectionClosed() throws XBeeException, IOException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
@@ -72,10 +76,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the IO line is null.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testSetDIOWithValueNullIOLine() throws InvalidOperatingModeException, XBeeException {
+	public void testSetDIOWithValueNullIOLine() throws XBeeException, IOException {
 		// Set a null IO line.
 		xbeeDevice.setDIOValue(null, IOValue.HIGH);
 	}
@@ -84,10 +88,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the IO value is null.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testSetDIOWithValueNullIOValue() throws InvalidOperatingModeException, XBeeException {
+	public void testSetDIOWithValueNullIOValue() throws XBeeException, IOException {
 		// Set DIO0 line with a null value.
 		xbeeDevice.setDIOValue(IOLine.DIO0_AD0, null);
 	}
@@ -96,10 +100,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the operating mode is AT.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testSetDIOATOperatingMode() throws InvalidOperatingModeException, XBeeException {
+	public void testSetDIOATOperatingMode() throws XBeeException, IOException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
@@ -111,10 +115,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the operating mode is UNKNOWN.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testSetDIOUnknownOperatingMode() throws InvalidOperatingModeException, XBeeException {
+	public void testSetDIOUnknownOperatingMode() throws XBeeException, IOException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
@@ -126,11 +130,11 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the status value after sending the set 
 	 * command is INVALID_PARAMETER.
 	 * 
-	 * @throws InvalidOperatingModeException
 	 * @throws XBeeException
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testSetDIOValueInvalidParameterStatusResponse() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=OperationNotSupportedException.class)
+	public void testSetDIOValueInvalidParameterStatusResponse() throws XBeeException, IOException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.INVALID_PARAMETER);
@@ -145,11 +149,11 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO cannot be set if the response value after sending the set command 
 	 * is null.
 	 * 
-	 * @throws InvalidOperatingModeException
 	 * @throws XBeeException
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testSetDIOValueNullResponse() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=OperationNotSupportedException.class)
+	public void testSetDIOValueNullResponse() throws XBeeException, IOException {
 		// Return a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
@@ -162,12 +166,12 @@ public class LocalDIOHandlingTest {
 	 * due to a timeout sending the command.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testSetDIOTimeout() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=TimeoutException.class)
+	public void testSetDIOTimeout() throws XBeeException, IOException {
 		// Throw a timeout exception when trying to send any AT Command.
-		Mockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
+		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Set DIO0 line HIGH
 		xbeeDevice.setDIOValue(IOLine.DIO0_AD0, IOValue.HIGH);
@@ -177,10 +181,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO can be set successfully.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void testSetDIOSuccess() throws InvalidOperatingModeException, XBeeException {
+	public void testSetDIOSuccess() throws XBeeException, IOException {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
@@ -196,10 +200,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO value cannot be read if the connection is closed.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testGetDIOValueConnectionClosed() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=InterfaceNotOpenException.class)
+	public void testGetDIOValueConnectionClosed() throws XBeeException, IOException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
@@ -208,13 +212,13 @@ public class LocalDIOHandlingTest {
 	}
 	
 	/**
-	 * Verify that DIO value cannot be read if the IO line is not valid.
+	 * Verify that DIO value cannot be read if the IO line is null.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testGetDIOWithNullIOLine() throws InvalidOperatingModeException, XBeeException {
+	public void testGetDIOWithNullIOLine() throws XBeeException, IOException {
 		// Read the value of a null IO line.
 		xbeeDevice.getDIOValue(null);
 	}
@@ -223,10 +227,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO value cannot be read if the operating mode is AT.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testGetDIOValueATOperatingMode() throws InvalidOperatingModeException, XBeeException {
+	public void testGetDIOValueATOperatingMode() throws XBeeException, IOException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
@@ -238,10 +242,10 @@ public class LocalDIOHandlingTest {
 	 * Verify that DIO value cannot be read if the operating mode is UNKNOWN.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testGetDIOValueUnknownOperatingMode() throws InvalidOperatingModeException, XBeeException {
+	public void testGetDIOValueUnknownOperatingMode() throws XBeeException, IOException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
@@ -254,10 +258,10 @@ public class LocalDIOHandlingTest {
 	 * command is INVALID_PARAMETER.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testGetDIOValueInvalidParameterStatusResponse() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=OperationNotSupportedException.class)
+	public void testGetDIOValueInvalidParameterStatusResponse() throws XBeeException, IOException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.INVALID_PARAMETER);
@@ -273,10 +277,10 @@ public class LocalDIOHandlingTest {
 	 * is null.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testGetDIOValueNullResponse() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=OperationNotSupportedException.class)
+	public void testGetDIOValueNullResponse() throws XBeeException, IOException {
 		// Return a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
@@ -290,7 +294,7 @@ public class LocalDIOHandlingTest {
 	 * 
 	 * @throws Exception 
 	 */
-	@Test(expected=XBeeException.class)
+	@Test(expected=OperationNotSupportedException.class)
 	public void testGetDIOValueNoDigitalValuesResponse() throws Exception {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
@@ -314,12 +318,12 @@ public class LocalDIOHandlingTest {
 	 * successfully due to a timeout sending the get value command.
 	 * 
 	 * @throws XBeeException 
-	 * @throws InvalidOperatingModeException 
+	 * @throws IOException 
 	 */
-	@Test(expected=XBeeException.class)
-	public void testGetDIOValueTimeout() throws InvalidOperatingModeException, XBeeException {
+	@Test(expected=TimeoutException.class)
+	public void testGetDIOValueTimeout() throws XBeeException, IOException {
 		// Throw a timeout exception when trying to send any AT Command.
-		Mockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
+		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the value of the DIO0 line.
 		xbeeDevice.getDIOValue(IOLine.DIO0_AD0);

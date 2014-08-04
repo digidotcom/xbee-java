@@ -44,85 +44,84 @@ public class LocalIOConfigurationTest {
 		xbeeDevice = Mockito.spy(new XBeeDevice(mockedPort));
 	}
 	
-	@Test
 	/**
 	 * Verify that IO cannot be configured if the connection is closed.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testConfigureIOConnectionClosed() {
+	@Test(expected=XBeeException.class)
+	public void testConfigureIOConnectionClosed() throws InvalidOperatingModeException, XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Configure DIO0 line as digital output.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.DIGITAL_OUT_HIGH);
-			fail("IO shouldn't have been configured.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
-		}
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.DIGITAL_OUT_HIGH);
 	}
 	
-	@Test
 	/**
-	 * Verify that IO cannot be configured if the IO line or mode are not 
-	 * valid.
+	 * Verify that IO cannot be configured if the IO line is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testConfigureIOInvalidParameters() {
+	@Test(expected=NullPointerException.class)
+	public void testConfigureIOWithNullIOLine() throws InvalidOperatingModeException, XBeeException {
 		// Configure a null IO line.
-		try {
-			xbeeDevice.setIOConfiguration(null, IOMode.DIGITAL_OUT_HIGH);
-			fail("IO shouldn't have been configured.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
-		
-		// Configure DIO0 line with a null mode.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, null);
-			fail("IO shouldn't have been configured.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
+		xbeeDevice.setIOConfiguration(null, IOMode.DIGITAL_OUT_HIGH);
 	}
 	
-	@Test
 	/**
-	 * Verify that IO cannot be configured if the operating mode is not API or 
-	 * API Escaped.
+	 * Verify that IO cannot be configured if the IO line is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testConfigureIOInvalidOperatingMode() {
+	@Test(expected=NullPointerException.class)
+	public void testConfigureIOWithNullIOMode() throws InvalidOperatingModeException, XBeeException {
+		// Configure DIO0 line with a null mode.
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, null);
+	}
+	
+	/**
+	 * Verify that IO cannot be configured if the operating mode is AT.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testConfigureIOATOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
 		// Configure DIO0 line as digital output.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.DIGITAL_OUT_HIGH);
-			fail("IO shouldn't have been configured.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
-		
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.DIGITAL_OUT_HIGH);
+	}
+	
+	/**
+	 * Verify that IO cannot be configured if the operating mode is AT.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testConfigureIOUnknownOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
 		// Configure DIO0 line as digital output.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.DIGITAL_OUT_HIGH);
-			fail("IO shouldn't have been configured.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.DIGITAL_OUT_HIGH);
 	}
 	
-	@Test
 	/**
-	 * Verify that IO cannot be configured if the configuration command was not processed 
-	 * successfully (null answer or error in the answer).
+	 * Verify that IO cannot be configured if the status value after sending the 
+	 * configure command is INVALID_PARAMETER.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testConfigureIOOperationNotSupported() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testConfigureIOInvalidParameterStatusResponse() throws InvalidOperatingModeException, XBeeException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.INVALID_PARAMETER);
@@ -130,121 +129,108 @@ public class LocalIOConfigurationTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Configure DIO0 line as PWM.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.PWM);
-			fail("IO shouldn't have been configured.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
-		
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.PWM);
+	}
+	
+	/**
+	 * Verify that IO cannot be configured if the response value after sending the 
+	 * configure command is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=XBeeException.class)
+	public void testConfigureIONullResponse() throws InvalidOperatingModeException, XBeeException {
 		// Now try returning a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Configure DIO0 line as PWM.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.PWM);
-			fail("IO shouldn't have been configured.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.PWM);
 	}
 	
-	@Test
 	/**
 	 * Verify that IO cannot be configured if the configuration command was not processed 
 	 * successfully due to a timeout sending the command.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 * 
 	 */
-	public void testConfigureIOTimeout() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testConfigureIOTimeout() throws InvalidOperatingModeException, XBeeException {
 		// Throw a timeout exception when trying to send any AT Command.
 		Mockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Configure DIO0 line as PWM.
-		try {
-			xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.PWM);
-			fail("IO shouldn't have been configured.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
-		}
+		xbeeDevice.setIOConfiguration(IOLine.DIO0_AD0, IOMode.PWM);
 	}
 	
-	@Test
 	/**
 	 * Verify that IO configuration cannot be read if the connection is closed.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetIOConfigurationConnectionClosed() {
+	@Test(expected=XBeeException.class)
+	public void testGetIOConfigurationConnectionClosed() throws InvalidOperatingModeException, XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
-		}
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
 	}
 	
-	@Test
 	/**
-	 * Verify that IO configuration cannot be read if the IO line is not valid.
+	 * Verify that IO configuration cannot be read if the IO line is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetIOConfigurationInvalidParameters() {
+	@Test(expected=NullPointerException.class)
+	public void testGetIOConfigurationWithNullIOLine() throws InvalidOperatingModeException, XBeeException {
 		// Read the configuration of a null IO line.
-		try {
-			xbeeDevice.getIOConfiguration(null);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
+		xbeeDevice.getIOConfiguration(null);
 	}
 	
-	@Test
 	/**
-	 * Verify that IO configuration cannot be read if the operating mode is not API or 
-	 * API Escaped.
+	 * Verify that IO configuration cannot be read if the operating mode is AT.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetIOConfigurationInvalidOperatingMode() {
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testGetIOConfigurationATOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
 		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
-		
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
+	}
+	
+	/**
+	 * Verify that IO configuration cannot be read if the operating mode is Unknown.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testGetIOConfigurationUnknownOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
 		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
 	}
 	
-	@Test
 	/**
-	 * Verify that IO configuration cannot be read if the get configuration command was not processed 
-	 * successfully (null answer or error in the answer).
+	 * Verify that IO configuration cannot be read if the status value after sending the 
+	 * configuration command is INVALID_PARAMETER.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetIOConfigurationOperationNotSupported() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testGetIOConfigurationInvalidParameterStatusResponse() throws InvalidOperatingModeException, XBeeException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.INVALID_PARAMETER);
@@ -252,69 +238,67 @@ public class LocalIOConfigurationTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
-		
-		// Now try returning a null ATCommandResponse when sending any AT Command.
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
+	}
+	
+	/**
+	 * Verify that IO configuration cannot be read if the response value after sending the 
+	 * configuration command is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=XBeeException.class)
+	public void testGetIOConfigurationNullResponse() throws InvalidOperatingModeException, XBeeException {
+		// Return a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
-		
-		// Now try with a valid response status (OK) but with a configuration ID not supported 
-		// (not contained in the IOMode enumerator).
-		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
-		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{(byte) 0xFF});
-		
-		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
 	}
 	
-	@Test
+	/**
+	 * Verify that IO configuration cannot be read if the response value contains an invalid 
+	 * configuration mode.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=XBeeException.class)
+	public void testGetIOConfigurationInvalidIOModeResponse() throws InvalidOperatingModeException, XBeeException {
+		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
+		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
+		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
+		// The value of the AT command will be 0xFF, which is a configuration ID not contained in the IOMode enumerator.
+		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{(byte) 0xFF});
+		
+		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
+		
+		// Read the configuration of the DIO0 line.
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
+	}
+	
 	/**
 	 * Verify that IO configuration cannot be read if the get configuration command was not processed 
 	 * successfully due to a timeout sending the get configuration command.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetIOConfigurationTimeout() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testGetIOConfigurationTimeout() throws InvalidOperatingModeException, XBeeException {
 		// Throw a timeout exception when trying to send any AT Command.
 		Mockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the configuration of the DIO0 line.
-		try {
-			xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-			fail("IO configuration shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
-		}
+		xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
 	}
 	
-	@Test
 	/**
 	 * Verify that IO configuration can be read successfully.
 	 * @throws Exception
 	 */
+	@Test
 	public void testGetIOConfigurationSuccess() throws Exception {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
@@ -325,14 +309,7 @@ public class LocalIOConfigurationTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the configuration of the DIO0 line.
-		IOMode ioMode = null;
-		try {
-			ioMode = xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			fail("This exception shouldn't be thrown now.");
-		}
+		IOMode ioMode = xbeeDevice.getIOConfiguration(IOLine.DIO0_AD0);
 		
 		// Verify the read mode is correct.
 		assertEquals(IOMode.DIGITAL_OUT_HIGH, ioMode);

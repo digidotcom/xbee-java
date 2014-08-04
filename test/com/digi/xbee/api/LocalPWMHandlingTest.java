@@ -31,8 +31,8 @@ public class LocalPWMHandlingTest {
 	
 	// Constants.
 	private static final int DUTY_CYCLE_VALID_VALUE = 75;
-	private static final int DUTY_CYCLE_INVALID_VALUE_LOW = -10;
-	private static final int DUTY_CYCLE_INVALID_VALUE_HIGH = 150;
+	private static final int DUTY_CYCLE_NEGATIVE_VALUE = -10;
+	private static final int DUTY_CYCLE_OVER_100_VALUE = 150;
 	
 	// Variables.
 	private SerialPortRxTx mockedPort;
@@ -49,55 +49,64 @@ public class LocalPWMHandlingTest {
 		xbeeDevice = Mockito.spy(new XBeeDevice(mockedPort));
 	}
 	
-	@Test
 	/**
 	 * Verify that PWM duty cycle cannot be set if the connection is closed.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testSetDutyCycleConnectionClosed() {
+	@Test(expected=XBeeException.class)
+	public void testSetDutyCycleConnectionClosed() throws InvalidOperatingModeException, XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
-		}
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 	}
 	
-	@Test
 	/**
-	 * Verify that PWM duty cycle cannot be set if the IO line or value are not 
-	 * valid.
+	 * Verify that PWM duty cycle cannot be set if the IO line is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 * 
 	 */
-	public void testSetDutyCycleInvalidParameters() {
+	@Test(expected=NullPointerException.class)
+	public void testSetDutyCycleOfNullIOLine() throws InvalidOperatingModeException, XBeeException {
 		// Set the duty cycle of a null IO line.
-		try {
-			xbeeDevice.setPWMDutyCycle(null, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
-		
-		// Set duty cycle of PWM0 to -10%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_INVALID_VALUE_LOW);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (Exception e) {
-			assertEquals(IllegalArgumentException.class, e.getClass());
-		}
-		
-		// Set duty cycle of PWM0 to 150%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_INVALID_VALUE_HIGH);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (Exception e) {
-			assertEquals(IllegalArgumentException.class, e.getClass());
-		}
-		
+		xbeeDevice.setPWMDutyCycle(null, DUTY_CYCLE_VALID_VALUE);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle cannot be set if the value is under 0%.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testSetDutyCycleWithNegativePercentace() throws InvalidOperatingModeException, XBeeException {
+		// Set duty cycle of PWM0 with a negative value.
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_NEGATIVE_VALUE);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle cannot be set if the value is over 100%.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testSetDutyCycleWithPercentageOver100() throws InvalidOperatingModeException, XBeeException {
+		// Set duty cycle of PWM0 with a value over 100%.
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_OVER_100_VALUE);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle cannot be set if the IO line does not have 
+	 * PWM capabilities.
+	 */
+	@Test
+	public void testSetDutyCycleOfIOLineWithoutPWMCapabilities() {
 		// Set the duty cycle of IO lines without PWM capabilities.
 		for (IOLine ioLine:IOLine.values()) {
 			if (ioLine == IOLine.DIO10_PWM0 || ioLine == IOLine.DIO11_PWM1)
@@ -112,43 +121,45 @@ public class LocalPWMHandlingTest {
 		}
 	}
 	
-	@Test
 	/**
-	 * Verify that PWM duty cycle cannot be set if the operating mode is not API or 
-	 * API Escaped.
+	 * Verify that PWM duty cycle cannot be set if the operating mode is AT.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testSetDutyCycleInvalidOperatingMode() {
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testSetDutyCycleATOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
-		
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle cannot be set if the operating mode is UNKNOWN.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testSetDutyCycleUnknownOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 	}
 	
-	@Test
 	/**
-	 * Verify that PWM duty cycle cannot be set if the set command was not processed successfully 
-	 * (null answer or error in the answer).
+	 * Verify that PWM duty cycle cannot be set if the status value after sending the set 
+	 * command is INVALID_PARAMETER.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testSetDutyCycleOperationNotSupported() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testSetDutyCycleInvalidParameterStatusResponse() throws InvalidOperatingModeException, XBeeException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.INVALID_PARAMETER);
@@ -156,58 +167,49 @@ public class LocalPWMHandlingTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
-		
-		// Now try returning a null ATCommandResponse when sending any AT Command.
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle cannot be set if the response value after sending the set command 
+	 * is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=XBeeException.class)
+	public void testSetDutyCycleNullResponse() throws InvalidOperatingModeException, XBeeException {
+		// Return a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 	}
 	
-	@Test
 	/**
 	 * Verify that PWM duty cycle cannot be set if the set command was not processed successfully 
 	 * due to a timeout sending the command.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testSetDutyCycleTimeout() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testSetDutyCycleTimeout() throws InvalidOperatingModeException, XBeeException {
 		// Throw a timeout exception when trying to send any AT Command.
 		Mockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-			fail("Duty cycle shouldn't have been set.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
-		}
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 	}
 	
-	@Test
 	/**
 	 * Verify that PWM duty cycle can be set successfully.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testSetDutyCycleSuccess() throws Exception {
+	@Test
+	public void testSetDutyCycleSuccess() throws InvalidOperatingModeException, XBeeException {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
@@ -215,85 +217,75 @@ public class LocalPWMHandlingTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Set duty cycle of PWM0 to 75%.
-		try {
-			xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			fail("This exception shouldn't be thrown now.");
-		}
+		xbeeDevice.setPWMDutyCycle(IOLine.DIO10_PWM0, DUTY_CYCLE_VALID_VALUE);
 	}
 	
-	@Test
 	/**
 	 * Verify that PWM duty cycle value cannot be read if the connection is closed.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetDutyCycleValueConnectionClosed() {
+	@Test(expected=XBeeException.class)
+	public void testGetDutyCycleValueConnectionClosed() throws InvalidOperatingModeException, XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Read the duty cycle value of the PWM0 line.
-		try {
-			xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_NOT_OPEN, e.getErrorCode());
-		}
+		xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
 	}
 	
-	@Test
 	/**
-	 * Verify that PWM duty cycle value cannot be read if the IO line is not valid.
+	 * Verify that PWM duty cycle value cannot be read if the IO line is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetDutyCycleValueInvalidParameters() {
+	@Test(expected=NullPointerException.class)
+	public void testGetDutyCycleValueOfNullIOLine() throws InvalidOperatingModeException, XBeeException {
 		// Read the duty cycle value of a null IO line.
-		try {
-			xbeeDevice.getPWMDutyCycle(null);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
+		xbeeDevice.getPWMDutyCycle(null);
 	}
 	
-	@Test
 	/**
-	 * Verify that PWM duty cycle value cannot be read if the operating mode is not 
-	 * API or API Escaped.
+	 * Verify that PWM duty cycle value cannot be read if the operating mode is AT.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetDutyCycleValueInvalidOperatingMode() {
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testGetDutyCycleValueATOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
 		// Read the duty cycle value of the PWM0 line.
-		try {
-			xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
-		
+		xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle value cannot be read if the operating mode is UNKNOWN.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testGetDutyCycleValueUnknownOperatingMode() throws InvalidOperatingModeException, XBeeException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
 		// Read the duty cycle value of the PWM0 line.
-		try {
-			xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
+		xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
 	}
 	
-	@Test
 	/**
-	 * Verify that PWM duty cycle value cannot be read if the get value command was not processed 
-	 * successfully (null answer or error in the answer).
+	 * Verify that PWM duty cycle value cannot be read if the status value after sending the get 
+	 * command is INVALID_PARAMETER.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetDutyCycleValueOperationNotSupported() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testGetDutyCycleValueInvalidParameterStatusResponse() throws InvalidOperatingModeException, XBeeException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.INVALID_PARAMETER);
@@ -301,58 +293,49 @@ public class LocalPWMHandlingTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the duty cycle value of the PWM0 line.
-		try {
-			xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
-		
-		// Now try returning a null ATCommandResponse when sending any AT Command.
+		xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
+	}
+	
+	/**
+	 * Verify that PWM duty cycle value cannot be read if the response value after sending the get command 
+	 * is null.
+	 * 
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
+	 */
+	@Test(expected=XBeeException.class)
+	public void testGetDutyCycleValueNullResponse() throws InvalidOperatingModeException, XBeeException {
+		// Return a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the duty cycle value of the PWM0 line.
-		try {
-			xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
+		xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
 	}
 	
-	@Test
 	/**
 	 * Verify that PWM duty cycle value cannot be read if the get value command was not processed 
 	 * successfully due to a timeout sending the get value command.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetDutyCycleValueTimeout() throws Exception {
+	@Test(expected=XBeeException.class)
+	public void testGetDutyCycleValueTimeout() throws InvalidOperatingModeException, XBeeException {
 		// Throw a timeout exception when trying to send any AT Command.
 		Mockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the duty cycle value of the PWM0 line.
-		try {
-			xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-			fail("Duty cycle value shouldn't have been retrieved.");
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.CONNECTION_TIMEOUT, e.getErrorCode());
-		}
+		xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
 	}
 	
-	@Test
 	/**
 	 * Verify that PWM duty cycle value can be retrieved successfully.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws InvalidOperatingModeException 
 	 */
-	public void testGetDutyCycleValueSuccess() throws Exception {
+	@Test
+	public void testGetDutyCycleValueSuccess() throws InvalidOperatingModeException, XBeeException {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
@@ -361,14 +344,7 @@ public class LocalPWMHandlingTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Read the duty cycle value of the PWM0 line.
-		double dutyCycle = -1;
-		try {
-			dutyCycle = xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (XBeeException e) {
-			fail("This exception shouldn't be thrown now.");
-		}
+		double dutyCycle = xbeeDevice.getPWMDutyCycle(IOLine.DIO10_PWM0);
 		
 		// Verify that the value retrieved is approximately 83.1%. 
 		assertEquals(83.1, dutyCycle, 0.1);

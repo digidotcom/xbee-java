@@ -54,44 +54,37 @@ public class IOSampleTest {
 	private static final int DIGITAL_MASK = 529; // 0x0211
 	private static final int ANALOG_MASK = 138; // 0x8A
 	
-	@Test
+	/**
+	 * Verify that the IOSample object is not correctly instantiated when the IO data byte 
+	 * array is null.
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testCreateIOSampleWithNullData() {
+		// Instantiate an IOSample object with null IO data.
+		new IOSample(null);
+	}
+	
 	/**
 	 * Verify that the IOSample object is not correctly instantiated when the IO data byte 
 	 * array is not valid.
 	 */
-	public void testIOSampleInvalidData() {
+	@Test(expected=IllegalArgumentException.class)
+	public void testCreateIOSampleWithInvalidData() {
 		// Instantiate an IOSample object with invalid IO data.
-		try {
-			new IOSample(INVALID_IO_DATA);
-			fail("IO sample shouldn't have been instantiated correctly.");
-		} catch (Exception e) {
-			assertEquals(IllegalArgumentException.class, e.getClass());
-		}
-		
-		// Instantiate an IOSample object with null IO data.
-		try {
-			new IOSample(INVALID_IO_DATA);
-			fail("IO sample shouldn't have been instantiated correctly.");
-		} catch (Exception e) {
-			assertEquals(IllegalArgumentException.class, e.getClass());
-		}
+		new IOSample(INVALID_IO_DATA);
 	}
 	
-	@Test
 	/**
-	 * Verify that 
+	 * Verify that digital values are successfully parsed and stored in the sample 
+	 * when it only contains digital information.
 	 */
-	public void testIOSampleOnlyDigitalData() {
+	@Test
+	public void testGetDigitalValuesFromDigitalData() {
 		// Create an IO sample with the digital data.
 		IOSample ioSample = new IOSample(IO_DATA_ONLY_DIGITAL);
 		
 		// Verify that the digital mask is correct.
 		assertEquals(DIGITAL_MASK, ioSample.getDigitalMask());
-		
-		// Verify that the analog mask is 0.
-		assertEquals(0, ioSample.getAnalogMask());
-		
-		// --------- Check Digital Values ----------------
 		
 		// Verify that the IO sample has digital values.
 		assertTrue(ioSample.hasDigitalValues());
@@ -122,8 +115,19 @@ public class IOSampleTest {
 				assertNull(ioSample.getDigitalValues().get(ioLine));
 			}
 		}
+	}
+	
+	/**
+	 * Verify that no analog values are retrieved from the sample when it 
+	 * only contains digital information.
+	 */
+	@Test
+	public void testGetAnalogValuesFromDigitalData() {
+		// Create an IO sample with the digital data.
+		IOSample ioSample = new IOSample(IO_DATA_ONLY_DIGITAL);
 		
-		// --------- Check Analog Values ----------------
+		// Verify that the analog mask is 0.
+		assertEquals(0, ioSample.getAnalogMask());
 		
 		// Verify that the IO sample does not have analog values.
 		assertFalse(ioSample.hasAnalogValues());
@@ -139,32 +143,36 @@ public class IOSampleTest {
 			}
 			assertNull(ioSample.getAnalogValues().get(ioLine));
 		}
-		
-		// -------- Check Power Supply Value ------------
+	}
+	
+	/**
+	 * Verify that power supply value not retrieved from the sample when it 
+	 * only contains digital information.
+	 * 
+	 * @throws XBeeException 
+	 */
+	@Test(expected=XBeeException.class)
+	public void testGetPowerSupplyValueFromDigitalData() throws XBeeException {
+		// Create an IO sample with the analog data.
+		IOSample ioSample = new IOSample(IO_DATA_ONLY_DIGITAL);
 		
 		// Verify that the IO sample does not have power supply value.
 		assertFalse(ioSample.hasPowerSupplyValue());
 			
-		try {
-			ioSample.getPowerSupplyValue();
-			fail("Power supply value shouldn't have been retrieved.");
-		} catch (XBeeException e) {
-			assertEquals(XBeeException.INVALID_OPERATION, e.getErrorCode());
-		}
+		ioSample.getPowerSupplyValue();
 	}
 	
+	/**
+	 * Verify that no digital values are retrieved from the sample when it 
+	 * only contains analog and power supply information.
+	 */
 	@Test
-	public void testIOSampleOnlyAnalogData() {
+	public void testGetDigitalValuesFromAnalogData() {
 		// Create an IO sample with the analog data.
 		IOSample ioSample = new IOSample(IO_DATA_ONLY_ANALOG);
 		
 		// Verify that the digital mask is 0.
 		assertEquals(0, ioSample.getDigitalMask());
-		
-		// Verify that the analog mask is correct.
-		assertEquals(ANALOG_MASK, ioSample.getAnalogMask());
-		
-		// --------- Check Digital Values ----------------
 		
 		// Verify that the IO sample does not have digital values.
 		assertFalse(ioSample.hasDigitalValues());
@@ -180,8 +188,19 @@ public class IOSampleTest {
 			}
 			assertNull(ioSample.getDigitalValues().get(ioLine));
 		}
+	}
+	
+	/**
+	 * Verify that analog values are successfully parsed and stored in the sample 
+	 * when it only contains analog and power supply information.
+	 */
+	@Test
+	public void testGetAnalogValuesFromAnalogData() {
+		// Create an IO sample with the analog data.
+		IOSample ioSample = new IOSample(IO_DATA_ONLY_ANALOG);
 		
-		// --------- Check Analog Values ----------------
+		// Verify that the analog mask is correct.
+		assertEquals(ANALOG_MASK, ioSample.getAnalogMask());
 		
 		// Verify that the IO sample has analog values.
 		assertTrue(ioSample.hasAnalogValues());
@@ -208,31 +227,36 @@ public class IOSampleTest {
 				assertNull(ioSample.getAnalogValues().get(ioLine));
 			}
 		}
-		
-		// -------- Check Power Supply Value ------------
+	}
+	
+	/**
+	 * Verify that power supply value is successfully parsed and stored in the sample 
+	 * when it only contains analog and power supply information.
+	 * 
+	 * @throws XBeeException 
+	 */
+	@Test
+	public void testGetPowerSupplyValueFromAnalogData() throws XBeeException {
+		// Create an IO sample with the analog data.
+		IOSample ioSample = new IOSample(IO_DATA_ONLY_ANALOG);
 		
 		// Verify that the IO sample has power supply value.
 		assertTrue(ioSample.hasPowerSupplyValue());
 			
-		try {
-			assertEquals(POWER_SUPPLY_VALUE, ioSample.getPowerSupplyValue());
-		} catch (XBeeException e) {
-			fail("This exception shouldn't have been thrown.");
-		}
+		assertEquals(POWER_SUPPLY_VALUE, ioSample.getPowerSupplyValue());
 	}
 	
+	/**
+	 * Verify that digital values are successfully parsed and stored in the sample 
+	 * when it contains digital, analog and power supply information.
+	 */
 	@Test
-	public void testIOSampleMixedData() {
+	public void testGetDigitalValuesFromMixedData() {
 		// Create an IO sample with mixed (digital + analog) data.
 		IOSample ioSample = new IOSample(IO_DATA_MIXED);
 		
 		// Verify that the digital mask is correct.
 		assertEquals(DIGITAL_MASK, ioSample.getDigitalMask());
-		
-		// Verify that the analog mask is correct.
-		assertEquals(ANALOG_MASK, ioSample.getAnalogMask());
-		
-		// --------- Check Digital Values ----------------
 		
 		// Verify that the IO sample has digital values.
 		assertTrue(ioSample.hasDigitalValues());
@@ -263,8 +287,19 @@ public class IOSampleTest {
 				assertNull(ioSample.getDigitalValues().get(ioLine));
 			}
 		}
+	}
+	
+	/**
+	 * Verify that analog values are successfully parsed and stored in the sample 
+	 * when it contains digital, analog and power supply information.
+	 */
+	@Test
+	public void testGetAnalogValuesFromMixedData() {
+		// Create an IO sample with mixed (digital + analog) data.
+		IOSample ioSample = new IOSample(IO_DATA_MIXED);
 		
-		// --------- Check Analog Values ----------------
+		// Verify that the analog mask is correct.
+		assertEquals(ANALOG_MASK, ioSample.getAnalogMask());
 		
 		// Verify that the IO sample has analog values.
 		assertTrue(ioSample.hasAnalogValues());
@@ -291,16 +326,22 @@ public class IOSampleTest {
 				assertNull(ioSample.getAnalogValues().get(ioLine));
 			}
 		}
-		
-		// -------- Check Power Supply Value ------------
+	}
+	
+	/**
+	 * Verify that power supply value is successfully parsed and stored in the sample 
+	 * when it contains digital, analog and power supply information.
+	 * 
+	 * @throws XBeeException 
+	 */
+	@Test
+	public void testGetPowerSupplyValueFromMixedData() throws XBeeException {
+		// Create an IO sample with mixed (digital + analog) data.
+		IOSample ioSample = new IOSample(IO_DATA_MIXED);
 		
 		// Verify that the IO sample has power supply value.
 		assertTrue(ioSample.hasPowerSupplyValue());
 			
-		try {
-			assertEquals(POWER_SUPPLY_VALUE, ioSample.getPowerSupplyValue());
-		} catch (XBeeException e) {
-			fail("This exception shouldn't have been thrown.");
-		}
+		assertEquals(POWER_SUPPLY_VALUE, ioSample.getPowerSupplyValue());
 	}
 }

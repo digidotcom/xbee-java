@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.exceptions.InterfaceInUseException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
-import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
@@ -65,8 +64,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters) {
-		super(port, parameters, DEFAULT_PORT_TIMEOUT);
-		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
+		this(port, parameters, DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
@@ -104,8 +102,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
 	 */
 	public SerialPortRxTx(String port, int baudRate) {
-		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
-		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
+		this(port, baudRate, DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
@@ -133,12 +130,12 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public void open() throws InvalidInterfaceException, InterfaceInUseException, InvalidConfigurationException {
+	public void open() throws InterfaceInUseException, InvalidConfigurationException, InvalidInterfaceException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 		} catch (NoSuchPortException e) {
-			throw new InvalidInterfaceException("No such port: " + port);
+			throw new InvalidInterfaceException("No such port: " + port, e);
 		}
 		try {
 			// Get the serial port.
@@ -164,11 +161,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			// Register serial port event listener to be notified when data is available.
 			serialPort.addEventListener(this);
 		} catch (PortInUseException e) {
-			throw new InterfaceInUseException("Port " + port + " is already in use by other application(s)");
+			throw new InterfaceInUseException("Port " + port + " is already in use by other application(s)", e);
 		} catch (UnsupportedCommOperationException e) {
-			throw new InvalidConfigurationException(e.getMessage());
+			throw new InvalidConfigurationException(e.getMessage(), e);
 		} catch (TooManyListenersException e) {
-			throw new InvalidConfigurationException(e.getMessage());
+			throw new InvalidConfigurationException(e.getMessage(), e);
 		}
 	}
 	
@@ -331,7 +328,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 *                                  if {@code flowControl < 0}.
 	 */
 	public void setPortParameters(int baudRate, int dataBits, int stopBits,
-			int parity, int flowControl) throws OperationNotSupportedException {
+			int parity, int flowControl) throws InvalidConfigurationException {
 		parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
 		
 		if (serialPort != null) {
@@ -339,7 +336,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
 				serialPort.setFlowControlMode(flowControl);
 			} catch (UnsupportedCommOperationException e) {
-				throw new OperationNotSupportedException(e.getMessage());
+				throw new InvalidConfigurationException(e.getMessage(), e);
 			}
 		}
 	}

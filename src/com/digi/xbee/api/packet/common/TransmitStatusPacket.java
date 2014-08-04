@@ -26,7 +26,7 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a ZigBee Transmit Status packet. Packet is built using the parameters of 
+ * This class represents a Transmit Status Packet. Packet is built using the parameters of 
  * the constructor.
  * 
  * When a TX Request is completed, the module sends a TX Status message. This message will indicate if the
@@ -46,7 +46,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type ZigBeeTransmitStatus with
+	 * Class constructor. Instances a new object of type TransmitStatusPacket with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.

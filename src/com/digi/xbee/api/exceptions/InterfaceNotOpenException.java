@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when trying to perform any operation over a 
  * closed interface.
+ * 
+ * @see ConnectionException
  */
 public class InterfaceNotOpenException extends ConnectionException {
 
@@ -37,5 +39,16 @@ public class InterfaceNotOpenException extends ConnectionException {
 	 */
 	public InterfaceNotOpenException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InterfaceNotOpenException} with the specified message
+	 * and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InterfaceNotOpenException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

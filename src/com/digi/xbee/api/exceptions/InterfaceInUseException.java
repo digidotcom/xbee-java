@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when trying to open the port/interface but
  * it is in use by other applications.
+ * 
+ * @see ConnectionException
  */
 public class InterfaceInUseException extends ConnectionException {
 
@@ -36,5 +38,16 @@ public class InterfaceInUseException extends ConnectionException {
 	 */
 	public InterfaceInUseException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InterfaceInUseException} with the specified message
+	 * and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InterfaceInUseException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

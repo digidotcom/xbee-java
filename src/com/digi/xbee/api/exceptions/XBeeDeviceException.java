@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when any problem related to the XBee device
  * occurs.
+ * 
+ * @see XBeeException
  */
 public class XBeeDeviceException extends XBeeException {
 

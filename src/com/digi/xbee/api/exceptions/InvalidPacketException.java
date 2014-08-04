@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when there is an error parsing an API packet
  * from the input stream.
+ * 
+ * @see CommunicationException
  */
 public class InvalidPacketException extends CommunicationException {
 
@@ -36,5 +38,16 @@ public class InvalidPacketException extends CommunicationException {
 	 */
 	public InvalidPacketException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InvalidPacketException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InvalidPacketException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

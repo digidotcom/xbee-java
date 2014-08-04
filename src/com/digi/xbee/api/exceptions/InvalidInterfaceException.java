@@ -13,6 +13,8 @@ package com.digi.xbee.api.exceptions;
 
 /**
  * This exception will be thrown when trying to open a non-existing interface.
+ * 
+ * @see ConnectionException
  */
 public class InvalidInterfaceException extends ConnectionException {
 
@@ -35,5 +37,16 @@ public class InvalidInterfaceException extends ConnectionException {
 	 */
 	public InvalidInterfaceException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InvalidInterfaceException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InvalidInterfaceException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

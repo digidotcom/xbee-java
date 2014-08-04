@@ -14,18 +14,21 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when trying to open an interface with an
  * invalid configuration.
+ * 
+ * @see ConnectionException
  */
 public class InvalidConfigurationException extends ConnectionException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The configuration used to open the interface is invalid.";
 
 	/**
-	 * Creates an {@code InvalidConfigurationException} with {@code null} as its 
-	 * error detail message.
+	 * Creates an {@code InvalidConfigurationException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public InvalidConfigurationException() {
-		super();
+		super(DEFAULT_MESSAGE);
 	}
 	
 	/**
@@ -36,5 +39,16 @@ public class InvalidConfigurationException extends ConnectionException {
 	 */
 	public InvalidConfigurationException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InvalidConfigurationException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InvalidConfigurationException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

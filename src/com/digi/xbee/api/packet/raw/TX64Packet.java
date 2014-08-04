@@ -35,7 +35,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type Transmit64Packet with
+	 * Class constructor. Instances a new object of type TX64Packet with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.

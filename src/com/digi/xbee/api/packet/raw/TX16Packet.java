@@ -35,7 +35,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type Transmit16Packet with
+	 * Class constructor. Instances a new object of type TX16Packet with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.

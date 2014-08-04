@@ -12,8 +12,6 @@
 package com.digi.xbee.api.connection.serial;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,35 +142,11 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#open()
-	 */
-	public abstract void open() throws ConnectionException;
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#close()
-	 */
-	public abstract void close();
-	
-	/*
-	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#isConnected()
 	 */
 	public boolean isOpen() {
 		return connectionOpen;
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#getInputStream()
-	 */
-	public abstract InputStream getInputStream();
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#getOutputStream()
-	 */
-	public abstract OutputStream getOutputStream();
 	
 	/**
 	 * Retrieves the name of the Serial Port.
@@ -248,12 +222,12 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * Sets the new parameters of the serial port.
 	 * 
 	 * @param parameters The new serial port parameters.
-	 * @throws XBeeException
-	 * @throws InvalidOperatingModeException 
+	 * 
+	 * @throws ConnectionException if any error occurs when setting the serial port parameters.
 	 * 
 	 * @throws NullPointerException if {@code parameters == null}.
 	 */
-	public void setPortParameters(SerialPortParameters parameters) throws XBeeException, InvalidOperatingModeException {
+	public void setPortParameters(SerialPortParameters parameters) throws ConnectionException {
 		if (parameters == null)
 			throw new NullPointerException("Serial port parameters cannot be null.");
 		

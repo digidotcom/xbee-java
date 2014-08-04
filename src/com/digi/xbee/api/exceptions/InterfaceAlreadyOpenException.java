@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when trying to open an interface that is
  * already opened by the application.
+ * 
+ * @see ConnectionException
  */
 public class InterfaceAlreadyOpenException extends ConnectionException {
 
@@ -37,5 +39,16 @@ public class InterfaceAlreadyOpenException extends ConnectionException {
 	 */
 	public InterfaceAlreadyOpenException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InterfaceAlreadyOpenException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InterfaceAlreadyOpenException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

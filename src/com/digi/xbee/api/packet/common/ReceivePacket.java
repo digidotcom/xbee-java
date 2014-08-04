@@ -25,7 +25,7 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a ZigBee Receive packet. Packet is built using the parameters of 
+ * This class represents a Receive Packet. Packet is built using the parameters of 
  * the constructor.
  * 
  * When the module receives an RF packet, it is sent out the UART using this message type.
@@ -50,7 +50,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	private Logger logger;
 
 	/**
-	 * Class constructor. Instances a new object of type ZigBeeReceivePacket with
+	 * Class constructor. Instances a new object of type ReceivePacket with
 	 * the given parameters.
 	 * 
 	 * @param sourceAddress64 64-bit address of the sender.

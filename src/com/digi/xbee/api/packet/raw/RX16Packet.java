@@ -36,7 +36,7 @@ public class RX16Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type Receive16Packet with
+	 * Class constructor. Instances a new object of type RX16Packet with
 	 * the given parameters.
 	 * 
 	 * @param sourceAddress 16-bit address of the sender.

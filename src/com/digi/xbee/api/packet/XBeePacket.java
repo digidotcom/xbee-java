@@ -158,7 +158,9 @@ public abstract class XBeePacket {
 	 * 
 	 * @param packet The hexadecimal string to parse.
 	 * @return The generated Generic XBee Packet.
-	 * @throws PacketParsingException 
+	 * 
+	 * @throws InvalidPacketException if the given string does not represent a valid frame:
+	 *                                invalid checksum, length, start delimiter, etc.
 	 * 
 	 * @throws NullPointerException if {@code packet == null}.
 	 */
@@ -174,7 +176,8 @@ public abstract class XBeePacket {
 	 * 
 	 * @param packet The byte array to parse.
 	 * @return The generated Generic XBee Packet.
-	 * @throws PacketParsingException 
+	 * @throws InvalidPacketException if the given byte array does not represent a valid frame: 
+	 *                                invalid checksum, length, start delimiter, etc.
 	 * 
 	 * @throws NullPointerException if {@code packet == null}.
 	 */

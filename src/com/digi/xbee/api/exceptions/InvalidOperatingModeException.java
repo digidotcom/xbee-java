@@ -18,6 +18,7 @@ import com.digi.xbee.api.models.OperatingMode;
  * {@link OperatingMode#API} and {@link OperatingMode#API_ESCAPE}.
  * 
  * @see OperatingMode
+ * @see XBeeDeviceException
  */
 public class InvalidOperatingModeException extends XBeeDeviceException {
 
@@ -51,5 +52,16 @@ public class InvalidOperatingModeException extends XBeeDeviceException {
 	 */
 	public InvalidOperatingModeException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates an {@code InvalidOperatingModeException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public InvalidOperatingModeException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

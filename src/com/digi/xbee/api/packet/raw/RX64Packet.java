@@ -36,7 +36,7 @@ public class RX64Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type Receive64Packet with
+	 * Class constructor. Instances a new object of type RX64Packet with
 	 * the given parameters.
 	 * 
 	 * @param sourceAddress 64-bit address of the sender.

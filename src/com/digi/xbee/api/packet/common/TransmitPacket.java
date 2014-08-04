@@ -26,7 +26,7 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a ZigBee Transmit Request packet. Packet is built
+ * This class represents a Transmit Packet. Packet is built
  * using the parameters of the constructor.
  * 
  * A Transmit Request API frame causes the module to send data as an RF packet to the specified destination.
@@ -63,7 +63,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type ZigBeeTransmitRequest with
+	 * Class constructor. Instances a new object of type TransmitPacket with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.

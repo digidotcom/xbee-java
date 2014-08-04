@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when the user does not have the appropriate
  * access to the connection interface.
+ * 
+ * @see ConnectionException
  */
 public class PermissionDeniedException extends ConnectionException {
 
@@ -36,5 +38,16 @@ public class PermissionDeniedException extends ConnectionException {
 	 */
 	public PermissionDeniedException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates a {@code PermissionDeniedException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public PermissionDeniedException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

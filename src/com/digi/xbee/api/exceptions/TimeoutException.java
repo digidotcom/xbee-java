@@ -14,6 +14,8 @@ package com.digi.xbee.api.exceptions;
 /**
  * This exception will be thrown when performing synchronous operations and the
  * configured time expires.
+ * 
+ * @see CommunicationException
  */
 public class TimeoutException extends CommunicationException {
 
@@ -36,5 +38,15 @@ public class TimeoutException extends CommunicationException {
 	 */
 	public TimeoutException(String message) {
 		super(message);
+	}
+	
+	/**
+	 * Creates a {@code TimeoutException} with the specified message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
+	 */
+	public TimeoutException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

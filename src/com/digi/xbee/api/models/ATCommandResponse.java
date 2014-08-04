@@ -22,11 +22,11 @@ package com.digi.xbee.api.models;
 public class ATCommandResponse {
 	
 	// Variables
-	private ATCommand command;
+	private final ATCommand command;
 	
-	private byte[] response;
+	private final byte[] response;
 	
-	private ATCommandStatus status = ATCommandStatus.OK;
+	private final ATCommandStatus status;
 	
 	/**
 	 * Class constructor. Instances a new object of type ATCommandResponse

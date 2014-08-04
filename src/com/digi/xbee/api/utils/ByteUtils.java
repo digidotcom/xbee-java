@@ -220,15 +220,15 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Returns whether the specified bit of the given byte is set to 1
-	 * or not. (bit positions from 0 to 7).
+	 * Returns whether the specified bit of the given integer is set to 1
+	 * or not.
 	 * 
-	 * @param containerByte Byte to check bit position enablement.
-	 * @param bitPosition Position of the bit to check in the byte.
-	 * @return True if the given bit position is set to 1 in the byte, false otherwise.
+	 * @param containerInteger Integer to check bit position enablement.
+	 * @param bitPosition Position of the bit to check in the integer.
+	 * @return {@code true} if the given bit position is set to {@code 1} in the {@code containerInteger}, {@code false} otherwise.
 	 */
-	public static boolean isBitEnabled(int containerByte, int bitPosition) {
-		return (((containerByte & 0xFF) >> bitPosition) & 0x01) == 0x01;
+	public static boolean isBitEnabled(int containerInteger, int bitPosition) {
+		return (((containerInteger & 0xFFFFFFFF) >> bitPosition) & 0x01) == 0x01;
 	}
 	
 	/**

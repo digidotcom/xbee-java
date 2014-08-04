@@ -24,12 +24,18 @@ import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
+import com.digi.xbee.api.io.IOLine;
+import com.digi.xbee.api.io.IOMode;
+import com.digi.xbee.api.io.IOSample;
+import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
+import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
@@ -45,6 +51,7 @@ import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 public class XBeeDevice {
@@ -899,6 +906,281 @@ public class XBeeDevice {
 		if (xbeeDevice == null)
 			throw new NullPointerException("XBee device cannot be null");
 		return sendSerialData(xbeeDevice.get64BitAddress(), data);
+	}
+	
+	/**
+	 * Sets the configuration of the given IO line.
+	 * 
+	 * @param ioLine The IO line to configure.
+	 * @param mode The IO mode to set to the IO line.
+	 * @throws InvalidOperatingModeException 
+	 * @throws InterfaceNotOpenException
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws InterfaceNotOpenException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null} or
+	 *                              if {@code ioMode == null}.
+	 * 
+	 * @see #getIOConfiguration(IOLine)
+	 * @see IOLine
+	 * @see IOMode
+	 */
+	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		if (ioMode == null)
+			throw new NullPointerException("IO mode cannot be null.");
+		
+		String atCommand = ioLine.getConfigurationATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new OperationNotSupportedException();
+	}
+	
+	/**
+	 * Retrieves the configuration mode of the provided IO line.
+	 * 
+	 * @param ioLine The IO line to get its configuration.
+	 * @return The IO mode (configuration) of the provided IO line.
+	 * @throws InvalidOperatingModeException
+	 * @throws InterfaceNotOpenException 
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see IOLine
+	 * @see IOMode
+	 */
+	public IOMode getIOConfiguration(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("DIO pin cannot be null.");
+		
+		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getConfigurationATCommand()));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException();
+		
+		int ioModeValue = response.getResponse()[0];
+		IOMode dioMode = IOMode.getIOMode(ioModeValue, ioLine);
+		if (dioMode != null)
+			return dioMode;
+		throw new OperationNotSupportedException();
+	}
+	
+	/**
+	 * Sets the digital value (high or low) to the provided IO line.
+	 * 
+	 * @param ioLine The IO line to set its value.
+	 * @param value The IOValue to set to the IO line ({@code HIGH} or {@code LOW}).
+	 * @throws InvalidOperatingModeException
+	 * @throws InterfaceNotOpenException
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws InterfaceNotOpenException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null} or 
+	 *                              if {@code ioValue == null}.
+	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see IOLine
+	 * @see IOValue
+	 * @see IOMode.DIGITAL_OUT_HIGH
+	 * @see IOMode.DIGITAL_OUT_LOW
+	 */
+	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check IO value.
+		if (ioValue == null)
+			throw new NullPointerException("IO value cannot be null.");
+		
+		String atCommand = ioLine.getConfigurationATCommand();
+		byte[] valueByte = new byte[]{(byte)ioValue.getID()};
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, valueByte));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new OperationNotSupportedException();
+	}
+	
+	/**
+	 * Retrieves the digital value of the provided IO line (must be configured as digital I/O).
+	 * 
+	 * @param ioLine The IO line to get its digital value.
+	 * @return The digital value corresponding to the provided IO line.
+	 * @throws InvalidOperatingModeException
+	 * @throws InterfaceNotOpenException 
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see IOLine
+	 * @see IOMode.DIGITAL_IN
+	 * @see IOMode.DIGITAL_OUT_HIGH
+	 * @see IOMode.DIGITAL_OUT_LOW
+	 */
+	public IOValue getDIOValue(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		
+		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException();
+		
+		IOSample ioSample = new IOSample(response.getResponse());
+		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
+			throw new OperationNotSupportedException();
+		
+		return ioSample.getDigitalValues().get(ioLine);
+	}
+	
+	/**
+	 * Sets the duty cycle (in %) of the provided IO line. 
+	 * 
+	 * <p>IO line must be PWM capable({@code hasPWMCapability()}) and 
+     * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
+	 * 
+	 * @param ioLine The IO line to set its duty cycle value.
+	 * @param value The duty cycle of the PWM. 
+	 * @throws InvalidOperatingModeException
+	 * @throws InterfaceNotOpenException 
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false} or 
+	 *                                  if {@code value < 0} or
+	 *                                  if {@code value > 1023}.
+	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see IOLine
+	 * @see IOMode.PWM
+	 */
+	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check if the IO line has PWM capability.
+		if (!ioLine.hasPWMCapability())
+			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
+		// Check duty cycle limits.
+		if (dutyCycle < 0 || dutyCycle > 100)
+			throw new IllegalArgumentException("Duty Cycle must be between 0% and 100%.");
+		
+		// Convert the value.
+		int finaldutyCycle = (int)(dutyCycle * 1023.0/100.0);
+		
+		String atCommand = ioLine.getPWMDutyCycleATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
+			throw new OperationNotSupportedException();
+	}
+	
+	/**
+	 * Gets the PWM duty cycle (in %) corresponding to the provided IO line.
+	 * 
+	 * <p>IO line must be PWM capable ({@code hasPWMCapability()}) and 
+	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
+	 * 
+	 * @param ioLine The IO line to get its PWM duty cycle.
+	 * @return The PWM duty cycle value corresponding to the provided IO line (0% - 100%).
+	 * @throws InvalidOperatingModeException
+	 * @throws InterfaceNotOpenException 
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
+	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see IOLine
+	 * @see IOMode.PWM
+	 */
+	public double getPWMDutyCycle(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check if the IO line has PWM capability.
+		if (!ioLine.hasPWMCapability())
+			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
+		
+		String atCommand = ioLine.getPWMDutyCycleATCommand();
+		ATCommandResponse response = sendATCommand(new ATCommand(atCommand));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException();
+		
+		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
+		return Math.round((readValue * 100.0/1023.0) * 100.0) / 100.0;
+	}
+	
+	/**
+	 * Retrieves the analog value of the provided IO line (must be configured as ADC).
+	 * 
+	 * @param ioLine The IO line to get its analog value.
+	 * @return The analog value corresponding to the provided IO line.
+	 * @throws InvalidOperatingModeException
+	 * @throws InterfaceNotOpenException 
+	 * @throws IOException 
+	 * @throws TimeoutException 
+	 * @throws OperationNotSupportedException 
+	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see IOLine
+	 * @see IOMode.ADC
+	 */
+	public int getADCValue(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		
+		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
+				|| response == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException();
+		
+		IOSample ioSample = new IOSample(response.getResponse());
+		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
+			throw new OperationNotSupportedException();
+		
+		return ioSample.getAnalogValues().get(ioLine);
 	}
 	
 	/*

@@ -140,4 +140,15 @@ public class HexUtils {
 			prettyHexString += hexString.substring(2 * i, 2 * i + 2) + " ";
 		return prettyHexString.trim();
 	}
+	
+	/**
+	 * Converts the given byte array into a hex string and retrieves it 
+	 * splitting the content byte by byte.
+	 * 
+	 * @param value The byte array to convert and split.
+	 * @return The hexadecimal string with the bytes split.
+	 */
+	public static String prettyHexString(byte[] value) {
+		return prettyHexString(byteArrayToHexString(value));
+	}
 }

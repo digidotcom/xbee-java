@@ -14,18 +14,39 @@ package com.digi.xbee.api.exceptions;
 import com.digi.xbee.api.models.OperatingMode;
 
 /**
- * This exception is thrown whenever an action related with AT mode is performed
- * while in API or API2 modes and vice-versa. 
+ * This exception will be thrown if the operating mode is different than
+ * {@link OperatingMode#API} and {@link OperatingMode#API_ESCAPE}.
  * 
  * @see OperatingMode
+ * @see XBeeDeviceException
  */
-public class InvalidOperatingModeException extends Exception {
+public class InvalidOperatingModeException extends XBeeDeviceException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;
+	private static final String DEFAULT_MESSAGE = "The operating mode of the XBee device is not supported by the library.";
 
 	/**
-	 * Creates an InvalidXBeeModeException with the specified message.
+	 * Creates an {@code InvalidOperatingModeException} with 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
+	 */
+	public InvalidOperatingModeException() {
+		super(DEFAULT_MESSAGE);
+	}
+	
+	/**
+	 * Creates an {@code InvalidOperatingModeException} with the specified
+	 * mode.
+	 * 
+	 * @param mode The unsupported operating mode.
+	 */
+	public InvalidOperatingModeException(OperatingMode mode) {
+		super("Unsupported operating mode: " + mode);
+	}
+	
+	/**
+	 * Creates an {@code InvalidOperatingModeException} with the specified 
+	 * message.
 	 * 
 	 * @param message The associated message.
 	 */
@@ -34,9 +55,13 @@ public class InvalidOperatingModeException extends Exception {
 	}
 	
 	/**
-	 * Creates an InvalidXBeeModeException with the specified message.
+	 * Creates an {@code InvalidOperatingModeException} with the specified 
+	 * message and cause.
+	 * 
+	 * @param message The associated message.
+	 * @param cause The cause of this exception.
 	 */
-	public InvalidOperatingModeException() {
-		super("Device is configured with an unsupported operating mode.");
+	public InvalidOperatingModeException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

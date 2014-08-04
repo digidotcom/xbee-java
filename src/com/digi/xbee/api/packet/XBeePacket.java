@@ -15,7 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 
-import com.digi.xbee.api.exceptions.PacketParsingException;
+import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.utils.ByteUtils;
@@ -158,11 +158,13 @@ public abstract class XBeePacket {
 	 * 
 	 * @param packet The hexadecimal string to parse.
 	 * @return The generated Generic XBee Packet.
-	 * @throws PacketParsingException 
+	 * 
+	 * @throws InvalidPacketException if the given string does not represent a valid frame:
+	 *                                invalid checksum, length, start delimiter, etc.
 	 * 
 	 * @throws NullPointerException if {@code packet == null}.
 	 */
-	public static XBeePacket parsePacket(String packet) throws PacketParsingException {
+	public static XBeePacket parsePacket(String packet) throws InvalidPacketException {
 		if (packet == null)
 			throw new NullPointerException("Packet cannot be null.");
 			
@@ -174,23 +176,24 @@ public abstract class XBeePacket {
 	 * 
 	 * @param packet The byte array to parse.
 	 * @return The generated Generic XBee Packet.
-	 * @throws PacketParsingException 
+	 * @throws InvalidPacketException if the given byte array does not represent a valid frame: 
+	 *                                invalid checksum, length, start delimiter, etc.
 	 * 
 	 * @throws NullPointerException if {@code packet == null}.
 	 */
-	public static XBeePacket parsePacket(byte[] packet) throws PacketParsingException {
+	public static XBeePacket parsePacket(byte[] packet) throws InvalidPacketException {
 		if (packet == null)
 			throw new NullPointerException("Packet byte array cannot be null.");
 		
 		if (packet.length > 1 && ((packet[0] &0xFF) != SpecialByte.HEADER_BYTE.getValue()))
-			throw new PacketParsingException("Invalid start delimiter.");
+			throw new InvalidPacketException("Invalid start delimiter.");
 		
 		if (packet.length < 4)
-			throw new PacketParsingException("Packet length is too short.");
+			throw new InvalidPacketException("Packet length is too short.");
 		
 		int length = ByteUtils.byteArrayToInt(new byte[] {packet[1], packet[2]});
 		if (length != packet.length - 4)
-			throw new PacketParsingException("Invalid packet length.");
+			throw new InvalidPacketException("Invalid packet length.");
 		
 		byte[] data = new byte[length];
 		System.arraycopy(packet, 3, data, 0, length);
@@ -200,7 +203,7 @@ public abstract class XBeePacket {
 		
 		byte generatedChecksum = (byte)(checksum.generate() & 0xFF);
 		if (packetChecksum != generatedChecksum)
-			throw new PacketParsingException("Invalid '" + packetChecksum + "' checksum. It should be " + generatedChecksum);
+			throw new InvalidPacketException("Invalid '" + packetChecksum + "' checksum. It should be " + generatedChecksum);
 		
 		XBeePacketParser parser = new XBeePacketParser(new ByteArrayInputStream(packet, 1, packet.length - 1), OperatingMode.API);
 		XBeePacket xbeePacket = parser.parsePacket();

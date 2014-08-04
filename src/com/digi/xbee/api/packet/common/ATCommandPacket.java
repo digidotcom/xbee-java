@@ -15,6 +15,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -37,6 +40,8 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	private final String command;
 	
 	private byte[] parameter;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instances a new object of type ATCommandPacket
@@ -62,6 +67,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		this.command = command;
 		if (parameter != null)
 			this.parameter = parameter.getBytes();
+		this.logger = LoggerFactory.getLogger(ATCommandPacket.class);
 	}
 	
 	/**
@@ -101,8 +107,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 			if (parameter != null)
 				os.write(parameter);
 		} catch (IOException e) {
-			// TODO: Revisit this when logging feature is implemented.
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return os.toByteArray();
 	}

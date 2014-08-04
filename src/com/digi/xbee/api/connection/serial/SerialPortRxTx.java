@@ -27,7 +27,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
 
-import com.digi.xbee.api.exceptions.XBeeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.digi.xbee.api.exceptions.InterfaceInUseException;
+import com.digi.xbee.api.exceptions.InvalidConfigurationException;
+import com.digi.xbee.api.exceptions.InvalidInterfaceException;
 
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
@@ -44,6 +49,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	private CommPortIdentifier portIdentifier = null;
 	
+	private Logger logger;
+	
 	/**
 	 * Class constructor. Instances a new object of type SerialPort with
 	 * the given parameters.
@@ -57,7 +64,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters) {
-		super(port, parameters, DEFAULT_PORT_TIMEOUT);
+		this(port, parameters, DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
@@ -76,6 +83,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters, int receiveTimeout) {
 		super(port, parameters, receiveTimeout);
+		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
 	/**
@@ -94,7 +102,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
 	 */
 	public SerialPortRxTx(String port, int baudRate) {
-		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
+		this(port, baudRate, DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
@@ -115,18 +123,19 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 */
 	public SerialPortRxTx(String port, int baudRate, int receiveTimeout) {
 		super(port, baudRate, receiveTimeout);
+		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.XBeeInterface#open()
 	 */
-	public void open() throws XBeeException {
+	public void open() throws InterfaceInUseException, InvalidConfigurationException, InvalidInterfaceException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 		} catch (NoSuchPortException e) {
-			throw new XBeeException(XBeeException.INVALID_PORT, "No such port: " + port);
+			throw new InvalidInterfaceException("No such port: " + port, e);
 		}
 		try {
 			// Get the serial port.
@@ -152,11 +161,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			// Register serial port event listener to be notified when data is available.
 			serialPort.addEventListener(this);
 		} catch (PortInUseException e) {
-			throw new XBeeException(XBeeException.PORT_IN_USE);
+			throw new InterfaceInUseException("Port " + port + " is already in use by other application(s)", e);
 		} catch (UnsupportedCommOperationException e) {
-			throw new XBeeException(XBeeException.INVALID_OPERATION, e.getMessage());
+			throw new InvalidConfigurationException(e.getMessage(), e);
 		} catch (TooManyListenersException e) {
-			throw new XBeeException(XBeeException.GENERIC, e.getMessage());
+			throw new InvalidConfigurationException(e.getMessage(), e);
 		}
 	}
 	
@@ -175,7 +184,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				outputStream = null;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		if (serialPort != null) {
 			try {
@@ -223,7 +232,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 			break;
 		}
@@ -319,7 +328,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 *                                  if {@code flowControl < 0}.
 	 */
 	public void setPortParameters(int baudRate, int dataBits, int stopBits,
-			int parity, int flowControl) throws XBeeException {
+			int parity, int flowControl) throws InvalidConfigurationException {
 		parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
 		
 		if (serialPort != null) {
@@ -327,7 +336,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				serialPort.setSerialPortParams(baudRate, dataBits, stopBits, parity);
 				serialPort.setFlowControlMode(flowControl);
 			} catch (UnsupportedCommOperationException e) {
-				throw new XBeeException(XBeeException.INVALID_OPERATION, e.getMessage());
+				throw new InvalidConfigurationException(e.getMessage(), e);
 			}
 		}
 	}
@@ -371,7 +380,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			String myPackage = this.getClass().getPackage().getName();
 			if (requester.startsWith(myPackage))
 				requester = "another AT connection";
-			System.out.println("Connection for port " + port + " canceled due to ownership request from " + requester + ".");
+			logger.warn("Connection for port {} canceled due to ownership request from {}.", port, requester);
 		}
 	}
 	

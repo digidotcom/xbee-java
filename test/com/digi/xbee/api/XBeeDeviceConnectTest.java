@@ -14,7 +14,6 @@ package com.digi.xbee.api;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -26,8 +25,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
+import com.digi.xbee.api.exceptions.ConnectionException;
+import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
-import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.models.OperatingMode;
 
 @RunWith(PowerMockRunner.class)
@@ -98,9 +100,9 @@ public class XBeeDeviceConnectTest {
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
-		} catch (XBeeException e) {
+		} catch (ConnectionException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InvalidOperatingModeException e) {
+		} catch (XBeeDeviceException e) {
 			fail("This exception shouldn't be thrown now.");
 		}
 		
@@ -125,9 +127,9 @@ public class XBeeDeviceConnectTest {
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
-		} catch (XBeeException e) {
+		} catch (ConnectionException e) {
 			fail("This exception shouldn't be thrown now.");
-		} catch (InvalidOperatingModeException e) {
+		} catch (XBeeDeviceException e) {
 			fail("This exception shouldn't be thrown now.");
 		}
 		
@@ -152,10 +154,8 @@ public class XBeeDeviceConnectTest {
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
-		} catch (XBeeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (InvalidOperatingModeException e) {
-			// This is the exception we should have received.
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
 		
 		// Verify the device is disconnected.
@@ -180,10 +180,8 @@ public class XBeeDeviceConnectTest {
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
-		} catch (XBeeException e) {
-			fail("This exception shouldn't be thrown now.");
-		} catch (InvalidOperatingModeException e) {
-			// This is the exception we should have received.
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
 		
 		// Verify the device is disconnected.
@@ -203,16 +201,14 @@ public class XBeeDeviceConnectTest {
 	 */
 	public void testConnectTimeout() throws Exception {
 		// Configure the determineOperatingMode method to return 'API'.
-		PowerMockito.doThrow(new XBeeException(XBeeException.CONNECTION_TIMEOUT)).when(xbeeDevice, "open");
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, "open");
 		
 		// Execute the connect method.
 		try {
 			xbeeDevice.open();
 			fail("Device shouldn't have connected");
-		} catch (XBeeException e) {
-			// This is the exception we should have received.
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
+		} catch (Exception e) {
+			assertEquals(TimeoutException.class, e.getClass());
 		}
 		
 		// Verify the device is disconnected.
@@ -238,11 +234,8 @@ public class XBeeDeviceConnectTest {
 		try {
 			xbeeDevice.open();
 			fail("Device shouldn't have connected");
-		} catch (XBeeException e) {
-			// This is the exception we should have received. Verify it is a connection already open exception.
-			assertEquals(XBeeException.CONNECTION_ALREADY_OPEN, e.getErrorCode());
-		} catch (InvalidOperatingModeException e) {
-			fail("This exception shouldn't be thrown now.");
+		} catch (Exception e) {
+			assertEquals(InterfaceAlreadyOpenException.class, e.getClass());
 		}
 	}
 }

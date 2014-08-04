@@ -89,6 +89,6 @@ public final class SerialPortParameters {
 	
 	@Override
 	public String toString() {
-		return "Baud Rate: "+ baudrate + ", Data Bits: " + dataBits + ", Stop Bits:" + stopBits + ", Parity: " + parity + ", Flow Control: " + flowControl;
+		return "Baud Rate: "+ baudrate + ", Data Bits: " + dataBits + ", Stop Bits: " + stopBits + ", Parity: " + parity + ", Flow Control: " + flowControl;
 	}
 }

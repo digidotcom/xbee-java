@@ -17,7 +17,10 @@ import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.digi.xbee.api.exceptions.PacketParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
@@ -29,6 +32,7 @@ import com.digi.xbee.api.packet.XBeePacketParser;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * Thread that constantly reads data from the input stream.
@@ -55,6 +59,8 @@ public class DataReader extends Thread {
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
 	
+	private Logger logger;
+	
 	/**
 	 * Class constructor. Instances a new DataReader object for the given interface.
 	 * 
@@ -72,6 +78,7 @@ public class DataReader extends Thread {
 		
 		this.connectionInterface = connectionInterface;
 		this.mode = mode;
+		this.logger = LoggerFactory.getLogger(DataReader.class);
 	}
 	
 	/**
@@ -159,6 +166,7 @@ public class DataReader extends Thread {
 	 * @see java.lang.Thread#run()
 	 */
 	public void run() {
+		logger.debug(connectionInterface.toString() + "Data reader started.");
 		running = true;
 		try {
 			synchronized (connectionInterface) {
@@ -180,8 +188,8 @@ public class DataReader extends Thread {
 							try {
 								XBeePacket packet = parser.parsePacket();
 								packetReceived(packet);
-							} catch (PacketParsingException e) {
-								e.printStackTrace();
+							} catch (InvalidPacketException e) {
+								logger.error("Error parsing the API packet.", e);
 							}
 						}
 						break;
@@ -199,14 +207,11 @@ public class DataReader extends Thread {
 				}
 			}
 		} catch (IOException e) {
-			// TODO: We may receive error while reading from input stream and port was closed.
-			//e.printStackTrace();
+			logger.error("Error reading from input stream.", e);
 		} catch (InterruptedException e) {
-			// TODO Always exception when close the port
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (IllegalStateException e) {
-			// TODO Always exception when close the port
-			//e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			if (running) {
 				running = false;
@@ -266,9 +271,13 @@ public class DataReader extends Thread {
 	 * @param data The received data.
 	 */
 	private void notifySerialDataReceived(final String address, final byte[] data) {
+		logger.info(connectionInterface.toString() + 
+				"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
+		
 		try {
 			synchronized (serialDataReceiveListeners) {
-				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, serialDataReceiveListeners.size()));
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						serialDataReceiveListeners.size()));
 				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
 					executor.execute(new Runnable() {
 						public void run() {
@@ -279,7 +288,7 @@ public class DataReader extends Thread {
 				executor.shutdown();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 	
@@ -289,16 +298,20 @@ public class DataReader extends Thread {
 	 * @param packet The received packet.
 	 */
 	private void notifyPacketReceived(final XBeePacket packet) {
+		logger.debug(connectionInterface.toString() + "Packet received: \n{}", packet.toPrettyString());
+		
 		try {
 			synchronized (packetReceiveListeners) {
 				final ArrayList<IPacketReceiveListener> removeListeners = new ArrayList<IPacketReceiveListener>();
-				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, packetReceiveListeners.size()));
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						packetReceiveListeners.size()));
 				for (final IPacketReceiveListener listener:packetReceiveListeners.keySet()) {
 					executor.execute(new Runnable() {
 						public void run() {
 							if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
 								listener.packetReceived(packet);
-							else if (((XBeeAPIPacket)packet).needsAPIFrameID() && ((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
+							else if (((XBeeAPIPacket)packet).needsAPIFrameID() && 
+									((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
 								listener.packetReceived(packet);
 								removeListeners.add(listener);
 							}
@@ -311,7 +324,7 @@ public class DataReader extends Thread {
 					packetReceiveListeners.remove(listener);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 	
@@ -332,5 +345,6 @@ public class DataReader extends Thread {
 		synchronized (connectionInterface) {
 			connectionInterface.notify();
 		}
+		logger.debug(connectionInterface.toString() + "Data reader stopped.");
 	}
 }

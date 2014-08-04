@@ -12,10 +12,12 @@
 package com.digi.xbee.api.connection.serial;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.XBeeException;
 
@@ -49,6 +51,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	protected SerialPortParameters parameters;
 	
 	protected boolean connectionOpen = false;
+	
+	private Logger logger;
 	
 	/**
 	 * Class constructor. Instantiates a new object of type AbstractXBeeSerialPort with
@@ -133,19 +137,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		this.baudRate = parameters.baudrate;
 		this.receiveTimeout = receiveTimeout;
 		this.parameters = parameters;
+		this.logger = LoggerFactory.getLogger(AbstractSerialPort.class);
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#open()
-	 */
-	public abstract void open() throws XBeeException, InvalidOperatingModeException;
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#close()
-	 */
-	public abstract void close();
 	
 	/*
 	 * (non-Javadoc)
@@ -154,18 +147,6 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	public boolean isOpen() {
 		return connectionOpen;
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#getInputStream()
-	 */
-	public abstract InputStream getInputStream();
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#getOutputStream()
-	 */
-	public abstract OutputStream getOutputStream();
 	
 	/**
 	 * Retrieves the name of the Serial Port.
@@ -241,12 +222,12 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * Sets the new parameters of the serial port.
 	 * 
 	 * @param parameters The new serial port parameters.
-	 * @throws XBeeException
-	 * @throws InvalidOperatingModeException 
+	 * 
+	 * @throws ConnectionException if any error occurs when setting the serial port parameters.
 	 * 
 	 * @throws NullPointerException if {@code parameters == null}.
 	 */
-	public void setPortParameters(SerialPortParameters parameters) throws XBeeException, InvalidOperatingModeException {
+	public void setPortParameters(SerialPortParameters parameters) throws ConnectionException {
 		if (parameters == null)
 			throw new NullPointerException("Serial port parameters cannot be null.");
 		
@@ -296,7 +277,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 				if (getInputStream().available() > 0)
 					getInputStream().read(availableBytes, 0, getInputStream().available());
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -309,7 +290,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 			try {
 				getOutputStream().flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -492,9 +473,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 					|| parameters.flowControl == 8
 					|| parameters.flowControl == 12)
 				flowControl = "S";
-			return port + " - " + baudRate + "/" + parameters.dataBits + 
-					"/"  + parity + "/" + parameters.stopBits + "/" + flowControl;
+			return "[" + port + " - " + baudRate + "/" + parameters.dataBits + 
+					"/"  + parity + "/" + parameters.stopBits + "/" + flowControl + "] ";
 		} else
-			return port + " - " + baudRate + "/8/N/1/N";
+			return "[" + port + " - " + baudRate + "/8/N/1/N] ";
 	}
 }

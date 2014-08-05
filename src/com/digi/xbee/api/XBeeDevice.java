@@ -413,7 +413,10 @@ public class XBeeDevice {
 				// Send the packet and build response.
 				ATCommandResponsePacket answerPacket = (ATCommandResponsePacket)sendXBeePacket(packet);
 				response = new ATCommandResponse(command, answerPacket.getCommandData(), answerPacket.getStatus());
-				logger.debug(toString() + "AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
+				if (response.getResponse() != null)
+					logger.debug(toString() + "AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
+				else
+					logger.debug(toString() + "AT command response: null.");
 			} catch (ClassCastException e) {
 				logger.error("Received an invalid packet type after sending an AT command packet." + e);
 			}

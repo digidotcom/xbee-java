@@ -25,6 +25,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
+import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -59,11 +60,10 @@ public class LocalADCHandlingTest {
 	/**
 	 * Verify that ADC value cannot be read if the connection is closed.
 	 * 
-	 * @throws XBeeException
-	 * @throws IOException 
+	 * @throws XBeeException 
 	 */
 	@Test(expected=InterfaceNotOpenException.class)
-	public void testGetADCValueConnectionClosed() throws XBeeException, IOException {
+	public void testGetADCValueConnectionClosed() throws XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
@@ -75,10 +75,9 @@ public class LocalADCHandlingTest {
 	 * Verify that ADC value cannot be read if the IO line is null.
 	 * 
 	 * @throws XBeeException 
-	 * @throws IOException 
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testGetADCValueWithNullIOLine() throws XBeeException, IOException {
+	public void testGetADCValueWithNullIOLine() throws XBeeException {
 		// Read the value of a null line.
 		xbeeDevice.getADCValue(null);
 	}
@@ -87,10 +86,9 @@ public class LocalADCHandlingTest {
 	 * Verify that ADC value cannot be read if the operating mode is AT.
 	 * 
 	 * @throws XBeeException 
-	 * @throws IOException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testGetADCValueATOperatingMode() throws XBeeException, IOException {
+	public void testGetADCValueATOperatingMode() throws XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
@@ -102,10 +100,9 @@ public class LocalADCHandlingTest {
 	 * Verify that ADC value cannot be read if the operating mode is UNKNOWN.
 	 * 
 	 * @throws XBeeException 
-	 * @throws IOException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testGetADCValueUnknownOperatingMode() throws XBeeException, IOException {
+	public void testGetADCValueUnknownOperatingMode() throws XBeeException {
 		// Return UNKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
@@ -120,7 +117,7 @@ public class LocalADCHandlingTest {
 	 * @throws XBeeException 
 	 * @throws IOException 
 	 */
-	@Test(expected=OperationNotSupportedException.class)
+	@Test(expected=ATCommandException.class)
 	public void testGetADCValueInvalidParameterStatusResponse() throws XBeeException, IOException {
 		// Generate an ATCommandResponse with error status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
@@ -139,7 +136,7 @@ public class LocalADCHandlingTest {
 	 * @throws XBeeException 
 	 * @throws IOException 
 	 */
-	@Test(expected=OperationNotSupportedException.class)
+	@Test(expected=ATCommandException.class)
 	public void testGetADCValueNullResponse() throws XBeeException, IOException {
 		// Return a null ATCommandResponse when sending any AT Command.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());

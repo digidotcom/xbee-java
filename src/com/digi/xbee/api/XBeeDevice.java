@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
@@ -27,6 +28,7 @@ import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
+import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
@@ -916,13 +918,8 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to configure.
 	 * @param mode The IO mode to set to the IO line.
-	 * @throws InvalidOperatingModeException 
-	 * @throws InterfaceNotOpenException
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws InterfaceNotOpenException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the set configuration command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null} or
 	 *                              if {@code ioMode == null}.
 	 * 
@@ -930,7 +927,7 @@ public class XBeeDevice {
 	 * @see IOLine
 	 * @see IOMode
 	 */
-	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -940,10 +937,17 @@ public class XBeeDevice {
 		if (ioMode == null)
 			throw new NullPointerException("IO mode cannot be null.");
 		
+		// Create and send the AT Command.
 		String atCommand = ioLine.getConfigurationATCommand();
-		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
-			throw new OperationNotSupportedException();
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
 	}
 	
 	/**
@@ -951,19 +955,15 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its configuration.
 	 * @return The IO mode (configuration) of the provided IO line.
-	 * @throws InvalidOperatingModeException
-	 * @throws InterfaceNotOpenException 
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the get configuration command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode
 	 */
-	public IOMode getIOConfiguration(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public IOMode getIOConfiguration(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -971,16 +971,29 @@ public class XBeeDevice {
 		if (ioLine == null)
 			throw new NullPointerException("DIO pin cannot be null.");
 		
-		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getConfigurationATCommand()));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
-				|| response == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException();
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(ioLine.getConfigurationATCommand()));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Check if the response contains the configuration value.
+		if (response.getResponse() == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException("Answer does not conain the configuration value.");
+		
+		// Check if the received configuration mode is valid.
 		int ioModeValue = response.getResponse()[0];
 		IOMode dioMode = IOMode.getIOMode(ioModeValue, ioLine);
-		if (dioMode != null)
-			return dioMode;
-		throw new OperationNotSupportedException();
+		if (dioMode == null)
+			throw new OperationNotSupportedException("Received configuration mode '" + HexUtils.integerToHexString(ioModeValue, 1) + "' is not valid.");
+		
+		// Return the configuration mode.
+		return dioMode;
 	}
 	
 	/**
@@ -988,13 +1001,8 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to set its value.
 	 * @param value The IOValue to set to the IO line ({@code HIGH} or {@code LOW}).
-	 * @throws InvalidOperatingModeException
-	 * @throws InterfaceNotOpenException
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws InterfaceNotOpenException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the set DIO command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null} or 
 	 *                              if {@code ioValue == null}.
 	 * 
@@ -1004,7 +1012,7 @@ public class XBeeDevice {
 	 * @see IOMode.DIGITAL_OUT_HIGH
 	 * @see IOMode.DIGITAL_OUT_LOW
 	 */
-	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1015,11 +1023,18 @@ public class XBeeDevice {
 		if (ioValue == null)
 			throw new NullPointerException("IO value cannot be null.");
 		
+		// Create and send the AT Command.
 		String atCommand = ioLine.getConfigurationATCommand();
 		byte[] valueByte = new byte[]{(byte)ioValue.getID()};
-		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, valueByte));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
-			throw new OperationNotSupportedException();
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(atCommand, valueByte));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
 	}
 	
 	/**
@@ -1027,12 +1042,8 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * @return The digital value corresponding to the provided IO line.
-	 * @throws InvalidOperatingModeException
-	 * @throws InterfaceNotOpenException 
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the get IO values command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
@@ -1041,7 +1052,7 @@ public class XBeeDevice {
 	 * @see IOMode.DIGITAL_OUT_HIGH
 	 * @see IOMode.DIGITAL_OUT_LOW
 	 */
-	public IOValue getDIOValue(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1049,15 +1060,32 @@ public class XBeeDevice {
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		
-		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
-				|| response == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException();
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 		
-		IOSample ioSample = new IOSample(response.getResponse());
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Try to build an IO Sample from the received response.
+		IOSample ioSample;
+		try {
+			ioSample = new IOSample(response.getResponse());
+		} catch (IllegalArgumentException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		} catch (NullPointerException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		}
+		
+		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
-			throw new OperationNotSupportedException();
+			throw new OperationNotSupportedException("Answer does not conain digital data for " + ioLine.getName() + ".");
 		
+		// Return the digital value. 
 		return ioSample.getDigitalValues().get(ioLine);
 	}
 	
@@ -1069,12 +1097,8 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to set its duty cycle value.
 	 * @param value The duty cycle of the PWM. 
-	 * @throws InvalidOperatingModeException
-	 * @throws InterfaceNotOpenException 
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the set PWM duty cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false} or 
 	 *                                  if {@code value < 0} or
@@ -1084,7 +1108,7 @@ public class XBeeDevice {
 	 * @see IOLine
 	 * @see IOMode.PWM
 	 */
-	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1101,10 +1125,17 @@ public class XBeeDevice {
 		// Convert the value.
 		int finaldutyCycle = (int)(dutyCycle * 1023.0/100.0);
 		
+		// Create and send the AT Command.
 		String atCommand = ioLine.getPWMDutyCycleATCommand();
-		ATCommandResponse response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK)
-			throw new OperationNotSupportedException();
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
 	}
 	
 	/**
@@ -1115,12 +1146,8 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its PWM duty cycle.
 	 * @return The PWM duty cycle value corresponding to the provided IO line (0% - 100%).
-	 * @throws InvalidOperatingModeException
-	 * @throws InterfaceNotOpenException 
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the get PWM duty cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
 	 * 
@@ -1128,7 +1155,7 @@ public class XBeeDevice {
 	 * @see IOLine
 	 * @see IOMode.PWM
 	 */
-	public double getPWMDutyCycle(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public double getPWMDutyCycle(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1139,12 +1166,22 @@ public class XBeeDevice {
 		if (!ioLine.hasPWMCapability())
 			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
 		
-		String atCommand = ioLine.getPWMDutyCycleATCommand();
-		ATCommandResponse response = sendATCommand(new ATCommand(atCommand));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
-				|| response == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException();
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(ioLine.getPWMDutyCycleATCommand()));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Check if the response contains the PWM value.
+		if (response.getResponse() == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException("Answer does not conain PWM duty cycle value.");
+		
+		// Return the PWM duty cycle value.
 		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
 		return Math.round((readValue * 100.0/1023.0) * 100.0) / 100.0;
 	}
@@ -1154,19 +1191,15 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * @return The analog value corresponding to the provided IO line.
-	 * @throws InvalidOperatingModeException
-	 * @throws InterfaceNotOpenException 
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 * @throws OperationNotSupportedException 
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the get IO values command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode.ADC
 	 */
-	public int getADCValue(IOLine ioLine) throws InvalidOperatingModeException, InterfaceNotOpenException, TimeoutException, IOException, OperationNotSupportedException {
+	public int getADCValue(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1174,16 +1207,48 @@ public class XBeeDevice {
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		
-		ATCommandResponse response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		if (response == null || response.getResponseStatus() != ATCommandStatus.OK 
-				|| response == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException();
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 		
-		IOSample ioSample = new IOSample(response.getResponse());
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Try to build an IO Sample from the received response.
+		IOSample ioSample;
+		try {
+			ioSample = new IOSample(response.getResponse());
+		} catch (IllegalArgumentException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		} catch (NullPointerException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		}
+		
+		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
-			throw new OperationNotSupportedException();
+			throw new OperationNotSupportedException("Answer does not conain analog data for " + ioLine.getName() + ".");
 		
+		// Return the analog value.
 		return ioSample.getAnalogValues().get(ioLine);
+	}
+	
+	/**
+	 * Checks if the provided {@code ATCommandResponse} is valid throwing an 
+	 * {@code ATCommandException} in case it is not.
+	 * 
+	 * @param response The {@code ATCommandResponse} to check.
+	 * @throws ATCommandException if {@code response == null} or 
+	 *                            if {@code response.getResponseStatus() != ATCommandStatus.OK}.
+	 */
+	private void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
+		if (response == null)
+			throw new ATCommandException(null);
+		else if (response.getResponseStatus() != ATCommandStatus.OK)
+			throw new ATCommandException(response.getResponseStatus());
 	}
 	
 	/*

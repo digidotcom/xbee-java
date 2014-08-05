@@ -272,7 +272,7 @@ public class DataReader extends Thread {
 	 */
 	private void notifySerialDataReceived(final String address, final byte[] data) {
 		logger.info(connectionInterface.toString() + 
-				"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
+				"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		try {
 			synchronized (serialDataReceiveListeners) {

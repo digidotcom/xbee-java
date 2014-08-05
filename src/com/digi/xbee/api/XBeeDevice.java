@@ -778,7 +778,7 @@ public class XBeeDevice {
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
 		
-		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.byteArrayToHexString(data));
+		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {
@@ -849,7 +849,7 @@ public class XBeeDevice {
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
 		
-		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.byteArrayToHexString(data));
+		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {

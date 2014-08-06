@@ -9,9 +9,11 @@
 * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
 * =======================================================================
 */
-package com.digi.xbee.api.handlelocaladc;
+package com.digi.xbee.api.localadc;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
@@ -19,7 +21,7 @@ import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 
 /**
- * XBee Java Library Handle Local ADC sample application.
+ * XBee Java Library Read Local ADC sample application.
  * 
  * <p>This example reads the potentiometer value and prints it in the output
  * console every 250ms.</p>
@@ -35,6 +37,7 @@ public class MainApp {
 	private static final String PORT = "COM1";
 	// TODO Replace with the baud rate of your module.
 	private static final int BAUD_RATE = 9600;
+	private static final int READ_TIMEOUT = 250;
 	
 	private static final IOLine IOLINE_IN = IOLine.DIO1_AD1;
 	
@@ -45,45 +48,52 @@ public class MainApp {
 	 */
 	public static void main(String[] args) {
 		System.out.println(" +---------------------------------------------+");
-		System.out.println(" |  XBee Java Library Handle Local ADC Sample  |");
+		System.out.println(" |   XBee Java Library Read Local ADC Sample   |");
 		System.out.println(" +---------------------------------------------+\n");
 		
 		final XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
+		Timer readADCTimer = new Timer();
+		
 		try {
-			// Open the local device.
 			myDevice.open();
 			
-			// Configure the IO line.
 			myDevice.setIOConfiguration(IOLINE_IN, IOMode.ADC);
 			
-			// Create a thread that reads the analog input and prints the potentiometer value every 250ms.
-			Thread thread = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						while (true) {
-							// Read the analog value from the input line.
-							int value = myDevice.getADCValue(IOLINE_IN);
-							System.out.println("Input line value: " + value);
-							// Sleep 250ms.
-							Thread.sleep(250);
-						}
-					} catch (XBeeException e) {
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-			thread.start();
+			readADCTimer.schedule(new ReadADCTask(myDevice), 0, READ_TIMEOUT);
 		} catch (XBeeException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Read ADC task to be performed every {@value #READ_TIMEOUT} ms.
+	 *
+	 * <p>The task will read the ADC value of {@value #IOLINE_IN} and print its 
+	 * value to the standard output.</p>
+	 * 
+	 * @see TimerTask
+	 */
+	private static class ReadADCTask extends TimerTask {
+		private XBeeDevice xbeeDevice;
+		
+		public ReadADCTask(XBeeDevice xbeeDevice) {
+			this.xbeeDevice = xbeeDevice;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				// Read the analog value from the input line.
+				int value = xbeeDevice.getADCValue(IOLINE_IN);
+				System.out.println("Input line value: " + value);
+			} catch (XBeeException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

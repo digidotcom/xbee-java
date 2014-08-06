@@ -37,9 +37,9 @@
        
     4) The final step is to connect a voltage variable source to the pin 
        configured as ADC (light sensor, temperature sensor, etc). For testing 
-       purposes we recommend to use a potentiometer. Depending on the board 
-       you are using you will need to follow a different set of instructions 
-       to connect it:
+       purposes we recommend to use a potentiometer. Depending on the carrier 
+       board you are using you will need to follow a different set of 
+       instructions to connect it:
          - XBIB-U-DEV board:
              * Isolate the pin configured as ADC so it does not use the 
                functionality provided by the board.

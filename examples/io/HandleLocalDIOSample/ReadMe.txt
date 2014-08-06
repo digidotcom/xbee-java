@@ -50,8 +50,8 @@
          
          - XBee Development Board:
              * If you are using the XBee Development Board you will need to 
-               update the IOLINE_IN constant accordingly. A couple of TODOs 
-               within the application code will indicate you what to do.
+               update the IOLINE_IN constant accordingly. There are comments 
+               in the code indicating which fragment belongs to each board.
 
          NOTE: It is recommended to verify the capabilities of the pins used 
                in the example in the product manual of your XBee Device to 

@@ -27,6 +27,7 @@ import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.TransmitException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
@@ -43,6 +44,7 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
+import com.digi.xbee.api.models.XBeeTransmitStatus;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
@@ -751,22 +753,16 @@ public class XBeeDevice {
 	/**
 	 * Sends the provided data to the XBee device of the network corresponding to the 
 	 * provided 64-Bit address.
-	 * See {@link com.digi.xbee.api.models.XBee64BitAddress}.
 	 * 
 	 * @param address The 64-Bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @return True if the data was sent successfully, false otherwise.
-	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires.
-	 * @throws IOException if an I/O error occurs while sending the data.
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@address == null} or {@data == null}.
+	 * 
+	 * @see XBee64BitAddress
 	 */
-	public boolean sendSerialData(XBee64BitAddress address, byte[] data) 
-			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
+	public void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -785,59 +781,48 @@ public class XBeeDevice {
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {
 		case RAW_802_15_4:
+			// Generate and send the Tx64 packet.
 			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			receivedPacket = sendXBeePacket(xbeePacket);
-			// If receivedPacket is null it means that packet was sent asynchronously, return true.
-			if (receivedPacket == null)
-				return true;
-			// Verify that the packet was sent successfully checking the received transmit status.
-			if (receivedPacket instanceof TXStatusPacket) {
-				switch (((TXStatusPacket)receivedPacket).getTransmitStatus()) {
-				case SUCCESS:
-					return true;
-				default:
-					return false;
-				}
-			} else
-				return false;
+			try {
+				receivedPacket = sendXBeePacket(xbeePacket);
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			
+			// Check if the packet received is a valid transmit status packet. If the packet received 
+			// is null it means that the transmission was made asynchronously, so it is valid.
+			if (receivedPacket != null)
+				checkTransmitStatusPacketIsValid(receivedPacket);
+			break;
 		default:
+			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-			receivedPacket = sendXBeePacket(xbeePacket);
-			// If receivedPacket is null it means that packet was sent asynchronously, return true.
-			if (receivedPacket == null)
-				return true;
-			// Verify that the packet was sent successfully checking the received transmit status.
-			if (receivedPacket instanceof TransmitStatusPacket) {
-				switch (((TransmitStatusPacket)receivedPacket).getTransmitStatus()) {
-				case SUCCESS:
-					return true;
-				default:
-					return false;
-				}
-			} else
-				return false;
+			try {
+				receivedPacket = sendXBeePacket(xbeePacket);
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			
+			// Check if the packet received is a valid transmit status packet. If the packet received 
+			// is null it means that the transmission was made asynchronously, so it is valid.
+			if (receivedPacket != null)
+				checkTransmitStatusPacketIsValid(receivedPacket);
 		}
 	}
 	
 	/**
 	 * Sends the provided data to the XBee device of the network corresponding to the 
 	 * provided 16-Bit address.
-	 * See {@link com.digi.xbee.api.models.XBee16BitAddress}.
 	 * 
 	 * @param address The 16-Bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @return True if the data was sent successfully, false otherwise.
-	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires.
-	 * @throws IOException if an I/O error occurs while sending the data.
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@address == null} or {@data == null}.
+	 * 
+	 * @see XBee16BitAddress
 	 */
-	public boolean sendSerialData(XBee16BitAddress address, byte[] data) 
-			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
+	public void sendSerialData(XBee16BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -856,61 +841,76 @@ public class XBeeDevice {
 		// Depending on the protocol of the XBee device, the packet to send may vary.
 		switch (getXBeeProtocol()) {
 		case RAW_802_15_4:
+			// Generate and send the Tx16 packet.
 			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			receivedPacket = sendXBeePacket(xbeePacket);
-			// If receivedPacket is null it means that packet was sent asynchronously, return true.
-			if (receivedPacket == null)
-				return true;
-			// Verify that the packet was sent successfully checking the received transmit status.
-			if (receivedPacket instanceof TXStatusPacket) {
-				switch (((TXStatusPacket)receivedPacket).getTransmitStatus()) {
-				case SUCCESS:
-					return true;
-				default:
-					return false;
-				}
-			} else
-				return false;
+			try {
+				receivedPacket = sendXBeePacket(xbeePacket);
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			
+			// Check if the packet received is a valid transmit status packet. If the packet received 
+			// is null it means that the transmission was made asynchronously, so it is valid.
+			if (receivedPacket != null)
+				checkTransmitStatusPacketIsValid(receivedPacket);
+			break;
 		default:
+			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-			receivedPacket = sendXBeePacket(xbeePacket);
-			// If receivedPacket is null it means that packet was sent asynchronously, return true.
-			if (receivedPacket == null)
-				return true;
-			// Verify that the packet was sent successfully checking the received transmit status.
-			if (receivedPacket instanceof TransmitStatusPacket) {
-				switch (((TransmitStatusPacket)receivedPacket).getTransmitStatus()) {
-				case SUCCESS:
-					return true;
-				default:
-					return false;
-				}
-			} else
-				return false;
+			try {
+				receivedPacket = sendXBeePacket(xbeePacket);
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			
+			// Check if the packet received is a valid transmit status packet. If the packet received 
+			// is null it means that the transmission was made asynchronously, so it is valid.
+			if (receivedPacket != null)
+				checkTransmitStatusPacketIsValid(receivedPacket);
 		}
 	}
 	
 	/**
 	 * Sends the provided data to the provided XBee device.
-	 * See {@link com.digi.xbee.api.XBeeDevice}.
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @return True if the data was sent successfully, false otherwise.
-	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires.
-	 * @throws IOException if an I/O error occurs while sending the data.
-	 * 
+	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code xbeeDevice == null} or {@code data == null}.
+	 * 
+	 * @see XBeeDevice
 	 */
-	public boolean sendSerialData(XBeeDevice xbeeDevice, byte[] data) 
-			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
+	public void sendSerialData(XBeeDevice xbeeDevice, byte[] data) throws TimeoutException, XBeeException {
 		if (xbeeDevice == null)
 			throw new NullPointerException("XBee device cannot be null");
-		return sendSerialData(xbeeDevice.get64BitAddress(), data);
+		sendSerialData(xbeeDevice.get64BitAddress(), data);
+	}
+	
+	/**
+	 * Checks if the provided {@code XBeePacket} is a valid transmit status packet throwing 
+	 * an {@code TransmitException} in case it is not.
+	 * 
+	 * @param packet The {@code XBeePacket} to check if it a valid transmit status packet.
+	 * @throws TransmitException if {@value packet} is not an instance of {@code TransmitStatusPacket} or 
+	 *                           if {@value packet} is not an instance of {@code TXStatusPacket} or 
+	 *                           if its transmit status is different than {@code XBeeTransmitStatus.SUCCESS}.
+	 */
+	private void checkTransmitStatusPacketIsValid(XBeePacket packet) throws TransmitException {
+		if (packet == null)
+			throw new TransmitException(null);
+		if (packet instanceof TransmitStatusPacket) {
+			if (((TransmitStatusPacket)packet).getTransmitStatus() == null)
+				throw new TransmitException(null);
+			else if (((TransmitStatusPacket)packet).getTransmitStatus() != XBeeTransmitStatus.SUCCESS)
+				throw new TransmitException(((TransmitStatusPacket)packet).getTransmitStatus());
+		} else if (packet instanceof TXStatusPacket) {
+			if (((TXStatusPacket)packet).getTransmitStatus() == null)
+				throw new TransmitException(null);
+			else if (((TXStatusPacket)packet).getTransmitStatus() != XBeeTransmitStatus.SUCCESS)
+				throw new TransmitException(((TXStatusPacket)packet).getTransmitStatus());
+		} else
+			throw new TransmitException(null);
 	}
 	
 	/**

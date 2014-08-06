@@ -11,8 +11,6 @@
 */
 package com.digi.xbee.api.sendserialdata;
 
-import java.io.IOException;
-
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 //TODO Uncomment this import if you are using a 16-bit destination address.
@@ -74,11 +72,9 @@ public class MainApp {
 					new String(dataToSend));
 			
 			// Send the data to the destination address.
-			success = myDevice.sendSerialData(destinationAddress, dataToSend);
+			myDevice.sendSerialData(destinationAddress, dataToSend);
 			
 		} catch (XBeeException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			// Close the local device before exiting.

@@ -11,11 +11,11 @@
 */
 package com.digi.xbee.api.localdio;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
@@ -63,16 +63,20 @@ public class MainApp {
 		
 		try {
 			myDevice.open();
-			
-			myDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
-			myDevice.setIOConfiguration(IOLINE_OUT, IOMode.DIGITAL_OUT_LOW);
-			
-			readADCTimer.schedule(new UpdateOutputTask(myDevice), 0, READ_TIMEOUT);
 		} catch (XBeeException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		
+		try {
+			myDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
+			myDevice.setIOConfiguration(IOLINE_OUT, IOMode.DIGITAL_OUT_LOW);
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		} catch (XBeeException e) {
 			e.printStackTrace();
 		}
+		
+		readADCTimer.schedule(new UpdateOutputTask(myDevice), 0, READ_TIMEOUT);
 	}
 	
 	/**
@@ -98,9 +102,9 @@ public class MainApp {
 				System.out.println("Input line value: " + value);
 				// Set the previous value to the output line.
 				xbeeDevice.setDIOValue(IOLINE_OUT, value);
-			} catch (XBeeException e) {
+			} catch (TimeoutException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (XBeeException e) {
 				e.printStackTrace();
 			}
 		}

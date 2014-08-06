@@ -11,11 +11,11 @@
 */
 package com.digi.xbee.api.localadc;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
@@ -57,15 +57,19 @@ public class MainApp {
 		
 		try {
 			myDevice.open();
-			
-			myDevice.setIOConfiguration(IOLINE_IN, IOMode.ADC);
-			
-			readADCTimer.schedule(new ReadADCTask(myDevice), 0, READ_TIMEOUT);
 		} catch (XBeeException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		}
+		
+		try {
+			myDevice.setIOConfiguration(IOLINE_IN, IOMode.ADC);
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		} catch (XBeeException e) {
 			e.printStackTrace();
 		}
+		
+		readADCTimer.schedule(new ReadADCTask(myDevice), 0, READ_TIMEOUT);
 	}
 	
 	/**
@@ -89,9 +93,9 @@ public class MainApp {
 				// Read the analog value from the input line.
 				int value = xbeeDevice.getADCValue(IOLINE_IN);
 				System.out.println("Input line value: " + value);
-			} catch (XBeeException e) {
+			} catch (TimeoutException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (XBeeException e) {
 				e.printStackTrace();
 			}
 		}

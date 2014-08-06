@@ -1245,7 +1245,7 @@ public class XBeeDevice {
 	 *                            if {@code response.getResponseStatus() != ATCommandStatus.OK}.
 	 */
 	private void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
-		if (response == null)
+		if (response == null || response.getResponseStatus() == null)
 			throw new ATCommandException(null);
 		else if (response.getResponseStatus() != ATCommandStatus.OK)
 			throw new ATCommandException(response.getResponseStatus());

@@ -21,14 +21,12 @@ import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
-import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.TransmitException;
-import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
@@ -171,13 +169,10 @@ public class XBeeDevice {
 	/**
 	 * Opens the connection interface associated with this XBee device.
 	 * 
-	 * @throws ConnectionException if the device is already open or if any error occurs when 
-	 *                             opening the device, such as an invalid connection interface,
-	 *                             an invalid configuration or the connection interface is busy.
-	 * @throws XBeeDeviceException if the operating mode cannot be determined or is not supported.
-	 * @throws TimeoutException if the configured time expires when trying to open the device.
+	 * @throws InterfaceAlreadyOpenException if the device is already open.
+	 * @throws XBeeException if there is any problem opening the device.
 	 */
-	public void open() throws ConnectionException, XBeeDeviceException, TimeoutException {
+	public void open() throws XBeeException {
 		logger.info(toString() + "Opening the connection interface...");
 		
 		// First, verify that the connection is not already open.
@@ -194,8 +189,14 @@ public class XBeeDevice {
 		dataReader.start();
 		
 		// Determine the operating mode of the XBee device if it is unknown.
-		if (operatingMode == OperatingMode.UNKNOWN)
-			operatingMode = determineOperatingMode();
+		if (operatingMode == OperatingMode.UNKNOWN) {
+			try {
+				operatingMode = determineOperatingMode();
+			} catch (TimeoutException e) {
+				// Do nothing, just avoid throwing an exception without closing the device.
+				logger.error("Timeout getting the operating mode of the device.", e);
+			}
+		}
 		
 		// Check if the operating mode is a valid and supported one.
 		if (operatingMode == OperatingMode.UNKNOWN) {
@@ -236,12 +237,12 @@ public class XBeeDevice {
 	 * 
 	 * @return The operating mode of the XBee device.
 	 * 
-	 * @throws InterfaceNotOpenException if the interface is not open.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if the configured time expires.
 	 * 
 	 * @see OperatingMode
 	 */
-	protected OperatingMode determineOperatingMode() throws InterfaceNotOpenException, TimeoutException {
+	protected OperatingMode determineOperatingMode() throws TimeoutException {
 		try {
 			// Check if device is in API or API Escaped operating modes.
 			operatingMode = OperatingMode.API;
@@ -284,13 +285,15 @@ public class XBeeDevice {
 	 * Attempts to put the device in AT Command mode. Only valid if device is working in AT mode.
 	 * 
 	 * @return {@code true} if the device entered in AT command mode, {@code false} otherwise.
-	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode cannot be determined or is not supported.
 	 * @throws TimeoutException if the configured time expires.
 	 */
 	public boolean enterATCommandMode() throws InvalidOperatingModeException, TimeoutException {
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		if (operatingMode != OperatingMode.AT)
-			throw new InvalidOperatingModeException("Invalid mode. Command mode can only be accesses while in AT mode.");
+			throw new InvalidOperatingModeException("Invalid mode. Command mode can be only accessed while in AT mode.");
 		
 		// Enter in AT command mode (send '+++'). The process waits 1,5 seconds for the 'OK\n'.
 		byte[] readData = new byte[256];
@@ -374,29 +377,26 @@ public class XBeeDevice {
 	 * @param command AT command to be sent.
 	 * @return An {@code ATCommandResponse} object containing the response of the command or {@code null}
 	 *         if there is no response.
-	 * 
+	 * @throws NullPointerException if {@code command == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws TimeoutException if the configured time expires while waiting for the command reply.
 	 * @throws IOException if an I/O error occurs while sending the AT command.
-	 * @throws NullPointerException if {@code command == null}
 	 * 
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
-	 * 
 	 * @see ATCommand
 	 * @see ATCommandResponse
 	 */
 	public ATCommandResponse sendATCommand(ATCommand command) 
-			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
+			throws InvalidOperatingModeException, TimeoutException, IOException {
 		// Check if command is null.
 		if (command == null)
 			throw new NullPointerException("AT command cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		ATCommandResponse response = null;
 		OperatingMode operatingMode = getOperatingMode();
@@ -435,7 +435,7 @@ public class XBeeDevice {
 	 * @param packet XBee packet to be sent.
 	 * @return XBeePacket object containing the response of the sent packet or {@code null}
 	 *         if there is no response.
-	 * 
+	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
@@ -444,11 +444,13 @@ public class XBeeDevice {
 	 * 
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
-	 * 
 	 * @see XBeePacket
 	 */
 	public XBeePacket sendXBeePacket(final XBeePacket packet) 
-			throws InterfaceNotOpenException, InvalidOperatingModeException, TimeoutException, IOException {
+			throws InvalidOperatingModeException, TimeoutException, IOException {
+		// Check if the packet to send is null.
+		if (packet == null)
+			throw new NullPointerException("XBee packet cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -587,14 +589,17 @@ public class XBeeDevice {
 	 * @param packet XBee packet to be sent.
 	 * @param packetReceiveListener Listener for the operation, {@code null} to not be notifie
 	 *                              when the answer arrives.
-	 * 
+	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
 	 */
-	public void sendXBeePacket(XBeePacket packet,IPacketReceiveListener packetReceiveListener)
-			throws InterfaceNotOpenException, InvalidOperatingModeException, IOException {
+	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
+			throws InvalidOperatingModeException, IOException {
+		// Check if the packet to send is null.
+		if (packet == null)
+			throw new NullPointerException("XBee packet cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -630,14 +635,14 @@ public class XBeeDevice {
 	 * <p>To be notified when the answer is received, use {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
 	 * 
 	 * @param packet XBee packet to be sent asynchronously.
-	 * 
+	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
 	 */
 	public void sendXBeePacketAsync(XBeePacket packet) 
-			throws InterfaceNotOpenException, InvalidOperatingModeException, IOException {
+			throws InvalidOperatingModeException, IOException {
 		sendXBeePacket(packet, null);
 	}
 	
@@ -645,7 +650,6 @@ public class XBeeDevice {
 	 * Writes the given XBee packet in the connection interface.
 	 * 
 	 * @param packet XBee packet to be written.
-	 * 
 	 * @throws IOException if an I/O error occurs while writing the XBee packet in the connection interface.
 	 */
 	protected void writePacket(XBeePacket packet) throws IOException {
@@ -756,22 +760,22 @@ public class XBeeDevice {
 	 * 
 	 * @param address The 64-Bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
+	 * @throws NullPointerException if {@address == null} or {@data == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the serial data.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws NullPointerException if {@address == null} or {@data == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 */
 	public void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address == null)
 			throw new NullPointerException("Address cannot be null");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
@@ -816,22 +820,22 @@ public class XBeeDevice {
 	 * 
 	 * @param address The 16-Bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
+	 * @throws NullPointerException if {@address == null} or {@data == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the serial data.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws NullPointerException if {@address == null} or {@data == null}.
 	 * 
 	 * @see XBee16BitAddress
 	 */
 	public void sendSerialData(XBee16BitAddress address, byte[] data) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address == null)
 			throw new NullPointerException("Address cannot be null");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		XBeePacket xbeePacket;
 		XBeePacket receivedPacket;
@@ -875,9 +879,10 @@ public class XBeeDevice {
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.
+	 * @throws NullPointerException if {@code xbeeDevice == null} or {@code data == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the serial data.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws NullPointerException if {@code xbeeDevice == null} or {@code data == null}.
 	 * 
 	 * @see XBeeDevice
 	 */
@@ -918,24 +923,25 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to configure.
 	 * @param mode The IO mode to set to the IO line.
-	 * @throws TimeoutException if there is a timeout sending the set configuration command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null} or
 	 *                              if {@code ioMode == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the set configuration command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getIOConfiguration(IOLine)
 	 * @see IOLine
 	 * @see IOMode
 	 */
 	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		if (ioMode == null)
 			throw new NullPointerException("IO mode cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Create and send the AT Command.
 		String atCommand = ioLine.getConfigurationATCommand();
@@ -955,21 +961,22 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its configuration.
 	 * @return The IO mode (configuration) of the provided IO line.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get configuration command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode
 	 */
 	public IOMode getIOConfiguration(IOLine ioLine) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("DIO pin cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Create and send the AT Command.
 		ATCommandResponse response = null;
@@ -1001,10 +1008,11 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to set its value.
 	 * @param value The IOValue to set to the IO line ({@code HIGH} or {@code LOW}).
-	 * @throws TimeoutException if there is a timeout sending the set DIO command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null} or 
 	 *                              if {@code ioValue == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the set DIO command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
@@ -1013,15 +1021,15 @@ public class XBeeDevice {
 	 * @see IOMode.DIGITAL_OUT_LOW
 	 */
 	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		// Check IO value.
 		if (ioValue == null)
 			throw new NullPointerException("IO value cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Create and send the AT Command.
 		String atCommand = ioLine.getConfigurationATCommand();
@@ -1042,9 +1050,10 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * @return The digital value corresponding to the provided IO line.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO values command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
@@ -1053,12 +1062,12 @@ public class XBeeDevice {
 	 * @see IOMode.DIGITAL_OUT_LOW
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Create and send the AT Command.
 		ATCommandResponse response = null;
@@ -1096,22 +1105,20 @@ public class XBeeDevice {
      * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
 	 * 
 	 * @param ioLine The IO line to set its duty cycle value.
-	 * @param value The duty cycle of the PWM. 
-	 * @throws TimeoutException if there is a timeout sending the set PWM duty cycle command.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @param value The duty cycle of the PWM.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false} or 
 	 *                                  if {@code value < 0} or
 	 *                                  if {@code value > 1023}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the set PWM duty cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode.PWM
 	 */
 	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
@@ -1121,6 +1128,9 @@ public class XBeeDevice {
 		// Check duty cycle limits.
 		if (dutyCycle < 0 || dutyCycle > 100)
 			throw new IllegalArgumentException("Duty Cycle must be between 0% and 100%.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Convert the value.
 		int finaldutyCycle = (int)(dutyCycle * 1023.0/100.0);
@@ -1146,25 +1156,26 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its PWM duty cycle.
 	 * @return The PWM duty cycle value corresponding to the provided IO line (0% - 100%).
-	 * @throws TimeoutException if there is a timeout sending the get PWM duty cycle command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the get PWM duty cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode.PWM
 	 */
 	public double getPWMDutyCycle(IOLine ioLine) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
 		// Check if the IO line has PWM capability.
 		if (!ioLine.hasPWMCapability())
 			throw new IllegalArgumentException("Provided IO line does not have PWM capability.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Create and send the AT Command.
 		ATCommandResponse response = null;
@@ -1191,21 +1202,22 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * @return The analog value corresponding to the provided IO line.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO values command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOMode.ADC
 	 */
 	public int getADCValue(IOLine ioLine) throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
 		
 		// Create and send the AT Command.
 		ATCommandResponse response = null;

@@ -17,7 +17,7 @@ package com.digi.xbee.api.exceptions;
  * 
  * @see ConnectionException
  */
-public class InterfaceNotOpenException extends ConnectionException {
+public class InterfaceNotOpenException extends RuntimeException {
 
 	// Constants
 	private static final long serialVersionUID = 1L;

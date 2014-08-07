@@ -47,6 +47,7 @@ public class MainApp {
 			myDevice.open();
 		} catch (XBeeException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 		
 		myDevice.startListeningForSerialData(new MySerialDataReceiveListener());

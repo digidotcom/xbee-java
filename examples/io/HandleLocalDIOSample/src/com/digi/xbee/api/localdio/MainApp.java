@@ -15,7 +15,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
@@ -65,15 +64,16 @@ public class MainApp {
 			myDevice.open();
 		} catch (XBeeException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 		
 		try {
 			myDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
 			myDevice.setIOConfiguration(IOLINE_OUT, IOMode.DIGITAL_OUT_LOW);
-		} catch (TimeoutException e) {
-			e.printStackTrace();
 		} catch (XBeeException e) {
 			e.printStackTrace();
+			myDevice.close();
+			System.exit(1);
 		}
 		
 		readADCTimer.schedule(new UpdateOutputTask(myDevice), 0, READ_TIMEOUT);
@@ -102,8 +102,6 @@ public class MainApp {
 				System.out.println("Input line value: " + value);
 				// Set the previous value to the output line.
 				xbeeDevice.setDIOValue(IOLINE_OUT, value);
-			} catch (TimeoutException e) {
-				e.printStackTrace();
 			} catch (XBeeException e) {
 				e.printStackTrace();
 			}

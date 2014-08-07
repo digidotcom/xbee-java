@@ -37,7 +37,7 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	
 	// TODO Replace with the 64-bit address of your receiver module.
-	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
+	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A2004031A8D6");
 	// TODO Replace with the 16-bit address of your receiver module.
 	//private static final XBee16BitAddress DESTINATION_16_BIT_ADDRESS = new XBee16BitAddress("XXXX");
 	
@@ -56,7 +56,6 @@ public class MainApp {
 		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		byte[] dataToSend = DATA_TO_SEND.getBytes();
-		boolean success = false;
 		
 		// Use an XBee64BitAddress object when using a 64-bit destination address.
 		XBee64BitAddress destinationAddress = DESTINATION_64_BIT_ADDRESS;
@@ -64,27 +63,23 @@ public class MainApp {
 		//XBee16BitAddress destinationAddress = DESTINATION_16_BIT_ADDRESS;
 		
 		try {
-			// Open the local device.
 			myDevice.open();
-			
-			System.out.format("Sending data to %s >> %s | %s... ", destinationAddress, 
-					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
-					new String(dataToSend));
-			
-			// Send the data to the destination address.
-			myDevice.sendSerialData(destinationAddress, dataToSend);
-			
 		} catch (XBeeException e) {
 			e.printStackTrace();
-		} finally {
-			// Close the local device before exiting.
-			myDevice.close();
-			if (success) {
-				System.out.println("Success");
-				System.exit(0);
-			}
-			System.out.println("Error");
 			System.exit(1);
+		}
+			
+		System.out.format("Sending data to %s >> %s | %s... ", destinationAddress, 
+				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
+				new String(dataToSend));
+		try {
+			myDevice.sendSerialData(destinationAddress, dataToSend);
+			System.out.println("Success");
+		} catch (XBeeException e) {
+			System.out.println("Error");
+			e.printStackTrace();
+		} finally {
+			myDevice.close();
 		}
 	}
 }

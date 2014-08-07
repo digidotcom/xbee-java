@@ -11,6 +11,8 @@
 */
 package com.digi.xbee.api.io;
 
+import java.util.HashMap;
+
 /**
  * Enumerates the possible values of a {@code IOLine} configured as digital I/O.
  */
@@ -21,9 +23,16 @@ public enum IOValue {
 	HIGH(5, "High");
 	
 	// Variables.
+	private final static HashMap <Integer, IOValue> lookupTable = new HashMap<Integer, IOValue>();
+	
 	private final int id;
 	
 	private final String name;
+	
+	static {
+		for (IOValue ioValue:values())
+			lookupTable.put(ioValue.getID(), ioValue);
+	}
 	
 	/**
 	 * Creates a new IO value with the given ID and name.
@@ -52,6 +61,18 @@ public enum IOValue {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Retrieves the IO Value corresponding to the provided value ID.
+	 * 
+	 * @param valueID The ID of the IOValue to retrieve.
+	 * @return The IO Value corresponding to the provided value ID.
+	 */
+	public static IOValue getIOValue(int valueID) {
+		if (lookupTable.containsKey(valueID))
+			return lookupTable.get(valueID);
+		return null;
 	}
 	
 	/*

@@ -22,12 +22,12 @@ public class IOLineTest {
 	private static final int INVALID_ID = -1;
 	
 	// Variables.
-	private IOLine[] values;
+	private IOLine[] ioLines;
 	
 	@Before
 	public void setup() {
-		// Retrieve the list of enum values.
-		values = IOLine.values();
+		// Retrieve the list of enum. values.
+		ioLines = IOLine.values();
 	}
 	
 	/**
@@ -35,28 +35,28 @@ public class IOLineTest {
 	 */
 	@Test
 	public void testIOLineNames() {
-		for (IOLine ioLine:values) {
+		for (IOLine ioLine:ioLines) {
 			assertNotNull(ioLine.name());
 			assertTrue(ioLine.name().length() > 0);
 		}
 	}
 	
 	/**
-	 * Verify that each of the IO Line enum values can be retrieved statically 
+	 * Verify that each IO line enum. value can be retrieved statically 
 	 * using its index.
 	 */
 	@Test
 	public void testIOLineStaticAccess() {
-		for (IOLine ioLine:values)
+		for (IOLine ioLine:ioLines)
 			assertEquals(ioLine, IOLine.getDIO(ioLine.getIndex()));
 	}
 	
 	/**
-	 * Verify that when trying to get an IO not contained in the enumeration, 
+	 * Verify that when trying to get an IO line not contained in the enumeration, 
 	 * a null value is retrieved.
 	 */
 	@Test
-	public void testNullIOIsRetrievedWithInvalidIndex() {
+	public void testNullIOLineIsRetrievedWithInvalidIndex() {
 		assertNull(IOLine.getDIO(INVALID_ID));
 	}
 	
@@ -64,8 +64,8 @@ public class IOLineTest {
 	 * Verify that all the IO lines have a configuration command.
 	 */
 	@Test
-	public void testNotNullConfigurationcommand() {
-		for (IOLine ioLine:values)
+	public void testNotNullConfigurationCommand() {
+		for (IOLine ioLine:ioLines)
 			assertNotNull(ioLine.getConfigurationATCommand());
 	}
 	
@@ -74,7 +74,7 @@ public class IOLineTest {
 	 */
 	@Test
 	public void testNotNullReadIOCommand() {
-		for (IOLine ioLine:values)
+		for (IOLine ioLine:ioLines)
 			assertNotNull(ioLine.getReadIOATCommand());
 	}
 	
@@ -83,7 +83,7 @@ public class IOLineTest {
 	 */
 	@Test
 	public void testPWMCapabilities() {
-		for (IOLine ioLine:values) {
+		for (IOLine ioLine:ioLines) {
 			if (ioLine.getIndex() == 10 || ioLine.getIndex() == 11) {
 				assertTrue(ioLine.hasPWMCapability());
 				assertNotNull(ioLine.getPWMDutyCycleATCommand());

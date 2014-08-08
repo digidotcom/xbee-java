@@ -189,14 +189,8 @@ public class XBeeDevice {
 		dataReader.start();
 		
 		// Determine the operating mode of the XBee device if it is unknown.
-		if (operatingMode == OperatingMode.UNKNOWN) {
-			try {
-				operatingMode = determineOperatingMode();
-			} catch (TimeoutException e) {
-				// Do nothing, just avoid throwing an exception without closing the device.
-				logger.error("Timeout getting the operating mode of the device.", e);
-			}
-		}
+		if (operatingMode == OperatingMode.UNKNOWN)
+			operatingMode = determineOperatingMode();
 		
 		// Check if the operating mode is a valid and supported one.
 		if (operatingMode == OperatingMode.UNKNOWN) {
@@ -236,13 +230,11 @@ public class XBeeDevice {
 	 * Determines the operating mode of the XBee device.
 	 * 
 	 * @return The operating mode of the XBee device.
-	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if the configured time expires.
 	 * 
 	 * @see OperatingMode
 	 */
-	protected OperatingMode determineOperatingMode() throws TimeoutException {
+	protected OperatingMode determineOperatingMode() {
 		try {
 			// Check if device is in API or API Escaped operating modes.
 			operatingMode = OperatingMode.API;
@@ -268,6 +260,8 @@ public class XBeeDevice {
 					boolean success = enterATCommandMode();
 					if (success)
 						return OperatingMode.AT;
+				} catch (TimeoutException e1) {
+					logger.error(e1.getMessage(), e1);
 				} catch (InvalidOperatingModeException e1) {
 					logger.error(e1.getMessage(), e1);
 				} catch (InterruptedException e1) {

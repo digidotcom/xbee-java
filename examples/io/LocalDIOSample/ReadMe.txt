@@ -3,12 +3,12 @@
   This is a sample Java application to show how to set and read XBee digital 
   lines of the device attached to the serial/USB port of your PC.
   
-  The application configures two IO lines of the XBee device, one as digital
-  input (button) and the other one as digital output (LED). Then, the 
+  The application configures two IO lines of the XBee device, one as a digital
+  input (button) and the other as a digital output (LED). Then, the 
   application reads the status of the input line periodically and updates 
   the output to follow the input.
   
-  Therefore while the push button is pressed the LED should be lighting.
+  While the push button is pressed the LED should be lighting.
 
 
   Files
@@ -45,13 +45,13 @@
          - XBIB-U-DEV board:
              * The example is already configured to use this carrier board. 
                The input line is configured to use the SW5 user button of the 
-               board and the output line is connected to the DS2 user LED. So 
-               you don't need to make further changes.
+               board and the output line is connected to the DS2 user LED. No
+			   further changes are necessary.
          
          - XBee Development Board:
-             * If you are using the XBee Development Board you will need to 
-               update the IOLINE_IN constant accordingly. There are comments 
-               in the code indicating which fragment belongs to each board.
+             * If you are using the XBee Development Board, update the IOLINE_IN
+               constant accordingly. There are comments in the code indicating
+               which fragment belongs to each board.
 
          NOTE: It is recommended to verify the capabilities of the pins used 
                in the example in the product manual of your XBee Device to 
@@ -61,7 +61,7 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test its functionality follow these steps:
+  To test its functionality, follow these steps:
   
     1) Press the button corresponding to the digital input line. In the XBIB
        boards it is the DIO3; in the XBee Development boards is the DIO4 or

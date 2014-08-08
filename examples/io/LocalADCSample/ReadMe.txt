@@ -1,9 +1,9 @@
   Introduction
   ------------
-  This is a sample Java application to show how to read XBee analog inputs 
+  This is a sample Java application that shows how to read XBee analog inputs 
   of the device attached to the serial/USB port of your PC.
   
-  The application configures an IO line of the XBee device as ADC. Then 
+  The application configures an IO line of the XBee device as ADC. Then, 
   periodically reads its value and prints it in the output console.
 
 
@@ -37,7 +37,7 @@
        
     4) The final step is to connect a voltage variable source to the pin 
        configured as ADC (light sensor, temperature sensor, etc). For testing 
-       purposes we recommend to use a potentiometer. Depending on the carrier 
+       purposes we recommend using a potentiometer. Depending on the carrier 
        board you are using you will need to follow a different set of 
        instructions to connect it:
          - XBIB-U-DEV board:
@@ -77,7 +77,7 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test its functionality follow these steps:
+  To test its functionality, follow these steps:
   
     1) Rotate the potentiometer.
        

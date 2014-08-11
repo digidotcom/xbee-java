@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.exceptions.InterfaceInUseException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
+import com.digi.xbee.api.exceptions.XBeeException;
 
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
@@ -126,11 +127,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#open()
-	 */
-	public void open() throws InterfaceInUseException, InvalidConfigurationException, InvalidInterfaceException {
+	@Override
+	public void open() throws XBeeException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);

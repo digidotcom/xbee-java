@@ -177,6 +177,7 @@ public class XBeeDevice implements IConnectionInterface {
 		
 		this.connectionInterface = localXBeeDevice;
 		this.xbee64BitAddress = xbee64BitAddress;
+		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
 		logger.debug(toString() + "Using the connection interface {}.", 
 				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
 		

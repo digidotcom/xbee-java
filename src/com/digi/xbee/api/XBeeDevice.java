@@ -12,8 +12,6 @@
 package com.digi.xbee.api;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.slf4j.Logger;
@@ -58,7 +56,7 @@ import com.digi.xbee.api.packet.raw.TXStatusPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
-public class XBeeDevice implements IConnectionInterface {
+public class XBeeDevice {
 	
 	// Constants.
 	protected static int DEFAULT_RECEIVE_TIMETOUT = 2000; // 2.0 seconds of timeout to receive packet and command responses.
@@ -82,9 +80,9 @@ public class XBeeDevice implements IConnectionInterface {
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
 	
-	protected boolean isRemote = false;
-	
 	private Logger logger;
+	
+	private XBeeDevice localXBeeDevice;
 	
 	/**
 	 * Class constructor. Instantiates a new XBeeDevice object in the given port name and baud rate.
@@ -175,16 +173,20 @@ public class XBeeDevice implements IConnectionInterface {
 		if (xbee64BitAddress == null)
 			throw new NullPointerException("XBee 64 bit address of the remote device cannot be null.");
 		
-		this.connectionInterface = localXBeeDevice;
+		this.localXBeeDevice = localXBeeDevice;
+		this.connectionInterface = localXBeeDevice.getConnectionInterface();
 		this.xbee64BitAddress = xbee64BitAddress;
 		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
 		logger.debug(toString() + "Using the connection interface {}.", 
 				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
-		
-		isRemote = true;
 	}
 	
-	@Override
+	/**
+	 * Opens the connection interface associated with this XBee device.
+	 * 
+	 * @throws InterfaceAlreadyOpenException if the device is already open.
+	 * @throws XBeeException if there is any problem opening the device.
+	 */
 	public void open() throws XBeeException {
 		logger.info(toString() + "Opening the connection interface...");
 		
@@ -199,7 +201,7 @@ public class XBeeDevice implements IConnectionInterface {
 		
 		// Data reader initialization and determining operating mode should be only 
 		// done for local XBee devices.
-		if (isRemote)
+		if (isRemote())
 			return;
 		
 		// Initialize the data reader.
@@ -220,7 +222,9 @@ public class XBeeDevice implements IConnectionInterface {
 		}
 	}
 	
-	@Override
+	/**
+	 * Closes the connection interface associated with this XBee device.
+	 */
 	public void close() {
 		// Stop XBee reader.
 		if (dataReader != null && dataReader.isRunning())
@@ -230,42 +234,16 @@ public class XBeeDevice implements IConnectionInterface {
 		logger.info(toString() + "Connection interface closed.");
 	}
 	
-	@Override
+	/**
+	 * Retrieves whether or not the connection interface associated to the device is 
+	 * open.
+	 * 
+	 * @return {@code true} if the interface is open, {@code false} otherwise.
+	 */
 	public boolean isOpen() {
 		if (connectionInterface != null)
 			return connectionInterface.isOpen();
 		return false;
-	}
-	
-	@Override
-	public InputStream getInputStream() {
-		return connectionInterface.getInputStream();
-	}
-	
-	@Override
-	public OutputStream getOutputStream() {
-		return connectionInterface.getOutputStream();
-	}
-	
-	@Override
-	public void writeData(byte[] data) throws IOException {
-		connectionInterface.writeData(data);
-	}
-	
-	@Override
-	public void writeData(byte[] data, int offset, int length)
-			throws IOException {
-		connectionInterface.writeData(data, offset, length);
-	}
-	
-	@Override
-	public int readData(byte[] data) throws IOException {
-		return connectionInterface.readData(data);
-	}
-	
-	@Override
-	public int readData(byte[] data, int offset, int length) throws IOException {
-		return connectionInterface.readData(data, offset, length);
 	}
 	
 	/**
@@ -280,12 +258,12 @@ public class XBeeDevice implements IConnectionInterface {
 	}
 	
 	/**
-	 * Retrieves whether or not the XBee device is a remot device.
+	 * Retrieves whether or not the XBee device is a remote device.
 	 * 
 	 * @return {@code true} if the XBee device is a remote device, {@code false} otherwise.
 	 */
 	public boolean isRemote() {
-		return isRemote;
+		return localXBeeDevice != null;
 	}
 	
 	/**
@@ -833,7 +811,7 @@ public class XBeeDevice implements IConnectionInterface {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		// Check if device is remote.
-		if (isRemote)
+		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
 		XBeePacket xbeePacket;
@@ -896,7 +874,7 @@ public class XBeeDevice implements IConnectionInterface {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		// Check if device is remote.
-		if (isRemote)
+		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
 		XBeePacket xbeePacket;

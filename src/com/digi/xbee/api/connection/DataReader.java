@@ -32,6 +32,7 @@ import com.digi.xbee.api.packet.XBeePacketParser;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -242,26 +243,33 @@ public class DataReader extends Thread {
 		
 		String address = null;
 		byte[] data = null;
+		boolean isBroadcastData = false;
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			address = ((ReceivePacket)apiPacket).get64bitAddress().toString();
 			data = ((ReceivePacket)apiPacket).getReceivedData();
+			isBroadcastData = ByteUtils.isBitEnabled(((ReceivePacket)apiPacket).getReceiveOptions(), 1);
 			break;
 		case RX_64:
 			address = ((RX64Packet)apiPacket).getSourceAddress().toString();
 			data = ((RX64Packet)apiPacket).getReceivedData();
+			if (ByteUtils.isBitEnabled(((RX64Packet)apiPacket).getReceiveOptions(), 1)
+					|| ByteUtils.isBitEnabled(((RX64Packet)apiPacket).getReceiveOptions(), 2))
+				isBroadcastData = true;
 			break;
 		case RX_16:
 			address = ((RX16Packet)apiPacket).getSourceAddress().toString();
 			data = ((RX16Packet)apiPacket).getReceivedData();
+			if (ByteUtils.isBitEnabled(((RX16Packet)apiPacket).getReceiveOptions(), 1)
+					|| ByteUtils.isBitEnabled(((RX16Packet)apiPacket).getReceiveOptions(), 2))
+				isBroadcastData = true;
 			break;
 		default:
 			break;
 		}
 		// Notify that serial data was received to the corresponding listeners.
-		if (address != null && data != null)
-			notifySerialDataReceived(address, data);
+		notifySerialDataReceived(address, data, isBroadcastData);
 	}
 	
 	/**
@@ -269,10 +277,16 @@ public class DataReader extends Thread {
 	 *
 	 * @param address The address of the node that sent the data.
 	 * @param data The received data.
+	 * @param isBroadcastData Indicates whether or not the data was sent via broadcast to execute 
+	 *                        the corresponding broadcast callback.
 	 */
-	private void notifySerialDataReceived(final String address, final byte[] data) {
-		logger.info(connectionInterface.toString() + 
-				"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(data));
+	private void notifySerialDataReceived(final String address, final byte[] data, final boolean isBroadcastData) {
+		if (isBroadcastData)
+			logger.info(connectionInterface.toString() + 
+					"Broadcast serial data received from {} >> {}.", address, HexUtils.prettyHexString(data));
+		else
+			logger.info(connectionInterface.toString() + 
+					"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		try {
 			synchronized (serialDataReceiveListeners) {
@@ -281,7 +295,10 @@ public class DataReader extends Thread {
 				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
 					executor.execute(new Runnable() {
 						public void run() {
-							listener.serialDataReceived(address, data);
+							if (isBroadcastData)
+								listener.broadcastSerialDataReceived(address, data);
+							else
+								listener.serialDataReceived(address, data);
 						}
 					});
 				}

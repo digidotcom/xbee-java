@@ -25,4 +25,12 @@ public interface ISerialDataReceiveListener {
 	 * @param data The received data.
 	 */
 	public void serialDataReceived(String address, byte[] data);
+	
+	/**
+	 * Called when serial data is received from a remote node via broadcast.
+	 * 
+	 * @param address The address of the remote node that sent the broadcast data.
+	 * @param data The received data.
+	 */
+	public void broadcastSerialDataReceived(String address, byte[] data);
 }

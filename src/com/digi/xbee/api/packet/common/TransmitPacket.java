@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -81,8 +80,6 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 *                                  if {@code broadcastRadius > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
-	 * 
-	 * @see XBeeTransmitOptions
 	 */
 	public TransmitPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int broadcastRadius, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TRANSMIT_REQUEST);

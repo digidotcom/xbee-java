@@ -18,21 +18,22 @@ import java.util.LinkedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.models.ATStringCommands;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
-import com.digi.xbee.api.models.ATStringCommands;
 
 /**
  * This class represents an AT Command XBee packet. Packet is built
  * using the parameters of the constructor.
  * 
- * Used to query or set module parameters on the local device. This API
+ * <p>Used to query or set module parameters on the local device. This API
  * command applies changes after executing the command. (Changes made to
- * module parameters take effect once changes are applied.).
+ * module parameters take effect once changes are applied.).</p>
  * 
- * Command response is received as an AT Command Response packet.
- * See {@link com.digi.xbee.packet.common.ATCommandResponsePacket}.
+ * <p>Command response is received as an {@code ATCommandResponsePacket}.</p>
+ * 
+ * @see ATCommandResponsePacket
  */
 public class ATCommandPacket extends XBeeAPIPacket {
 
@@ -47,9 +48,9 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * Class constructor. Instances a new object of type ATCommandPacket
 	 * with the given parameters.
 	 * 
-	 * @param frameID The XBee API frame ID.
-	 * @param command The AT command.
-	 * @param parameter The AT command parameter as String.
+	 * @param frameID XBee API frame ID.
+	 * @param command AT command.
+	 * @param parameter AT command parameter as String.
 	 * 
 	 * @throws NullPointerException if {@code command == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
@@ -74,9 +75,9 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * Class constructor. Instances a new object of type ATCommandPacket
 	 * with the given parameters.
 	 * 
-	 * @param frameID The XBee API frame ID.
-	 * @param command The AT command.
-	 * @param parameter The AT command parameter.
+	 * @param frameID XBee API frame ID.
+	 * @param command AT command.
+	 * @param parameter AT command parameter.
 	 * 
 	 * @throws NullPointerException if {@code command == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
@@ -93,12 +94,10 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		this.frameID = frameID;
 		this.command = command;
 		this.parameter = parameter;
+		this.logger = LoggerFactory.getLogger(ATCommandPacket.class);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
-	 */
+	
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
@@ -111,11 +110,8 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		}
 		return os.toByteArray();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
-	 */
+	
+	@Override
 	public boolean needsAPIFrameID() {
 		return true;
 	}
@@ -170,10 +166,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		return new String(parameter);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIPacketParameters()
-	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");

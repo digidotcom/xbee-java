@@ -442,15 +442,23 @@ public class XBeeDevice {
 		case API:
 		case API_ESCAPE:
 			// Create AT command packet
-			XBeeAPIPacket packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+			XBeePacket packet;
+			if (isRemote())
+				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), XBee16BitAddress.UNKNOWN_ADDRESS, XBeeTransmitOptions.NONE, command.getCommand(), command.getParameter());
+			else
+				packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
 			if (command.getParameter() == null)
 				logger.debug(toString() + "Sending AT command '{}'.", command.getCommand());
 			else
 				logger.debug(toString() + "Sending AT command '{} {}'.", command.getCommand(), HexUtils.prettyHexString(command.getParameter()));
 			try {
 				// Send the packet and build response.
-				ATCommandResponsePacket answerPacket = (ATCommandResponsePacket)sendXBeePacket(packet);
-				response = new ATCommandResponse(command, answerPacket.getCommandData(), answerPacket.getStatus());
+				XBeePacket answerPacket = sendXBeePacket(packet, true);
+				if (answerPacket instanceof ATCommandResponsePacket)
+					response = new ATCommandResponse(command, ((ATCommandResponsePacket)answerPacket).getCommandValue(), ((ATCommandResponsePacket)answerPacket).getStatus());
+				else if (answerPacket instanceof RemoteATCommandResponsePacket)
+					response = new ATCommandResponse(command, ((RemoteATCommandResponsePacket)answerPacket).getCommandValue(), ((RemoteATCommandResponsePacket)answerPacket).getStatus());
+				
 				if (response.getResponse() != null)
 					logger.debug(toString() + "AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
 				else

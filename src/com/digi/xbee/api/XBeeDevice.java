@@ -782,20 +782,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx64 packet.
 			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			try {
-				sendXBeePacketAsync(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
+			sendAndCheckXBeePacket(xbeePacket, true);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-			try {
-				sendXBeePacketAsync(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
+			sendAndCheckXBeePacket(xbeePacket, true);
 		}
 	}
 	
@@ -833,20 +825,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx16 packet.
 			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			try {
-				sendXBeePacketAsync(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
+			sendAndCheckXBeePacket(xbeePacket, true);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-			try {
-				sendXBeePacketAsync(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
+			sendAndCheckXBeePacket(xbeePacket, true);
 		}
 	}
 	
@@ -893,7 +877,6 @@ public class XBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		XBeePacket xbeePacket;
-		XBeePacket receivedPacket;
 		
 		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
@@ -902,30 +885,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx64 packet.
 			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			try {
-				receivedPacket = sendXBeePacket(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			
-			// Check if the packet received is a valid transmit status packet. If the packet received 
-			// is null it means that the transmission was made asynchronously, so it is valid.
-			if (receivedPacket != null)
-				checkTransmitStatusPacketIsValid(receivedPacket);
+			sendAndCheckXBeePacket(xbeePacket, false);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-			try {
-				receivedPacket = sendXBeePacket(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			
-			// Check if the packet received is a valid transmit status packet. If the packet received 
-			// is null it means that the transmission was made asynchronously, so it is valid.
-			if (receivedPacket != null)
-				checkTransmitStatusPacketIsValid(receivedPacket);
+			sendAndCheckXBeePacket(xbeePacket, false);
 		}
 	}
 	
@@ -953,7 +918,6 @@ public class XBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		XBeePacket xbeePacket;
-		XBeePacket receivedPacket;
 		
 		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
@@ -962,30 +926,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx16 packet.
 			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			try {
-				receivedPacket = sendXBeePacket(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			
-			// Check if the packet received is a valid transmit status packet. If the packet received 
-			// is null it means that the transmission was made asynchronously, so it is valid.
-			if (receivedPacket != null)
-				checkTransmitStatusPacketIsValid(receivedPacket);
+			sendAndCheckXBeePacket(xbeePacket, false);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-			try {
-				receivedPacket = sendXBeePacket(xbeePacket);
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			
-			// Check if the packet received is a valid transmit status packet. If the packet received 
-			// is null it means that the transmission was made asynchronously, so it is valid.
-			if (receivedPacket != null)
-				checkTransmitStatusPacketIsValid(receivedPacket);
+			sendAndCheckXBeePacket(xbeePacket, false);
 		}
 	}
 	
@@ -1008,27 +954,47 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Checks if the provided {@code XBeePacket} is a valid transmit status packet throwing 
-	 * an {@code TransmitException} in case it is not.
+	 * Sends the provided {@code XBeePacket} and determines if the transmission status is success 
+	 * for synchronous transmissions. If the status is not success, an {@code TransmitException} is
+	 * thrown.
 	 * 
-	 * @param packet The {@code XBeePacket} to check if it a valid transmit status packet.
+	 * @param packet The {@code XBeePacket} to be sent.
+	 * @param asyncTransmission Determines whether or not the transmission should be made asynchronously.
 	 * @throws TransmitException if {@value packet} is not an instance of {@code TransmitStatusPacket} or 
 	 *                           if {@value packet} is not an instance of {@code TXStatusPacket} or 
 	 *                           if its transmit status is different than {@code XBeeTransmitStatus.SUCCESS}.
+	 * @throws XBeeException if there is any other XBee related error.
 	 */
-	private void checkTransmitStatusPacketIsValid(XBeePacket packet) throws TransmitException {
-		if (packet == null)
+	private void sendAndCheckXBeePacket(XBeePacket packet, boolean asyncTransmission) throws TransmitException, XBeeException {
+		XBeePacket receivedPacket = null;
+		
+		// Send the XBee packet.
+		try {
+			if (asyncTransmission)
+				sendXBeePacketAsync(packet);
+			else
+				receivedPacket = sendXBeePacket(packet);
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// If the transmission is async. we are done.
+		if (asyncTransmission)
+			return;
+		
+		// Check if the packet received is a valid transmit status packet.
+		if (receivedPacket == null)
 			throw new TransmitException(null);
-		if (packet instanceof TransmitStatusPacket) {
-			if (((TransmitStatusPacket)packet).getTransmitStatus() == null)
+		if (receivedPacket instanceof TransmitStatusPacket) {
+			if (((TransmitStatusPacket)receivedPacket).getTransmitStatus() == null)
 				throw new TransmitException(null);
-			else if (((TransmitStatusPacket)packet).getTransmitStatus() != XBeeTransmitStatus.SUCCESS)
-				throw new TransmitException(((TransmitStatusPacket)packet).getTransmitStatus());
-		} else if (packet instanceof TXStatusPacket) {
-			if (((TXStatusPacket)packet).getTransmitStatus() == null)
+			else if (((TransmitStatusPacket)receivedPacket).getTransmitStatus() != XBeeTransmitStatus.SUCCESS)
+				throw new TransmitException(((TransmitStatusPacket)receivedPacket).getTransmitStatus());
+		} else if (receivedPacket instanceof TXStatusPacket) {
+			if (((TXStatusPacket)receivedPacket).getTransmitStatus() == null)
 				throw new TransmitException(null);
-			else if (((TXStatusPacket)packet).getTransmitStatus() != XBeeTransmitStatus.SUCCESS)
-				throw new TransmitException(((TXStatusPacket)packet).getTransmitStatus());
+			else if (((TXStatusPacket)receivedPacket).getTransmitStatus() != XBeeTransmitStatus.SUCCESS)
+				throw new TransmitException(((TXStatusPacket)receivedPacket).getTransmitStatus());
 		} else
 			throw new TransmitException(null);
 	}

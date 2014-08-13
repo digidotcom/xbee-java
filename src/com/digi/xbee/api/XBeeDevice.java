@@ -782,13 +782,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx64 packet.
 			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, true);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, true);
 		}
+		sendAndCheckXBeePacket(xbeePacket, true);
 	}
 	
 	/**
@@ -825,13 +824,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx16 packet.
 			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, true);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, true);
 		}
+		sendAndCheckXBeePacket(xbeePacket, true);
 	}
 	
 	/**
@@ -885,13 +883,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx64 packet.
 			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, false);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, false);
 		}
+		sendAndCheckXBeePacket(xbeePacket, false);
 	}
 	
 	/**
@@ -926,13 +923,12 @@ public class XBeeDevice {
 		case RAW_802_15_4:
 			// Generate and send the Tx16 packet.
 			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, false);
 			break;
 		default:
 			// Generate and send the Transmit packet.
 			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-			sendAndCheckXBeePacket(xbeePacket, false);
 		}
+		sendAndCheckXBeePacket(xbeePacket, false);
 	}
 	
 	/**

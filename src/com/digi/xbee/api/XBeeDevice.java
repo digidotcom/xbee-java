@@ -628,6 +628,14 @@ public class XBeeDevice {
 							if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
 								return;
 						}
+						// If the packet sent is a remote AT command, verify that the received one is a remote AT command response and 
+						// the command matches in both packets.
+						if (sentAPIPacket.getFrameType() == APIFrameType.REMOTE_AT_COMMAND_REQUEST) {
+							if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_COMMAND_RESPONSE)
+								return;
+							if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
+								return;
+						}
 					}
 					
 					// Verify that the sent packet is not the received one! This can happen when the echo mode is enabled in the 

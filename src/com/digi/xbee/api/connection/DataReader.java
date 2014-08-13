@@ -269,7 +269,8 @@ public class DataReader extends Thread {
 			break;
 		}
 		// Notify that serial data was received to the corresponding listeners.
-		notifySerialDataReceived(address, data, isBroadcastData);
+		if (address != null && data != null)
+			notifySerialDataReceived(address, data, isBroadcastData);
 	}
 	
 	/**

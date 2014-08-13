@@ -201,6 +201,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the serialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).serialDataReceived(XBEE_16BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the broadcastSerialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).broadcastSerialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_16BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -230,6 +233,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the broadcastSerialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).broadcastSerialDataReceived(XBEE_16BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the serialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).serialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_16BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -259,6 +265,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the broadcastSerialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).broadcastSerialDataReceived(XBEE_16BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the serialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).serialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_16BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -285,6 +294,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the serialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).serialDataReceived(XBEE_64BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the broadcastSerialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).broadcastSerialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -314,6 +326,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the broadcastSerialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).broadcastSerialDataReceived(XBEE_64BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the serialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).serialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -343,6 +358,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the broadcastSerialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).broadcastSerialDataReceived(XBEE_64BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the serialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).serialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -369,6 +387,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the serialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).serialDataReceived(XBEE_64BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the broadcastSerialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).broadcastSerialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());
@@ -398,6 +419,9 @@ public class ISerialDataReceiveListenerTest {
 		// Verify that the broadcastSerialDataReceived method of the listener was executed one time.
 		Mockito.verify(receiveSerialDataListener, Mockito.times(1)).broadcastSerialDataReceived(XBEE_64BIT_ADDRESS.toString(), 
 				RECEIVED_DATA_BYTES);
+		// Verify that the serialDataReceived method of the listener was not executed.
+		Mockito.verify(receiveSerialDataListener, Mockito.never()).serialDataReceived(Mockito.anyString(), 
+				(byte[])Mockito.any());
 		
 		assertEquals(XBEE_64BIT_ADDRESS.toString(), receiveSerialDataListener.getAddress());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveSerialDataListener.getSerialData());

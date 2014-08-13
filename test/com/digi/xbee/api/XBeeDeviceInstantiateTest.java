@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 
@@ -46,13 +47,13 @@ public class XBeeDeviceInstantiateTest {
 		PowerMockito.when(XBee.createConnectiontionInterface("COM1", serialPortParameters)).thenReturn(connectionInterface);
 	}
 	
-	@Test
 	/**
-	 * Verify that the xbeeDevice object was correctly instantiated giving the name of the 
+	 * Verify that the xbeeDevice object is correctly instantiated giving the name of the 
 	 * serial port and the baud rate as parameters.
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceNameBR() throws Exception {
 		// Whenever a SerialPortParameters class is instantiated, the mocked serialPortParameters should be returned.
 		PowerMockito.whenNew(SerialPortParameters.class).withAnyArguments().thenReturn(serialPortParameters);
@@ -67,16 +68,18 @@ public class XBeeDeviceInstantiateTest {
 		XBee.createConnectiontionInterface("COM1", 9600);
 		
 		// Verify the XBee device returns the expected connection interface.
-		assertEquals(xbeeDevice.getConnectionInterface(), connectionInterface);
+		assertEquals(connectionInterface, xbeeDevice.getConnectionInterface());
+		// Verify the instantiated device is local.
+		assertFalse(xbeeDevice.isRemote());
 	}
 	
-	@Test
 	/**
-	 * Verify that the xbeeDevice object was not correctly instantiated when the name of the 
+	 * Verify that the xbeeDevice object is not correctly instantiated when the name of the 
 	 * serial port or the baud rate parameters are not valid.
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceBadNameBR() throws Exception {
 		// Real methods must be called so the checkers for bad parameters are executed.
 		PowerMockito.when(XBee.class, "createConnectiontionInterface", Mockito.anyString(), Mockito.anyInt()).thenCallRealMethod();
@@ -99,13 +102,13 @@ public class XBeeDeviceInstantiateTest {
 		}
 	}
 	
-	@Test
 	/**
-	 * Verify that the xbeeDevice object was correctly instantiated giving all the serial 
+	 * Verify that the xbeeDevice object is correctly instantiated giving all the serial 
 	 * port settings as parameters.
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceAdvancedSettings() throws Exception {
 		// Whenever a SerialPortParameters class is instantiated, the mocked serialPortParameters should be returned.
 		PowerMockito.whenNew(SerialPortParameters.class).withAnyArguments().thenReturn(serialPortParameters);
@@ -120,16 +123,18 @@ public class XBeeDeviceInstantiateTest {
 		XBee.createConnectiontionInterface("COM1", serialPortParameters);
 		
 		// Verify the XBee device returns the expected connection interface.
-		assertEquals(xbeeDevice.getConnectionInterface(), connectionInterface);
+		assertEquals(connectionInterface, xbeeDevice.getConnectionInterface());
+		// Verify the instantiated device is local.
+		assertFalse(xbeeDevice.isRemote());
 	}
 	
-	@Test
 	/**
 	 * Verify that the xbeeDevice object is not correctly instantiated when the serial 
 	 * port settings are not valid.
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceBadAdvancedSettings() throws Exception {
 		// Real methods must be called so the checkers for bad parameters are executed.
 		PowerMockito.when(XBee.class, "createConnectiontionInterface", Mockito.anyString(), Mockito.anyInt()).thenCallRealMethod();
@@ -184,11 +189,11 @@ public class XBeeDeviceInstantiateTest {
 		}
 	}
 	
-	@Test
 	/**
-	 * Verify that the xbeeDevice object was correctly instantiated giving the name of the 
+	 * Verify that the xbeeDevice object is correctly instantiated giving the name of the 
 	 * serial port and a SerialPortParameters object as parameters.
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceSerialPortParams() {
 		// Instantiate an XBeeDevice object with a SerialParameters object.
 		XBeeDevice xbeeDevice = null;
@@ -200,16 +205,18 @@ public class XBeeDeviceInstantiateTest {
 		XBee.createConnectiontionInterface("COM1", serialPortParameters);
 		
 		// Verify the XBee device returns the expected connection interface.
-		assertEquals(xbeeDevice.getConnectionInterface(), connectionInterface);
+		assertEquals(connectionInterface, xbeeDevice.getConnectionInterface());
+		// Verify the instantiated device is local.
+		assertFalse(xbeeDevice.isRemote());
 	}
 	
-	@Test
 	/**
-	 * Verify that the xbeeDevice object was not correctly instantiated when the name of the 
+	 * Verify that the xbeeDevice object is not correctly instantiated when the name of the 
 	 * serial port or the SerialPortParameters object are not valid.
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceBadSerialPortParams() throws Exception {
 		// Real methods must be called so the checkers for bad parameters are executed.
 		PowerMockito.when(XBee.class, "createConnectiontionInterface", Mockito.anyString(), Mockito.anyInt()).thenCallRealMethod();
@@ -232,25 +239,27 @@ public class XBeeDeviceInstantiateTest {
 		}
 	}
 	
-	@Test
 	/**
 	 * Verify that the xbeeDevice object was correctly instantiated giving an 
 	 * IConnectionInterface object as parameter.
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceIConnectionInterface() {
 		// Instantiate an XBeeDevice object with a SerialParameters object.
 		XBeeDevice xbeeDevice = null;
 		xbeeDevice = new XBeeDevice(connectionInterface);
 		
 		// Verify the XBee device returns the expected connection interface.
-		assertEquals(xbeeDevice.getConnectionInterface(), connectionInterface);
+		assertEquals(connectionInterface, xbeeDevice.getConnectionInterface());
+		// Verify the instantiated device is local.
+		assertFalse(xbeeDevice.isRemote());
 	}
 	
-	@Test
 	/**
 	 * Verify that the xbeeDevice object was not correctly instantiated when the 
 	 * IConnectionInterface object is null.
 	 */
+	@Test
 	public void testInstantiateXBeeDeviceBadIConnectionInterface() {
 		// Instantiate an XBeeDevice object with a null IConnectionInterface.
 		try {

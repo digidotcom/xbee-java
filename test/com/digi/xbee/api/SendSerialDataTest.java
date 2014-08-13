@@ -429,4 +429,36 @@ public class SendSerialDataTest {
 			assertEquals(NullPointerException.class, e.getClass());
 		} 
 	}
+	
+	/**
+	 * Verify that when trying to send serial data from a remote XBee device to a remote 
+	 * XBee device, an OperationNotSupportedException is thrown.
+	 */
+	@Test
+	public void testSendSerialDataFromRemoteDevices() {
+		// Return that the XBee device is remote when asked.
+		Mockito.when(xbeeDevice.isRemote()).thenReturn(true);
+		
+		// Send serial data using the 16-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(OperationNotSupportedException.class, e.getClass());
+		}
+		// Send serial data using the 64-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(OperationNotSupportedException.class, e.getClass());
+		}
+		// Send serial data using an XBeeDevice as parameter.
+		try {
+			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(OperationNotSupportedException.class, e.getClass());
+		}
+	}
 }

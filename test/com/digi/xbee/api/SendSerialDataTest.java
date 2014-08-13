@@ -115,10 +115,8 @@ public class SendSerialDataTest {
 	
 	
 	/**
-	 * Verify that we receive an invalid argument exception when either the address or the 
-	 * data to be sent is null.
-	 * 
-	 * @throws Exception
+	 * Verify that we receive a {@code NullPointerException} when either the address or the 
+	 * data to be sent are null.
 	 */
 	@Test
 	public void testSendSerialDataInvalidParams() {
@@ -143,9 +141,23 @@ public class SendSerialDataTest {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		} 
-		// Try to send serial data with null data.
+		// Try to send serial data with null data. 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, null);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with null data. 16-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, null);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with null data. XBee device.
+		try {
+			xbeeDevice.sendSerialData(mockedDevice, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -153,7 +165,7 @@ public class SendSerialDataTest {
 	}
 	
 	/**
-	 * Verify that we receive a connection not opened exception when the device is not connected and 
+	 * Verify that we receive an interface not open exception when the device is not open and 
 	 * we try to send the serial data.
 	 * 
 	 * @throws Exception
@@ -349,6 +361,7 @@ public class SendSerialDataTest {
 			fail("Tx16 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
@@ -356,6 +369,7 @@ public class SendSerialDataTest {
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
@@ -363,6 +377,7 @@ public class SendSerialDataTest {
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 	}
 	
@@ -398,7 +413,7 @@ public class SendSerialDataTest {
 	 */
 	@Test
 	public void testSendSerialDataOtherProtocolsInvalidOperatingMode() {
-		// When checking if the connection is open, return false.
+		// Return that the operating mode of the device is AT when asked.
 		Mockito.when(xbeeDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
 		// Return that the protocol of the device is ZigBee when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
@@ -529,6 +544,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
@@ -536,6 +552,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
@@ -543,6 +560,7 @@ public class SendSerialDataTest {
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 	}
 }

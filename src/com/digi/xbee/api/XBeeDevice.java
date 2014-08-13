@@ -752,9 +752,12 @@ public class XBeeDevice {
 	 * Sends the provided data to the XBee device of the network corresponding to the 
 	 * provided 64-Bit address asynchronously.
 	 * 
+	 * <p>Asynchronous transmissions do not wait for answer from the remote device or for 
+	 * transmit status packet</p>
+	 * 
 	 * @param address The 64-Bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@address == null} or {@data == null}.
+	 * @throws NullPointerException if {@code address == null} or {@code data == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws XBeeException if there is any XBee related exception.
 	 * 
@@ -800,9 +803,12 @@ public class XBeeDevice {
 	 * Sends the provided data to the XBee device of the network corresponding to the 
 	 * provided 16-Bit address asynchronously.
 	 * 
+	 * <p>Asynchronous transmissions do not wait for answer from the remote device or for 
+	 * transmit status packet</p>
+	 * 
 	 * @param address The 16-Bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@address == null} or {@data == null}.
+	 * @throws NullPointerException if {@code address == null} or {@code data == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws XBeeException if there is any XBee related exception.
 	 * 
@@ -846,6 +852,8 @@ public class XBeeDevice {
 	
 	/**
 	 * Sends the provided data to the provided XBee device asynchronously.
+	 * 
+	 * <p>Asynchronous transmissions do not wait for answer from the remote device or for transmit status packet</p>
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.

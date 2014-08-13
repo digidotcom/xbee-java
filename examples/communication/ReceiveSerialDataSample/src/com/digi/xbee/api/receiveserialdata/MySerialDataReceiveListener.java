@@ -36,4 +36,14 @@ public class MySerialDataReceiveListener implements ISerialDataReceiveListener {
 				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)), 
 				new String(data));
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.listeners.ISerialDataReceiveListener#broadcastSerialDataReceived(java.lang.String, byte[])
+	 */
+	@Override
+	public void broadcastSerialDataReceived(String address, byte[] data) {
+		// This callback is executed when broadcast serial data is received from any node 
+		// of the network.
+	}
 }

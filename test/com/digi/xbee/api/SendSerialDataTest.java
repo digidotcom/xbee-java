@@ -23,6 +23,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.TransmitException;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -45,6 +46,8 @@ public class SendSerialDataTest {
 	
 	private static final String SEND_DATA = "data";
 	private static final byte[] SEND_DATA_BYTES = SEND_DATA.getBytes();
+	
+	private static final String SEND_XBEE_PACKET_METHOD = "sendXBeePacket";
 	
 	// Variables.
 	private SerialPortRxTx mockedPort;
@@ -121,8 +124,8 @@ public class SendSerialDataTest {
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
 		// Return the mocked TxStatus success packet when sending the mocked tx16Packet or tx64Packet packets.
-		Mockito.doReturn(txStatusSuccess).when(xbeeDevice).sendXBeePacket(tx16Packet);
-		Mockito.doReturn(txStatusSuccess).when(xbeeDevice).sendXBeePacket(tx64Packet);
+		PowerMockito.doReturn(txStatusSuccess).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
+		PowerMockito.doReturn(txStatusSuccess).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
 		
 		// Verify that the packet is sent successfully when using the 16-bit address.
 		xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -145,8 +148,8 @@ public class SendSerialDataTest {
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
 		// Return the mocked TxStatus error packet when sending the mocked tx16Packet or tx64Packet packets.
-		Mockito.doReturn(txStatusError).when(xbeeDevice).sendXBeePacket(tx16Packet);
-		Mockito.doReturn(txStatusError).when(xbeeDevice).sendXBeePacket(tx64Packet);
+		PowerMockito.doReturn(txStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, tx16Packet, true);
+		PowerMockito.doReturn(txStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, tx64Packet, true);
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -184,8 +187,8 @@ public class SendSerialDataTest {
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
 		// Throw a timeout exception when sending the mocked tx16Packet or tx64Packet packets.
-		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendXBeePacket(tx16Packet);
-		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendXBeePacket(tx64Packet);
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -262,7 +265,7 @@ public class SendSerialDataTest {
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Return the mocked TransmitStatus success packet when sending the mocked transmitPacket packet.
-		Mockito.doReturn(transmitStatusSuccess).when(xbeeDevice).sendXBeePacket(transmitPacket);
+		PowerMockito.doReturn(transmitStatusSuccess).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
 		
 		// Verify that the packet is sent successfully when using the 16-bit address.
 		xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -286,7 +289,7 @@ public class SendSerialDataTest {
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Return the mocked TransmitStatus error packet when sending the mocked transmitPacket packet.
-		Mockito.doReturn(transmitStatusError).when(xbeeDevice).sendXBeePacket(transmitPacket);
+		PowerMockito.doReturn(transmitStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -325,7 +328,7 @@ public class SendSerialDataTest {
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Throw a timeout exception when sending the mocked transmitPacket packet.
-		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendXBeePacket(transmitPacket);
+		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {

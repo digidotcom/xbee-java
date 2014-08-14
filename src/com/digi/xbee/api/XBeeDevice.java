@@ -484,19 +484,18 @@ public class XBeeDevice {
 	 *         if there is no response.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires while waiting for the packet reply.
-	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
-	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws XBeeException if there is any error sending the XBee packet.
 	 * 
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
 	 * @see XBeePacket
 	 */
-	public XBeePacket sendXBeePacket(XBeePacket packet) 
-			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, IOException {
-		return sendXBeePacket(packet, isRemote());
+	public XBeePacket sendXBeePacket(XBeePacket packet) throws XBeeException {
+		try {
+			return sendXBeePacket(packet, isRemote());
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 	}
 	
 	/**
@@ -740,18 +739,19 @@ public class XBeeDevice {
 	 * listener (if not null) to wait for an answer.
 	 * 
 	 * @param packet XBee packet to be sent.
-	 * @param packetReceiveListener Listener for the operation, {@code null} to not be notifie
+	 * @param packetReceiveListener Listener for the operation, {@code null} to not be notified 
 	 *                              when the answer arrives.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
-	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws XBeeException if there is any error sending the XBee packet.
 	 */
 	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
-			throws InvalidOperatingModeException, OperationNotSupportedException, IOException {
-		sendXBeePacket(packet, packetReceiveListener, isRemote());
+			throws XBeeException {
+		try {
+			sendXBeePacket(packet, packetReceiveListener, isRemote());
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 	}
 	
 	/**
@@ -762,14 +762,15 @@ public class XBeeDevice {
 	 * @param packet XBee packet to be sent asynchronously.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
-	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws XBeeException if there is any error sending the XBee packet.
 	 */
 	public void sendXBeePacketAsync(XBeePacket packet) 
-			throws InvalidOperatingModeException, IOException, OperationNotSupportedException {
-		sendXBeePacket(packet, null, isRemote());
+			throws IOException, XBeeException {
+		try {
+			sendXBeePacket(packet, null, isRemote());
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 	}
 	
 	/**

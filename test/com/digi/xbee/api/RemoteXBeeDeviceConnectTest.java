@@ -14,6 +14,7 @@ package com.digi.xbee.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -92,18 +93,21 @@ public class RemoteXBeeDeviceConnectTest {
 	
 	/**
 	 * Verify that when the connection is already open and the connect method is called an 
-	 * exception is thrown.
-	 * 
-	 * @throws XBeeException 
+	 * exception is thrown, but the remote device is still open.
 	 */
-	@Test(expected=InterfaceAlreadyOpenException.class)
-	public void testOpenRemoteXBeeAlreadyOpen() throws XBeeException {
+	@Test
+	public void testOpenRemoteXBeeAlreadyOpen() {
 		// Configure the connection interface of the local XBee to indicate that it is
 		// open when asked.
 		Mockito.when(connectionInterface.isOpen()).thenReturn(true);
 		
 		// Execute the connect method.
-		remoteXBeeDevice.open();
+		try {
+			remoteXBeeDevice.open();
+			fail("Device shouldn't have connected");
+		} catch (Exception e) {
+			assertEquals(InterfaceAlreadyOpenException.class, e.getClass());
+		}
 		
 		// Verify that the device is still open.
 		assertTrue(remoteXBeeDevice.isOpen());

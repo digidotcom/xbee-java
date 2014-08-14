@@ -241,5 +241,16 @@ public class XBeeDeviceConnectTest {
 		} catch (Exception e) {
 			assertEquals(InterfaceAlreadyOpenException.class, e.getClass());
 		}
+		
+		// Verify that the device is still open.
+		assertTrue(xbeeDevice.isOpen());
+		
+		// Close the connection.
+		xbeeDevice.close();
+		
+		// Verify the device is not connected.
+		assertFalse(xbeeDevice.isOpen());
+		// Verify the dataReader is not running.
+		assertFalse(dataReader.isRunning());
 	}
 }

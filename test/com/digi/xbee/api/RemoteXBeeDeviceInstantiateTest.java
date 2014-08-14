@@ -53,6 +53,22 @@ public class RemoteXBeeDeviceInstantiateTest {
 	}
 	
 	/**
+	 * Verify that a remote XBeeDevice object is not correctly instantiated when the local 
+	 * XBee device provided is actually a remote device.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testInstantiateRemoteXBeeDeviceBadLocalDevice() {
+		// Mock the necessary objects to instantiate a remote XBee device.
+		XBeeDevice mockedLocalDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(mockedLocalDevice.isRemote()).thenReturn(true);
+		
+		XBee64BitAddress mockedAddress = PowerMockito.mock(XBee64BitAddress.class);
+		
+		// Instantiate the remote XBee device.
+		new XBeeDevice(mockedLocalDevice, mockedAddress);
+	}
+	
+	/**
 	 * Verify that a remote XBeeDevice object can be instantiated correctly.
 	 */
 	@Test

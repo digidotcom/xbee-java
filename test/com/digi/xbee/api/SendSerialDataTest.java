@@ -13,6 +13,8 @@ package com.digi.xbee.api;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +25,17 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.TransmitException;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.models.XBeeTransmitStatus;
+import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.TX16Packet;
@@ -111,12 +117,97 @@ public class SendSerialDataTest {
 		PowerMockito.whenNew(TransmitPacket.class).withAnyArguments().thenReturn(transmitPacket);
 	}
 	
+	
+	/**
+	 * Verify that we receive a {@code NullPointerException} when either the address or the 
+	 * data to be sent are null.
+	 */
+	@Test
+	public void testSendSerialDataInvalidParams() {
+		// Try to send serial data with a null 16-bit address.
+		try {
+			xbeeDevice.sendSerialData((XBee16BitAddress)null, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
+		// Try to send serial data with a null 64-bit address.
+		try {
+			xbeeDevice.sendSerialData((XBee64BitAddress)null, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
+		// Try to send serial data with a null XBeeDevice.
+		try {
+			xbeeDevice.sendSerialData((XBeeDevice)null, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
+		// Try to send serial data with null data. 64-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, null);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with null data. 16-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, null);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with null data. XBee device.
+		try {
+			xbeeDevice.sendSerialData(mockedDevice, null);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		} 
+	}
+	
+	/**
+	 * Verify that we receive an interface not open exception when the device is not open and 
+	 * we try to send the serial data.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendSerialDataConnectionClosed() throws Exception {
+		// When checking if the connection is open, return false.
+		Mockito.when(mockedPort.isOpen()).thenReturn(false);
+		
+		// Send serial data using the 16-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
+		}
+		// Send serial data using the 64-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
+		}
+		// Send serial data using an XBeeDevice as parameter.
+		try {
+			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			fail("Serial data frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
+		}
+	}
+	
 	/**
 	 * Verify that serial data is considered successfully sent when the received TxStatus packet 
 	 * contains a SUCCESS status. In this test case the protocol of the XBee device is 802.15.4 
 	 * and the test is executed using all the different addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
 	public void testSendSerialData802Success() throws Exception {
@@ -133,6 +224,9 @@ public class SendSerialDataTest {
 		xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
 		xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+		
+		// Verify the sendXBeePacket method was called 3 times (one for each data send).
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
 	}
 	
 	/**
@@ -140,16 +234,16 @@ public class SendSerialDataTest {
 	 * than SUCCESS. In this test case the protocol of the XBee device is 802.15.4 and the test is 
 	 * executed using all the different addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialData802Error() throws Exception {
+	public void testSendSerialData802TxStatusError() throws Exception {
 		// Return that the protocol of the device is 802.15.4 when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
 		// Return the mocked TxStatus error packet when sending the mocked tx16Packet or tx64Packet packets.
-		PowerMockito.doReturn(txStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, tx16Packet, true);
-		PowerMockito.doReturn(txStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, tx64Packet, true);
+		PowerMockito.doReturn(txStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
+		PowerMockito.doReturn(txStatusError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -168,9 +262,44 @@ public class SendSerialDataTest {
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
+			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
+		}
+	}
+	
+	/**
+	 * Verify that serial data send fails when the operating mode is AT. In this test case the 
+	 * protocol of the XBee device is 802.15.4 and the test is executed using all the different 
+	 * addressing parameters.
+	 */
+	@Test
+	public void testSendSerialData802InvalidOperatingMode() {
+		// Return that the operating mode of the device is AT when asked.
+		Mockito.when(xbeeDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
+		// Return that the protocol of the device is 802.15.4 when asked.
+		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
+		
+		// Send serial data using the 16-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx16 frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
+		// Send serial data using the 64-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx64 frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
+		// Send serial data using an XBeeDevice as parameter.
+		try {
+			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			fail("Tx64 frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
 	}
 	
@@ -179,7 +308,7 @@ public class SendSerialDataTest {
 	 * serial data. In this test case the protocol of the XBee device is 802.15.4 and the test 
 	 * is executed using all the different addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
 	public void testSendSerialData802Timeout() throws Exception {
@@ -207,47 +336,51 @@ public class SendSerialDataTest {
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
+			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TimeoutException.class, e.getClass());
 		}
 	}
 	
 	/**
-	 * Verify that we receive a connection not opened exception when the device is not connected and 
-	 * we try to send the serial data. In this test case the protocol of the XBee device is 802.15.4 
+	 * Verify that serial data send fails (XBee exception thrown) when the {@code sendXBeePacket} 
+	 * method throws an IO exception. In this test case the protocol of the XBee device is 802.15.4 
 	 * and the test is executed using all the different addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialData802ConnectionClosed() throws Exception {
+	public void testSendSerialData802IOError() throws Exception {
 		// Return that the protocol of the device is 802.15.4 when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
-		// When checking if the connection is open, return false.
-		Mockito.when(mockedPort.isOpen()).thenReturn(false);
+		// Throw an IO exception when trying to send an XBee packet.
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx16 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
+			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 	}
 	
@@ -257,7 +390,7 @@ public class SendSerialDataTest {
 	 * (other protocols but 802.15.4 behave the same way) and the test is executed using all the 
 	 * different addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
 	public void testSendSerialDataOtherProtocolsSuccess() throws Exception {
@@ -273,6 +406,44 @@ public class SendSerialDataTest {
 		xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
 		xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+		
+		// Verify the sendXBeePacket method was called 3 times (one for each data send).
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
+	}
+	
+	/**
+	 * Verify that serial data send fails when the operating mode is AT. In this test case 
+	 * the protocol of the XBee device is ZigBee (other protocols but 802.15.4 behave the 
+	 * same way) and the test is executed using all the different addressing parameters.
+	 */
+	@Test
+	public void testSendSerialDataOtherProtocolsInvalidOperatingMode() {
+		// Return that the operating mode of the device is AT when asked.
+		Mockito.when(xbeeDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
+		// Return that the protocol of the device is ZigBee when asked.
+		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+		
+		// Send serial data using the 16-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
+		// Send serial data using the 64-bit address.
+		try {
+			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
+		// Send serial data using an XBeeDevice as parameter.
+		try {
+			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
 	}
 	
 	/**
@@ -281,10 +452,11 @@ public class SendSerialDataTest {
 	 * but 802.15.4 behave the same way) and the test is  executed using all the different addressing 
 	 * parameters.
 	 * 
-	 * @throws Exception
+	 * @throws XBeeException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void testSendSerialDataOtherProtocolsError() throws Exception {
+	public void testSendSerialDataOtherProtocolsTxStatusError() throws Exception {
 		// Return that the protocol of the device is ZigBee when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
@@ -294,14 +466,14 @@ public class SendSerialDataTest {
 		// Send serial data using the 16-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("Tx16 frame shouldn't have been sent successfully.");
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("Tx64 frame shouldn't have been sent successfully.");
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
 		}
@@ -320,7 +492,7 @@ public class SendSerialDataTest {
 	 * but 802.15.4 behave the same way) and the test is executed using all the different 
 	 * addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
 	public void testSendSerialDataOtherProtocolsTimeout() throws Exception {
@@ -354,80 +526,45 @@ public class SendSerialDataTest {
 	}
 	
 	/**
-	 * Verify that we receive a connection not opened exception when the device is not connected and 
-	 * we try to send the serial data. In this test case the protocol of the XBee device is ZigBee 
+	 * Verify that serial data send fails (XBee exception thrown) when the {@code sendXBeePacket} 
+	 * method throws an IO exception. In this test case the protocol of the XBee device is ZigBee 
 	 * (other protocols but 802.15.4 behave the same way) and the test is executed using all the 
 	 * different addressing parameters.
 	 * 
-	 * @throws Exception
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataOtherProtocolsConnectionClosed() throws Exception {
+	public void testSendSerialDataOtherProtocolsIOError() throws Exception {
 		// Return that the protocol of the device is ZigBee when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
-		// When checking if the connection is open, return false.
-		Mockito.when(mockedPort.isOpen()).thenReturn(false);
+		// Throw an IO exception when trying to send an XBee packet.
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
 		}
-	}
-	
-	/**
-	 * Verify that we receive an invalid argument exception when either the address or the 
-	 * data to be sent is null.
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void testSendSerialDataInvalidParams() {
-		// Try to send serial data with a null 16-bit address.
-		try {
-			xbeeDevice.sendSerialData((XBee16BitAddress)null, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		} 
-		// Try to send serial data with a null 64-bit address.
-		try {
-			xbeeDevice.sendSerialData((XBee64BitAddress)null, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		} 
-		// Try to send serial data with a null XBeeDevice.
-		try {
-			xbeeDevice.sendSerialData((XBeeDevice)null, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		} 
-		// Try to send serial data with null data.
-		try {
-			xbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, null);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		} 
 	}
 	
 	/**

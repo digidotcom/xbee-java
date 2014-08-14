@@ -18,8 +18,44 @@ import com.digi.xbee.api.utils.ByteUtils;
 
 /**
  * This class represents an IO Data Sample. The sample is built using the parameters of 
- * the constructor.
+ * the constructor. The sample contains an analog and digital mask indicating which IO lines 
+ * are configured with that functionality.
  * 
+ * <p>Depending on the protocol the XBee device is executing, the digital and analog masks are 
+ * retrieved in separated bytes (2 bytes for the digital mask and 1 for the analog mask) or 
+ * merged contained (digital and analog masks are contained in 2 bytes).</p> 
+ * <br>
+ * <p><b>802.15.4 Protocol</b></p>
+ * <br>
+ * <p>Digital and analog channels masks</p>
+ * <p>------------------------------------------------------------------</p>
+ * <p>Indicates which digital and ADC IO lines are configured in the module. Each
+ * bit corresponds to one digital or ADC IO line on the module:</p>
+ * <br>
+ * <BLOCKQUOTE>
+ *      <p>bit 0 =  DIO0</p>1
+ *      <p>bit 1 =  DIO1</p>0
+ *      <p>bit 2 =  DIO2</p>0
+ *      <p>bit 3 =  DIO3</p>1
+ *      <p>bit 4 =  DIO4</p>0
+ *      <p>bit 5 =  DIO5</p>1
+ *      <p>bit 6 =  DIO6</p>0
+ *      <p>bit 7 =  DIO7</p>0
+ *      <p>bit 8 =  DIO8</p>0
+ *      <p>bit 9 =  AD0</p>0
+ *      <p>bit 10 = AD1</p>1
+ *      <p>bit 11 = AD2</p>1
+ *      <p>bit 12 = AD3</p>0
+ *      <p>bit 13 = AD4</p>0
+ *      <p>bit 14 = AD5</p>0
+ *      <p>bit 15 = N/A</p>0
+ * <br>
+ *      <p>Example: mask of {@code 0x0C29} means DIO0, DIO3, DIO5, AD1 and AD2 enabled.</p>
+ *      <p>0 0 0 0 1 1 0 0 0 0 1 0 1 0 0 1</p>
+ * </BLOCKQUOTE>
+ * <br><br>
+ * <p><b>Other Protocols</b></p>
+ * <br>
  * <p>Digital Channel Mask</p>
  * <p>------------------------------------------------------------------</p>
  * <p>Indicates which digital IO lines are configured in the module. Each
@@ -90,7 +126,7 @@ public class IOSample {
 	 * @param ioSamplePayload The payload corresponding to an IO sample.
 	 * 
 	 * @throws NullPointerException if {@code ioSamplePayload == null}.
-	 * @throws IllegalArgumentException if {@code ioSamplePayload.length < 5}.
+	 * @throws IllegalArgumentException if {@code ioSamplePayload.length < 4}.
 	 */
 	public IOSample(byte[] ioSamplePayload) {
 		if (ioSamplePayload == null)
@@ -100,7 +136,64 @@ public class IOSample {
 			throw new IllegalArgumentException("IO sample payload must be longer than 4.");
 		
 		this.ioSamplePayload = ioSamplePayload;
-		parseIOSample();
+		if (ioSamplePayload.length % 2 != 0)
+			parseRawIOSample();
+		else
+			parseIOSample();
+	}
+	
+	/**
+	 * Parses the information contained in the IO sample bytes reading the value of 
+	 * each configured DIO and ADC.
+	 */
+	private void parseRawIOSample() {
+		int dataIndex = 3;
+		
+		// Obtain the digital mask.                 // Available digital IOs in 802.15.4
+		digitalHSBMask = ioSamplePayload[1] & 0x01;	// 0 0 0 0 0 0 0 1
+		digitalLSBMask = ioSamplePayload[2] & 0xFF;	// 1 1 1 1 1 1 1 1
+		// Combine the masks.
+		digitalMask = (digitalHSBMask << 8) + digitalLSBMask;
+		// Obtain the analog mask.                                              // Available analog IOs in 802.15.4
+		analogMask = ((ioSamplePayload[1] <<8) + ioSamplePayload[2]) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
+		
+		// Read the digital values (if any). There are 9 possible digital lines in 
+		// 802.15.4 protocol. The digital mask indicates if there is any digital 
+		// line enabled to read its value. If 0, no digital values are received.
+		if (digitalMask > 0) {
+			// Obtain the digital values.
+			digitalHSBValues = ioSamplePayload[3] & 0x7F;
+			digitalLSBValues = ioSamplePayload[4] & 0xFF;
+			// Combine the values.
+			digitalValues = (digitalHSBValues << 8) + digitalLSBValues;
+			
+			for (int i = 0; i < 16; i++) {
+				if (!ByteUtils.isBitEnabled(digitalMask, i))
+					continue;
+				if (ByteUtils.isBitEnabled(digitalValues, i))
+					digitalValuesMap.put(IOLine.getDIO(i), IOValue.HIGH);
+				else
+					digitalValuesMap.put(IOLine.getDIO(i), IOValue.LOW);
+			}
+			// Increase the data index to read the analog values.
+			dataIndex += 2;
+		}
+		
+		// Read the analog values (if any). There are 6 possible analog lines.
+		// The analog mask indicates if there is any analog line enabled to read 
+		// its value. If 0, no analog values are received.
+		int adcIndex = 9;
+		while ((ioSamplePayload.length - dataIndex) > 1 && adcIndex < 16) {
+			if (!ByteUtils.isBitEnabled(analogMask, adcIndex)) {
+				adcIndex += 1;
+				continue;
+			}
+			// 802.15.4 protocol does not provide power supply value, so get just the ADC data.
+			analogValuesMap.put(IOLine.getDIO(adcIndex - 9), ((ioSamplePayload[dataIndex] & 0xFF) << 8) + (ioSamplePayload[dataIndex + 1] & 0xFF));
+			// Increase the data index to read the next analog values.
+			dataIndex += 2;
+			adcIndex += 1;
+		}
 	}
 	
 	/**
@@ -113,9 +206,9 @@ public class IOSample {
 		// Obtain the digital masks.                // Available digital IOs
 		digitalHSBMask = ioSamplePayload[1] & 0x7F;	// 0 1 1 1 1 1 1 1
 		digitalLSBMask = ioSamplePayload[2] & 0xFF;	// 1 1 1 1 1 1 1 1
-		// Combine the masks mask.
+		// Combine the masks.
 		digitalMask = (digitalHSBMask << 8) + digitalLSBMask;
-		// Obtain the analog masks.                 // Available analog IOs
+		// Obtain the analog mask.                  // Available analog IOs
 		analogMask = ioSamplePayload[3] & 0xBF;		// 1 0 1 1 1 1 1 1
 		
 		// Read the digital values (if any). There are 16 possible digital lines.

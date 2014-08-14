@@ -47,6 +47,8 @@ public class SendSerialDataAsyncTest {
 	private static final String SEND_DATA = "data";
 	private static final byte[] SEND_DATA_BYTES = SEND_DATA.getBytes();
 	
+	private static final String SEND_XBEE_PACKET_ASYNC_METHOD = "sendXBeePacketAsync";
+	
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	private XBeeDevice xbeeDevice;
@@ -175,17 +177,16 @@ public class SendSerialDataAsyncTest {
 	 * does not throw any exception. In this test case the protocol of the XBee device is 802.15.4 
 	 * and the test is executed using all the different addressing parameters.
 	 * 
-	 * @throws XBeeException 
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataAsync802Success() throws XBeeException, IOException {
+	public void testSendSerialDataAsync802Success() throws Exception {
 		// Return that the protocol of the device is 802.15.4 when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
 		// Stub the sendXBeePacketAsync method to do nothing when called.
-		Mockito.doNothing().when(xbeeDevice).sendXBeePacketAsync(tx16Packet);
-		Mockito.doNothing().when(xbeeDevice).sendXBeePacketAsync(tx64Packet);
+		PowerMockito.doNothing().when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
+		PowerMockito.doNothing().when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
 		
 		// Verify that the packet is sent successfully when using the 16-bit address.
 		xbeeDevice.sendSerialDataAsync(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -195,7 +196,7 @@ public class SendSerialDataAsyncTest {
 		xbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacketAsync method was called 3 times (one for each data send).
-		Mockito.verify(xbeeDevice, Mockito.times(3)).sendXBeePacketAsync((XBeeAPIPacket)Mockito.anyObject());
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
 	}
 	
 	/**
@@ -238,17 +239,16 @@ public class SendSerialDataAsyncTest {
 	 * method throws an IO exception. In this test case the protocol of the XBee device is 802.15.4 
 	 * and the test is executed using all the different addressing parameters.
 	 * 
-	 * @throws XBeeException
-	 * @throws IOException
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataAsync802IOError() throws XBeeException, IOException {
+	public void testSendSerialDataAsync802IOError() throws Exception {
 		// Return that the protocol of the device is 802.15.4 when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
 		// Throw an IO exception when trying to send an XBee packet asynchronously.
-		Mockito.doThrow(new IOException()).when(xbeeDevice).sendXBeePacketAsync(tx16Packet);
-		Mockito.doThrow(new IOException()).when(xbeeDevice).sendXBeePacketAsync(tx64Packet);
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -282,16 +282,15 @@ public class SendSerialDataAsyncTest {
 	 * (other protocols but 802.15.4 behave the same way) and the test is executed using all the 
 	 * different addressing parameters.
 	 * 
-	 * @throws XBeeException
-	 * @throws IOException 
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataAsyncOtherProtocolsSuccess() throws XBeeException, IOException {
+	public void testSendSerialDataAsyncOtherProtocolsSuccess() throws Exception {
 		// Return that the protocol of the device is ZigBee when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Stub the sendXBeePacketAsync method to do nothing when called.
-		Mockito.doNothing().when(xbeeDevice).sendXBeePacketAsync(transmitPacket);
+		PowerMockito.doNothing().when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
 		
 		// Verify that the packet is sent successfully when using the 16-bit address.
 		xbeeDevice.sendSerialDataAsync(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -301,8 +300,7 @@ public class SendSerialDataAsyncTest {
 		xbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacketAsync method was called 3 times (one for each data send).
-		Mockito.verify(xbeeDevice, Mockito.times(3)).sendXBeePacketAsync((XBeeAPIPacket)Mockito.anyObject());
-	}
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());	}
 	
 	/**
 	 * Verify that serial data send fails when the operating mode is AT. In this test case 
@@ -345,16 +343,15 @@ public class SendSerialDataAsyncTest {
 	 * (other protocols but 802.15.4 behave the same way) and the test is executed using all the 
 	 * different addressing parameters.
 	 * 
-	 * @throws XBeeException
-	 * @throws IOException
+	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataAsyncOtherProtocolsIOError() throws XBeeException, IOException {
+	public void testSendSerialDataAsyncOtherProtocolsIOError() throws Exception {
 		// Return that the protocol of the device is ZigBee when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Throw an IO exception when trying to send an XBee packet asynchronously.
-		Mockito.doThrow(new IOException()).when(xbeeDevice).sendXBeePacketAsync(transmitPacket);
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
 		
 		// Send serial data using the 16-bit address.
 		try {

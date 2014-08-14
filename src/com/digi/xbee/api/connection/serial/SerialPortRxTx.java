@@ -126,10 +126,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#open()
-	 */
+	@Override
 	public void open() throws InterfaceInUseException, InvalidConfigurationException, InvalidInterfaceException {
 		// Check that the given serial port exists.
 		try {

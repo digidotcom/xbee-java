@@ -48,6 +48,8 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
+import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.TX16Packet;
@@ -81,6 +83,8 @@ public class XBeeDevice {
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
 	
 	private Logger logger;
+	
+	private XBeeDevice localXBeeDevice;
 	
 	/**
 	 * Class constructor. Instantiates a new XBeeDevice object in the given port name and baud rate.
@@ -156,14 +160,31 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the connection interface associated to this XBee device.
+	 * Class constructor. Instantiates a new remote {@code XBeeDevice} object with the 
+	 * given local {@code XBeeDevice} which contains the connection interface to be used.
 	 * 
-	 * @return XBee device's connection interface.
+	 * @param localXBeeDevice The local XBee device that will behave as connection interface to communicate 
+	 *                        with this remote XBee device
+	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee device.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code xbee64BitAddress == null}.
 	 * 
-	 * @see IConnectionInterface
+	 * @see XBeeDevice
 	 */
-	public IConnectionInterface getConnectionInterface() {
-		return connectionInterface;
+	public XBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+		if (localXBeeDevice == null)
+			throw new NullPointerException("Local XBee device cannot be null.");
+		if (xbee64BitAddress == null)
+			throw new NullPointerException("XBee 64 bit address of the remote device cannot be null.");
+		if (localXBeeDevice.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
+		
+		this.localXBeeDevice = localXBeeDevice;
+		this.connectionInterface = localXBeeDevice.getConnectionInterface();
+		this.xbee64BitAddress = xbee64BitAddress;
+		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
+		logger.debug(toString() + "Using the connection interface {}.", 
+				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
 	}
 	
 	/**
@@ -183,6 +204,11 @@ public class XBeeDevice {
 		connectionInterface.open();
 		
 		logger.info(toString() + "Connection interface open.");
+		
+		// Data reader initialization and determining operating mode should be only 
+		// done for local XBee devices.
+		if (isRemote())
+			return;
 		
 		// Initialize the data reader.
 		dataReader = new DataReader(connectionInterface, operatingMode);
@@ -218,7 +244,7 @@ public class XBeeDevice {
 	 * Retrieves whether or not the connection interface associated to the device is 
 	 * open.
 	 * 
-	 * @return True if the interface is open, false otherwise.
+	 * @return {@code true} if the interface is open, {@code false} otherwise.
 	 */
 	public boolean isOpen() {
 		if (connectionInterface != null)
@@ -227,14 +253,35 @@ public class XBeeDevice {
 	}
 	
 	/**
+	 * Retrieves the connection interface associated to this XBee device.
+	 * 
+	 * @return XBee device's connection interface.
+	 * 
+	 * @see IConnectionInterface
+	 */
+	public IConnectionInterface getConnectionInterface() {
+		return connectionInterface;
+	}
+	
+	/**
+	 * Retrieves whether or not the XBee device is a remote device.
+	 * 
+	 * @return {@code true} if the XBee device is a remote device, {@code false} otherwise.
+	 */
+	public boolean isRemote() {
+		return localXBeeDevice != null;
+	}
+	
+	/**
 	 * Determines the operating mode of the XBee device.
 	 * 
 	 * @return The operating mode of the XBee device.
 	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * 
 	 * @see OperatingMode
 	 */
-	protected OperatingMode determineOperatingMode() {
+	protected OperatingMode determineOperatingMode() throws OperationNotSupportedException {
 		try {
 			// Check if device is in API or API Escaped operating modes.
 			operatingMode = OperatingMode.API;
@@ -376,6 +423,7 @@ public class XBeeDevice {
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws TimeoutException if the configured time expires while waiting for the command reply.
+	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the AT command.
 	 * 
 	 * @see #setReceiveTimeout(int)
@@ -384,13 +432,14 @@ public class XBeeDevice {
 	 * @see ATCommandResponse
 	 */
 	public ATCommandResponse sendATCommand(ATCommand command) 
-			throws InvalidOperatingModeException, TimeoutException, IOException {
+			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, IOException {
 		// Check if command is null.
 		if (command == null)
 			throw new NullPointerException("AT command cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
+		
 		
 		ATCommandResponse response = null;
 		OperatingMode operatingMode = getOperatingMode();
@@ -402,15 +451,23 @@ public class XBeeDevice {
 		case API:
 		case API_ESCAPE:
 			// Create AT command packet
-			XBeeAPIPacket packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+			XBeePacket packet;
+			if (isRemote())
+				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), XBee16BitAddress.UNKNOWN_ADDRESS, XBeeTransmitOptions.NONE, command.getCommand(), command.getParameter());
+			else
+				packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
 			if (command.getParameter() == null)
 				logger.debug(toString() + "Sending AT command '{}'.", command.getCommand());
 			else
 				logger.debug(toString() + "Sending AT command '{} {}'.", command.getCommand(), HexUtils.prettyHexString(command.getParameter()));
 			try {
 				// Send the packet and build response.
-				ATCommandResponsePacket answerPacket = (ATCommandResponsePacket)sendXBeePacket(packet);
-				response = new ATCommandResponse(command, answerPacket.getCommandData(), answerPacket.getStatus());
+				XBeePacket answerPacket = sendXBeePacket(packet, true);
+				if (answerPacket instanceof ATCommandResponsePacket)
+					response = new ATCommandResponse(command, ((ATCommandResponsePacket)answerPacket).getCommandValue(), ((ATCommandResponsePacket)answerPacket).getStatus());
+				else if (answerPacket instanceof RemoteATCommandResponsePacket)
+					response = new ATCommandResponse(command, ((RemoteATCommandResponsePacket)answerPacket).getCommandValue(), ((RemoteATCommandResponsePacket)answerPacket).getStatus());
+				
 				if (response.getResponse() != null)
 					logger.debug(toString() + "AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
 				else
@@ -431,23 +488,51 @@ public class XBeeDevice {
 	 *         if there is no response.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws XBeeException if there is any error sending the XBee packet.
+	 * 
+	 * @see #setReceiveTimeout(int)
+	 * @see #getReceiveTimeout()
+	 * @see XBeePacket
+	 */
+	public XBeePacket sendXBeePacket(XBeePacket packet) throws XBeeException {
+		try {
+			return sendXBeePacket(packet, isRemote());
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+	}
+	
+	/**
+	 * Sends the given XBee packet synchronously and waits until response is 
+	 * received or receive timeout is reached.
+	 * 
+	 * @param packet XBee packet to be sent.
+	 * @param sentFromLocalDevice Indicates whether or not the packet was sent from a local device.
+	 * @return XBeePacket object containing the response of the sent packet or {@code null}
+	 *         if there is no response.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws TimeoutException if the configured time expires while waiting for the packet reply.
+	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
 	 * 
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
 	 * @see XBeePacket
 	 */
-	public XBeePacket sendXBeePacket(final XBeePacket packet) 
-			throws InvalidOperatingModeException, TimeoutException, IOException {
+	private XBeePacket sendXBeePacket(final XBeePacket packet, boolean sentFromLocalDevice) 
+			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, IOException {
 		// Check if the packet to send is null.
 		if (packet == null)
 			throw new NullPointerException("XBee packet cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
+		// Check if the packet is being sent from a remote device.
+		if (!sentFromLocalDevice)
+			throw new OperationNotSupportedException("Remote devices cannot send data to other remote devices.");
 		
 		OperatingMode operatingMode = getOperatingMode();
 		switch (operatingMode) {
@@ -463,11 +548,11 @@ public class XBeeDevice {
 			// If the packet does not need frame ID, send it async. and return null.
 			if (packet instanceof XBeeAPIPacket) {
 				if (!((XBeeAPIPacket)packet).needsAPIFrameID()) {
-					sendXBeePacketAsync(packet);
+					sendXBeePacketAsync(packet, sentFromLocalDevice);
 					return null;
 				}
 			} else {
-				sendXBeePacketAsync(packet);
+				sendXBeePacketAsync(packet, sentFromLocalDevice);
 				return null;
 			}
 			
@@ -546,6 +631,14 @@ public class XBeeDevice {
 							if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
 								return;
 						}
+						// If the packet sent is a remote AT command, verify that the received one is a remote AT command response and 
+						// the command matches in both packets.
+						if (sentAPIPacket.getFrameType() == APIFrameType.REMOTE_AT_COMMAND_REQUEST) {
+							if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_AT_COMMAND_RESPONSE)
+								return;
+							if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
+								return;
+						}
 					}
 					
 					// Verify that the sent packet is not the received one! This can happen when the echo mode is enabled in the 
@@ -587,16 +680,20 @@ public class XBeeDevice {
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
+	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
 	 */
-	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
-			throws InvalidOperatingModeException, IOException {
+	private void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener, boolean sentFromLocalDevice)
+			throws InvalidOperatingModeException, OperationNotSupportedException, IOException {
 		// Check if the packet to send is null.
 		if (packet == null)
 			throw new NullPointerException("XBee packet cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
+		// Check if the packet is being sent from a remote device.
+		if (!sentFromLocalDevice)
+			throw new OperationNotSupportedException("Remote devices cannot send data to other remote devices.");
 		
 		OperatingMode operatingMode = getOperatingMode();
 		switch (operatingMode) {
@@ -633,11 +730,51 @@ public class XBeeDevice {
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
+	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
 	 */
+	private void sendXBeePacketAsync(XBeePacket packet, boolean sentFromLocalDevice) 
+			throws InvalidOperatingModeException, OperationNotSupportedException, IOException {
+		sendXBeePacket(packet, null, sentFromLocalDevice);
+	}
+	
+	/**
+	 * Sends the given XBee packet asynchronously and registers the given packet
+	 * listener (if not null) to wait for an answer.
+	 * 
+	 * @param packet XBee packet to be sent.
+	 * @param packetReceiveListener Listener for the operation, {@code null} to not be notified 
+	 *                              when the answer arrives.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws XBeeException if there is any error sending the XBee packet.
+	 */
+	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
+			throws XBeeException {
+		try {
+			sendXBeePacket(packet, packetReceiveListener, isRemote());
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+	}
+	
+	/**
+	 * Sends the given XBee packet asynchronously.
+	 * 
+	 * <p>To be notified when the answer is received, use {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
+	 * 
+	 * @param packet XBee packet to be sent asynchronously.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws XBeeException if there is any error sending the XBee packet.
+	 */
 	public void sendXBeePacketAsync(XBeePacket packet) 
-			throws InvalidOperatingModeException, IOException {
-		sendXBeePacket(packet, null);
+			throws IOException, XBeeException {
+		try {
+			sendXBeePacket(packet, null, isRemote());
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
 	}
 	
 	/**
@@ -873,6 +1010,9 @@ public class XBeeDevice {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
 		XBeePacket xbeePacket;
 		
@@ -913,6 +1053,9 @@ public class XBeeDevice {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
 		XBeePacket xbeePacket;
 		
@@ -967,9 +1110,9 @@ public class XBeeDevice {
 		// Send the XBee packet.
 		try {
 			if (asyncTransmission)
-				sendXBeePacketAsync(packet);
+				sendXBeePacketAsync(packet, true);
 			else
-				receivedPacket = sendXBeePacket(packet);
+				receivedPacket = sendXBeePacket(packet, true);
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}
@@ -1340,10 +1483,7 @@ public class XBeeDevice {
 			throw new ATCommandException(response.getResponseStatus());
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	@Override
 	public String toString() {
 		return connectionInterface.toString();
 	}

@@ -222,10 +222,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * Sets the new parameters of the serial port.
 	 * 
 	 * @param parameters The new serial port parameters.
-	 * 
-	 * @throws ConnectionException if any error occurs when setting the serial port parameters.
-	 * 
 	 * @throws NullPointerException if {@code parameters == null}.
+	 * @throws ConnectionException if any error occurs when setting the serial port parameters.
 	 */
 	public void setPortParameters(SerialPortParameters parameters) throws ConnectionException {
 		if (parameters == null)

@@ -19,28 +19,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.ATCommandStatus;
-import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.APIFrameType;
-import com.digi.xbee.api.utils.HexUtils;
 import com.digi.xbee.api.models.ATStringCommands;
+import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.packet.XBeeAPIPacket;
+import com.digi.xbee.api.utils.ByteUtils;
+import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents an AT Command Response packet. Packet is built using the parameters of 
+ * This class represents a Remote AT Command Response packet. Packet is built using the parameters of 
  * the constructor.
  * 
- * <p>In response to an AT Command message, the module will send an AT Command Response message. Some
- * commands will send back multiple frames (for example, the ND (Node Discover) command).</p>
+ * <p>If a module receives a remote command response RF data frame in response to a Remote AT Command
+ * Request, the module will send a Remote AT Command Response message out the UART. Some commands may
+ * send back multiple frames--for example, Node Discover (ND) command.</p>
  * 
- * <p>This packet is received in response of an {@code ATCommandPacket}.</p>
+ * <p>This packet is received in response of a {@code RemoteATCommandPacket}.</p>
  * 
  * <p>Response also includes an {@code ATComandStatus} object with the status of the AT command.</p>
  * 
- * @see ATCommandPacket
+ * @see RemoteATCommandPacket
  * @see ATComandStatus 
  */
-public class ATCommandResponsePacket extends XBeeAPIPacket {
+public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	
 	// Variables
+	private final XBee64BitAddress sourceAddress64;
+	
+	private final XBee16BitAddress sourceAddress16;
+	
 	private final ATCommandStatus status;
 	
 	private final String command;
@@ -50,56 +58,92 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommandResponsePacket
-	 * with the given parameters.
+	 * Class constructor. Instances a new object of type RemoteCommandResponse with
+	 * the given parameters.
 	 * 
-	 * @param frameID The XBee API frame ID.
-	 * @param status The AT command response status.
-	 * @param command The AT command.
+	 * @param frameID frame ID
+	 * @param sourceAddress64 64-bit address of the remote radio returning response
+	 * @param sourceAddress16 16-bit network address of the remote
+	 * @param command The AT command
+	 * @param status The command status.
 	 * @param commandValue The AT command response value.
 	 * 
-	 * @throws NullPointerException if {@code status == null} or 
-	 *                              if {@code command == null}.
+	 * @throws NullPointerException if {@code destAddress64 == null} or
+	 *                              if {@code destAddress16 == null} or
+	 *                              if {@code command == null} or
+	 *                              if {@code status == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
 	 * 
+	 * @see XBee64BitAddress
+	 * @see XBee16BitAddress
 	 * @see ATCommandStatus
 	 */
-	public ATCommandResponsePacket(int frameID, ATCommandStatus status, String command, byte[] commandValue) {
-		super(APIFrameType.AT_COMMAND_RESPONSE);
+	public RemoteATCommandResponsePacket(int frameID, XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, String command, ATCommandStatus status, byte[] commandValue) {
+		super(APIFrameType.REMOTE_AT_COMMAND_RESPONSE);
 		
+		if (sourceAddress64 == null)
+			throw new NullPointerException("64-bit destination address cannot be null.");
+		if (sourceAddress16 == null)
+			throw new NullPointerException("16-bit destination address cannot be null.");
 		if (command == null)
-			throw new NullPointerException("Command cannot be null.");
+			throw new NullPointerException("AT command cannot be null.");
 		if (status == null)
-			throw new NullPointerException("Command status cannot be null.");
+			throw new NullPointerException("AT command status cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		
 		this.frameID = frameID;
-		this.status = status;
+		this.sourceAddress64 = sourceAddress64;
+		this.sourceAddress16 = sourceAddress16;
 		this.command = command;
+		this.status = status;
 		this.commandValue = commandValue;
-		this.logger = LoggerFactory.getLogger(ATCommandResponsePacket.class);
+		this.logger = LoggerFactory.getLogger(RemoteATCommandResponsePacket.class);
 	}
 	
 	@Override
 	public byte[] getAPIData() {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		data.write(frameID);
 		try {
-			os.write(frameID);
-			os.write(command.getBytes());
-			os.write(status.getId());
+			data.write(sourceAddress64.getValue());
+			data.write(sourceAddress16.getValue());
+			data.write(ByteUtils.stringToByteArray(command));
+			data.write(status.getId());
 			if (commandValue != null)
-				os.write(commandValue);
+				data.write(commandValue);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
-		return os.toByteArray();
+		return data.toByteArray();
 	}
 	
 	@Override
 	public boolean needsAPIFrameID() {
 		return true;
+	}
+	
+	/**
+	 * Retrieves the 64 bit source address. 
+	 * 
+	 * @return The 64 bit source address.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public XBee64BitAddress get64bitSourceAddress() {
+		return sourceAddress64;
+	}
+	
+	/**
+	 * Retrieves the 16 bit source address.
+	 * 
+	 * @return The 16 bit source address.
+	 * 
+	 * @see XBee16BitAddress
+	 */
+	public XBee16BitAddress get16bitSourceAddress() {
+		return sourceAddress16;
 	}
 	
 	/**
@@ -135,7 +179,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Sets the AT command response value.
+	 * Sets the AT response response value.
 	 * 
 	 * @param commandValue The AT command response value.
 	 */
@@ -167,6 +211,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
+		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
+		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
 		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")");
 		if (commandValue != null) {

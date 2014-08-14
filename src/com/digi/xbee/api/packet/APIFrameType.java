@@ -34,7 +34,7 @@ public enum APIFrameType {
 	TX_STATUS (0x89, "TX (Transmit) Status"),
 	TRANSMIT_STATUS (0x8B, "Transmit Status"),
 	RECEIVE_PACKET (0x90, "Receive Packet"),
-	REMOTE_COMMAND_RESPONSE (0x97, "Remote Command Response"),
+	REMOTE_AT_COMMAND_RESPONSE (0x97, "Remote Command Response"),
 	GENERIC (0xFF, "Generic");
 	
 	// Variables

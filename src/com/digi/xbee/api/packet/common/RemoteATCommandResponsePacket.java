@@ -80,7 +80,7 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @see ATCommandStatus
 	 */
 	public RemoteATCommandResponsePacket(int frameID, XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, String command, ATCommandStatus status, byte[] commandValue) {
-		super(APIFrameType.REMOTE_COMMAND_RESPONSE);
+		super(APIFrameType.REMOTE_AT_COMMAND_RESPONSE);
 		
 		if (sourceAddress64 == null)
 			throw new NullPointerException("64-bit destination address cannot be null.");
@@ -107,14 +107,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		data.write(frameID);
 		try {
-			if (sourceAddress64 != null)
-				data.write(sourceAddress64.getValue());
-			if (sourceAddress16 != null)
-				data.write(sourceAddress16.getValue());
-			if (command != null)
-				data.write(ByteUtils.stringToByteArray(command));
-			if (status != null)
-				data.write(status.getId());
+			data.write(sourceAddress64.getValue());
+			data.write(sourceAddress16.getValue());
+			data.write(ByteUtils.stringToByteArray(command));
+			data.write(status.getId());
 			if (commandValue != null)
 				data.write(commandValue);
 		} catch (IOException e) {
@@ -171,6 +167,18 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
+	 * Sets the AT command value as String.
+	 * 
+	 * @param commandValue The AT command value as String.
+	 */
+	public void setCommandValue(String commandValue) {
+		if (commandValue == null)
+			this.commandValue = null;
+		else
+			this.commandValue = commandValue.getBytes();
+	}
+	
+	/**
 	 * Sets the AT response response value.
 	 * 
 	 * @param commandValue The AT command response value.
@@ -186,6 +194,17 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 */
 	public byte[] getCommandValue() {
 		return commandValue;
+	}
+	
+	/**
+	 * Retrieves the AT command value as String.
+	 * 
+	 * @return The AT command value as String, null if no parameter is set.
+	 */
+	public String getCommandValueAsString() {
+		if (commandValue == null)
+			return null;
+		return new String(commandValue);
 	}
 	
 	@Override

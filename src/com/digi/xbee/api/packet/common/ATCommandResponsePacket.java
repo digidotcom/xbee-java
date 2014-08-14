@@ -123,7 +123,19 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Sets the AT response response value.
+	 * Sets the AT command value as String.
+	 * 
+	 * @param commandValue The AT command value as String.
+	 */
+	public void setCommandValue(String commandValue) {
+		if (commandValue == null)
+			this.commandValue = null;
+		else
+			this.commandValue = commandValue.getBytes();
+	}
+	
+	/**
+	 * Sets the AT command response value.
 	 * 
 	 * @param commandValue The AT command response value.
 	 */
@@ -138,6 +150,17 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 */
 	public byte[] getCommandValue() {
 		return commandValue;
+	}
+	
+	/**
+	 * Retrieves the AT command value as String.
+	 * 
+	 * @return The AT command value as String, null if no parameter is set.
+	 */
+	public String getCommandValueAsString() {
+		if (commandValue == null)
+			return null;
+		return new String(commandValue);
 	}
 	
 	@Override

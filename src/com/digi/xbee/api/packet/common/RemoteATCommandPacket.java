@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.models.ATStringCommands;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.ByteUtils;
@@ -76,6 +77,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * 
 	 * @see XBee64BitAddress
 	 * @see XBee16BitAddress
+	 * @see XBeeTransmitOptions
 	 */
 	public RemoteATCommandPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int transmitOptions, String command, String parameter) {
 		super(APIFrameType.REMOTE_AT_COMMAND_REQUEST);
@@ -211,7 +213,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	/**
 	 * Sets the AT command parameter as String.
 	 * 
-	 * @return The AT command parameter as String.
+	 * @param parameter The AT command parameter as String.
 	 */
 	public void setParameter(String parameter) {
 		if (parameter == null)

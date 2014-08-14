@@ -158,7 +158,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	/**
 	 * Retrieves the AT command parameter as String.
 	 * 
-	 * @return The AT command parameter as String, null if not parameter is set.
+	 * @return The AT command parameter as String, null if no parameter is set.
 	 */
 	public String getParameterAsString() {
 		if (parameter == null)

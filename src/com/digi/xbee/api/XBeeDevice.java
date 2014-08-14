@@ -166,6 +166,8 @@ public class XBeeDevice {
 	 * @param localXBeeDevice The local XBee device that will behave as connection interface to communicate 
 	 *                        with this remote XBee device
 	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee device.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code xbee64BitAddress == null}.
 	 * 
 	 * @see XBeeDevice
 	 */
@@ -174,6 +176,8 @@ public class XBeeDevice {
 			throw new NullPointerException("Local XBee device cannot be null.");
 		if (xbee64BitAddress == null)
 			throw new NullPointerException("XBee 64 bit address of the remote device cannot be null.");
+		if (localXBeeDevice.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
 		
 		this.localXBeeDevice = localXBeeDevice;
 		this.connectionInterface = localXBeeDevice.getConnectionInterface();
@@ -630,7 +634,7 @@ public class XBeeDevice {
 						// If the packet sent is a remote AT command, verify that the received one is a remote AT command response and 
 						// the command matches in both packets.
 						if (sentAPIPacket.getFrameType() == APIFrameType.REMOTE_AT_COMMAND_REQUEST) {
-							if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_COMMAND_RESPONSE)
+							if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_AT_COMMAND_RESPONSE)
 								return;
 							if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
 								return;

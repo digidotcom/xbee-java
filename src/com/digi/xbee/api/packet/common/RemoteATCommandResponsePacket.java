@@ -167,9 +167,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Sets the AT command value as String.
+	 * Sets the AT command response value as String.
 	 * 
-	 * @param commandValue The AT command value as String.
+	 * @param commandValue The AT command response value as String.
 	 */
 	public void setCommandValue(String commandValue) {
 		if (commandValue == null)
@@ -197,9 +197,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command value as String.
+	 * Retrieves the AT command response value as String.
 	 * 
-	 * @return The AT command value as String, null if no parameter is set.
+	 * @return The AT command response value as String, null if no value is set.
 	 */
 	public String getCommandValueAsString() {
 		if (commandValue == null)

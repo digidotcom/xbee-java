@@ -37,7 +37,7 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	
 	// TODO Replace with the 64-bit address of your receiver module.
-	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A2004031A8D6");
+	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
 	// TODO Replace with the 16-bit address of your receiver module.
 	//private static final XBee16BitAddress DESTINATION_16_BIT_ADDRESS = new XBee16BitAddress("XXXX");
 	

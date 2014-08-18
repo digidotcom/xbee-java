@@ -13,7 +13,7 @@
       Main application class. Instantiates an XBee device and establishes a 
       serial connection with it.
       
-    * com.digi.xbee.api.receiveserialdata.MyPacketReceiveListener.java:
+    * com.digi.xbee.api.receiveserialdata.MySerialDataReceiveListener.java:
       Class that handles the received data packets.
 
 

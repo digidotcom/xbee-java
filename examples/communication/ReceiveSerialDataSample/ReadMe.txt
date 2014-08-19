@@ -50,7 +50,8 @@
   data to the receiver module. If you want to send data to this module, follow 
   these steps:
   
-    a) Use the 'SendSerialDataSample' example included in the library.
+    a) Use the 'SendSerialDataSample' or 'SendSerialDataAsyncSample' example 
+       included in the library.
        Follow the instructions on its 'ReadMe' file to perform the task.
        
     b) Use the XCTU:

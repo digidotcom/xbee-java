@@ -69,11 +69,11 @@
           - 16-bit dest. address (only if present): FF FE
           - Broadcast radius (only if present):     00
           - Options:                                00
-          - RF data (ASCII):                        Hello XBee!
+          - RF data (ASCII):                        Hello everyone!
           
        5) Send this frame and check the launched application output console: 
           The packet has been received and a line containing the data included 
           in the 'RF data' field of the sent frame is printed out:
           
-          Broadcast from 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
+          Broadcast from 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 65 76 65 72 79 6F 6E 65 21 | Hello everyone!
           

@@ -16,25 +16,51 @@ import java.util.Arrays;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a 16 bit address of the XBee ZigBee protocol. In this
- * protocol, each device is assigned a 16 bit address when it joins a network.
+ * This class represents a 16-bit network address.
+ * 
+ * <p>This address is only applicable for:</p>
+ * <ul>
+ * <li>802.15.4</li>
+ * <li>ZigBee</li>
+ * <li>ZNet 2.5</li>
+ * <li>XTend (Legacy)</li>
+ * </ul>
+ * 
+ * <p>DigiMesh and Point-to-multipoint does not support 16-bit addressing.</p>
+ * 
+ * <p>Each device has its own 16-bit address which is unique in the network. 
+ * It is automatically assigned when the radio joins the network for ZigBee 
+ * and Znet 2.5, and manually configured in 802.15.4 radios.</p>
+ * 
  */
 public final class XBee16BitAddress {
 
 	// Constants
+	/**
+	 * 16-bit address reserved for the coordinator.
+	 */
+	public static final XBee16BitAddress COORDINATOR_ADDRESS = new XBee16BitAddress("0000");
+	/**
+	 * 16-bit broadcast address.
+	 */
 	public static final XBee16BitAddress BROADCAST_ADDRESS = new XBee16BitAddress("FFFF");
+	/**
+	 * 16-bit unknown address.
+	 */
 	public static final XBee16BitAddress UNKNOWN_ADDRESS = new XBee16BitAddress("FFFE");
 	
+	/**
+	 * Pattern for the 16-bit address string: {@value}.
+	 */
 	private static final String XBEE_16_BIT_ADDRESS_PATTERN = "(0[xX])?[0-9a-fA-F]{1,4}";
 	
 	private static final int HASH_SEED = 23;
 	
 	// Variables
-	private final int hsb;
-	private final int lsb;
+	private final byte[] address;
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee16BitAddress
+	 * Class constructor. Instances a new object of type {@code XBee16BitAddress} 
 	 * with the given parameters.
 	 * 
 	 * @param hsb High significant byte of the address.
@@ -51,66 +77,70 @@ public final class XBee16BitAddress {
 		if (lsb > 255 || lsb < 0)
 			throw new IllegalArgumentException("LSB must be betwwen 0 and 255.");
 		
-		this.hsb = hsb;
-		this.lsb = lsb;
+		address = new byte[2];
+		address[0] = (byte) hsb;
+		address[1] = (byte) lsb;
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee16BitAddress
+	 * Class constructor. Instances a new object of type {@code XBee16BitAddress} 
 	 * with the given parameters.
 	 * 
 	 * @param address Address as byte array.
 	 * 
 	 * @throws NullPointerException if {@code address == null}.
-	 * @throws IllegalArgumentException if {@code address.length > 2}.
+	 * @throws IllegalArgumentException if {@code address.length < 1} or
+	 *                                  if {@code address.length > 2}.
 	 */
 	public XBee16BitAddress(byte[] address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
+		if (address.length < 1)
+			throw new IllegalArgumentException("Address must contain at least 1 byte.");
 		if (address.length > 2)
 			throw new IllegalArgumentException("Address cannot contain more than 2 bytes.");
 		
 		// Check array size.
-		if (address.length == 0) {
-			hsb = 0;
-			lsb = 0;
-		} else if (address.length == 1) {
-			hsb = 0;
-			lsb = address[0];
-		} else {
-			hsb = address[0];
-			lsb = address[1];
-		}
+		this.address = new byte[2];
+		int diff = this.address.length - address.length;
+		for (int i = 0; i < diff; i++)
+			this.address[i] = 0;
+		for (int i = diff; i < this.address.length; i++)
+			this.address[i] = address[i - diff];
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee16BitAddress
+	 * Class constructor. Instances a new object of type {@code XBee16BitAddress} 
 	 * with the given parameters.
+	 * 
+	 * <p>The string must be the hexadecimal representation of a 16-bit 
+	 * address.</p> 
 	 * 
 	 * @param address String containing the address.
 	 * 
 	 * @throws NullPointerException if {@code address == null}.
-	 * @throws IllegalArgumentException if {@code address} is not valid.
+	 * @throws IllegalArgumentException if {@code address.length() < 1} or
+	 *                                  if {@code address} contains 
+	 *                                  non-hexadecimal characters and is longer
+	 *                                  than 8 bytes.
 	 */
 	public XBee16BitAddress(String address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
+		if (address.length() < 1)
+			throw new IllegalArgumentException("Address must contain at least 1 character.");
 		if (!address.matches(XBEE_16_BIT_ADDRESS_PATTERN))
 			throw new IllegalArgumentException("Address must follow this pattern: (0x)XXXX.");
 		
 		// Convert the string into a byte array.
 		byte[] byteAddress = HexUtils.hexStringToByteArray(address);
 		// Check array size.
-		if (byteAddress.length == 0) {
-			hsb = 0;
-			lsb = 0;
-		} else if (byteAddress.length == 1) {
-			hsb = 0;
-			lsb = byteAddress[0];
-		} else {
-			hsb = byteAddress[0];
-			lsb = byteAddress[1];
-		}
+		this.address = new byte[2];
+		int diff = this.address.length - byteAddress.length;
+		for (int i = 0; i < diff; i++)
+			this.address[i] = 0;
+		for (int i = diff; i < this.address.length; i++)
+			this.address[i] = byteAddress[i - diff];
 	}
 	
 	/**
@@ -119,7 +149,7 @@ public final class XBee16BitAddress {
 	 * @return Address high significant byte.
 	 */
 	public int getHsb() {
-		return hsb;
+		return address[0];
 	}
 	
 	/**
@@ -128,16 +158,16 @@ public final class XBee16BitAddress {
 	 * @return Address low significant byte.
 	 */
 	public int getLsb() {
-		return lsb;
+		return address[1];
 	}
 	
 	/**
-	 * Retrieves the address value.
+	 * Retrieves the 16-bit address value.
 	 * 
 	 * @return Address value as byte array.
 	 */
 	public byte[] getValue() {
-		return new byte[] {(byte) hsb, (byte) lsb};
+		return Arrays.copyOf(address, address.length);
 	}
 	
 	@Override
@@ -158,6 +188,6 @@ public final class XBee16BitAddress {
 	
 	@Override
 	public String toString() {
-		return HexUtils.byteArrayToHexString(new byte[] {(byte)hsb, (byte)lsb});
+		return HexUtils.byteArrayToHexString(address);
 	}
 }

@@ -16,19 +16,34 @@ import java.util.Arrays;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a 64 bit address (also known as MAC address). Each
- * XBee device has its own 64 bit address which is unique.
+ * This class represents a 64-bit address (also known as MAC address). 
+ * 
+ * <p>The 64-bit address is a unique device address assigned during 
+ * manufacturing. This address is unique to each physical device.</p>
+ * 
  */
 public final class XBee64BitAddress {
 
 	// Constants
+	/**
+	 * 64-bit address reserved for the coordinator.
+	 */
 	public static final XBee64BitAddress COORDINATOR_ADDRESS = new XBee64BitAddress("0000");
+	/**
+	 * 64-bit broadcast address.
+	 */
 	public static final XBee64BitAddress BROADCAST_ADDRESS = new XBee64BitAddress("FFFF");
+	/**
+	 * 64-bit unknown address.
+	 */
 	public static final XBee64BitAddress UNKNOWN_ADDRESS = new XBee64BitAddress("FFFE");
 	
 	private static final String DEVICE_ID_SEPARATOR = "-";
 	private static final String DEVICE_ID_MAC_SEPARATOR = "FF";
 	
+	/**
+	 * Pattern for the 64-bit address string: {@value}.
+	 */
 	private static final String XBEE_64_BIT_ADDRESS_PATTERN = "(0[xX])?[0-9a-fA-F]{1,16}";
 	
 	private static final int HASH_SEED = 23;
@@ -37,55 +52,67 @@ public final class XBee64BitAddress {
 	private final byte[] address;
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee64BitAddress
-	 * with the given parameters-
+	 * Class constructor. Instances a new object of type {@code XBee64BitAddress}
+	 * with the given parameters.
 	 * 
-	 * @param address The XBee 64 bit address as byte array.
+	 * @param address The XBee 64-bit address as byte array.
 	 * 
 	 * @throws NullPointerException if {@code address == null}.
-	 * @throws IllegalArgumentException if {@code address.length > 8}.
+	 * @throws IllegalArgumentException if {@code address.length > 8} or
+	 *                                  if {@code address.length < 1}.
 	 */
 	public XBee64BitAddress(byte[] address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
+		if (address.length < 1)
+			throw new IllegalArgumentException("Address must contain at least 1 byte.");
 		if (address.length > 8)
 			throw new IllegalArgumentException("Address cannot contain more than 8 bytes.");
 		
 		this.address = new byte[8];
-		int diff = 8 - address.length;
+		int diff = this.address.length - address.length;
 		for (int i = 0; i < diff; i++)
 			this.address[i] = 0;
-		for (int i = diff; i < 8; i++)
+		for (int i = diff; i < this.address.length; i++)
 			this.address[i] = address[i - diff];
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee64BitAddress
-	 * with the given parameters-
+	 * Class constructor. Instances a new object of type {@code XBee64BitAddress}
+	 * with the given parameters.
 	 * 
-	 * @param address The XBee 64 bit address as string.
+	 * <p>The string must be the hexadecimal representation of a 64-bit 
+	 * address.</p>
+	 * 
+	 * @param address The XBee 64-bit address as string.
 	 * 
 	 * @throws NullPointerException if {@code address == null}.
+	 * @throws IllegalArgumentException if {@code address.length() < 1} or
+	 *                                  if {@code address} contains 
+	 *                                  non-hexadecimal characters and is longer
+	 *                                  than 8 bytes.
 	 */
 	public XBee64BitAddress(String address) {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null.");
+		if (address.length() < 1)
+			throw new IllegalArgumentException("Address must contain at least 1 character.");
 		if (!address.matches(XBEE_64_BIT_ADDRESS_PATTERN))
 			throw new IllegalArgumentException("Address must follow this pattern: (0x)0013A20040XXXXXX.");
 		
 		byte[] byteAddress = HexUtils.hexStringToByteArray(address);
 		this.address = new byte[8];
-		int diff = 8 - byteAddress.length;
+		int diff = this.address.length - byteAddress.length;
 		for (int i = 0; i < diff; i++)
 			this.address[i] = 0;
-		for (int i = diff; i < 8; i++)
+		for (int i = diff; i < this.address.length; i++)
 			this.address[i] = byteAddress[i - diff];
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee64BitAddress
-	 * with the given bytes being b0 the more significant byte and b7 the 
-	 * less significant byte.
+	 * Class constructor. Instances a new object of type {@code XBee64BitAddress}
+	 * with the given bytes being {@code b0} the more significant byte and 
+	 * {@code b7} the less significant byte.
 	 * 
 	 * @param b0 XBee 64 bit address b0.
 	 * @param b1 XBee 64 bit address b1.
@@ -143,16 +170,17 @@ public final class XBee64BitAddress {
 	}
 	
 	/**
-	 * Retrieves the XBee 64 bit address value as byte array.
+	 * Retrieves the XBee 64-bit address value as byte array.
 	 * 
-	 * @return XBee 64 bit address value as byte array.
+	 * @return XBee 64-bit address value as byte array.
 	 */
 	public byte[] getValue() {
-		return address;
+		return Arrays.copyOf(address, address.length);
 	}
 	
 	/**
-	 * Generates a Device ID to be used in Device Cloud from this XBee 64-bit Address.
+	 * Generates a Device ID to be used in Device Cloud from this XBee 64-bit 
+	 * Address.
 	 * 
 	 * @return Device ID corresponding to this address.
 	 */

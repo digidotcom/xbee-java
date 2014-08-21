@@ -1,6 +1,6 @@
   Introduction
   ------------
-  This is a sample Java application to show how to receive data packets from 
+  This is a sample Java application to show how data packets are received from 
   another XBee device on the same network.
   
   The application prints the received data to the standard output in ASCII and 
@@ -10,7 +10,7 @@
   Files
   ----------
     * com.digi.xbee.api.receiveserialdata.MainApp.java:
-      Main application class. Instantiates an XBee device and establishes a 
+      Main application class. It instantiates an XBee device and establishes a 
       serial connection with it.
       
     * com.digi.xbee.api.receiveserialdata.MySerialDataReceiveListener.java:
@@ -28,7 +28,7 @@
 
   Example setup
   -------------
-    1) Look for the 64-bit address labeled on the back of the device, a 16 
+    1) Find the 64-bit address labeled on the back of the device, which is a 16 
        character string that follows the format 0013A20040XXXXXX.
        
     2) Plug the XBee radios into the XBee adapters and connect them to your
@@ -46,13 +46,13 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test its functionality you need other device on the network to send unicast 
-  data to the receiver module. If you want to send data to this module, follow 
-  these steps:
+  To test the functionality send unicast data to the receiver module from other 
+  devices on the network. If you want to send data to this module, follow these 
+  steps:
   
     a) Use the 'SendSerialDataSample' or 'SendSerialDataAsyncSample' example 
        included in the library.
-       Follow the instructions on its 'ReadMe' file to perform the task.
+       Follow the instructions in the 'ReadMe' file to perform the task.
        
     b) Use the XCTU:
        

@@ -14,7 +14,7 @@
   Files
   ----------
     * com.digi.xbee.api.handlelocaldio.MainApp.java:
-      Main application class. Instantiates an XBee device, establishes a 
+      Main application class. It instantiates an XBee device, establishes a 
       serial connection with it, configures the IO lines and reads/sets the
       digital IOs.
 
@@ -61,7 +61,7 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test its functionality, follow these steps:
+  To test the functionality, follow these steps:
   
     1) Press the button corresponding to the digital input line. In the XBIB
        boards it is the DIO3; in the XBee Development boards is the DIO4 or

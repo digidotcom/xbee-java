@@ -10,7 +10,7 @@
   Files
   ----------
     * com.digi.xbee.api.handlelocaladc.MainApp.java:
-      Main application class. Instantiates an XBee device, establishes a 
+      Main application class. It instantiates an XBee device, establishes a 
       serial connection with it, configures the IO line and reads its analog 
       value.
 
@@ -77,7 +77,7 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test its functionality, follow these steps:
+  To test the functionality, follow these steps:
   
     1) Rotate the potentiometer.
        

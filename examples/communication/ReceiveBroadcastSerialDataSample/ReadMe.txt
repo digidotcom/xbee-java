@@ -1,16 +1,16 @@
   Introduction
   ------------
-  This is a sample Java application to show how to receive broadcast data 
-  packets from another XBee device on the same network.
+  This is a sample Java application to show how broadcast data packets are 
+  received from another XBee device on the same network.
   
-  The application prints the received broadcast data to the standard output in 
-  ASCII and hexadecimal formats after the sender address.
+  The application prints the broadcast data that was received to the standard 
+  output in ASCII and hexadecimal formats after the sender address.
 
 
   Files
   ----------
     * com.digi.xbee.api.receivebroadcastserialdata.MainApp.java:
-      Main application class. Instantiates an XBee device and establishes a 
+      Main application class. It instantiates an XBee device and establishes a 
       serial connection with it.
       
     * com.digi.xbee.api.receivebroadcastserialdata.MyBroadcastSerialDataReceiveListener.java:
@@ -43,12 +43,12 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test its functionality you need other device on the network to send 
-  broadcast data to the receiver module. If you want to send broadcast data, 
-  follow these steps:
+  To test the functionality send broadcast data to the receiver module from 
+  other devices on the network. If you want to send broadcast data, follow 
+  these steps:
   
     a) Use the 'SendBroadcastSerialDataSample' example included in the library.
-       Follow the instructions on its 'ReadMe' file to perform the task.
+       Follow the instructions in the 'ReadMe' file to perform the task.
        
     b) Use the XCTU:
        

@@ -103,14 +103,35 @@ public class SendSerialDataAsyncTest {
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
-		} 
+		}
 		// Try to send serial data with a null 64-bit address.
 		try {
 			xbeeDevice.sendSerialDataAsync((XBee64BitAddress)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
-		} 
+		}
+		// Try to send serial data with a null 64-bit address.
+		try {
+			xbeeDevice.sendSerialDataAsync((XBee64BitAddress)null, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with a null 16-bit address.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, (XBee16BitAddress)null, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with a null 64-bit and 16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync((XBee64BitAddress)null, (XBee16BitAddress)null, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
 		// Try to send serial data with a null XBeeDevice.
 		try {
 			xbeeDevice.sendSerialDataAsync((XBeeDevice)null, SEND_DATA_BYTES);
@@ -128,6 +149,13 @@ public class SendSerialDataAsyncTest {
 		// Try to send serial data with null data. 16-bit address.
 		try {
 			xbeeDevice.sendSerialDataAsync(XBEE_16BIT_ADDRESS, null);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		// Try to send serial data with null data. 64-bit/16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -163,6 +191,13 @@ public class SendSerialDataAsyncTest {
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
+		// Send serial data using the 64-bit and 16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Serial data shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InterfaceNotOpenException.class, e.getClass());
+		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
@@ -192,11 +227,13 @@ public class SendSerialDataAsyncTest {
 		xbeeDevice.sendSerialDataAsync(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using the 64-bit address.
 		xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using the 64-bit and 16-bit addresses.
+		xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
 		xbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacketAsync method was called 3 times (one for each data send).
-		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(4)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
 	}
 	
 	/**
@@ -221,6 +258,13 @@ public class SendSerialDataAsyncTest {
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx64 frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
+		// Send serial data using the 64-bit and 16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -266,6 +310,14 @@ public class SendSerialDataAsyncTest {
 			assertEquals(XBeeException.class, e.getClass());
 			assertEquals(IOException.class, e.getCause().getClass());
 		}
+		// Send serial data using the 64-bit and 16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("Tx64 frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
+		}
 		// Send serial data using an XBeeDevice as parameter.
 		try {
 			xbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
@@ -296,11 +348,13 @@ public class SendSerialDataAsyncTest {
 		xbeeDevice.sendSerialDataAsync(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using the 64-bit address.
 		xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using the 64-bit and 16-bit addresses.
+		xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
 		xbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacketAsync method was called 3 times (one for each data send).
-		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());	}
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(4)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());	}
 	
 	/**
 	 * Verify that serial data send fails when the operating mode is AT. In this test case 
@@ -324,6 +378,13 @@ public class SendSerialDataAsyncTest {
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(InvalidOperatingModeException.class, e.getClass());
+		}
+		// Send serial data using the 64-bit and 16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -364,6 +425,14 @@ public class SendSerialDataAsyncTest {
 		// Send serial data using the 64-bit address.
 		try {
 			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
+			fail("TransmitRequest frame shouldn't have been sent successfully.");
+		} catch (Exception e) {
+			assertEquals(XBeeException.class, e.getClass());
+			assertEquals(IOException.class, e.getCause().getClass());
+		}
+		// Send serial data using the 64-bit and 16-bit addresses.
+		try {
+			xbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());

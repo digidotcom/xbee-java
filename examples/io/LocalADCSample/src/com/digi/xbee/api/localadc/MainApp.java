@@ -56,20 +56,16 @@ public class MainApp {
 		
 		try {
 			myDevice.open();
-		} catch (XBeeException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		try {
+			
 			myDevice.setIOConfiguration(IOLINE_IN, IOMode.ADC);
+			
+			readADCTimer.schedule(new ReadADCTask(myDevice), 0, READ_TIMEOUT);
+			
 		} catch (XBeeException e) {
 			e.printStackTrace();
 			myDevice.close();
 			System.exit(1);
 		}
-		
-		readADCTimer.schedule(new ReadADCTask(myDevice), 0, READ_TIMEOUT);
 	}
 	
 	/**
@@ -93,6 +89,7 @@ public class MainApp {
 				// Read the analog value from the input line.
 				int value = xbeeDevice.getADCValue(IOLINE_IN);
 				System.out.println("Input line value: " + value);
+				
 			} catch (XBeeException e) {
 				e.printStackTrace();
 			}

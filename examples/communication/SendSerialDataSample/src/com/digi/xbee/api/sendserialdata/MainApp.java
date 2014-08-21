@@ -64,20 +64,19 @@ public class MainApp {
 		
 		try {
 			myDevice.open();
-		} catch (XBeeException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 			
-		System.out.format("Sending data to %s >> %s | %s... ", destinationAddress, 
-				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
-				new String(dataToSend));
-		try {
+			System.out.format("Sending data to %s >> %s | %s... ", destinationAddress, 
+					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
+					new String(dataToSend));
+			
 			myDevice.sendSerialData(destinationAddress, dataToSend);
+			
 			System.out.println("Success");
+			
 		} catch (XBeeException e) {
 			System.out.println("Error");
 			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			myDevice.close();
 		}

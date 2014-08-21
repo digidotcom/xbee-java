@@ -62,21 +62,18 @@ public class MainApp {
 		
 		try {
 			myDevice.open();
-		} catch (XBeeException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		try {
+			
 			myDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
+			
 			myDevice.setIOConfiguration(IOLINE_OUT, IOMode.DIGITAL_OUT_LOW);
+			
+			readADCTimer.schedule(new UpdateOutputTask(myDevice), 0, READ_TIMEOUT);
+			
 		} catch (XBeeException e) {
 			e.printStackTrace();
 			myDevice.close();
 			System.exit(1);
 		}
-		
-		readADCTimer.schedule(new UpdateOutputTask(myDevice), 0, READ_TIMEOUT);
 	}
 	
 	/**
@@ -100,8 +97,10 @@ public class MainApp {
 				// Read the digital value from the input line.
 				IOValue value = xbeeDevice.getDIOValue(IOLINE_IN);
 				System.out.println("Input line value: " + value);
+				
 				// Set the previous value to the output line.
 				xbeeDevice.setDIOValue(IOLINE_OUT, value);
+				
 			} catch (XBeeException e) {
 				e.printStackTrace();
 			}

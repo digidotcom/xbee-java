@@ -47,6 +47,7 @@ public class MainApp {
 			myDevice.open();
 			
 			myDevice.startListeningForSerialData(new MyBroadcastSerialDataReceiveListener());
+			
 			System.out.println("\n>> Waiting for broadcast data...");
 			
 		} catch (XBeeException e) {

@@ -45,12 +45,14 @@ public class MainApp {
 		
 		try {
 			myDevice.open();
+			
+			myDevice.startListeningForSerialData(new MySerialDataReceiveListener());
+			
+			System.out.println("\n>> Waiting for data...");
+			
 		} catch (XBeeException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
-		myDevice.startListeningForSerialData(new MySerialDataReceiveListener());
-		System.out.println("\n>> Waiting for data...");
 	}
 }

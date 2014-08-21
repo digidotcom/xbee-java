@@ -296,10 +296,20 @@ public class DataReader extends Thread {
 				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
 					executor.execute(new Runnable() {
 						public void run() {
-							if (isBroadcastData)
-								listener.broadcastSerialDataReceived(address, data);
-							else
-								listener.serialDataReceived(address, data);
+							/* Synchronize the listener so it is not called 
+							 twice. That is, let the listener to finish its job.
+							 
+							 By synchronizing the listener also unicast and 
+							 broadcast data reception are synchronized, that is, 
+							 while unicast data is being processed, broadcast 
+							 data is waiting till it finishes, and the other 
+							 way around. */
+							synchronized (listener) {
+								if (isBroadcastData)
+									listener.broadcastSerialDataReceived(address, data);
+								else
+									listener.serialDataReceived(address, data);
+							}
 						}
 					});
 				}

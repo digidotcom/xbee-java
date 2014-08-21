@@ -13,9 +13,9 @@
   Files
   ----------
     * com.digi.xbee.api.sendserialdataasync.MainApp.java:
-      Main application class. Instantiates an XBee device, establishes a serial 
-      connection with it and sends the serial data to the specified XBee device.
-      Finally it prints out the result of the sent operation.
+      Main application class. It instantiates an XBee device, establishes a 
+      serial connection with it and sends the serial data to the specified XBee 
+      device. Finally it prints out the result of the sent operation.
 
 
   Requirements
@@ -31,7 +31,7 @@
   -------------
     1) Insert the 64-bit address of the receiver XBee module in the MainApp 
        class.
-       Find the 64-bit address labeled on the back of the device, a 16 
+       Find the 64-bit address labeled on the back of the device, which is a 16 
        character string that follows the format 0013A20040XXXXXX.
        
     2) Plug the XBee radios into the XBee adapters and connect them to your
@@ -47,12 +47,12 @@
 
   Running the example
   -------------------
-  First, build the application. To test its functionality you need the device 
+  First, build the application. To test the functionality ensure the device 
   with the configured address during the setup above to be listening to unicast 
   data. To do this:
   
     a) Use the 'ReceiveSerialDataSample' example included in the library.
-       Follow the instructions on its 'ReadMe' file to perform the task.
+       Follow the instructions in the 'ReadMe' file to perform the task.
        
     b) Use the XCTU:
        
@@ -62,11 +62,12 @@
           settings.
           
        3) Once the module is added, change to the 'Consoles' working mode and 
-          open the serial connection so you can see the data when it is received.
+          open the serial connection so you can see the data when it is 
+          received.
           
        4) Launch the sample application, some data is sent to the configured 
           destination address and a line with the result of the operation is 
-          printed out to the standard output:
+          printed to the standard output:
           
           Sending data to 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
           

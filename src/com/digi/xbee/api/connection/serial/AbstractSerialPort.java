@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
-import com.digi.xbee.api.exceptions.XBeeException;
 
 public abstract class AbstractSerialPort implements IConnectionInterface {
 	

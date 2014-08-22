@@ -57,15 +57,17 @@ public enum SpecialByte {
 	/**
 	 * Retrieves the Special Byte associated with the given value.
 	 * 
-	 * @param value Value to retrieve Special Byte;
-	 * @return Special Byte for the given value, null if it does not exist.
+	 * @param value Value to retrieve Special Byte.
+	 * 
+	 * @return Special Byte for the given value, {@code null} if it does not 
+	 *         exist.
 	 */
 	public static SpecialByte get(int value) {
 		return lookupTable.get(value);
 	}
 	
 	/**
-	 * Escapes the byte by performing a XOR operation with 0x20 value.
+	 * Escapes the byte by performing a XOR operation with {@code 0x20} value.
 	 * 
 	 * @return Escaped byte value.
 	 */
@@ -77,7 +79,8 @@ public enum SpecialByte {
 	 * Checks whether the given byte is special or not.
 	 * 
 	 * @param byteToCheck Byte to check.
-	 * @return True if given byte is special, false otherwise.
+	 * 
+	 * @return {@code true} if given byte is special, {@code false} otherwise.
 	 */
 	public static boolean isSpecialByte(int byteToCheck) {
 		return get(byteToCheck) != null;

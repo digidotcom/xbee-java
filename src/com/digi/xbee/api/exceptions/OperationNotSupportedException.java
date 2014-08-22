@@ -47,6 +47,8 @@ public class OperationNotSupportedException extends XBeeDeviceException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public OperationNotSupportedException(String message, Throwable cause) {
 		super(message, cause);

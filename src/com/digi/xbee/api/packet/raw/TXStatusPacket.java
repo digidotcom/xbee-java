@@ -24,15 +24,17 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	private final XBeeTransmitStatus transmitStatus;
 	
 	/**
-	 * Class constructor. Instances a new object of type TXStatusPacket with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code TXStatusPacket} 
+	 * with the given parameters.
 	 * 
 	 * @param frameID Packet frame ID.
-	 * @param transmitStatus Transmit status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
+	 * @param transmitStatus Transmit status.
 	 * 
-	 * @throws NullPointerException if {@code transmitStatus == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
+	 * @throws NullPointerException if {@code transmitStatus == null}.
+	 * 
+	 * @see XBeeTransmitStatus
 	 */
 	public TXStatusPacket(int frameID, XBeeTransmitStatus transmitStatus) {
 		super(APIFrameType.TX_STATUS);
@@ -48,8 +50,9 @@ public class TXStatusPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		byte[] data = new byte[2];
 		data[0] = (byte)frameID;
@@ -59,17 +62,19 @@ public class TXStatusPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return true;
 	}
 	
 	/**
 	 * Retrieves the transmit status.
-	 * See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
 	 * 
-	 * @return Transmit status. See {@link com.digi.xbee.api.models.XBeeTransmitStatus}.
+	 * @return Transmit status.
+	 * 
+	 * @see XBeeTransmitStatus
 	 */
 	public XBeeTransmitStatus getTransmitStatus() {
 		return transmitStatus;
@@ -77,8 +82,9 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeePacket#getPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");

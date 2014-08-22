@@ -45,6 +45,8 @@ public class TimeoutException extends CommunicationException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public TimeoutException(String message, Throwable cause) {
 		super(message, cause);

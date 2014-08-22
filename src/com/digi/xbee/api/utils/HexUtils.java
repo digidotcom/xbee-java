@@ -12,8 +12,8 @@
 package com.digi.xbee.api.utils;
 
 /**
- * Utility class containing methods to work with hexadecimal values
- * and several data type conversions.
+ * Utility class containing methods to work with hexadecimal values and several 
+ * data type conversions.
  */
 public class HexUtils {
 
@@ -24,7 +24,9 @@ public class HexUtils {
 	 * Converts the given byte array into a hex string.
 	 * 
 	 * @param value Byte array to convert to hex string.
-	 * @return Converted byte array to hex string.
+	 * 
+	 * @return Converted byte array to hex string or {@code null} 
+	 *         if {@code value == null}.
 	 */
 	public static String byteArrayToHexString(byte[] value) {
 		if (value == null )
@@ -32,7 +34,7 @@ public class HexUtils {
 		final StringBuilder hex = new StringBuilder(2 * value.length );
 		for (final byte b : value) {
 			hex.append(HEXES.charAt((b & 0xF0) >> 4))
-			.append(HEXES.charAt((b & 0x0F)));
+				.append(HEXES.charAt((b & 0x0F)));
 		}
 		return hex.toString();
 	}
@@ -41,13 +43,14 @@ public class HexUtils {
 	 * Converts the given byte  into a hex string.
 	 * 
 	 * @param value Byte to convert to hex string.
+	 * 
 	 * @return Converted byte to hex string.
 	 */
 	public static String byteToHexString(byte value) {
 		final StringBuilder hex = new StringBuilder(2);
 		byte b = value;
 		hex.append(HEXES.charAt((b & 0xF0) >> 4))
-		.append(HEXES.charAt((b & 0x0F)));
+			.append(HEXES.charAt((b & 0x0F)));
 		return hex.toString();
 	}
 	
@@ -55,6 +58,7 @@ public class HexUtils {
 	 * Converts the given hex string into a byte array.
 	 * 
 	 * @param value Hex string to convert to.
+	 * 
 	 * @return Byte array of the given hex string.
 	 * 
 	 * @throws NullPointerException if {@code value == null}.
@@ -80,11 +84,12 @@ public class HexUtils {
 	}
 	
 	/**
-	 * Internal function to check if the parameter is a string or a
-	 * numeric value
+	 * Internal function to check if the parameter is a string or a numeric 
+	 * value.
 	 * 
 	 * @param parameter parameter to check.
-	 * @return true if contains letters, false otherwise.
+	 * 
+	 * @return {@code true} if contains letters, {@code false} otherwise.
 	 * 
 	 * @throws NullPointerException if {@code parameter == null}.
 	 */
@@ -105,6 +110,7 @@ public class HexUtils {
 	 * 
 	 * @param value The integer value to convert to hexadecimal string.
 	 * @param minBytes The minimum number of bytes to be represented.
+	 * 
 	 * @return The integer value as hexadecimal string.
 	 */
 	public static String integerToHexString(int value, int minBytes) {
@@ -124,6 +130,7 @@ public class HexUtils {
 	 * Retrieves the given hexadecimal string splitting the content byte by byte.
 	 * 
 	 * @param hexString The hexadecimal string to split.
+	 * 
 	 * @return The hexadecimal string with the bytes split.
 	 * 
 	 * @throws NullPointerException if {@code hexString == null}.
@@ -146,7 +153,10 @@ public class HexUtils {
 	 * splitting the content byte by byte.
 	 * 
 	 * @param value The byte array to convert and split.
+	 * 
 	 * @return The hexadecimal string with the bytes split.
+	 * 
+	 * @throws NullPointerException if {@code value == null}.
 	 */
 	public static String prettyHexString(byte[] value) {
 		return prettyHexString(byteArrayToHexString(value));

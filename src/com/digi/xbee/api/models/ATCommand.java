@@ -12,12 +12,15 @@
 package com.digi.xbee.api.models;
 
 /**
- * This class represents an AT command used to read or set different
- * properties of the XBee device. AT commands can be sent directly to
- * the connected device or to remote devices and may have parameters. 
+ * This class represents an AT command used to read or set different properties 
+ * of the XBee device.
  * 
- * After executing an AT Command, an AT Response is received from the device.
- *  See {@link com.digi.xbee.models.ATResponse}.
+ * <p>AT commands can be sent directly to the connected device or to remote 
+ * devices and may have parameters.</p> 
+ * 
+ * <p>After executing an AT Command, an AT Response is received from the device.</p>
+ * 
+ * @see ATCommandResponse
  */
 public class ATCommand {
 	
@@ -27,54 +30,47 @@ public class ATCommand {
 	private byte[] parameter;
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommand with
+	 * Class constructor. Instances a new object of type {@code ATCommand} with
 	 * the given parameters.
 	 * 
 	 * @param command The AT Command.
 	 * 
-	 * @throws NullPointerException if {@code command == null}.
 	 * @throws IllegalArgumentException if {@code command.length() != 2}.
+	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command) {
-		if (command == null)
-			throw new NullPointerException("Command cannot be null.");
-		if (command.length() != 2)
-			throw new IllegalArgumentException("Command lenght must be 2.");
-		
-		this.command = command;
-		this.parameter = null;
+		this(command, (String)null);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommand with
+	 * Class constructor. Instances a new object of type {@code ATCommand} with
 	 * the given parameters.
 	 * 
-	 * @param command The AT Command.
-	 * @param parameter The command parameter as string, null if no parameter is required.
+	 * <p>If not parameter is required the constructor {@link #ATCommand(String)}
+	 * is recommended.</p>
 	 * 
-	 * @throws NullPointerException if {@code command == null}.
+	 * @param command The AT Command.
+	 * @param parameter The command parameter as string.
+	 * 
 	 * @throws IllegalArgumentException if {@code command.length() != 2}.
+	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command, String parameter) {
-		if (command == null)
-			throw new NullPointerException("Command cannot be null.");
-		if (command.length() != 2)
-			throw new IllegalArgumentException("Command lenght must be 2.");
-		
-		this.command = command;
-		if (parameter != null)
-			this.parameter = parameter.getBytes();
+		this(command, parameter == null ? null : parameter.getBytes());
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommand with
+	 * Class constructor. Instances a new object of type {@code ATCommand} with
 	 * the given parameters.
 	 * 
-	 * @param command The AT Command.
-	 * @param parameter The command parameter as byte array, null if no parameter is required.
+	 * <p>If not parameter is required the constructor {@link #ATCommand(String)}
+	 * is recommended.</p>
 	 * 
-	 * @throws NullPointerException if {@code command == null}.
+	 * @param command The AT Command.
+	 * @param parameter The command parameter as byte array.
+	 * 
 	 * @throws IllegalArgumentException if {@code command.length() != 2}.
+	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command, byte[] parameter) {
 		if (command == null)
@@ -98,7 +94,7 @@ public class ATCommand {
 	/**
 	 * Retrieves the AT command parameter.
 	 * 
-	 * @return The AT command parameter, null if none.
+	 * @return The AT command parameter, {@code null} if none.
 	 */
 	public byte[] getParameter() {
 		return parameter;
@@ -107,7 +103,7 @@ public class ATCommand {
 	/**
 	 * Retrieves the AT command parameter in string format.
 	 * 
-	 * @return The AT command parameter, null if none.
+	 * @return The AT command parameter, {@code null} if none.
 	 */
 	public String getParameterString() {
 		if (parameter == null)
@@ -118,7 +114,7 @@ public class ATCommand {
 	/**
 	 * Sets the AT command parameter as string.
 	 * 
-	 * @param parameter The AT command parameter as string, null if none.
+	 * @param parameter The AT command parameter as string, {@code null} if none.
 	 */
 	public void setParameter(String parameter) {
 		this.parameter = parameter.getBytes();
@@ -127,7 +123,8 @@ public class ATCommand {
 	/**
 	 * Sets the AT command parameter as byte array.
 	 * 
-	 * @param parameter The AT command parameter as byte array, null if none.
+	 * @param parameter The AT command parameter as byte array, {@code null} if 
+	 *                  none.
 	 */
 	public void setParameter(byte[] parameter) {
 		this.parameter = parameter;

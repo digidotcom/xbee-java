@@ -70,22 +70,24 @@ public enum IOMode {
 	}
 	
 	/**
-	 * Retrieves the IOMode corresponding to the provided mode ID.
+	 * Retrieves the {@code IOMode} corresponding to the provided mode ID.
 	 * 
-	 * @param modeID The ID of the IOMode to retrieve.
-	 * @return The IOMode corresponding to the provided mode ID.
+	 * @param modeID The ID of the {@code IOMode} to retrieve.
+	 * 
+	 * @return The {@code IOMode} corresponding to the provided mode ID.
 	 */
 	public static IOMode getIOMode(int modeID) {
 		return getIOMode(modeID, null);
 	}
 	
 	/**
-	 * Retrieves the IOMode corresponding to the provided mode ID and 
+	 * Retrieves the {@code IOMode} corresponding to the provided mode ID and 
 	 * IO line.
 	 * 
-	 * @param modeID The ID of the IOMode to retrieve.
-	 * @param ioLine The IO line to retrieve its IOMode.
-	 * @return The IOMode corresponding to the provided mode ID and 
+	 * @param modeID The ID of the {@code IOMode} to retrieve.
+	 * @param ioLine The IO line to retrieve its {@code IOMode}.
+	 * 
+	 * @return The {@code IOMode} corresponding to the provided mode ID and 
 	 *         IO line.
 	 */
 	public static IOMode getIOMode(int modeID, IOLine ioLine) {

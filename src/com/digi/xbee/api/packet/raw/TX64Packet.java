@@ -35,19 +35,22 @@ public class TX64Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type TX64Packet with
+	 * Class constructor. Instances a new object of type {@code TX64Packet} with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress64 64-bit address of the destination device.
-	 * @param transmitOptions Bitfield of supported transmission options. See {@link com.digi.xbee.api.models.XBeeTransmitOptions}.
+	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param data RF Data that is sent to the destination device.
 	 * 
-	 * @throws NullPointerException if {@code destAddress64 == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code destAddress64 == null}.
+	 * 
+	 * @see XBeeTransmitOptions
+	 * @see XBee64BitAddress
 	 */
 	public TX64Packet(int frameID, XBee64BitAddress destAddress64, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TX_64);
@@ -68,8 +71,9 @@ public class TX64Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
@@ -86,8 +90,9 @@ public class TX64Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return true;
 	}
@@ -96,6 +101,8 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * Retrieves the 64 bit destination address.
 	 * 
 	 * @return The 64 bit destination address.
+	 * 
+	 * @see XBee64BitAddress
 	 */
 	public XBee64BitAddress get64BitDestinationAddress() {
 		return destAddress64;
@@ -105,6 +112,8 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * Retrieves the transmit options bitfield.
 	 * 
 	 * @return Transmit options bitfield.
+	 * 
+	 * @see XBeeTransmitOptions
 	 */
 	public int getTransmitOptions() {
 		return transmitOptions;
@@ -128,11 +137,11 @@ public class TX64Packet extends XBeeAPIPacket {
 		return rfData;
 	}
 	
-	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeePacket#getPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");

@@ -18,7 +18,8 @@ import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 public class XBee {
 	
 	/**
-	 * Retrieves a serial port connection interface with the given serial port name and baud rate.
+	 * Retrieves a serial port connection interface with the given serial port 
+	 * name and baud rate.
 	 * 
 	 * @param port Serial port name.
 	 * @param baudRate Serial port baud rate.
@@ -34,7 +35,8 @@ public class XBee {
 	}
 	
 	/**
-	 * Retrieves a serial port connection interface with the given serial port parameters.
+	 * Retrieves a serial port connection interface with the given serial port 
+	 * parameters.
 	 * 
 	 * @param port Serial port name.
 	 * @param serialPortParameters Serial port parameters.

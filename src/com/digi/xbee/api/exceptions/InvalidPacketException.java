@@ -46,6 +46,8 @@ public class InvalidPacketException extends CommunicationException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public InvalidPacketException(String message, Throwable cause) {
 		super(message, cause);

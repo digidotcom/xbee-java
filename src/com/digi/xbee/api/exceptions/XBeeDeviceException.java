@@ -34,6 +34,8 @@ public class XBeeDeviceException extends XBeeException {
 	 * Creates an {@code XBeeDeviceException} with the specified cause.
 	 * 
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public XBeeDeviceException(Throwable cause) {
 		super(cause);
@@ -54,6 +56,8 @@ public class XBeeDeviceException extends XBeeException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public XBeeDeviceException(String message, Throwable cause) {
 		super(message, cause);

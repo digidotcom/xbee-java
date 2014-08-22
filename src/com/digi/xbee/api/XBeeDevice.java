@@ -87,12 +87,13 @@ public class XBeeDevice {
 	private XBeeDevice localXBeeDevice;
 	
 	/**
-	 * Class constructor. Instantiates a new XBeeDevice object in the given port name and baud rate.
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
+	 * given port name and baud rate.
 	 * 
 	 * @param port Serial port name where XBee device is attached to.
-	 * @param baudRate Serial port baud rate to communicate with the device. Other 
-	 * 					connection parameters will be set as default (8 data bits, 
-	 * 					1 stop bit, no parity, no flow control).
+	 * @param baudRate Serial port baud rate to communicate with the device. 
+	 *                 Other connection parameters will be set as default (8 
+	 *                 data bits, 1 stop bit, no parity, no flow control).
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0}.
@@ -102,8 +103,8 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new XBeeDevice object in the given serial port name and 
-	 * settings.
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
+	 * given serial port name and settings.
 	 * 
 	 * @param port Serial port name where XBee device is attached to.
 	 * @param baudRate Serial port baud rate to communicate with the device.
@@ -124,8 +125,8 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new XBeeDevice object in the given serial port name and 
-	 * parameters.
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
+	 * given serial port name and parameters.
 	 * 
 	 * @param port Serial port name where XBee device is attached to.
 	 * @param serialPortParameters Object containing the serial port parameters.
@@ -140,10 +141,11 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new XBeeDevice object with the given connection 
-	 * interface.
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object with the 
+	 * given connection interface.
 	 * 
-	 * @param connectionInterface The connection interface with the physical XBee device.
+	 * @param connectionInterface The connection interface with the physical 
+	 *                            XBee device.
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null}
 	 * 
@@ -160,16 +162,19 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new remote {@code XBeeDevice} object with the 
-	 * given local {@code XBeeDevice} which contains the connection interface to be used.
+	 * Class constructor. Instantiates a new remote {@code XBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
 	 * 
-	 * @param localXBeeDevice The local XBee device that will behave as connection interface to communicate 
-	 *                        with this remote XBee device
-	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee device.
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device
+	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee 
+	 *                         device.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code xbee64BitAddress == null}.
 	 * 
-	 * @see XBeeDevice
+	 * @see XBee64BitAddress
 	 */
 	public XBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		if (localXBeeDevice == null)
@@ -190,8 +195,11 @@ public class XBeeDevice {
 	/**
 	 * Opens the connection interface associated with this XBee device.
 	 * 
-	 * @throws InterfaceAlreadyOpenException if the device is already open.
 	 * @throws XBeeException if there is any problem opening the device.
+	 * @throws InterfaceAlreadyOpenException if the device is already open.
+	 * 
+	 * @see #isOpen()
+	 * @see #close()
 	 */
 	public void open() throws XBeeException {
 		logger.info(toString() + "Opening the connection interface...");
@@ -230,6 +238,9 @@ public class XBeeDevice {
 	
 	/**
 	 * Closes the connection interface associated with this XBee device.
+	 * 
+	 * @see #isOpen()
+	 * @see #open()
 	 */
 	public void close() {
 		// Stop XBee reader.
@@ -241,10 +252,13 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves whether or not the connection interface associated to the device is 
-	 * open.
+	 * Retrieves whether or not the connection interface associated to the 
+	 * device is open.
 	 * 
 	 * @return {@code true} if the interface is open, {@code false} otherwise.
+	 * 
+	 * @see #open()
+	 * @see #close()
 	 */
 	public boolean isOpen() {
 		if (connectionInterface != null)
@@ -266,7 +280,8 @@ public class XBeeDevice {
 	/**
 	 * Retrieves whether or not the XBee device is a remote device.
 	 * 
-	 * @return {@code true} if the XBee device is a remote device, {@code false} otherwise.
+	 * @return {@code true} if the XBee device is a remote device, 
+	 *         {@code false} otherwise.
 	 */
 	public boolean isRemote() {
 		return localXBeeDevice != null;
@@ -276,8 +291,10 @@ public class XBeeDevice {
 	 * Determines the operating mode of the XBee device.
 	 * 
 	 * @return The operating mode of the XBee device.
+	 * 
+	 * @throws OperationNotSupportedException if the packet is being sent from 
+	 *                                        a remote device.
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * 
 	 * @see OperatingMode
 	 */
@@ -323,12 +340,16 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Attempts to put the device in AT Command mode. Only valid if device is working in AT mode.
+	 * Attempts to put the device in AT Command mode. Only valid if device is 
+	 * working in AT mode.
 	 * 
-	 * @return {@code true} if the device entered in AT command mode, {@code false} otherwise.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws InvalidOperatingModeException if the operating mode cannot be determined or is not supported.
+	 * @return {@code true} if the device entered in AT command mode, 
+	 *         {@code false} otherwise.
+	 *         
+	 * @throws InvalidOperatingModeException if the operating mode cannot be 
+	 *                                       determined or is not supported.
 	 * @throws TimeoutException if the configured time expires.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 */
 	public boolean enterATCommandMode() throws InvalidOperatingModeException, TimeoutException {
 		if (!connectionInterface.isOpen())
@@ -368,9 +389,9 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the 64-Bit address of the XBee device.
+	 * Retrieves the 64-bit address of the XBee device.
 	 * 
-	 * @return The 64-Bit address of the XBee device.
+	 * @return The 64-bit address of the XBee device.
 	 * 
 	 * @see XBee64BitAddress
 	 */
@@ -395,6 +416,7 @@ public class XBeeDevice {
 	 * @return The XBee device protocol.
 	 * 
 	 * @see XBeeProtocol
+	 * @see #setXBeeProtocol(XBeeProtocol)
 	 */
 	public XBeeProtocol getXBeeProtocol() {
 		return xbeeProtocol;
@@ -406,30 +428,37 @@ public class XBeeDevice {
 	 * @param xbeeProtocol The XBee protocol to set.
 	 * 
 	 * @see XBeeProtocol
+	 * @see #getXBeeProtocol()
 	 */
 	protected void setXBeeProtocol(XBeeProtocol xbeeProtocol) {
 		this.xbeeProtocol = xbeeProtocol;
 	}
 	
 	/**
-	 * Sends the given AT command and waits for answer or until receive timeout 
-	 * is reached.
+	 * Sends the given AT command and waits for answer or until the configured 
+	 * receive timeout expires.
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param command AT command to be sent.
-	 * @return An {@code ATCommandResponse} object containing the response of the command or {@code null}
-	 *         if there is no response.
-	 * @throws NullPointerException if {@code command == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @return An {@code ATCommandResponse} object containing the response of 
+	 *         the command or {@code null} if there is no response.
+	 *         
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires while waiting for the command reply.
-	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
+	 * @throws TimeoutException if the configured time expires while waiting 
+	 *                          for the command reply.
+	 * @throws OperationNotSupportedException if the packet is being sent from 
+	 *                                        a remote device.
 	 * @throws IOException if an I/O error occurs while sending the AT command.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code command == null}.
 	 * 
-	 * @see #setReceiveTimeout(int)
-	 * @see #getReceiveTimeout()
 	 * @see ATCommand
 	 * @see ATCommandResponse
+	 * @see #setReceiveTimeout(int)
+	 * @see #getReceiveTimeout()
 	 */
 	public ATCommandResponse sendATCommand(ATCommand command) 
 			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, IOException {
@@ -439,7 +468,6 @@ public class XBeeDevice {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
-		
 		
 		ATCommandResponse response = null;
 		OperatingMode operatingMode = getOperatingMode();
@@ -480,19 +508,29 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the given XBee packet synchronously and waits until response is 
-	 * received or receive timeout is reached.
+	 * Sends the given XBee packet synchronously and blocks until the response 
+	 * is received or the configured receive timeout expires.
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>Use {@link #sendXBeePacketAsync(XBeePacket)} for non-blocking 
+	 * operations.</p>
 	 * 
 	 * @param packet XBee packet to be sent.
-	 * @return XBeePacket object containing the response of the sent packet or {@code null}
-	 *         if there is no response.
-	 * @throws NullPointerException if {@code packet == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws XBeeException if there is any error sending the XBee packet.
 	 * 
+	 * @return An {@code XBeePacket} object containing the response of the sent
+	 *         packet or {@code null} if there is no response.
+	 * 
+	 * @throws XBeeException if there is any error sending the XBee packet.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
+	 * @see #sendXBeePacketAsync(XBeePacket)
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
-	 * @see XBeePacket
 	 */
 	public XBeePacket sendXBeePacket(XBeePacket packet) throws XBeeException {
 		try {
@@ -503,24 +541,37 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the given XBee packet synchronously and waits until response is 
+	 * Sends the given XBee packet synchronously and blocks until response is 
 	 * received or receive timeout is reached.
 	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>Use {@link #sendXBeePacketAsync(XBeePacket, boolean)} for non-blocking 
+	 * operations.</p>
+	 * 
 	 * @param packet XBee packet to be sent.
-	 * @param sentFromLocalDevice Indicates whether or not the packet was sent from a local device.
-	 * @return XBeePacket object containing the response of the sent packet or {@code null}
-	 *         if there is no response.
-	 * @throws NullPointerException if {@code packet == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @param sentFromLocalDevice Indicates whether or not the packet was sent 
+	 *                            from a local device.
+	 * @return An {@code XBeePacket} containing the response of the sent packet 
+	 *         or {@code null} if there is no response.
+	 *         
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws TimeoutException if the configured time expires while waiting for the packet reply.
 	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code packet == null}.
 	 * 
+	 * @see XBeePacket
+	 * @see #sendXBeePacket(XBeePacket)
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener, boolean)
+	 * @see #sendXBeePacketAsync(XBeePacket)
+	 * @see #sendXBeePacketAsync(XBeePacket, boolean)
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
-	 * @see XBeePacket
 	 */
 	private XBeePacket sendXBeePacket(final XBeePacket packet, boolean sentFromLocalDevice) 
 			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, IOException {
@@ -587,9 +638,12 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Insert (if possible) the next frame ID stored in the device to the provided packet.
+	 * Insert (if possible) the next frame ID stored in the device to the 
+	 * provided packet.
 	 * 
 	 * @param xbeePacket The packet to add the frame ID.
+	 * 
+	 * @see XBeePacket
 	 */
 	private void insertFrameID(XBeePacket xbeePacket) {
 		if (xbeePacket instanceof XBeeAPIPacket)
@@ -600,19 +654,28 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the packet listener corresponding to the provided sent packet. The listener will filter those packets 
-	 * matching with the Frame ID of the sent packet storing them in the provided responseList array.
+	 * Retrieves the packet listener corresponding to the provided sent packet. 
+	 * 
+	 * <p>The listener will filter those packets  matching with the Frame ID of 
+	 * the sent packet storing them in the provided responseList array.</p>
 	 * 
 	 * @param sentPacket The packet sent.
-	 * @param responseList List of packets received that correspond to the frame ID of the packet sent.
-	 * @return A packet receive listener that will filter the packets received corresponding to the sent one.
+	 * @param responseList List of packets received that correspond to the 
+	 *                     frame ID of the packet sent.
+	 * 
+	 * @return A packet receive listener that will filter the packets received 
+	 *         corresponding to the sent one.
+	 *         
+	 * @see IPacketReceiveListener
+	 * @see XBeePacket
 	 */
 	private IPacketReceiveListener createPacketReceivedListener(final XBeePacket sentPacket, final ArrayList<XBeePacket> responseList) {
 		IPacketReceiveListener packetReceiveListener = new IPacketReceiveListener() {
 			/*
 			 * (non-Javadoc)
-			 * @see com.digi.xbee.listeners.XBeePacketListener#packetReceived(byte[])
+			 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
 			 */
+			@Override
 			public void packetReceived(XBeePacket receivedPacket) {
 				// Check if it is the packet we are waiting for.
 				if (((XBeeAPIPacket)receivedPacket).checkFrameID((((XBeeAPIPacket)sentPacket).getFrameID()))) {
@@ -661,9 +724,14 @@ public class XBeeDevice {
 	 * 
 	 * @param sentPacket The packet sent.
 	 * @param receivedPacket The packet received.
-	 * @return True if the sent packet is the same than the received one, false otherwise.
+	 * 
+	 * @return {@code true} if the sent packet is the same than the received 
+	 *         one, {@code false} otherwise.
+	 *         
+	 * @see XBeePacket
 	 */
 	private boolean isSamePacket(XBeePacket sentPacket, XBeePacket receivedPacket) {
+		// TODO Should not we implement the {@code equals} method in the XBeePacket??
 		if (HexUtils.byteArrayToHexString(sentPacket.generateByteArray()).equals(HexUtils.byteArrayToHexString(receivedPacket.generateByteArray())))
 			return true;
 		return false;
@@ -671,17 +739,26 @@ public class XBeeDevice {
 	
 	/**
 	 * Sends the given XBee packet asynchronously and registers the given packet
-	 * listener (if not null) to wait for an answer.
+	 * listener (if not {@code null}) to wait for an answer.
 	 * 
 	 * @param packet XBee packet to be sent.
-	 * @param packetReceiveListener Listener for the operation, {@code null} to not be notifie
-	 *                              when the answer arrives.
-	 * @throws NullPointerException if {@code packet == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @param packetReceiveListener Listener for the operation, {@code null} 
+	 *                              not to be notified when the answer arrives.
+	 *                              
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see IPacketReceiveListener
+	 * @see #sendXBeePacket(XBeePacket)
+	 * @see #sendXBeePacket(XBeePacket, boolean)
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
+	 * @see #sendXBeePacketAsync(XBeePacket)
+	 * @see #sendXBeePacketAsync(XBeePacket, boolean)
 	 */
 	private void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener, boolean sentFromLocalDevice)
 			throws InvalidOperatingModeException, OperationNotSupportedException, IOException {
@@ -723,15 +800,24 @@ public class XBeeDevice {
 	/**
 	 * Sends the given XBee packet asynchronously.
 	 * 
-	 * <p>To be notified when the answer is received, use {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
+	 * <p>To be notified when the answer is received, use 
+	 * {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
 	 * 
 	 * @param packet XBee packet to be sent asynchronously.
-	 * @throws NullPointerException if {@code packet == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws OperationNotSupportedException if the packet is being sent from a remote device.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see #sendXBeePacketAsync(XBeePacket)
+	 * @see #sendXBeePacket(XBeePacket)
+	 * @see #sendXBeePacket(XBeePacket, boolean)
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener, boolean)
 	 */
 	private void sendXBeePacketAsync(XBeePacket packet, boolean sentFromLocalDevice) 
 			throws InvalidOperatingModeException, OperationNotSupportedException, IOException {
@@ -739,15 +825,21 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the given XBee packet asynchronously and registers the given packet
-	 * listener (if not null) to wait for an answer.
+	 * Sends the given XBee packet and registers the given packet listener 
+	 * (if not {@code null}) to wait for an answer.
 	 * 
 	 * @param packet XBee packet to be sent.
-	 * @param packetReceiveListener Listener for the operation, {@code null} to not be notified 
-	 *                              when the answer arrives.
-	 * @throws NullPointerException if {@code packet == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @param packetReceiveListener Listener for the operation, {@code null} 
+	 *                              not to be notified when the answer arrives.
+	 *                              
 	 * @throws XBeeException if there is any error sending the XBee packet.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see IPacketReceiveListener
+	 * @see #sendXBeePacket(XBeePacket)
+	 * @see #sendXBeePacketAsync(XBeePacket)
 	 */
 	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
 			throws XBeeException {
@@ -761,12 +853,18 @@ public class XBeeDevice {
 	/**
 	 * Sends the given XBee packet asynchronously.
 	 * 
-	 * <p>To be notified when the answer is received, use {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
+	 * <p>To be notified when the answer is received, use 
+	 * {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
 	 * 
 	 * @param packet XBee packet to be sent asynchronously.
-	 * @throws NullPointerException if {@code packet == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws XBeeException if there is any error sending the XBee packet.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see #sendXBeePacket(XBeePacket)
+	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
 	 */
 	public void sendXBeePacketAsync(XBeePacket packet) 
 			throws IOException, XBeeException {
@@ -781,7 +879,9 @@ public class XBeeDevice {
 	 * Writes the given XBee packet in the connection interface.
 	 * 
 	 * @param packet XBee packet to be written.
-	 * @throws IOException if an I/O error occurs while writing the XBee packet in the connection interface.
+	 * 
+	 * @throws IOException if an I/O error occurs while writing the XBee packet 
+	 *                     in the connection interface.
 	 */
 	protected void writePacket(XBeePacket packet) throws IOException {
 		logger.debug(toString() + "Sending XBee packet: \n{}", packet.toPrettyString());
@@ -815,18 +915,23 @@ public class XBeeDevice {
 	 * Retrieves the configured timeout for receiving packets in synchronous 
 	 * operations.
 	 * 
-	 * @return The current receive timeout.
+	 * @return The current receive timeout in milliseconds.
+	 * 
+	 * @see #setReceiveTimeout(int)
 	 */
 	public int getReceiveTimeout() {
 		return receiveTimeout;
 	}
 	
 	/**
-	 * Configures the timeout for receiving packets in synchronous operations.
+	 * Configures the timeout in milliseconds for receiving packets in 
+	 * synchronous operations.
 	 *  
-	 * @param receiveTimeout The new receive timeout.
+	 * @param receiveTimeout The new receive timeout in milliseconds.
 	 * 
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * 
+	 * @see #getReceiveTimeout()
 	 */
 	public void setReceiveTimeout(int receiveTimeout) {
 		if (receiveTimeout < 0)
@@ -836,11 +941,16 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Starts listening for packets in the provided packets listener. Adds 
-	 * the given listener to the list of listeners to be notified when new 
-	 * packets are received.
+	 * Starts listening for packets in the provided packets listener.
+	 * 
+	 * <p>The provided listener is added to the list of listeners to be notified
+	 * when new packets are received. If the listener has been already 
+	 * included, this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be notified when new packets are received.
+	 * 
+	 * @see IPacketReceiveListener
+	 * @see #stopListeningForPackets(IPacketReceiveListener)
 	 */
 	public void startListeningForPackets(IPacketReceiveListener listener) {
 		if (dataReader == null)
@@ -849,10 +959,15 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Stops listening for packets in the provided packets listener. Removes 
-	 * the given listener from the list of packets listeners.
+	 * Stops listening for packets in the provided packets listener. 
+	 * 
+	 * <p>The provided listener is removed from the list of packets listeners. 
+	 * If the listener was not in the list this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @see IPacketReceiveListener
+	 * @see #startListeningForPackets(IPacketReceiveListener)
 	 */
 	public void stopListeningForPackets(IPacketReceiveListener listener) {
 		if (dataReader == null)
@@ -861,11 +976,16 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Starts listening for serial data in the provided serial data listener. Adds 
-	 * the given listener to the list of listeners to be notified when new serial 
-	 * data is received.
+	 * Starts listening for serial data in the provided serial data listener.
+	 *  
+	 * <p>The provided listener is added to the list of listeners to be notified
+	 * when new serial data is received. If the listener has been already 
+	 * included this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be notified when new serial data is received.
+	 * 
+	 * @see ISerialDataReceiveListener
+	 * @see #stopListeningForSerialData(ISerialDataReceiveListener)
 	 */
 	public void startListeningForSerialData(ISerialDataReceiveListener listener) {
 		if (dataReader == null)
@@ -874,10 +994,15 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Stops listening for serial data in the provided serial data listener. Removes 
-	 * the given listener from the list of serial data listeners.
+	 * Stops listening for serial data in the provided serial data listener.
+	 * 
+	 * <p>The provided listener is removed from the list of serial data 
+	 * listeners. If the listener was not in the list this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @see ISerialDataReceiveListener
+	 * @see #startListeningForSerialData(ISerialDataReceiveListener)
 	 */
 	public void stopListeningForSerialData(ISerialDataReceiveListener listener) {
 		if (dataReader == null)
@@ -886,19 +1011,26 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the XBee device of the network corresponding to the 
-	 * provided 64-Bit address asynchronously.
+	 * Sends the provided data to the XBee device of the network corresponding 
+	 * to the given 64-bit address asynchronously.
 	 * 
-	 * <p>Asynchronous transmissions do not wait for answer from the remote device or for 
-	 * transmit status packet</p>
+	 * <p>Asynchronous transmissions do not wait for answer from the remote 
+	 * device or for transmit status packet</p>
 	 * 
-	 * @param address The 64-Bit address of the XBee that will receive the data.
+	 * @param address The 64-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@code address == null} or {@code data == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws XBeeException if there is any XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code address == null} or 
+	 *                              if {@code data == null}.
 	 * 
 	 * @see XBee64BitAddress
+	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
+	 * @see #sendSerialData(XBee16BitAddress, byte[])
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
 	 */
 	public void sendSerialDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -931,19 +1063,26 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the XBee device of the network corresponding to the 
-	 * provided 16-Bit address asynchronously.
+	 * Sends the provided data to the XBee device of the network corresponding 
+	 * to the given 16-bit address asynchronously.
 	 * 
-	 * <p>Asynchronous transmissions do not wait for answer from the remote device or for 
-	 * transmit status packet</p>
+	 * <p>Asynchronous transmissions do not wait for answer from the remote 
+	 * device or for transmit status packet</p>
 	 * 
-	 * @param address The 16-Bit address of the XBee that will receive the data.
+	 * @param address The 16-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@code address == null} or {@code data == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws XBeeException if there is any XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code address == null} or 
+	 *                              if {@code data == null}.
 	 * 
 	 * @see XBee16BitAddress
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
+	 * @see #sendSerialData(XBee16BitAddress, byte[])
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
 	 */
 	public void sendSerialDataAsync(XBee16BitAddress address, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -1045,15 +1184,22 @@ public class XBeeDevice {
 	/**
 	 * Sends the provided data to the provided XBee device asynchronously.
 	 * 
-	 * <p>Asynchronous transmissions do not wait for answer from the remote device or for transmit status packet</p>
+	 * <p>Asynchronous transmissions do not wait for answer from the remote 
+	 * device or for transmit status packet</p>
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@code xbeeDevice == null} or {@code data == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws XBeeException if there is any XBee related exception.
 	 * 
-	 * @see XBeeDevice
+	 * @throws XBeeException if there is any XBee related exception.
+	 *  @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code xbeeDevice == null} or 
+	 *                              if {@code data == null}.
+	 *                              
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBee16BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
 	 */
 	public void sendSerialDataAsync(XBeeDevice xbeeDevice, byte[] data) throws XBeeException {
 		if (xbeeDevice == null)
@@ -1062,17 +1208,35 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the XBee device of the network corresponding to the 
-	 * provided 64-Bit address.
+	 * Sends the provided data to the XBee device of the network corresponding 
+	 * to the given 64-bit address.
 	 * 
-	 * @param address The 64-Bit address of the XBee that will receive the data.
+	 * <p>This method blocks till a success or error response arrives or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations use the method 
+	 * {@link #sendSerialData(XBee64BitAddress, byte[])}.</p>
+	 * 
+	 * @param address The 64-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@address == null} or {@data == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws TimeoutException if there is a timeout sending the serial data.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code address == null} or 
+	 *                              if {@code data == null}.
 	 * 
 	 * @see XBee64BitAddress
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #sendSerialData(XBee16BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
 	 */
 	public void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -1080,6 +1244,7 @@ public class XBeeDevice {
 			throw new NullPointerException("Address cannot be null");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
+		
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1104,17 +1269,35 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the XBee device of the network corresponding to the 
-	 * provided 16-Bit address.
+	 * Sends the provided data to the XBee device of the network corresponding 
+	 * to the given 16-bit address.
 	 * 
-	 * @param address The 16-Bit address of the XBee that will receive the data.
+	 * <p>This method blocks till a success or error response arrives or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations use the method 
+	 * {@link #sendSerialData(XBee16BitAddress, byte[])}.</p>
+	 * 
+	 * @param address The 16-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@address == null} or {@data == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws TimeoutException if there is a timeout sending the serial data.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code address == null} or 
+	 *                              if {@code data == null}.
 	 * 
 	 * @see XBee16BitAddress
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
 	 */
 	public void sendSerialData(XBee16BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -1122,6 +1305,7 @@ public class XBeeDevice {
 			throw new NullPointerException("Address cannot be null");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
+		
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1220,16 +1404,33 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the provided XBee device.
+	 * Sends the provided data to the given XBee device.
+	 * 
+	 * <p>This method blocks till a success or error response arrives or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations use the method 
+	 * {@link #sendSerialDataAsync(XBeeDevice, byte[])}.</p>
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.
-	 * @throws NullPointerException if {@code xbeeDevice == null} or {@code data == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
 	 * @throws TimeoutException if there is a timeout sending the serial data.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code xbeeDevice == null} or 
+	 *                              if {@code data == null}.
 	 * 
-	 * @see XBeeDevice
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBee16BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
 	 */
 	public void sendSerialData(XBeeDevice xbeeDevice, byte[] data) throws TimeoutException, XBeeException {
 		if (xbeeDevice == null)
@@ -1238,16 +1439,20 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided {@code XBeePacket} and determines if the transmission status is success 
-	 * for synchronous transmissions. If the status is not success, an {@code TransmitException} is
-	 * thrown.
+	 * Sends the provided {@code XBeePacket} and determines if the transmission 
+	 * status is success for synchronous transmissions. If the status is not 
+	 * success, an {@code TransmitException} is thrown.
 	 * 
 	 * @param packet The {@code XBeePacket} to be sent.
-	 * @param asyncTransmission Determines whether or not the transmission should be made asynchronously.
-	 * @throws TransmitException if {@value packet} is not an instance of {@code TransmitStatusPacket} or 
-	 *                           if {@value packet} is not an instance of {@code TXStatusPacket} or 
+	 * @param asyncTransmission Determines whether or not the transmission 
+	 *                          should be made asynchronously.
+	 * 
+	 * @throws TransmitException if {@code packet} is not an instance of {@code TransmitStatusPacket} or 
+	 *                           if {@code packet} is not an instance of {@code TXStatusPacket} or 
 	 *                           if its transmit status is different than {@code XBeeTransmitStatus.SUCCESS}.
 	 * @throws XBeeException if there is any other XBee related error.
+	 * 
+	 * @see XBeePacket
 	 */
 	private void sendAndCheckXBeePacket(XBeePacket packet, boolean asyncTransmission) throws TransmitException, XBeeException {
 		XBeePacket receivedPacket = null;
@@ -1288,15 +1493,17 @@ public class XBeeDevice {
 	 * 
 	 * @param ioLine The IO line to configure.
 	 * @param mode The IO mode to set to the IO line.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the set 
+	 *                          configuration command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code ioLine == null} or
 	 *                              if {@code ioMode == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the set configuration command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #getIOConfiguration(IOLine)
 	 * @see IOLine
 	 * @see IOMode
+	 * @see #getIOConfiguration(IOLine)
 	 */
 	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1325,15 +1532,18 @@ public class XBeeDevice {
 	 * Retrieves the configuration mode of the provided IO line.
 	 * 
 	 * @param ioLine The IO line to get its configuration.
-	 * @return The IO mode (configuration) of the provided IO line.
-	 * @throws NullPointerException if {@code ioLine == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the get configuration command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @return The IO mode (configuration) of the provided IO line.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get 
+	 *                          configuration command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
 	 * @see IOLine
 	 * @see IOMode
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public IOMode getIOConfiguration(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1372,18 +1582,22 @@ public class XBeeDevice {
 	 * Sets the digital value (high or low) to the provided IO line.
 	 * 
 	 * @param ioLine The IO line to set its value.
-	 * @param value The IOValue to set to the IO line ({@code HIGH} or {@code LOW}).
+	 * @param value The IOValue to set to the IO line ({@code HIGH} or 
+	 *              {@code LOW}).
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the set DIO 
+	 *                          command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code ioLine == null} or 
 	 *                              if {@code ioValue == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the set DIO command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
 	 * @see IOValue
-	 * @see IOMode.DIGITAL_OUT_HIGH
-	 * @see IOMode.DIGITAL_OUT_LOW
+	 * @see IOMode#DIGITAL_OUT_HIGH
+	 * @see IOMode#DIGITAL_OUT_LOW
+	 * @see #getIOConfiguration(IOLine)
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1411,20 +1625,25 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the digital value of the provided IO line (must be configured as digital I/O).
+	 * Retrieves the digital value of the provided IO line (must be configured 
+	 * as digital I/O).
 	 * 
 	 * @param ioLine The IO line to get its digital value.
-	 * @return The digital value corresponding to the provided IO line.
-	 * @throws NullPointerException if {@code ioLine == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the get IO values command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @return The digital value corresponding to the provided IO line.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get IO values 
+	 *                          command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
 	 * @see IOLine
-	 * @see IOMode.DIGITAL_IN
-	 * @see IOMode.DIGITAL_OUT_HIGH
-	 * @see IOMode.DIGITAL_OUT_LOW
+	 * @see IOMode#DIGITAL_IN
+	 * @see IOMode#DIGITAL_OUT_HIGH
+	 * @see IOMode#DIGITAL_OUT_LOW
+	 * @see #getIOConfiguration(IOLine)
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1467,21 +1686,25 @@ public class XBeeDevice {
 	 * Sets the duty cycle (in %) of the provided IO line. 
 	 * 
 	 * <p>IO line must be PWM capable({@code hasPWMCapability()}) and 
-     * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
+	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
 	 * 
 	 * @param ioLine The IO line to set its duty cycle value.
 	 * @param value The duty cycle of the PWM.
-	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the set PWM duty 
+	 *                          cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false} or 
 	 *                                  if {@code value < 0} or
 	 *                                  if {@code value > 1023}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the set PWM duty cycle command.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
-	 * @see #setIOConfiguration(IOLine, IOMode)
 	 * @see IOLine
-	 * @see IOMode.PWM
+	 * @see IOMode#PWM
+	 * @see #getPWMDutyCycle(IOLine)
+	 * @see #getIOConfiguration(IOLine)
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1520,16 +1743,22 @@ public class XBeeDevice {
 	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
 	 * 
 	 * @param ioLine The IO line to get its PWM duty cycle.
-	 * @return The PWM duty cycle value corresponding to the provided IO line (0% - 100%).
-	 * @throws NullPointerException if {@code ioLine == null}.
-	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the get PWM duty cycle command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @return The PWM duty cycle value corresponding to the provided IO line 
+	 *         (0% - 100%).
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get PWM duty 
+	 *                          cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
 	 * @see IOLine
-	 * @see IOMode.PWM
+	 * @see IOMode#PWM
+	 * @see #setPWMDutyCycle(IOLine, double)
+	 * @see #getIOConfiguration(IOLine)
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public double getPWMDutyCycle(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1563,18 +1792,23 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the analog value of the provided IO line (must be configured as ADC).
+	 * Retrieves the analog value of the provided IO line (must be configured 
+	 * as ADC).
 	 * 
 	 * @param ioLine The IO line to get its analog value.
-	 * @return The analog value corresponding to the provided IO line.
-	 * @throws NullPointerException if {@code ioLine == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the get IO values command.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @return The analog value corresponding to the provided IO line.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get IO values
+	 *                          command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * 
 	 * @see IOLine
-	 * @see IOMode.ADC
+	 * @see IOMode#ADC
+	 * @see #getIOConfiguration(IOLine)
+	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public int getADCValue(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1618,6 +1852,7 @@ public class XBeeDevice {
 	 * {@code ATCommandException} in case it is not.
 	 * 
 	 * @param response The {@code ATCommandResponse} to check.
+	 * 
 	 * @throws ATCommandException if {@code response == null} or 
 	 *                            if {@code response.getResponseStatus() != ATCommandStatus.OK}.
 	 */
@@ -1628,6 +1863,10 @@ public class XBeeDevice {
 			throw new ATCommandException(response.getResponseStatus());
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return connectionInterface.toString();

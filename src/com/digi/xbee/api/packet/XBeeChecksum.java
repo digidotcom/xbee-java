@@ -12,8 +12,7 @@
 package com.digi.xbee.api.packet;
 
 /**
- * This class stores, computes and verifies the checksum of the XBee
- * API packets.
+ * This class stores, computes and verifies the checksum of the API packets.
  */
 public class XBeeChecksum {
 
@@ -49,7 +48,7 @@ public class XBeeChecksum {
 	}
 	
 	/**
-	 * Generates the checksum byte for the XBee packet.
+	 * Generates the checksum byte for the API packet.
 	 * 
 	 * @return Checksum byte.
 	 */
@@ -61,7 +60,7 @@ public class XBeeChecksum {
 	/**
 	 * Validates the checksum.
 	 * 
-	 * @return True if checksum is valid, false otherwise.
+	 * @return {@code true} if checksum is valid, {@code false} otherwise.
 	 */
 	public boolean validate() {
 		value = value & 0xFF;

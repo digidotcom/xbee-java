@@ -25,18 +25,21 @@ import com.digi.xbee.api.utils.HexUtils;
 import com.digi.xbee.api.models.ATStringCommands;
 
 /**
- * This class represents an AT Command Response packet. Packet is built using the parameters of 
- * the constructor.
+ * This class represents an AT Command Response packet. Packet is built using 
+ * the parameters of the constructor.
  * 
- * <p>In response to an AT Command message, the module will send an AT Command Response message. Some
- * commands will send back multiple frames (for example, the ND (Node Discover) command).</p>
+ * <p>In response to an AT Command message, the module will send an AT Command 
+ * Response message. Some commands will send back multiple frames (for example, 
+ * the ND (Node Discover) command).</p>
  * 
  * <p>This packet is received in response of an {@code ATCommandPacket}.</p>
  * 
- * <p>Response also includes an {@code ATComandStatus} object with the status of the AT command.</p>
+ * <p>Response also includes an {@code ATComandStatus} object with the status 
+ * of the AT command.</p>
  * 
  * @see ATCommandPacket
  * @see ATComandStatus 
+ * @see XBeeAPIPacket
  */
 public class ATCommandResponsePacket extends XBeeAPIPacket {
 	
@@ -50,18 +53,18 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommandResponsePacket
-	 * with the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code ATCommandResponsePacket} with the given parameters.
 	 * 
 	 * @param frameID The XBee API frame ID.
 	 * @param status The AT command response status.
 	 * @param command The AT command.
 	 * @param commandValue The AT command response value.
 	 * 
-	 * @throws NullPointerException if {@code status == null} or 
-	 *                              if {@code command == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
+	 * @throws NullPointerException if {@code status == null} or 
+	 *                              if {@code command == null}.
 	 * 
 	 * @see ATCommandStatus
 	 */
@@ -82,6 +85,10 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		this.logger = LoggerFactory.getLogger(ATCommandResponsePacket.class);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 */
 	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -97,6 +104,10 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		return os.toByteArray();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
+	 */
 	@Override
 	public boolean needsAPIFrameID() {
 		return true;
@@ -155,7 +166,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	/**
 	 * Retrieves the AT command response value as String.
 	 * 
-	 * @return The AT command response value as String, null if no value is set.
+	 * @return The AT command response value as String, {@code null} if no 
+	 *         value is set.
 	 */
 	public String getCommandValueAsString() {
 		if (commandValue == null)
@@ -163,6 +175,10 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		return new String(commandValue);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 */
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();

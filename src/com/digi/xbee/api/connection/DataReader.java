@@ -38,9 +38,9 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * Thread that constantly reads data from the input stream.
  * 
- * Depending on the working mode, read data is notified as is
- * to the subscribed listeners or is parsed to a packet using the
- * packet parser and then notified to subscribed listeners. 
+ * <p>Depending on the working mode, read data is notified as is to the 
+ * subscribed listeners or is parsed to a packet using the packet parser and 
+ * then notified to subscribed listeners.</p> 
  */
 public class DataReader extends Thread {
 	
@@ -63,7 +63,8 @@ public class DataReader extends Thread {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new DataReader object for the given interface.
+	 * Class constructor. Instances a new {@code DataReader} object for the 
+	 * given interface.
 	 * 
 	 * @param connectionInterface Connection interface to read from.
 	 * @param mode XBee operating mode.
@@ -97,10 +98,15 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given serial data receive listener to the list of listeners to be notified when 
-	 * serial data is received.
+	 * Adds the given serial data receive listener to the list of listeners to 
+	 * be notified when serial data is received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be notified when new serial data is received.
+	 * 
+	 * @see ISerialDataReceiveListener
+	 * @see #removeSerialDataReceiveListener(ISerialDataReceiveListener)
 	 */
 	public void addSerialDatatReceiveListener(ISerialDataReceiveListener listener) {
 		synchronized (serialDataReceiveListeners) {
@@ -110,10 +116,15 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Removes the given serial data receive listener from the list of serial data 
-	 * receive listeners.
+	 * Removes the given serial data receive listener from the list of serial 
+	 * data receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.</p>
 	 * 
 	 * @param listener Serial data receive listener to remove.
+	 * 
+	 * @see ISerialDataReceiveListener
+	 * @see #addSerialDatatReceiveListener(ISerialDataReceiveListener)
 	 */
 	public void removeSerialDataReceiveListener(ISerialDataReceiveListener listener) {
 		synchronized (serialDataReceiveListeners) {
@@ -123,23 +134,36 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given packet receive listener to the list of listeners to be notified when a 
-	 * packet is received.
+	 * Adds the given packet receive listener to the list of listeners to be 
+	 * notified when a packet is received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be notified when a packet is received.
+	 * 
+	 * @see IPacketReceiveListener
+	 * @see #addPacketReceiveListener(IPacketReceiveListener, int)
+	 * @see #removePacketReceiveListener(IPacketReceiveListener)
 	 */
 	public void addPacketReceiveListener(IPacketReceiveListener listener) {
 		addPacketReceiveListener(listener, ALL_FRAME_IDS);
 	}
 	
 	/**
-	 * Adds the given packet receive listener to the list of listeners to be notified when a 
-	 * packet is received.
+	 * Adds the given packet receive listener to the list of listeners to be 
+	 * notified when a packet is received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be notified when a packet is received.
-	 * @param frameID Frame ID for which this listener should be notified and removed after.
-	 * 					Using {@link #ALL_FRAME_IDS} this listener will be notified always and
-	 * 					will be removed only by user request.
+	 * @param frameID Frame ID for which this listener should be notified and 
+	 *                removed after.
+	 *                Using {@link #ALL_FRAME_IDS} this listener will be 
+	 *                notified always and will be removed only by user request.
+	 * 
+	 * @see IPacketReceiveListener
+	 * @see #addPacketReceiveListener(IPacketReceiveListener)
+	 * @see #removePacketReceiveListener(IPacketReceiveListener)
 	 */
 	public void addPacketReceiveListener(IPacketReceiveListener listener, int frameID) {
 		synchronized (packetReceiveListeners) {
@@ -153,7 +177,13 @@ public class DataReader extends Thread {
 	 * Removes the given packet receive listener from the list of XBee packet 
 	 * receive listeners.
 	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * 
 	 * @param listener Packet receive listener to remove.
+	 * 
+	 * @see IPacketReceiveListener
+	 * @see #addPacketReceiveListener(IPacketReceiveListener)
+	 * @see #addPacketReceiveListener(IPacketReceiveListener, int)
 	 */
 	public void removePacketReceiveListener(IPacketReceiveListener listener) {
 		synchronized (packetReceiveListeners) {
@@ -166,6 +196,7 @@ public class DataReader extends Thread {
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
 	 */
+	@Override
 	public void run() {
 		logger.debug(connectionInterface.toString() + "Data reader started.");
 		running = true;
@@ -226,6 +257,8 @@ public class DataReader extends Thread {
 	 * A packet was received, dispatch it to the corresponding listener(s).
 	 * 
 	 * @param packet The received packet.
+	 * 
+	 * @see XBeePacket
 	 */
 	private void packetReceived(XBeePacket packet) {
 		// Notify that a packet has been received to the corresponding listeners.
@@ -274,12 +307,14 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed serial data receive listeners that serial data has been received.
+	 * Notifies subscribed serial data receive listeners that serial data has 
+	 * been received.
 	 *
 	 * @param address The address of the node that sent the data.
 	 * @param data The received data.
-	 * @param isBroadcastData Indicates whether or not the data was sent via broadcast to execute 
-	 *                        the corresponding broadcast callback.
+	 * @param isBroadcastData Indicates whether or not the data was sent via 
+	 *                        broadcast to execute the corresponding broadcast 
+	 *                        callback.
 	 */
 	private void notifySerialDataReceived(final String address, final byte[] data, final boolean isBroadcastData) {
 		if (isBroadcastData)
@@ -295,6 +330,11 @@ public class DataReader extends Thread {
 						serialDataReceiveListeners.size()));
 				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
 					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
 						public void run() {
 							/* Synchronize the listener so it is not called 
 							 twice. That is, let the listener to finish its job.
@@ -324,6 +364,8 @@ public class DataReader extends Thread {
 	 * Notifies subscribed packet listeners that a packet has been received.
 	 *
 	 * @param packet The received packet.
+	 * 
+	 * @see XBeePacket
 	 */
 	private void notifyPacketReceived(final XBeePacket packet) {
 		logger.debug(connectionInterface.toString() + "Packet received: \n{}", packet.toPrettyString());
@@ -335,6 +377,11 @@ public class DataReader extends Thread {
 						packetReceiveListeners.size()));
 				for (final IPacketReceiveListener listener:packetReceiveListeners.keySet()) {
 					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
 						public void run() {
 							if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
 								listener.packetReceived(packet);
@@ -359,7 +406,8 @@ public class DataReader extends Thread {
 	/**
 	 * Returns whether the Data reader is running or not.
 	 * 
-	 * @return True if the Data reader is running, false otherwise.
+	 * @return {@code true} if the Data reader is running, {@code false} 
+	 *         otherwise.
 	 */
 	public boolean isRunning() {
 		return running;

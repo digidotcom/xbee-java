@@ -34,6 +34,8 @@ public class ConnectionException extends XBeeException {
 	 * Creates a {@code ConnectionException} with the specified cause.
 	 * 
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public ConnectionException(Throwable cause) {
 		super(cause);
@@ -54,6 +56,8 @@ public class ConnectionException extends XBeeException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public ConnectionException(String message, Throwable cause) {
 		super(message, cause);

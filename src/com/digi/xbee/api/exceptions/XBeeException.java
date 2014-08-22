@@ -34,6 +34,8 @@ public class XBeeException extends Exception {
 	 * Creates an {@code XBeeException} with the specified cause.
 	 * 
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public XBeeException(Throwable cause) {
 		super(cause);
@@ -53,17 +55,18 @@ public class XBeeException extends Exception {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public XBeeException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	/**
-	 * Returns the cause of this exception or null if no cause was
-	 * set.
-	 * 
-	 * @return The cause of this exception or null if no cause was set.
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Throwable#getCause()
 	 */
+	@Override
 	public Throwable getCause() {
 		return super.getCause();
 	}

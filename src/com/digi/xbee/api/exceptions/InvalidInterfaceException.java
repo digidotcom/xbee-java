@@ -45,6 +45,8 @@ public class InvalidInterfaceException extends ConnectionException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public InvalidInterfaceException(String message, Throwable cause) {
 		super(message, cause);

@@ -45,7 +45,7 @@ public enum XBeeProtocol {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type XBeeProtocol
+	 * Class constructor. Instances a new object of type {@code XBeeProtocol} 
 	 * for the enumeration.
 	 * 
 	 * @param id Protocol ID.
@@ -74,23 +74,25 @@ public enum XBeeProtocol {
 		return description;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Enum#toString()
-	 */
-	public String toString() {
-		return description;
-	}
-	
 	/**
-	 * Retrieves the XBeeProtocol corresponding to the given ID.
+	 * Retrieves the {@code XBeeProtocol} corresponding to the given ID.
 	 * 
 	 * @param id The ID of the protocol to retrieve.
-	 * @return The XBeeProtocol corresponding to the ID.
+	 * 
+	 * @return The {@code XBeeProtocol} corresponding to the ID.
 	 */
 	public static XBeeProtocol get(int id) {
 		if (!lookupTable.containsKey(id))
 			return UNKNOWN;
 		return lookupTable.get(id);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Enum#toString()
+	 */
+	@Override
+	public String toString() {
+		return description;
 	}
 }

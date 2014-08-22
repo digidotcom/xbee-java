@@ -83,6 +83,7 @@ public enum XBeeTransmitStatus {
 	 * Retrieves the XBee transmit status for the given ID.
 	 * 
 	 * @param id ID to retrieve the XBee transmit status.
+	 * 
 	 * @return The XBee transmit status associated with the given ID.
 	 */
 	public static XBeeTransmitStatus get(int id) {
@@ -93,6 +94,7 @@ public enum XBeeTransmitStatus {
 	 * (non-Javadoc)
 	 * @see java.lang.Enum#toString()
 	 */
+	@Override
 	public String toString() {
 		if (id != 0)
 			return "Error: " + description;

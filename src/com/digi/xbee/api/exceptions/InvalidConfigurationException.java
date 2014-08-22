@@ -47,6 +47,8 @@ public class InvalidConfigurationException extends ConnectionException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public InvalidConfigurationException(String message, Throwable cause) {
 		super(message, cause);

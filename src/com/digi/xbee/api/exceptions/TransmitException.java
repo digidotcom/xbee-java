@@ -29,10 +29,13 @@ public class TransmitException extends CommunicationException {
 	private final XBeeTransmitStatus transmitStatus;
 	
 	/**
-	 * Creates a {@code TransmitException} with the provided {@code XBeeTransmitStatus} indicating 
-	 * the status of the transmission and {@value #DEFAULT_MESSAGE} as its error detail message.
+	 * Creates a {@code TransmitException} with the provided 
+	 * {@code XBeeTransmitStatus} indicating the status of the transmission and 
+	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 * 
 	 * @param transmitStatus The status of the transmission.
+	 * 
+	 * @see XBeeTransmitStatus
 	 */
 	public TransmitException(XBeeTransmitStatus transmitStatus) {
 		super(DEFAULT_MESSAGE);
@@ -45,6 +48,8 @@ public class TransmitException extends CommunicationException {
 	 * 
 	 * @param message The associated message.
 	 * @param transmitStatus The status of the transmission.
+	 * 
+	 * @see XBeeTransmitStatus
 	 */
 	public TransmitException(String message, XBeeTransmitStatus transmitStatus) {
 		super(message);
@@ -53,11 +58,14 @@ public class TransmitException extends CommunicationException {
 	
 	/**
 	 * Creates a {@code TransmitException} with the specified message, cause and 
-	 * {@code XBeeTransmitStatus} indicating the status of the transmission..
+	 * {@code XBeeTransmitStatus} indicating the status of the transmission.
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
 	 * @param transmitStatus The status of the transmission.
+	 * 
+	 * @see Throwable
+	 * @see XBeeTransmitStatus
 	 */
 	public TransmitException(String message, Throwable cause, XBeeTransmitStatus transmitStatus) {
 		super(message, cause);
@@ -65,17 +73,20 @@ public class TransmitException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeTransmitStatus} of the exception containing information 
-	 * about the transmission.
+	 * Retrieves the {@code XBeeTransmitStatus} of the exception containing 
+	 * information about the transmission.
 	 * 
 	 * @return The status of the transmission.
+	 * 
+	 * @see XBeeTransmitStatus
 	 */
 	public XBeeTransmitStatus getTransmitStatus() {
 		return transmitStatus;
 	}
 	
 	/**
-	 * Retrieves the text with containing the status of the transmission from the exception.
+	 * Retrieves the text with containing the status of the transmission from 
+	 * the exception.
 	 * 
 	 * @return The text with the status of the transmission.
 	 */

@@ -26,27 +26,47 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a Transmit Packet. Packet is built
- * using the parameters of the constructor.
+ * This class represents a Transmit Packet. Packet is built using the parameters 
+ * of the constructor.
  * 
- * A Transmit Request API frame causes the module to send data as an RF packet to the specified destination.
+ * <p>A Transmit Request API frame causes the module to send data as an RF 
+ * packet to the specified destination.</p>
  * 
- * The 64-bit destination address should be set to 0x000000000000FFFF for a broadcast transmission (to all
- * devices). See {@link com.digi.xbee.api.models.XBee64BitAddress}. The coordinator can be addressed by either 
- * setting the 64-bit address to all 0x00s and the 16-bit address to 0xFFFE, OR by setting the 64-bit 
- * address to the coordinator's 64-bit address and the 16-bit address to 0x0000. For all other transmissions,
- * setting the 16-bit address to the correct 16-bit address can help improve performance when transmitting to
- * multiple destinations. If a 16-bit address is not known, this field should be set to 0xFFFE (unknown). See 
- * {@link com.digi.xbee.api.models.XBee16BitAddress}. The Transmit Status frame (0x8B) will indicate the discovered 
- * 16-bit address, if successful. See {@link com.digi.xbee.api.packet.common.TransmitStatusPacket}.
+ * <p>The 64-bit destination address should be set to {@code 0x000000000000FFFF} 
+ * for a broadcast transmission (to all devices) 
+ * ({@link com.digi.xbee.api.models.XBee64BitAddress#BROADCAST_ADDRESS}).</p>
  * 
- * The broadcast radius can be set from 0 up to NH. If set to 0, the value of NH specifies the broadcast radius
- * (recommended). This parameter is only used for broadcast transmissions.
+ * <p>The coordinator can be addressed by either setting the 64-bit address to 
+ * all {@code 0x00} and the 16-bit address to {@code 0xFFFE}, OR by setting the 
+ * 64-bit address to the coordinator's 64-bit address and the 16-bit address to 
+ * {@code 0x0000} ({@link com.digi.xbee.api.models.XBee64BitAddress#COORDINATOR_ADDRESS}, 
+ * {@link com.digi.xbee.api.models.XBee16BitAddress#COORDINATOR_ADDRESS}).</p>
  * 
- * The maximum number of payload bytes can be read with the NP command.
+ * <p>For all other transmissions, setting the 16-bit address to the correct 
+ * 16-bit address can help improve performance when transmitting to multiple 
+ * destinations.</p>
  * 
- * Several transmit options can be set using the transmit options bitfield. See
- * {@link com.digi.xbee.api.models.XBeeTransmitOptions}.
+ * <p>If a 16-bit address is not known, this field should be set to 
+ * {@code 0xFFFE} (unknown) 
+ * ({@link com.digi.xbee.api.models.XBee16BitAddress#UNKNOWN_ADDRESS}).</p> 
+ * 
+ * <p>The Transmit Status frame 
+ * ({@value com.digi.xbee.api.packet.APIFrameType#TRANSMIT_REQUEST}) will 
+ * indicate the discovered 16-bit address, if successful (see 
+ * {@link com.digi.xbee.api.packet.common.TransmitStatusPacket}).</p>
+ * 
+ * <p>The broadcast radius can be set from {@code 0} up to {@code NH}. If set 
+ * to {@code 0}, the value of {@code NH} specifies the broadcast radius
+ * (recommended). This parameter is only used for broadcast transmissions.</p>
+ * 
+ * <p>The maximum number of payload bytes can be read with the {@code NP} 
+ * command.</p>
+ * 
+ * <p>Several transmit options can be set using the transmit options bitfield
+ * (see {@link com.digi.xbee.api.models.XBeeTransmitOptions}).</p>
+ * 
+ * @see XBeeTransmitOptions
+ * @see XBeeAPIPacket
  */
 public class TransmitPacket extends XBeeAPIPacket {
 
@@ -63,25 +83,28 @@ public class TransmitPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type TransmitPacket with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code TransmitPacket} 
+	 * with the given parameters.
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress64 64-bit address of the destination device.
 	 * @param destAddress16 16-bit address of the destination device.
-	 * @param broadcastRadius maximum number of hops a broadcast transmission can occur.
+	 * @param broadcastRadius maximum number of hops a broadcast transmission 
+	 *                        can occur.
 	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param rfData RF Data that is sent to the destination device.
 	 * 
-	 * @throws NullPointerException if {@code destAddress64 == null} or
-	 *                              if {@code destAddress16 == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code broadcastRadius < 0} or
 	 *                                  if {@code broadcastRadius > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code destAddress64 == null} or
+	 *                              if {@code destAddress16 == null}.
 	 * 
+	 * @see XBee64BitAddress
+	 * @see XBee16BitAddress
 	 * @see XBeeTransmitOptions
 	 */
 	public TransmitPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int broadcastRadius, int transmitOptions, byte[] rfData) {
@@ -109,8 +132,9 @@ public class TransmitPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
@@ -129,8 +153,9 @@ public class TransmitPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return true;
 	}
@@ -139,6 +164,8 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * Retrieves the 64 bit destination address.
 	 * 
 	 * @return The 64 bit destination address.
+	 * 
+	 * @see XBee64BitAddress
 	 */
 	public XBee64BitAddress get64BitDestinationAddress() {
 		return destAddress64;
@@ -148,6 +175,8 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * Retrieves the 16 bit destination address.
 	 * 
 	 * @return The 16 bit destination address.
+	 * 
+	 * @see XBee16BitAddress
 	 */
 	public XBee16BitAddress get16BitDestinationAddress() {
 		return destAddress16;
@@ -191,8 +220,9 @@ public class TransmitPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");

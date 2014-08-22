@@ -39,6 +39,8 @@ public class InvalidOperatingModeException extends XBeeDeviceException {
 	 * mode.
 	 * 
 	 * @param mode The unsupported operating mode.
+	 * 
+	 * @see OperatingMode
 	 */
 	public InvalidOperatingModeException(OperatingMode mode) {
 		super("Unsupported operating mode: " + mode);
@@ -60,6 +62,8 @@ public class InvalidOperatingModeException extends XBeeDeviceException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public InvalidOperatingModeException(String message, Throwable cause) {
 		super(message, cause);

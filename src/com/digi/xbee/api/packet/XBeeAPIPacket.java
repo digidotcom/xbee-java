@@ -16,10 +16,14 @@ import java.util.LinkedHashMap;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This abstract class provides the basic structure of a ZigBee API frame. Derived classes
- * should implement their own methods to generate the API data and frame ID in case
- * they support it. Basic operations such as frame type retrieval are performed in
- * this class.
+ * This abstract class provides the basic structure of a ZigBee API frame.
+ * 
+ * <p>Derived classes should implement their own methods to generate the API 
+ * data and frame ID in case they support it.</p>
+ * 
+ * <p>Basic operations such as frame type retrieval are performed in this class.</p>
+ * 
+ * @see XBeePacket
  */
 public abstract class XBeeAPIPacket extends XBeePacket {
 
@@ -34,12 +38,14 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	protected int frameID = NO_FRAME_ID;
 
 	/**
-	 * Class constructor. Instances a new object of type AbstractXBeeAPIPacket
+	 * Class constructor. Instances a new object of type {@code XBeeAPIPacket} 
 	 * with the given API ID.
 	 * 
 	 * @param frameType XBee packet frame type.
 	 * 
 	 * @throws NullPointerException if {@code frameType == null}.
+	 * 
+	 * @see APIFrameType
 	 */
 	protected XBeeAPIPacket(APIFrameType frameType) {
 		super();
@@ -52,13 +58,13 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type AbstractXBeeAPIPacket
+	 * Class constructor. Instances a new object of type {@code XBeeAPIPacket}
 	 * with the given API ID integer.
 	 * 
 	 * @param frameTypeValue XBee packet frame type integer value.
 	 * 
-	 * @throws NullPointerException if {@code frameTypeValue < 0} or 
-	 *                              if {@code frameTypeValue > 255}.
+	 * @throws IllegalArgumentException if {@code frameTypeValue < 0} or 
+	 *                                  if {@code frameTypeValue > 255}.
 	 */
 	protected XBeeAPIPacket(int frameTypeValue) {
 		super();
@@ -73,6 +79,8 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * Retrieves the XBee packet frame type.
 	 * 
 	 * @return The XBee packet frame type.
+	 * 
+	 * @see APIFrameType
 	 */
 	public APIFrameType getFrameType() {
 		return frameType;
@@ -89,8 +97,9 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.AbstractXBeePacket#getPacketData()
+	 * @see com.digi.xbee.api.packet.XBeePacket#getPacketData()
 	 */
+	@Override
 	public byte[] getPacketData() {
 		byte[] data = new byte[getAPIData().length + 1];
 		data[0] = (byte)frameTypeValue;
@@ -108,23 +117,24 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	/**
 	 * Retrieves whether the API packet needs API Frame ID or not.
 	 * 
-	 * @return True if the packet needs API Frame ID, false otherwise.
+	 * @return {@code true} if the packet needs API Frame ID, {@code false} 
+	 *         otherwise.
 	 */
 	public abstract boolean needsAPIFrameID();
 	
 	/**
-	 * Gets the Frame ID
+	 * Gets the Frame ID.
 	 * 
-	 * @return frame ID
+	 * @return frame ID.
 	 */
 	public int getFrameID() {
 		return frameID;
 	}
 	
 	/**
-	 * Sets the frame ID
+	 * Sets the frame ID.
 	 * 
-	 * @param frameID frame ID to set
+	 * @param frameID frame ID to set.
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or 
 	 *                                  if {@code frameID > 255}.
@@ -140,6 +150,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * Returns whether the given id is the current frame id.
 	 * 
 	 * @param id the frame id to check.
+	 * 
 	 * @return {@code true} if frame ID is equal to the {@code id} provided, 
 	 *         {@code false} otherwise or if the frame does not need an id.
 	 *         
@@ -155,8 +166,9 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeePacket#getPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeePacket#getPacketParameters()
 	 */
+	@Override
 	protected LinkedHashMap<String, String> getPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		if (getFrameType() != null)
@@ -168,9 +180,10 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * retrieves a map with the XBee packet parameters and their values.
+	 * Retrieves a map with the XBee packet parameters and their values.
 	 * 
-	 * @return A sorted map containing the XBee packet parameters with their values.
+	 * @return A sorted map containing the XBee packet parameters with their 
+	 *         values.
 	 */
 	protected abstract LinkedHashMap<String, String> getAPIPacketParameters();
 }

@@ -23,6 +23,8 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * This class represents a basic and unknown XBee packet where the payload is
  * set as a byte array without a defined structure.
+ * 
+ * @see XBeeAPIPacket
  */
 public class UnknownXBeePacket extends XBeeAPIPacket {
 	
@@ -45,8 +47,9 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
@@ -60,8 +63,9 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return false;
 	}
@@ -86,8 +90,9 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	protected LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		if (rfData != null)

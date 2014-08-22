@@ -30,9 +30,11 @@ import java.util.TooManyListenersException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InterfaceInUseException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
+import com.digi.xbee.api.exceptions.PermissionDeniedException;
 
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
@@ -52,8 +54,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type SerialPort with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code SerialPortRxTx}
+	 * with the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
@@ -68,16 +70,16 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type SerialPort with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code SerialPortRxTx} 
+	 * with the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
 	 * @param receiveTimeout Serial port receive timeout in milliseconds.
 	 * 
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 *
 	 * @see SerialPortParameters
 	 */
@@ -87,11 +89,12 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type SerialPort with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code SerialPortRxTx} 
+	 * with the given parameters.
 	 * 
 	 * @param port Serial port name to use.
-	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
+	 * @param baudRate Serial port baud rate, the rest of parameters will be 
+	 *                 set by default.
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
@@ -106,15 +109,16 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type SerialPort with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code SerialPortRxTx} 
+	 * with the given parameters.
 	 * 
 	 * @param port Serial port name to use.
-	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
+	 * @param baudRate Serial port baud rate, the rest of parameters will be 
+	 *                 set by default.
 	 * @param receiveTimeout Serial port receive timeout in milliseconds.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
 	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
@@ -126,8 +130,12 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		this.logger = LoggerFactory.getLogger(SerialPortRxTx.class);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#open()
+	 */
 	@Override
-	public void open() throws InterfaceInUseException, InvalidConfigurationException, InvalidInterfaceException {
+	public void open() throws InterfaceInUseException, InvalidInterfaceException, InvalidConfigurationException, PermissionDeniedException {
 		// Check that the given serial port exists.
 		try {
 			portIdentifier = CommPortIdentifier.getPortIdentifier(port);
@@ -168,8 +176,9 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#close()
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#close()
 	 */
+	@Override
 	public void close() {
 		try {
 			if (inputStream != null) {
@@ -204,8 +213,9 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/*
 	 * (non-Javadoc)
-	 * @see purejavacomm.SerialPortEventListener#serialEvent(purejavacomm.SerialPortEvent)
+	 * @see gnu.io.SerialPortEventListener#serialEvent(gnu.io.SerialPortEvent)
 	 */
+	@Override
 	public void serialEvent(SerialPortEvent event) {
 		// Listen only to data available event.
 		switch (event.getEventType()) {
@@ -239,14 +249,16 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return super.toString();
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#setBreak(boolean)
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#setBreak(boolean)
 	 */
+	@Override
 	public void setBreak(boolean enabled) {
 		breakEnabled = enabled;
 		if(breakEnabled){
@@ -269,24 +281,27 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#getInputStream()
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#getInputStream()
 	 */
+	@Override
 	public InputStream getInputStream() {
 		return inputStream;
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#getOutputStream()
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#getOutputStream()
 	 */
+	@Override
 	public OutputStream getOutputStream() {
 		return outputStream;
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#setReadTimeout(int)
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#setReadTimeout(int)
 	 */
+	@Override
 	public void setReadTimeout(int timeout) {
 		serialPort.disableReceiveTimeout();
 		serialPort.enableReceiveTimeout(timeout);
@@ -294,38 +309,39 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#getReadTimeout()
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#getReadTimeout()
 	 */
+	@Override
 	public int getReadTimeout() {
 		return serialPort.getReceiveTimeout();
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#setDTR(boolean)
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#setDTR(boolean)
 	 */
+	@Override
 	public void setDTR(boolean state) {
 		serialPort.setDTR(state);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#setRTS(boolean)
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#setRTS(boolean)
 	 */
+	@Override
 	public void setRTS(boolean state) {
 		serialPort.setRTS(state);
 	}
 	
-	@Override
-	/**
-	 * @throws IllegalArgumentException if {@code baudRate < 0} or
-	 *                                  if {@code dataBits < 0} or
-	 *                                  if {@code stopBits < 0} or
-	 *                                  if {@code parity < 0} or
-	 *                                  if {@code flowControl < 0}.
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#setPortParameters(int, int, int, int, int)
 	 */
+	@Override
 	public void setPortParameters(int baudRate, int dataBits, int stopBits,
-			int parity, int flowControl) throws InvalidConfigurationException {
+			int parity, int flowControl) throws InvalidConfigurationException, ConnectionException {
 		parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
 		
 		if (serialPort != null) {
@@ -340,8 +356,9 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#sendBreak(int)
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#sendBreak(int)
 	 */
+	@Override
 	public void sendBreak(int duration) {
 		if (serialPort != null)
 			serialPort.sendBreak(duration);
@@ -351,6 +368,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * (non-Javadoc)
 	 * @see gnu.io.CommPortOwnershipListener#ownershipChange(int)
 	 */
+	@Override
 	public void ownershipChange(int nType) {
 		switch (nType) {
 		case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
@@ -360,7 +378,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Releases the port on any ownership request in the same application instance.
+	 * Releases the port on any ownership request in the same application 
+	 * instance.
 	 * 
 	 * @param data The port requester.
 	 */
@@ -382,7 +401,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Retrieves the list of serial ports of the PC.
+	 * Retrieves the list of available serial ports.
 	 * 
 	 * @return List of available serial ports.
 	 */
@@ -405,9 +424,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Retrieves the list of serial ports of the PC with description.
+	 * Retrieves the list of available serial ports with description.
 	 * 
 	 * @return List of available serial ports with their description.
+	 * 
+	 * @see SerialPortInfo
 	 */
 	public static ArrayList<SerialPortInfo> listSerialPortsInfo() {
 		ArrayList<SerialPortInfo> ports = new ArrayList<SerialPortInfo>();
@@ -428,24 +449,27 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#isCTS()
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#isCTS()
 	 */
+	@Override
 	public boolean isCTS() {
 		return serialPort.isCTS();
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#isDSR()
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#isDSR()
 	 */
+	@Override
 	public boolean isDSR() {
 		return serialPort.isDSR();
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.AbstractXBeeSerialPort#isCD()
+	 * @see com.digi.xbee.api.connection.serial.AbstractSerialPort#isCD()
 	 */
+	@Override
 	public boolean isCD() {
 		return serialPort.isCD();
 	}

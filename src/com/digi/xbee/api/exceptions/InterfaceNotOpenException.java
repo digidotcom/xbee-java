@@ -47,6 +47,8 @@ public class InterfaceNotOpenException extends RuntimeException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public InterfaceNotOpenException(String message, Throwable cause) {
 		super(message, cause);

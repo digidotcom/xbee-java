@@ -31,15 +31,18 @@ import com.digi.xbee.api.utils.HexUtils;
  * This class represents a Remote AT Command Request packet. Packet is built
  * using the parameters of the constructor.
  * 
- * <p>Used to query or set module parameters on a remote device. For parameter changes on the remote device to
- * take effect, changes must be applied, either by setting the apply changes options bit, or by sending an AC
- * command to the remote node.</p>
+ * <p>Used to query or set module parameters on a remote device. For parameter 
+ * changes on the remote device to take effect, changes must be applied, either 
+ * by setting the apply changes options bit, or by sending an {@code AC} command 
+ * to the remote node.</p>
  * 
  * <p>Remote Command options are set as a bitfield.</p>
  * 
- * <p>If configured, command response is received as a {@code RemoteATCommandResponse packet}.</p>
+ * <p>If configured, command response is received as a 
+ * {@code RemoteATCommandResponse packet}.</p>
  * 
  * @see RemoteATCommandResponsePacket
+ * @see XBeeAPIPacket
  */
 public class RemoteATCommandPacket extends XBeeAPIPacket {
 	
@@ -57,8 +60,8 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code RemoteATCommandRequest} with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code RemoteATCommandRequest} with the given parameters.
 	 * 
 	 * @param frameID The Frame ID.
 	 * @param destAddress64 64-bit address of the destination device.
@@ -67,14 +70,14 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * @param command AT command.
 	 * @param parameter AT command parameter as String.
 	 * 
-	 * @throws NullPointerException if {@code destAddress64 == null} or
-	 *                              if {@code destAddress16 == null} or
-	 *                              if {@code command == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
-	 * 
+	 * @throws NullPointerException if {@code destAddress64 == null} or
+	 *                              if {@code destAddress16 == null} or
+	 *                              if {@code command == null}.
+	 *                              
 	 * @see XBee64BitAddress
 	 * @see XBee16BitAddress
 	 * @see XBeeTransmitOptions
@@ -104,8 +107,8 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code RemoteATCommandRequest} with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code RemoteATCommandRequest} with the given parameters.
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress64 64-bit address of the destination device.
@@ -114,16 +117,17 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * @param command AT command.
 	 * @param commandParameter AT command parameter.
 	 * 
-	 * @throws NullPointerException if {@code destAddress64 == null} or
-	 *                              if {@code destAddress16 == null} or
-	 *                              if {@code command == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code destAddress64 == null} or
+	 *                              if {@code destAddress16 == null} or
+	 *                              if {@code command == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 * @see XBee16BitAddress
+	 * @see XBeeTransmitOptions
 	 */
 	public RemoteATCommandPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int transmitOptions, String command, byte[] parameter) {
 		super(APIFrameType.REMOTE_AT_COMMAND_REQUEST);
@@ -148,6 +152,10 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		this.logger = LoggerFactory.getLogger(RemoteATCommandPacket.class);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 */
 	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -165,6 +173,10 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		return data.toByteArray();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
+	 */
 	@Override
 	public boolean needsAPIFrameID() {
 		return true;
@@ -243,7 +255,8 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	/**
 	 * Retrieves the AT command parameter as String.
 	 * 
-	 * @return The AT command parameter as String, null if not parameter is set.
+	 * @return The AT command parameter as String, {@code null} if not 
+	 *         parameter is set.
 	 */
 	public String getParameterAsString() {
 		if (parameter == null)
@@ -251,6 +264,10 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		return new String(parameter);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 */
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();

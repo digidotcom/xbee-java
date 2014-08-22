@@ -35,7 +35,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type TX16Packet with
+	 * Class constructor. Instances a new object of type {@code TX16Packet} with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.
@@ -43,11 +43,14 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * @param transmitOptions Bitfield of supported transmission options. See {@link com.digi.xbee.api.models.api.XBeeTransmitOptions}.
 	 * @param rfData RF Data that is sent to the destination device.
 	 * 
-	 * @throws NullPointerException if {@code destAddress == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code destAddress == null}.
+	 * 
+	 * @see XBeeTransmitOptions
+	 * @see XBee16BitAddress
 	 */
 	public TX16Packet(int frameID, XBee16BitAddress destAddress, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TX_16);
@@ -68,8 +71,9 @@ public class TX16Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
@@ -86,8 +90,9 @@ public class TX16Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return true;
 	}
@@ -96,6 +101,8 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * Retrieves the 16 bit destination address.
 	 * 
 	 * @return The 16 bit destination address.
+	 * 
+	 * @see XBee16BitAddress
 	 */
 	public XBee16BitAddress get16BitDestinationAddress() {
 		return destAddress16;
@@ -105,6 +112,8 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * Retrieves the transmit options bitfield.
 	 * 
 	 * @return Transmit options bitfield.
+	 * 
+	 * @see XBeeTransmitOptions
 	 */
 	public int getTransmitOptions() {
 		return transmitOptions;
@@ -130,8 +139,9 @@ public class TX16Packet extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeePacket#getPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");

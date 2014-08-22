@@ -34,6 +34,8 @@ public class CommunicationException extends XBeeException {
 	 * Creates a {@code CommunicationException} with the specified cause.
 	 * 
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public CommunicationException(Throwable cause) {
 		super(cause);
@@ -54,6 +56,8 @@ public class CommunicationException extends XBeeException {
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
+	 * 
+	 * @see Throwable
 	 */
 	public CommunicationException(String message, Throwable cause) {
 		super(message, cause);

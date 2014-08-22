@@ -36,11 +36,13 @@ import com.digi.xbee.api.packet.raw.TXStatusPacket;
 
 /**
  * This class reads and parses XBee packets from the input stream returning
- * a generic {@link com.digi.xbee.api.packet.XBeeAPIPacket} which can be casted later
- * to the corresponding high level specific API packet.
+ * a generic {@code XBeeAPIPacket} which can be casted later to the 
+ * corresponding high level specific API packet.
  * 
- * All the API and API2 logic is already included so all packet reads from the input 
- * stream are independent of the XBee working mode.
+ * <p>All the API and API2 logic is already included so all packet reads from 
+ * the input stream are independent of the XBee working mode.</p>
+ * 
+ * @see XBeeAPIPacket
  */
 public class XBeePacketParser {
 	
@@ -59,16 +61,16 @@ public class XBeePacketParser {
 	private XBeeChecksum checksum;
 	
 	/**
-	 * Class constructor. Instances a new object of type XBeePacketParser with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type {@code XBeePacketParser}
+	 * with the given parameters.
 	 * 
 	 * @param inputStream Input stream to read bytes from.
 	 * @param mode XBee device working mode.
 	 * 
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API} and
+	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws NullPointerException if {@code inputStream == null} or 
 	 *                              if {@code mode == null}.
-	 * @throws NullPointerException if {@code mode != OperatingMode.API} and
-	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
 	 */
 	public XBeePacketParser(InputStream inputStream, OperatingMode mode) {
 		if (inputStream == null)
@@ -163,13 +165,16 @@ public class XBeePacketParser {
 	}
 	
 	/**
-	 * Reads one byte from the input stream. This operation checks several things like the 
-	 * working mode in order to consider escaped bytes.
+	 * Reads one byte from the input stream.
+	 * 
+	 * <p>This operation checks several things like the working mode in order 
+	 * to consider escaped bytes.</p>
 	 * 
 	 * @return The read byte.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -225,14 +230,18 @@ public class XBeePacketParser {
 	}
 	
 	/**
-	 * Reads the given amount of bytes from the input stream. This operation checks several 
-	 * things like the working mode in order to consider escaped bytes.
+	 * Reads the given amount of bytes from the input stream.
+	 * 
+	 * <p>This operation checks several things like the working mode in order 
+	 * to consider escaped bytes.</p>
 	 * 
 	 * @param numBytes Number of bytes to read.
+	 * 
 	 * @return The read byte array.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -281,10 +290,11 @@ public class XBeePacketParser {
 	/**
 	 * Reads an XBee 64 bit address from the input stream.
 	 * 
-	 * @return The read XBee 64 bit address, null if error.
+	 * @return The read XBee 64 bit address, {@code null} if error.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -298,10 +308,11 @@ public class XBeePacketParser {
 	/**
 	 * Reads an XBee 16 bit address from the input stream.
 	 * 
-	 * @return The read XBee 16 bit address, null if error.
+	 * @return The read XBee 16 bit address, {@code null} if error.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -316,8 +327,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed Generic packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -329,12 +341,14 @@ public class XBeePacketParser {
 	}
 	
 	/**
-	 * Parses the input stream and returns a packet of type TX (transmit) 16 Request.
+	 * Parses the input stream and returns a packet of type TX (transmit) 16 
+	 * Request.
 	 * 
 	 * @return Parsed TX (transmit) 16 Request packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -349,12 +363,14 @@ public class XBeePacketParser {
 	}
 	
 	/**
-	 * Parses the input stream and returns a packet of type TX (transmit) 64 Request.
+	 * Parses the input stream and returns a packet of type TX (transmit) 64 
+	 * Request.
 	 * 
 	 * @return Parsed TX (transmit) 64 Request packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -373,8 +389,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed AT Command packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, 
+	 *                     or if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -392,8 +409,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed Transmit Request packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -414,8 +432,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed AT Command Response packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -434,8 +453,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed TX status packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -450,8 +470,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed Transmit Status packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -469,8 +490,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed ZigBee Receive packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -489,8 +511,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed RX 16 packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
@@ -509,8 +532,9 @@ public class XBeePacketParser {
 	 * 
 	 * @return Parsed RX 64 packet.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */

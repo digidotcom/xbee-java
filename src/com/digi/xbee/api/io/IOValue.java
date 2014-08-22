@@ -66,7 +66,8 @@ public enum IOValue {
 	/**
 	 * Retrieves the IO Value corresponding to the provided value ID.
 	 * 
-	 * @param valueID The ID of the IOValue to retrieve.
+	 * @param valueID The ID of the {@code IOValue} to retrieve.
+	 * 
 	 * @return The IO Value corresponding to the provided value ID.
 	 */
 	public static IOValue getIOValue(int valueID) {

@@ -14,8 +14,7 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * This class lists all the possible states of an AT Command
- * after executing it.
+ * This class lists all the possible states of an AT Command after executing it.
  */
 public enum ATCommandStatus {
 
@@ -40,8 +39,8 @@ public enum ATCommandStatus {
 	}
 	
 	/**
-	 * Class constructor. Instances a new enumeration element of type ATCommandStatus
-	 * with the given parameters.
+	 * Class constructor. Instances a new enumeration element of type 
+	 * {@code ATCommandStatus} with the given parameters.
 	 * 
 	 * @param id AT Command Status ID.
 	 * @param description AT Command Status description.
@@ -73,6 +72,7 @@ public enum ATCommandStatus {
 	 * Retrieves the AT Command Status for the given ID.
 	 * 
 	 * @param id ID to retrieve AT Command Status.
+	 * 
 	 * @return AT Command Status associated with the given ID.
 	 */
 	public static ATCommandStatus get(int id) {
@@ -85,6 +85,7 @@ public enum ATCommandStatus {
 	 * (non-Javadoc)
 	 * @see java.lang.Enum#toString()
 	 */
+	@Override
 	public String toString() {
 		return description;
 	}

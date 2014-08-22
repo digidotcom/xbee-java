@@ -12,12 +12,14 @@
 package com.digi.xbee.api.models;
 
 /**
- * This class represents the response of an AT Command sent from the
- * connected XBee device or from a remote device after executing an
- * AT Command. See {@link com.digi.xbee.models.ATCommand}.
+ * This class represents the response of an AT Command sent from the connected 
+ * XBee device or from a remote device after executing an AT Command.
  * 
- * Among the executed command, this object contains the response data
- * and the command status. See {@link com.digi.xbee.models.ATCommandStatus}. 
+ * <p>Among the executed command, this object contains the response data and the 
+ * command status.</p>
+ * 
+ * @see ATCommand
+ * @see ATCommandStatus
  */
 public class ATCommandResponse {
 	
@@ -29,48 +31,54 @@ public class ATCommandResponse {
 	private final ATCommandStatus status;
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommandResponse
-	 * with the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code ATCommandResponse} with the given parameters.
 	 * 
 	 * @param command The AT command which generated the response.
 	 * 
 	 * @throws NullPointerException if {@code command == null}.
+	 * 
+	 * @see ATCommand
 	 */
 	public ATCommandResponse(ATCommand command) {
 		this(command, null, ATCommandStatus.OK);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommandResponse
-	 * with the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code ATCommandResponse} with the given parameters.
 	 * 
 	 * @param command The AT command which generated the response.
 	 * @param status Response status.
 	 * 
 	 * @throws NullPointerException if {@code command == null} or 
-	 *                              if {@code status == null}..
+	 *                              if {@code status == null}.
+	 * @see ATCommand
+	 * @see ATCommandStatus
 	 */
 	public ATCommandResponse(ATCommand command, ATCommandStatus status) {
 		this(command, null, status);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommandResponse
-	 * with the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code ATCommandResponse} with the given parameters.
 	 * 
 	 * @param command The AT command which generated the response.
 	 * @param response The command response.
 	 * 
 	 * @throws NullPointerException if {@code command == null} or 
 	 *                              if {@code response == null}.
+	 * 
+	 * @see ATCommand
 	 */
 	public ATCommandResponse(ATCommand command, byte[] response) {
 		this(command, response, ATCommandStatus.OK);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type ATCommandResponse
-	 * with the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code ATCommandResponse} with the given parameters.
 	 * 
 	 * @param command The AT command which generated the response.
 	 * @param response The command response.
@@ -79,6 +87,7 @@ public class ATCommandResponse {
 	 * @throws NullPointerException if {@code command == null} or 
 	 *                              if {@code status == null}.
 	 * 
+	 * @see ATCommand
 	 * @see ATCommandStatus
 	 */
 	public ATCommandResponse(ATCommand command, byte[] response, ATCommandStatus status) {
@@ -96,6 +105,8 @@ public class ATCommandResponse {
 	 * Retrieves the AT command which generated the response.
 	 * 
 	 * @return The AT command which generated the response.
+	 * 
+	 * @see ATCommand
 	 */
 	public ATCommand getCommand() {
 		return command;
@@ -104,7 +115,7 @@ public class ATCommandResponse {
 	/**
 	 * Retrieves the AT command response data if any.
 	 * 
-	 * @return The AT command response if any, null otherwise.
+	 * @return The AT command response if any, {@code null} otherwise.
 	 */
 	public byte[] getResponse() {
 		return response;
@@ -113,7 +124,7 @@ public class ATCommandResponse {
 	/**
 	 * Retrieves the AT command response as string if any.
 	 * 
-	 * @return The AT command response as string if any.
+	 * @return The AT command response as string if any, {@code null} otherwise.
 	 */
 	public String getResponseString() {
 		if (response == null)
@@ -123,9 +134,10 @@ public class ATCommandResponse {
 	
 	/**
 	 * Retrieves the AT command response status.
-	 *  See {@link com.digi.xbee.models.ATCommandStatus}.
 	 * 
-	 * @return The AT command response status. See {@link com.digi.xbee.models.ATCommandStatus}.
+	 * @return The AT command response status.
+	 * 
+	 * @see ATCommandStatus
 	 */
 	public ATCommandStatus getResponseStatus() {
 		return status;

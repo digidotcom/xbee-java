@@ -26,13 +26,16 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a Transmit Status Packet. Packet is built using the parameters of 
- * the constructor.
+ * <p>This class represents a Transmit Status Packet. Packet is built using the 
+ * parameters of the constructor.</p>
  * 
- * When a TX Request is completed, the module sends a TX Status message. This message will indicate if the
- * packet was transmitted successfully or if there was a failure. This packet is the response to standard
- * and explicit transmit requests. See {@link com.digi.xbee.api.packet.common.TransmitPacket} and
- * {@link com.digi.xbee.api.packet.zigbee.ExplicitAddressingZigBeePacket}.
+ * <p>When a TX Request is completed, the module sends a TX Status message. 
+ * This message will indicate if the packet was transmitted successfully or if 
+ * there was a failure. This packet is the response to standard and explicit 
+ * transmit requests.</p>
+ * 
+ * @see TransmitPacket
+ * @see ExplicitAddressingZigBeePacket
  */
 public class TransmitStatusPacket extends XBeeAPIPacket {
 	
@@ -46,23 +49,25 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type TransmitStatusPacket with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code TransmitStatusPacket} with the given parameters.
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress16 16-bit Network address the packet was delivered to.
-	 * @param tranmistRetryCount The number of application transmission retries that took place.
+	 * @param tranmistRetryCount The number of application transmission retries 
+	 *                           that took place.
 	 * @param transmitStatus Transmit status.
 	 * @param discoveryStatus Discovery status.
 	 * 
-	 * @throws NullPointerException if {@code destAddress16 == null} or
-	 *                              if {@code transmitStatus == null} or
-	 *                              if {@code discoveryStatus == null}.
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code tranmistRetryCount < 0} or
-	 *                                  if {@code tranmistRetryCount > 255} .
+	 *                                  if {@code tranmistRetryCount > 255}.
+	 * @throws NullPointerException if {@code destAddress16 == null} or
+	 *                              if {@code transmitStatus == null} or
+	 *                              if {@code discoveryStatus == null}.
 	 * 
+	 * @see XBee16BitAddress
 	 * @see XBeeTransmitStatus
 	 * @see XBeeDiscoveryStatus
 	 */
@@ -88,13 +93,12 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 		this.discoveryStatus = discoveryStatus;
 		this.logger = LoggerFactory.getLogger(TransmitStatusPacket.class);
 	}
-	
-
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
@@ -111,8 +115,9 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return true;
 	}
@@ -121,6 +126,8 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	 * Retrieves the 16 bit destination address. 
 	 * 
 	 * @return The 16 bit destination address.
+	 * 
+	 * @see XBee16BitAddress
 	 */
 	public XBee16BitAddress get16BitDestinationAddress() {
 		return destAddress16;
@@ -159,8 +166,9 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");

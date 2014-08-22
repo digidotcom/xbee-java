@@ -39,8 +39,8 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Class constructor. Instances a new enumeration element of type XBeeDiscoveryStatus
-	 * with the given parameters.
+	 * Class constructor. Instances a new enumeration element of type 
+	 * {@code XBeeDiscoveryStatus} with the given parameters.
 	 * 
 	 * @param id XBee Discovery Status ID.
 	 * @param description XBee Discovery Status description.
@@ -72,6 +72,7 @@ public enum XBeeDiscoveryStatus {
 	 * Retrieves the XBee Discovery Status for the given ID.
 	 * 
 	 * @param id ID to retrieve XBee Discovery Status Status.
+	 * 
 	 * @return XBee Discovery Status Status associated with the given ID.
 	 */
 	public static XBeeDiscoveryStatus get(int id) {
@@ -85,6 +86,7 @@ public enum XBeeDiscoveryStatus {
 	 * (non-Javadoc)
 	 * @see java.lang.Enum#toString()
 	 */
+	@Override
 	public String toString() {
 		return description;
 	}

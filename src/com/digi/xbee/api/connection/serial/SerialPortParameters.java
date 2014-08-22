@@ -30,8 +30,8 @@ public final class SerialPortParameters {
 	public final int flowControl;
 	
 	/**
-	 * Class constructor. Instances a new object of type XBeeSerialPortParameters with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code SerialPortParameters} with the given parameters.
 	 * 
 	 * @param baudrate Serial connection baud rate,
 	 * @param dataBits Serial connection data bits.
@@ -64,6 +64,10 @@ public final class SerialPortParameters {
 		this.flowControl = flowControl;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof SerialPortParameters)
@@ -76,6 +80,10 @@ public final class SerialPortParameters {
 			return false;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		int hash = HASH_SEED;
@@ -87,8 +95,14 @@ public final class SerialPortParameters {
 		return hash;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return "Baud Rate: "+ baudrate + ", Data Bits: " + dataBits + ", Stop Bits: " + stopBits + ", Parity: " + parity + ", Flow Control: " + flowControl;
+		return "Baud Rate: "+ baudrate + ", Data Bits: " + dataBits 
+				+ ", Stop Bits: " + stopBits + ", Parity: " + parity 
+				+ ", Flow Control: " + flowControl;
 	}
 }

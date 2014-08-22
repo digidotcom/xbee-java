@@ -22,9 +22,13 @@ import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This abstract class represents the basic structure of an XBee packet. Derived classes
- * should implement their own payload generation depending on their type. Generic
- * actions like checksum compute or packet length calculation is performed here.
+ * This abstract class represents the basic structure of an XBee packet.
+ * 
+ * <p>Derived classes should implement their own payload generation depending 
+ * on their type.</p>
+ * 
+ * <p>Generic actions like checksum compute or packet length calculation is 
+ * performed here.</p>
  */
 public abstract class XBeePacket {
 
@@ -32,17 +36,21 @@ public abstract class XBeePacket {
 	private XBeeChecksum checksum;
 	
 	/**
-	 * Class constructor. Instances a new XBeePacket.
+	 * Class constructor. Instances a new {@code XBeePacket}.
 	 */
 	protected XBeePacket() {
 		checksum = new XBeeChecksum();
 	}
 
 	/**
-	 * Generates the XBee packet byte array. Use only while working in 
-	 * API mode 1. If API mode is 2, use {@link #generateByteArrayEscaped()}.
+	 * Generates the XBee packet byte array. 
+	 * 
+	 * <p>Use only while working in API mode 1. If API mode is 2, use 
+	 * {@link #generateByteArrayEscaped()}.</p>
 	 * 
 	 * @return The XBee packet byte array.
+	 * 
+	 * @see #generateByteArrayEscaped()
 	 */
 	public byte[] generateByteArray() {
 		checksum.reset();
@@ -68,11 +76,14 @@ public abstract class XBeePacket {
 	}
 
 	/**
-	 * Generates the XBee packet byte array escaping the special
-	 * bytes. Use only while working in API mode 2. If API mode is 1
-	 * use {@link #generateByteArray()}.
+	 * Generates the XBee packet byte array escaping the special bytes.
+	 * 
+	 * <p>Use only while working in API mode 2. If API mode is 1 use 
+	 * {@link #generateByteArray()}.</p>
 	 * 
 	 * @return The XBee packet byte array with escaped characters.
+	 * 
+	 * @see #generateByteArray()
 	 */
 	public byte[] generateByteArrayEscaped() {
 		byte[] unescapedArray = generateByteArray();
@@ -111,9 +122,10 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * retrieves a map with the XBee packet parameters and their values.
+	 * Retrieves a map with the XBee packet parameters and their values.
 	 * 
-	 * @return A sorted map containing the XBee packet parameters with their values.
+	 * @return A sorted map containing the XBee packet parameters with their 
+	 *         values.
 	 */
 	public LinkedHashMap<String, String> getParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
@@ -125,9 +137,10 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * retrieves a map with the XBee packet parameters and their values.
+	 * Retrieves a map with the XBee packet parameters and their values.
 	 * 
-	 * @return A sorted map containing the XBee packet parameters with their values.
+	 * @return A sorted map containing the XBee packet parameters with their 
+	 *         values.
 	 */
 	protected abstract LinkedHashMap<String, String> getPacketParameters();
 	
@@ -135,6 +148,7 @@ public abstract class XBeePacket {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return HexUtils.byteArrayToHexString(generateByteArray());
 	}
@@ -153,15 +167,16 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * Parses the given hexadecimal string and returns a Generic XBee packet. The 
-	 * string can contain white spaces.
+	 * Parses the given hexadecimal string and returns a Generic XBee packet. 
+	 * The string can contain white spaces.
 	 * 
 	 * @param packet The hexadecimal string to parse.
+	 * 
 	 * @return The generated Generic XBee Packet.
 	 * 
-	 * @throws InvalidPacketException if the given string does not represent a valid frame:
-	 *                                invalid checksum, length, start delimiter, etc.
-	 * 
+	 * @throws InvalidPacketException if the given string does not represent a 
+	 *                                valid frame: invalid checksum, length, 
+	 *                                start delimiter, etc.
 	 * @throws NullPointerException if {@code packet == null}.
 	 */
 	public static XBeePacket parsePacket(String packet) throws InvalidPacketException {
@@ -175,10 +190,12 @@ public abstract class XBeePacket {
 	 * Parses the given byte array and returns a Generic XBee packet.
 	 * 
 	 * @param packet The byte array to parse.
-	 * @return The generated Generic XBee Packet.
-	 * @throws InvalidPacketException if the given byte array does not represent a valid frame: 
-	 *                                invalid checksum, length, start delimiter, etc.
 	 * 
+	 * @return The generated Generic XBee Packet.
+	 * 
+	 * @throws InvalidPacketException if the given byte array does not represent 
+	 *                                a valid frame: invalid checksum, length, 
+	 *                                start delimiter, etc.
 	 * @throws NullPointerException if {@code packet == null}.
 	 */
 	public static XBeePacket parsePacket(byte[] packet) throws InvalidPacketException {

@@ -50,11 +50,11 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type XBee API Type with
+	 * Class constructor. Instances a new object of type API Frame Type with
 	 * the given value and name.
 	 * 
-	 * @param idValue XBee frame type value.
-	 * @param name XBee frame type name.
+	 * @param idValue frame type value.
+	 * @param name frame type name.
 	 */
 	APIFrameType(int idValue, String name) {
 		this.idValue = idValue;
@@ -62,10 +62,12 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Retrieves the XBeeAPIType associated with the given ID value.
+	 * Retrieves the {@code APIFrameType} associated with the given ID value.
 	 * 
-	 * @param value ID value to retrieve APIFrameType;
-	 * @return XBeeAPIType for the given ID value, null if it does not exist.
+	 * @param value ID value to retrieve {@code APIFrameType};
+	 * 
+	 * @return the {@code APIFrameType} for the given ID value, {@code null} if 
+	 *         it does not exist.
 	 */
 	public static APIFrameType get(int value) {
 		APIFrameType type = lookupTable.get(value);
@@ -73,18 +75,18 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Retrieves the XBee API type value.
+	 * Retrieves the API frame type value.
 	 * 
-	 * @return The XBee API type value.
+	 * @return The API frame type value.
 	 */
 	public int getValue() {
 		return idValue;
 	}
 	
 	/**
-	 * Retrieves XBee API type name.
+	 * Retrieves API frame type name.
 	 * 
-	 * @return XBee API type name.
+	 * @return API frame type name.
 	 */
 	public String getName() {
 		return name;
@@ -94,6 +96,7 @@ public enum APIFrameType {
 	 * (non-Javadoc)
 	 * @see java.lang.Enum#toString()
 	 */
+	@Override
 	public String toString() {
 		return "(" + HexUtils.byteArrayToHexString(ByteUtils.intToByteArray(idValue)) + ") " + name;
 	}

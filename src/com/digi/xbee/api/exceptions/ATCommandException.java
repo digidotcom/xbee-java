@@ -14,8 +14,9 @@ package com.digi.xbee.api.exceptions;
 import com.digi.xbee.api.models.ATCommandStatus;
 
 /**
- * This exception will be thrown when receiving a command response containing a status different than 
- * {@code ATCommandStatus.OK} after sending an XBee AT command.
+ * This exception will be thrown when receiving a command response containing 
+ * a status different than {@code ATCommandStatus.OK} after sending an XBee 
+ * AT command.
  * 
  * @see CommunicationException
  */
@@ -29,10 +30,13 @@ public class ATCommandException extends CommunicationException {
 	private final ATCommandStatus atCommandStatus;
 	
 	/**
-	 * Creates an {@code ATCommandException} with the provided {@code ATCommandStatus} indicating 
-	 * the status of the AT command response and {@value #DEFAULT_MESSAGE} as its error detail message.
+	 * Creates an {@code ATCommandException} with the provided 
+	 * {@code ATCommandStatus} indicating the status of the AT command response 
+	 * and {@value #DEFAULT_MESSAGE} as its error detail message.
 	 * 
 	 * @param atCommandStatus The status of the AT command response.
+	 * 
+	 * @see ATCommandStatus
 	 */
 	public ATCommandException(ATCommandStatus atCommandStatus) {
 		super(DEFAULT_MESSAGE);
@@ -45,6 +49,8 @@ public class ATCommandException extends CommunicationException {
 	 * 
 	 * @param message The associated message.
 	 * @param atCommandStatus The status of the AT command response.
+	 * 
+	 * @see ATCommandStatus
 	 */
 	public ATCommandException(String message, ATCommandStatus atCommandStatus) {
 		super(message);
@@ -52,12 +58,16 @@ public class ATCommandException extends CommunicationException {
 	}
 	
 	/**
-	 * Creates an {@code ATCommandException} with the specified message, cause and 
-	 * {@code ATCommandStatus} indicating the status of the AT command response.
+	 * Creates an {@code ATCommandException} with the specified message, cause 
+	 * and {@code ATCommandStatus} indicating the status of the AT command 
+	 * response.
 	 * 
 	 * @param message The associated message.
 	 * @param cause The cause of this exception.
 	 * @param atCommandStatus The status of the AT command response.
+	 * 
+	 * @see Throwable
+	 * @see ATCommandStatus
 	 */
 	public ATCommandException(String message, Throwable cause, ATCommandStatus atCommandStatus) {
 		super(message, cause);
@@ -65,17 +75,20 @@ public class ATCommandException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the {@code ATCommandStatus} of the exception containing information 
-	 * about the AT command response.
+	 * Retrieves the {@code ATCommandStatus} of the exception containing 
+	 * information about the AT command response.
 	 * 
 	 * @return The status of the AT command response.
+	 * 
+	 * @see ATCommandStatus
 	 */
 	public ATCommandStatus getCommandStatus() {
 		return atCommandStatus;
 	}
 	
 	/**
-	 * Retrieves the text with containing the status of the AT command response from the exception.
+	 * Retrieves the text with containing the status of the AT command response 
+	 * from the exception.
 	 * 
 	 * @return The text with the status of the AT command response.
 	 */

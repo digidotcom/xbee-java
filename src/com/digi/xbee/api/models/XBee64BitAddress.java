@@ -57,9 +57,9 @@ public final class XBee64BitAddress {
 	 * 
 	 * @param address The XBee 64-bit address as byte array.
 	 * 
-	 * @throws NullPointerException if {@code address == null}.
 	 * @throws IllegalArgumentException if {@code address.length > 8} or
 	 *                                  if {@code address.length < 1}.
+	 * @throws NullPointerException if {@code address == null}.
 	 */
 	public XBee64BitAddress(byte[] address) {
 		if (address == null)
@@ -86,11 +86,11 @@ public final class XBee64BitAddress {
 	 * 
 	 * @param address The XBee 64-bit address as string.
 	 * 
-	 * @throws NullPointerException if {@code address == null}.
 	 * @throws IllegalArgumentException if {@code address.length() < 1} or
 	 *                                  if {@code address} contains 
 	 *                                  non-hexadecimal characters and is longer
 	 *                                  than 8 bytes.
+	 * @throws NullPointerException if {@code address == null}.
 	 */
 	public XBee64BitAddress(String address) {
 		if (address == null)
@@ -203,6 +203,10 @@ public final class XBee64BitAddress {
 		return sb.toString();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof XBee64BitAddress))
@@ -211,6 +215,10 @@ public final class XBee64BitAddress {
 		return Arrays.equals(addr.getValue(), getValue());
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		int hash = HASH_SEED;
@@ -219,6 +227,10 @@ public final class XBee64BitAddress {
 		return hash;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return HexUtils.byteArrayToHexString(address);

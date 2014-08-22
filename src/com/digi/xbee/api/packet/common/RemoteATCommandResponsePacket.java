@@ -28,19 +28,22 @@ import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a Remote AT Command Response packet. Packet is built using the parameters of 
- * the constructor.
+ * This class represents a Remote AT Command Response packet. Packet is built 
+ * using the parameters of the constructor.
  * 
- * <p>If a module receives a remote command response RF data frame in response to a Remote AT Command
- * Request, the module will send a Remote AT Command Response message out the UART. Some commands may
- * send back multiple frames--for example, Node Discover (ND) command.</p>
+ * <p>If a module receives a remote command response RF data frame in response 
+ * to a Remote AT Command Request, the module will send a Remote AT Command 
+ * Response message out the UART. Some commands may send back multiple frames--
+ * for example, Node Discover ({@code ND}) command.</p>
  * 
  * <p>This packet is received in response of a {@code RemoteATCommandPacket}.</p>
  * 
- * <p>Response also includes an {@code ATComandStatus} object with the status of the AT command.</p>
+ * <p>Response also includes an {@code ATComandStatus} object with the status 
+ * of the AT command.</p>
  * 
  * @see RemoteATCommandPacket
- * @see ATComandStatus 
+ * @see ATComandStatus
+ * @see XBeeAPIPacket
  */
 public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	
@@ -58,22 +61,23 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type RemoteCommandResponse with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code RemoteATCommandResponsePacket} with the given parameters.
 	 * 
-	 * @param frameID frame ID
-	 * @param sourceAddress64 64-bit address of the remote radio returning response
-	 * @param sourceAddress16 16-bit network address of the remote
-	 * @param command The AT command
+	 * @param frameID frame ID.
+	 * @param sourceAddress64 64-bit address of the remote radio returning 
+	 *                        response.
+	 * @param sourceAddress16 16-bit network address of the remote.
+	 * @param command The AT command.
 	 * @param status The command status.
 	 * @param commandValue The AT command response value.
 	 * 
+	 * @throws IllegalArgumentException if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code destAddress64 == null} or
 	 *                              if {@code destAddress16 == null} or
 	 *                              if {@code command == null} or
 	 *                              if {@code status == null}.
-	 * @throws IllegalArgumentException if {@code frameID < 0} or
-	 *                                  if {@code frameID > 255}.
 	 * 
 	 * @see XBee64BitAddress
 	 * @see XBee16BitAddress
@@ -102,6 +106,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		this.logger = LoggerFactory.getLogger(RemoteATCommandResponsePacket.class);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 */
 	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -119,6 +127,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		return data.toByteArray();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
+	 */
 	@Override
 	public boolean needsAPIFrameID() {
 		return true;
@@ -199,7 +211,8 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	/**
 	 * Retrieves the AT command response value as String.
 	 * 
-	 * @return The AT command response value as String, null if no value is set.
+	 * @return The AT command response value as String, {@code null} if no 
+	 *         value is set.
 	 */
 	public String getCommandValueAsString() {
 		if (commandValue == null)
@@ -207,6 +220,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		return new String(commandValue);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 */
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();

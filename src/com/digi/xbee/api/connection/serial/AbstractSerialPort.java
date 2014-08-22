@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.ConnectionException;
-import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
+import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 public abstract class AbstractSerialPort implements IConnectionInterface {
@@ -32,10 +32,24 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 */
 	public static final int DEFAULT_PORT_TIMEOUT = 10;
 	
-	// TODO: Add the rest of JavaDoc.
+	/**
+	 * Default number of data bits: {@value}.
+	 */
 	public static final int DEFAULT_DATA_BITS = 8;
+	
+	/**
+	 * Default number of stop bits: {@value}.
+	 */
 	public static final int DEFAULT_STOP_BITS = 1;
+	
+	/**
+	 * Default parity: {@value} (None).
+	 */
 	public static final int DEFAULT_PARITY = 0;
+	
+	/**
+	 * Default flow control: {@value} (None).
+	 */
 	public static final int DEFAULT_FLOW_CONTROL = 0;
 	
 	protected static final int FLOW_CONTROL_HW = 3;
@@ -55,8 +69,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instantiates a new object of type AbstractXBeeSerialPort with
-	 * the given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code AbstractSerialPort} with the given parameters.
 	 * 
 	 * @param port COM port name to use.
 	 * @param parameters Serial connection parameters.
@@ -71,11 +85,12 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type AbstractXBeeSerialPort with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code AbstractSerialPort} with the given parameters.
 	 * 
 	 * @param port COM port name to use.
-	 * @param baudRate Serial connection baud rate, the rest of parameters will be set by default.
+	 * @param baudRate Serial connection baud rate, the rest of parameters will 
+	 *                 be set by default.
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
@@ -90,15 +105,16 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code AbstractSerialPort} with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code AbstractSerialPort} with the given parameters.
 	 * 
 	 * @param port COM port name to use.
-	 * @param baudRate Serial port baud rate, the rest of parameters will be set by default.
+	 * @param baudRate Serial port baud rate, the rest of parameters will be 
+	 *        set by default.
 	 * @param receiveTimeout Receive timeout in milliseconds.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
 	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
@@ -110,16 +126,16 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type AbstractXBeeSerialPort with
-	 * the given parameters.
+	 * Class constructor. Instances a new object of type 
+	 * {@code AbstractSerialPort} with the given parameters.
 	 * 
 	 * @param port COM port name to use.
 	 * @param parameters Serial connection parameters.
 	 * @param receiveTimeout Serial connection receive timeout in milliseconds.
 	 * 
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 *
 	 * @see SerialPortParameters
 	 */
@@ -142,8 +158,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.XBeeInterface#isConnected()
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#isOpen()
 	 */
+	@Override
 	public boolean isOpen() {
 		return connectionOpen;
 	}
@@ -160,43 +177,46 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	/**
 	 * Sets the DTR line with the given state.
 	 * 
-	 * @param state True to set the line status high, false to set it low.
+	 * @param state {@code true} to set the line status high, {@code false} to 
+	 *              set it low.
 	 */
 	public abstract void setDTR(boolean state);
 	
 	/**
 	 * Sets the RTS line with the given state.
 	 * 
-	 * @param state True to set the line status high, false to set it low.
+	 * @param state {@code true} to set the line status high, {@code false} to 
+	 *              set it low.
 	 */
 	public abstract void setRTS(boolean state);
 	
 	/**
 	 * Retrieves the state of the CTS line.
 	 * 
-	 * @return True if the line is high, false otherwise.
+	 * @return {@code true} if the line is high, {@code false} otherwise.
 	 */
 	public abstract boolean isCTS();
 	
 	/**
 	 * Retrieves the state of the DSR line.
 	 * 
-	 * @return True if the line is high, false otherwise.
+	 * @return {@code true} if the line is high, {@code false} otherwise.
 	 */
 	public abstract boolean isDSR();
 	
 	/**
 	 * Retrieves the state of the CD line.
 	 * 
-	 * @return True if the line is high, false otherwise.
+	 * @return {@code true} if the line is high, {@code false} otherwise.
 	 */
 	public abstract boolean isCD();
 	
 	/**
-	 * Retrieves whether or not the port's flow control is configured in hardware 
-	 * mode.
+	 * Retrieves whether or not the port's flow control is configured in 
+	 * hardware mode.
 	 *  
-	 * @return True if the flow control is hardware, false otherwise.
+	 * @return {@code true} if the flow control is hardware, {@code false} 
+	 *         otherwise.
 	 */
 	public boolean isHardwareFlowControl() {
 		return parameters.flowControl == FLOW_CONTROL_HW;
@@ -210,10 +230,17 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param stopBits The new value of stop bits.
 	 * @param parity The new value of parity.
 	 * @param flowControl The new value of flow control.
-	 * @throws XBeeException
-	 * @throws InvalidOperatingModeException 
+	 * 
+	 * @throws InvalidConfigurationException if the configuration is invalid.
+	 * @throws ConnectionException if any error occurs when setting the serial 
+	 *                             port parameters
+	 * @throws IllegalArgumentException if {@code baudRate < 0} or
+	 *                                  if {@code dataBits < 0} or
+	 *                                  if {@code stopBits < 0} or
+	 *                                  if {@code parity < 0} or
+	 *                                  if {@code flowControl < 0}.
 	 */
-	public void setPortParameters(int baudRate, int dataBits, int stopBits, int parity, int flowControl) throws XBeeException, InvalidOperatingModeException {
+	public void setPortParameters(int baudRate, int dataBits, int stopBits, int parity, int flowControl) throws InvalidConfigurationException, ConnectionException {
 		SerialPortParameters parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
 		setPortParameters(parameters);
 	}
@@ -222,10 +249,15 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * Sets the new parameters of the serial port.
 	 * 
 	 * @param parameters The new serial port parameters.
+	 * 
+	 * @throws InvalidConfigurationException if the configuration is invalid.
+	 * @throws ConnectionException if any error occurs when setting the serial 
+	 *                             port parameters.
 	 * @throws NullPointerException if {@code parameters == null}.
-	 * @throws ConnectionException if any error occurs when setting the serial port parameters.
+	 * 
+	 * @see SerialPortParameters
 	 */
-	public void setPortParameters(SerialPortParameters parameters) throws ConnectionException {
+	public void setPortParameters(SerialPortParameters parameters) throws InvalidConfigurationException, ConnectionException {
 		if (parameters == null)
 			throw new NullPointerException("Serial port parameters cannot be null.");
 		
@@ -240,26 +272,27 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	/**
 	 * Enables or disables the break line.
 	 * 
-	 * @param enabled True to enable the Break line, false to disable it.
+	 * @param enabled {@code true} to enable the Break line, {@code false} to 
+	 *                disable it.
 	 */
 	public abstract void setBreak(boolean enabled);
 	
 	/**
-	 * Sends a break signal of the given duration.
+	 * Sends a break signal of the given duration (in milliseconds).
 	 * 
 	 * @param duration Duration of the break signal.
 	 */
 	public abstract void sendBreak(int duration);
 	
 	/**
-	 * Sets the read timeout of the serial port.
+	 * Sets the read timeout of the serial port (in milliseconds).
 	 * 
 	 * @param timeout The new read timeout.
 	 */
 	public abstract void setReadTimeout(int timeout);
 	
 	/**
-	 * Retrieves the read timeout of the serial port.
+	 * Retrieves the read timeout of the serial port (in milliseconds).
 	 * 
 	 * @return The read timeout.
 	 */
@@ -297,6 +330,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface#writeData(byte[])
 	 */
+	@Override
 	public void writeData(byte[] data) throws IOException {
 		if (data == null)
 			throw new NullPointerException("Data to be sent cannot be null.");
@@ -332,6 +366,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface#writeData(byte[], int, int)
 	 */
+	@Override
 	public void writeData(byte[] data, int offset, int length) throws IOException {
 		if (data == null)
 			throw new NullPointerException("Data to be sent cannot be null.");
@@ -375,6 +410,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface#readData(byte[])
 	 */
+	@Override
 	public int readData(byte[] data) throws IOException {
 		if (data == null)
 			throw new NullPointerException("Buffer cannot be null.");
@@ -389,6 +425,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface#readData(byte[], int, int)
 	 */
+	@Override
 	public int readData(byte[] data, int offset, int length) throws IOException {
 		if (data == null)
 			throw new NullPointerException("Buffer cannot be null.");
@@ -411,9 +448,12 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * Reads the given number of bytes from the serial port.
 	 * 
 	 * @param buffer The buffer where the read bytes will be placed.
-	 * @return The number of bytes read.
-	 * @throws IOException
 	 * 
+	 * @return The number of bytes read.
+	 * 
+	 * @throws IOException If the first byte cannot be read for any reason other than the end of the file, 
+	 *                     if the input stream has been closed, or 
+	 *                     if some other I/O error occurs. 
 	 * @throws NullPointerException if {@code buffer == null}.
 	 */
 	public int readDataBlocking(byte[] buffer) throws IOException {
@@ -430,6 +470,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * Retrieves the XBee port serial parameters.
 	 * 
 	 * @return The XBee port serial parameters.
+	 * 
+	 * @see SerialPortParameters
 	 */
 	public SerialPortParameters getPortParameters() {
 		if (parameters != null)
@@ -439,7 +481,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Retrieves the serial port receive timeout.
+	 * Retrieves the serial port receive timeout (in milliseconds).
 	 * 
 	 * @return The serial port receive timeout.
 	 */
@@ -451,6 +493,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		if (parameters != null) {
 			String parity = "N";

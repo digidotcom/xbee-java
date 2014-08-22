@@ -17,13 +17,13 @@ import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.utils.ByteUtils;
 
 /**
- * This class represents an IO Data Sample. The sample is built using the parameters of 
- * the constructor.
+ * This class represents an IO Data Sample. The sample is built using the
+ * parameters of the constructor.
  * 
  * <p>Digital Channel Mask</p>
  * <p>------------------------------------------------------------------</p>
- * <p>Indicates which digital IO lines are configured in the module. Each
- * bit corresponds to one digital IO line on the module:</p>
+ * <p>Indicates which digital IO lines are configured in the module. Each bit 
+ * corresponds to one digital IO line on the module:</p>
  * <br>
  * <BLOCKQUOTE>
  *      <p>bit 0 =  DIO0/AD0</p>
@@ -49,8 +49,8 @@ import com.digi.xbee.api.utils.ByteUtils;
  * </BLOCKQUOTE>
  * <p>Analog Channel Mask</p>
  * <p>-----------------------------------------------------------------------</p>
- * <p>Indicates which lines are configured as ADC. Each bit in the analog channel 
- * mask corresponds to one ADC line on the module.</p>
+ * <p>Indicates which lines are configured as ADC. Each bit in the analog 
+ * channel mask corresponds to one ADC line on the module.</p>
  * <br>
  * <BLOCKQUOTE>
  *      <p>bit 0 = AD0/DIO0</p>
@@ -84,13 +84,13 @@ public class IOSample {
 	private final HashMap<IOLine, IOValue> digitalValuesMap = new HashMap<IOLine, IOValue>();
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code IOSample} with the given 
-	 * IO sample payload.
+	 * Class constructor. Instances a new object of type {@code IOSample} with 
+	 * the given IO sample payload.
 	 * 
 	 * @param ioSamplePayload The payload corresponding to an IO sample.
 	 * 
-	 * @throws NullPointerException if {@code ioSamplePayload == null}.
 	 * @throws IllegalArgumentException if {@code ioSamplePayload.length < 5}.
+	 * @throws NullPointerException if {@code ioSamplePayload == null}.
 	 */
 	public IOSample(byte[] ioSamplePayload) {
 		if (ioSamplePayload == null)
@@ -104,8 +104,8 @@ public class IOSample {
 	}
 	
 	/**
-	 * Parses the information contained in the IO sample bytes reading the value of 
-	 * each configured DIO and ADC.
+	 * Parses the information contained in the IO sample bytes reading the 
+	 * value of each configured DIO and ADC.
 	 */
 	private void parseIOSample() {
 		int dataIndex = 4;
@@ -200,7 +200,8 @@ public class IOSample {
 	/**
 	 * Checks whether or not the {@code IOSample} has digital values.
 	 * 
-	 * @return {@code true} if there are digital values, {@code false} otherwise.
+	 * @return {@code true} if there are digital values, {@code false} 
+	 *         otherwise.
 	 */
 	public boolean hasDigitalValues() {
 		return digitalValuesMap.size() > 0;
@@ -210,7 +211,9 @@ public class IOSample {
 	 * Retrieves whether or not the given IO line has a digital value.
 	 * 
 	 * @param ioLine The IO line to check if has a digital value.
-	 * @return {@code true} if the given IO line has a digital value, {@code false} otherwise.
+	 * 
+	 * @return {@code true} if the given IO line has a digital value, 
+	 *         {@code false} otherwise.
 	 * 
 	 * @see IOLine
 	 */
@@ -221,11 +224,12 @@ public class IOSample {
 	/**
 	 * Retrieves the digital values map.
 	 * 
-	 * @return {@code HashMap} with the digital value of each configured IO line.
+	 * @return {@code HashMap} with the digital value of each configured IO 
+	 *         line.
 	 * 
-	 * @see #getDigitalValue(IOLine)
 	 * @see IOLine
 	 * @see IOValue
+	 * @see #getDigitalValue(IOLine)
 	 */
 	public HashMap<IOLine, IOValue> getDigitalValues() {
 		return digitalValuesMap;
@@ -235,12 +239,15 @@ public class IOSample {
 	 * Retrieves the digital value of the provided IO line.
 	 * 
 	 * @param ioLine The IO line to get its digital value.
-	 * @return The IOValue of the given IO line. 
+	 * 
+	 * @return The {@code IOValue} of the given IO line.
+	 * 
 	 * @throws IllegalArgumentException if the given IO line does not have 
 	 *                                  an associated digital value.
 	 * 
 	 * @see IOLine
 	 * @see IOValue
+	 * @see #getDigitalValues()
 	 */
 	public IOValue getDigitalValue(IOLine ioLine) {
 		if (!digitalValuesMap.containsKey(ioLine))
@@ -262,8 +269,10 @@ public class IOSample {
 	 *  
 	 * @return {@code true} if there are analog values, {@code false} otherwise.
 	 * 
-	 * @see #getAnalogValues()
 	 * @see IOLine
+	 * @see #hasAnalogValue(IOLine)
+	 * @see #getAnalogValues()
+	 * @see #getAnalogValue(IOLine)
 	 */
 	public boolean hasAnalogValues() {
 		return analogValuesMap.size() > 0;
@@ -273,9 +282,14 @@ public class IOSample {
 	 * Retrieves whether or not the given IO line has an analog value.
 	 * 
 	 * @param ioLine The IO line to check if has an analog value.
-	 * @return {@code true} if the given IO line has an analog value, {@code false} otherwise.
+	 * 
+	 * @return {@code true} if the given IO line has an analog value, 
+	 *         {@code false} otherwise.
 	 * 
 	 * @see IOLine
+	 * @see #hasAnalogValues()
+	 * @see #getAnalogValues()
+	 * @see #getAnalogValue(IOLine)
 	 */
 	public boolean hasAnalogValue(IOLine ioLine) {
 		return analogValuesMap.containsKey(ioLine);
@@ -286,9 +300,10 @@ public class IOSample {
 	 * 
 	 * @return {@code HashMap} with the analog value of each configured IO line.
 	 * 
-	 * @see #hasAnalogValues()
-	 * @see #getAnalogValue()
 	 * @see IOLine
+	 * @see #getAnalogValue(IOLine)
+	 * @see #hasAnalogValues()
+	 * @see #hasAnalogValue(IOLine)
 	 */
 	public HashMap<IOLine, Integer> getAnalogValues() {
 		return analogValuesMap;
@@ -298,11 +313,16 @@ public class IOSample {
 	 * Retrieves the analog value of the provided IO line.
 	 * 
 	 * @param ioLine The IO line to get its analog value.
-	 * @return The analog value of the given IO line. 
+	 * 
+	 * @return The analog value of the given IO line.
+	 *  
 	 * @throws IllegalArgumentException if the given IO line does not have 
 	 *                                  an associated analog value.
 	 * 
 	 * @see IOLine
+	 * @see #getAnalogValues()
+	 * @see #hasAnalogValue(IOLine)
+	 * @see #hasAnalogValues()
 	 */
 	public int getAnalogValue(IOLine ioLine) {
 		if (!analogValuesMap.containsKey(ioLine))
@@ -313,7 +333,10 @@ public class IOSample {
 	/**
 	 * Retrieves whether or not the IOSample has power supply value.
 	 * 
-	 * @return {@code true} if the IOSample has power supply value, {@code false} otherwise.
+	 * @return {@code true} if the IOSample has power supply value, 
+	 *         {@code false} otherwise.
+	 * 
+	 * @see #getPowerSupplyValue()
 	 */
 	public boolean hasPowerSupplyValue() {
 		return ByteUtils.isBitEnabled(analogMask, 7);
@@ -323,7 +346,11 @@ public class IOSample {
 	 * Retrieves the value of the power supply voltage.
 	 * 
 	 * @return The value of the power supply voltage.
-	 * @throws OperationNotSupportedException if the IOSample does not have power supply value.
+	 * 
+	 * @throws OperationNotSupportedException if the IOSample does not have 
+	 *         power supply value.
+	 * 
+	 * @see #hasPowerSupplyValue()
 	 */
 	public int getPowerSupplyValue() throws OperationNotSupportedException {
 		if (!ByteUtils.isBitEnabled(analogMask, 7))

@@ -36,19 +36,22 @@ public class RX64Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type RX64Packet with
+	 * Class constructor. Instances a new object of type {@code RX64Packet} with
 	 * the given parameters.
 	 * 
 	 * @param sourceAddress 64-bit address of the sender.
 	 * @param rssi Received signal strength indicator.
-	 * @param receiveOptions Bitfield indicating the receive options. See {@link com.digi.xbee.models.XBeeReceiveOptions}.
+	 * @param receiveOptions Bitfield indicating the receive options.
 	 * @param receivedData Received RF data.
 	 * 
-	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions > 255} or
 	 *                                  if {@code receiveOptions > 255}.
+	 * @throws NullPointerException if {@code sourceAddress == null}.
+	 * 
+	 * @see XBeeReceiveOptions
+	 * @see XBee64BitAddress
 	 */
 	public RX64Packet(XBee64BitAddress sourceAddress, int rssi, int receiveOptions, byte[] receivedData) {
 		super(APIFrameType.RX_64);
@@ -69,8 +72,9 @@ public class RX64Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
+	@Override
 	public byte[] getAPIData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
@@ -87,8 +91,9 @@ public class RX64Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return false;
 	}
@@ -97,6 +102,8 @@ public class RX64Packet extends XBeeAPIPacket {
 	 * Retrieves the 64 bit sender/source address. 
 	 * 
 	 * @return The 64 bit sender/source address.
+	 * 
+	 * @see XBee64BitAddress
 	 */
 	public XBee64BitAddress getSourceAddress() {
 		return sourceAddress;
@@ -104,9 +111,10 @@ public class RX64Packet extends XBeeAPIPacket {
 	
 	/**
 	 * Retrieves the receive options bitfield.
-	 * See {@link com.digi.xbee.models.XBeeReceiveOptions}.
 	 * 
 	 * @return Receive options bitfield.
+	 * 
+	 * @see XBeeReceiveOptions
 	 */
 	public int getReceiveOptions() {
 		return receiveOptions;
@@ -132,8 +140,9 @@ public class RX64Packet extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeePacket#getPacketParameters()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress.toString()));

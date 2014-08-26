@@ -30,10 +30,13 @@ public enum APIFrameType {
 	REMOTE_AT_COMMAND_REQUEST (0x17, "Remote AT Command Request"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),
+	RX_IO_64 (0x82, "IO Data Sample RX 64-bit Address Indicator"),
+	RX_IO_16 (0x83, "IO Data Sample RX 16-bit Address Indicator"),
 	AT_COMMAND_RESPONSE (0x88, "AT Command Response"),
 	TX_STATUS (0x89, "TX (Transmit) Status"),
 	TRANSMIT_STATUS (0x8B, "Transmit Status"),
 	RECEIVE_PACKET (0x90, "Receive Packet"),
+	IO_DATA_SAMPLE_RX_INDICATOR (0x92, "IO Data Sample RX Indicator"),
 	REMOTE_AT_COMMAND_RESPONSE (0x97, "Remote Command Response"),
 	GENERIC (0xFF, "Generic");
 	

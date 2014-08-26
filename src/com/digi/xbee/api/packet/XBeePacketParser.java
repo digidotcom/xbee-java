@@ -25,10 +25,13 @@ import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeTransmitStatus;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
+import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
+import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
@@ -140,6 +143,12 @@ public class XBeePacketParser {
 				case RX_16:
 					packet = parseRX16Packet();
 					break;
+				case RX_IO_64:
+					packet = parseRXIO64Packet();
+					break;
+				case RX_IO_16:
+					packet = parseRXIO16Packet();
+					break;
 				case TX_STATUS:
 					packet = parseTXStatusPacket();
 					break;
@@ -148,6 +157,9 @@ public class XBeePacketParser {
 					break;
 				case RECEIVE_PACKET:
 					packet = parseZigBeeReceivePacket();
+					break;
+				case IO_DATA_SAMPLE_RX_INDICATOR:
+					packet = parseIODataSampleRxIndicatorPacket();
 					break;
 				case GENERIC:
 				default:
@@ -522,5 +534,65 @@ public class XBeePacketParser {
 		if (readBytes < length)
 			data = readBytes(length - readBytes);
 		return new RX64Packet(sourceAddress64, signalStrength, receiveOptions, data);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type RX IO 64.
+	 * 
+	 * @return Parsed RX IO 64 packet.
+	 * 
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
+	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum.
+	 */
+	private XBeePacket parseRXIO64Packet() throws IOException, InvalidPacketException {
+		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
+		int rssi = readByte();
+		int receiveOptions = readByte();
+		byte[] data = null;
+		if (readBytes < length)
+			data = readBytes(length - readBytes);
+		return new RX64IOPacket(sourceAddress64, rssi, receiveOptions, data);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type RX IO 16.
+	 * 
+	 * @return Parsed RX IO 16 packet.
+	 * 
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
+	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum.
+	 */
+	private XBeePacket parseRXIO16Packet() throws IOException, InvalidPacketException {
+		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
+		int rssi = readByte();
+		int receiveOptions = readByte();
+		byte[] data = null;
+		if (readBytes < length)
+			data = readBytes(length - readBytes);
+		return new RX16IOPacket(sourceAddress16, rssi, receiveOptions, data);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type IO data sample RX indicator.
+	 * 
+	 * @return Parsed IO data sample RX indicator packet.
+	 * 
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
+	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum.
+	 */
+	private XBeePacket parseIODataSampleRxIndicatorPacket() throws IOException, InvalidPacketException {
+		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
+		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
+		int receiveOptions = readByte();
+		byte[] data = null;
+		if (readBytes < length)
+			data = readBytes(length - readBytes);
+		return new IODataSampleRxIndicatorPacket(sourceAddress64, sourceAddress16, receiveOptions, data);
 	}
 }

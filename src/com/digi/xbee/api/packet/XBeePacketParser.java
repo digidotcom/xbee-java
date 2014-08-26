@@ -27,6 +27,8 @@ import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
+import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
+import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
@@ -136,8 +138,8 @@ public class XBeePacketParser {
 				case TRANSMIT_REQUEST:
 					packet = parseTransmitRequestPacket();
 					break;
-				case AT_COMMAND_RESPONSE:
-					packet = parseATCommandResponsePacket();
+				case REMOTE_AT_COMMAND_REQUEST:
+					packet = parseRemoteATCommandRequestPacket();
 					break;
 				case RX_64:
 					packet = parseRX64Packet();
@@ -150,6 +152,12 @@ public class XBeePacketParser {
 					break;
 				case RX_IO_16:
 					packet = parseRXIO16Packet();
+					break;
+				case AT_COMMAND_RESPONSE:
+					packet = parseATCommandResponsePacket();
+					break;
+				case REMOTE_AT_COMMAND_RESPONSE:
+					packet = parseRemoteATCommandResponsePacket();
 					break;
 				case TX_STATUS:
 					packet = parseTXStatusPacket();
@@ -618,5 +626,49 @@ public class XBeePacketParser {
 		if (readBytes < length)
 			data = readBytes(length - readBytes);
 		return new IODataSampleRxIndicatorPacket(sourceAddress64, sourceAddress16, receiveOptions, data);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type Remote AT Command.
+	 * 
+	 * @return Parsed Remote AT Command packet.
+	 * 
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
+	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum.
+	 */
+	private XBeePacket parseRemoteATCommandRequestPacket() throws IOException, InvalidPacketException {
+		int frameID = readByte();
+		XBee64BitAddress destAddress64 = readXBee64BitAddress();
+		XBee16BitAddress destAddress16 = readXBee16BitAddress();
+		int transmitOptions = readByte();
+		String command = new String(readBytes(2));
+		byte[] parameterData = null;
+		if (readBytes < length)
+			parameterData = readBytes(length - readBytes);
+		return new RemoteATCommandPacket(frameID, destAddress64, destAddress16, transmitOptions, command, parameterData);
+	}
+	
+	/**
+	 * Parses the input stream and returns a packet of type Remote AT Command.
+	 * 
+	 * @return Parsed Remote AT Command packet.
+	 * 
+	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
+	 *                     or if the input stream has been closed, or if some other I/O error occurs.
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum.
+	 */
+	private XBeePacket parseRemoteATCommandResponsePacket() throws IOException, InvalidPacketException {
+		int frameID = readByte();
+		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
+		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
+		String command = new String(readBytes(2));
+		int status = readByte();
+		byte[] commandData = null;
+		if (readBytes < length)
+			commandData = readBytes(length - readBytes);
+		return new RemoteATCommandResponsePacket(frameID, sourceAddress64, sourceAddress16, command, ATCommandStatus.get(status), commandData);
 	}
 }

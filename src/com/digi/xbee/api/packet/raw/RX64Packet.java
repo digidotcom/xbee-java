@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeReceiveOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -46,7 +47,7 @@ public class RX64Packet extends XBeeAPIPacket {
 	 * 
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
-	 *                                  if {@code receiveOptions > 255} or
+	 *                                  if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 * 
@@ -69,7 +70,7 @@ public class RX64Packet extends XBeeAPIPacket {
 		this.receivedData = receivedData;
 		this.logger = LoggerFactory.getLogger(RX64Packet.class);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
@@ -88,7 +89,7 @@ public class RX64Packet extends XBeeAPIPacket {
 		}
 		return os.toByteArray();
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
@@ -125,7 +126,7 @@ public class RX64Packet extends XBeeAPIPacket {
 	 * 
 	 * @param receivedData Received RF data.
 	 */
-	public void setReceivedData (byte[] receivedData){
+	public void setReceivedData (byte[] receivedData) {
 		this.receivedData = receivedData;
 	}
 	
@@ -134,7 +135,7 @@ public class RX64Packet extends XBeeAPIPacket {
 	 * 
 	 * @return Received RF data.
 	 */
-	public byte[] getReceivedData (){
+	public byte[] getReceivedData () {
 		return receivedData;
 	}
 	

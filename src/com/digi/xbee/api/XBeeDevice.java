@@ -1914,6 +1914,9 @@ public class XBeeDevice {
 	
 	/**
 	 * Custom listener for IO packets. It will try to receive an IO sample packet.
+	 * 
+	 * <p>When an IO sample packet is received, it saves its payload and notifies 
+	 * the object that was waiting for the reception.</p>
 	 */
 	private IPacketReceiveListener IOPacketReceiveListener = new IPacketReceiveListener() {
 		/*
@@ -1921,39 +1924,33 @@ public class XBeeDevice {
 		 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
 		 */
 		public void packetReceived(XBeePacket receivedPacket) {
+			// Discard non API packets.
 			if (!(receivedPacket instanceof XBeeAPIPacket))
 				return;
-			// TODO: perform the packet check with correct values.
-			if (!(receivedPacket instanceof TXStatusPacket)
-					|| !(receivedPacket instanceof TXStatusPacket)
-					|| !(receivedPacket instanceof TXStatusPacket)) {
-				// If we already have received an IO packet, ignore this packet.
-				if (ioPacketReceived)
-					return;
-				
-				// Save the packet value (IO sample payload)
-				switch (((XBeeAPIPacket)receivedPacket).getFrameType()) {
-				case IO_DATA_SAMPLE_RX_INDICATOR:
-					ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getReceivedData();
-					break;
-				case RX_IO_16:
-					ioPacketPayload = ((RX16IOPacket)receivedPacket).getReceivedData();
-					break;
-				case RX_IO_64:
-					ioPacketPayload = ((RX64IOPacket)receivedPacket).getReceivedData();
-					break;
-				default:
-					return;
-				}
-				
-				ioPacketReceived = true;
-				
-				// Remove listener to avoid reception of more packets.
-				stopListeningForPackets(this);
-				// Continue execution by notifying the lock object.
-				synchronized (ioLock) {
-					ioLock.notify();
-				}
+			// If we already have received an IO packet, ignore this packet.
+			if (ioPacketReceived)
+				return;
+			
+			// Save the packet value (IO sample payload)
+			switch (((XBeeAPIPacket)receivedPacket).getFrameType()) {
+			case IO_DATA_SAMPLE_RX_INDICATOR:
+				ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getReceivedData();
+				break;
+			case RX_IO_16:
+				ioPacketPayload = ((RX16IOPacket)receivedPacket).getReceivedData();
+				break;
+			case RX_IO_64:
+				ioPacketPayload = ((RX64IOPacket)receivedPacket).getReceivedData();
+				break;
+			default:
+				return;
+			}
+			// Set the IO packet received flag.
+			ioPacketReceived = true;
+			
+			// Continue execution by notifying the lock object.
+			synchronized (ioLock) {
+				ioLock.notify();
 			}
 		}
 	};

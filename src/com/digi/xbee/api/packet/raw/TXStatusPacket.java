@@ -88,7 +88,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
-		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1) + " (" + transmitStatus.getDescription() + ")"));
+		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) + " (" + transmitStatus.getDescription() + ")");
 		return parameters;
 	}
 }

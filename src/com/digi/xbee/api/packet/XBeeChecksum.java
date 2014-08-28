@@ -1,18 +1,31 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet;
 
 /**
  * This class stores, computes and verifies the checksum of the API packets.
+ * 
+ * <p>To test data integrity, a checksum is calculated and verified on 
+ * non-escaped API data.<p>
+ * 
+ * <p><b>To calculate</b></p>
+ * 
+ * <p>Not including frame delimiters and length, add all bytes keeping only the 
+ * lowest 8 bits of the result and subtract the result from {@code 0xFF}.
+ * 
+ * <p><b>To verify</b></p>
+ * 
+ * <p>Add all bytes (include checksum, but not the delimiter and length). If the 
+ * checksum is correct, the sum will equal {@code 0xFF}.</p>
  */
 public class XBeeChecksum {
 

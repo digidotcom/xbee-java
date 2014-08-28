@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet;
 
 import java.io.ByteArrayInputStream;
@@ -171,59 +171,61 @@ public abstract class XBeePacket {
 	 * The string can contain white spaces.
 	 * 
 	 * @param packet The hexadecimal string to parse.
+	 * @param mode The operating mode to parse the packet (API 1 or API 2).
 	 * 
 	 * @return The generated Generic XBee Packet.
 	 * 
 	 * @throws InvalidPacketException if the given string does not represent a 
 	 *                                valid frame: invalid checksum, length, 
 	 *                                start delimiter, etc.
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
+	 *                                  if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see OperatingMode#API
+	 * @see OperatingMode#API_ESCAPE
 	 */
-	public static XBeePacket parsePacket(String packet) throws InvalidPacketException {
+	public static XBeePacket parsePacket(String packet, OperatingMode mode) throws InvalidPacketException {
 		if (packet == null)
 			throw new NullPointerException("Packet cannot be null.");
 			
-		return parsePacket(HexUtils.hexStringToByteArray(packet.trim().replace(" ",  "")));
+		return parsePacket(HexUtils.hexStringToByteArray(packet.trim().replace(" ",  "")), mode);
 	}
 	
 	/**
 	 * Parses the given byte array and returns a Generic XBee packet.
 	 * 
 	 * @param packet The byte array to parse.
+	 * @param mode The operating mode to parse the packet (API 1 or API 2).
 	 * 
 	 * @return The generated Generic XBee Packet.
 	 * 
 	 * @throws InvalidPacketException if the given byte array does not represent 
 	 *                                a valid frame: invalid checksum, length, 
 	 *                                start delimiter, etc.
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
+	 *                                  if {@code mode != OperatingMode.API_ESCAPE} 
+	 *                                  or if {@code packet.length == 0}.
 	 * @throws NullPointerException if {@code packet == null}.
+	 * 
+	 * @see OperatingMode#API
+	 * @see OperatingMode#API_ESCAPE
 	 */
-	public static XBeePacket parsePacket(byte[] packet) throws InvalidPacketException {
+	public static XBeePacket parsePacket(byte[] packet, OperatingMode mode) throws InvalidPacketException {
 		if (packet == null)
 			throw new NullPointerException("Packet byte array cannot be null.");
 		
-		if (packet.length > 1 && ((packet[0] &0xFF) != SpecialByte.HEADER_BYTE.getValue()))
+		if (mode != OperatingMode.API && mode != OperatingMode.API_ESCAPE)
+			throw new IllegalArgumentException("Operating mode must be API or API Escaped.");
+		
+		if (packet.length == 0)
+			throw new IllegalArgumentException("Packet length should be greater than 0.");
+		
+		if (packet.length > 1 && ((packet[0] & 0xFF) != SpecialByte.HEADER_BYTE.getValue()))
 			throw new InvalidPacketException("Invalid start delimiter.");
 		
-		if (packet.length < 4)
-			throw new InvalidPacketException("Packet length is too short.");
-		
-		int length = ByteUtils.byteArrayToInt(new byte[] {packet[1], packet[2]});
-		if (length != packet.length - 4)
-			throw new InvalidPacketException("Invalid packet length.");
-		
-		byte[] data = new byte[length];
-		System.arraycopy(packet, 3, data, 0, length);
-		byte packetChecksum = packet[packet.length - 1];
-		XBeeChecksum checksum = new XBeeChecksum();
-		checksum.add(data);
-		
-		byte generatedChecksum = (byte)(checksum.generate() & 0xFF);
-		if (packetChecksum != generatedChecksum)
-			throw new InvalidPacketException("Invalid '" + packetChecksum + "' checksum. It should be " + generatedChecksum);
-		
-		XBeePacketParser parser = new XBeePacketParser(new ByteArrayInputStream(packet, 1, packet.length - 1), OperatingMode.API);
-		XBeePacket xbeePacket = parser.parsePacket();
+		XBeePacketParser parser = new XBeePacketParser();
+		XBeePacket xbeePacket = parser.parsePacket(new ByteArrayInputStream(packet, 1, packet.length - 1), mode);
 		return xbeePacket;
 	}
 }

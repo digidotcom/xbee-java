@@ -1,28 +1,24 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
 import com.digi.xbee.api.exceptions.InvalidPacketException;
-import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.SpecialByte;
-import com.digi.xbee.api.models.XBee16BitAddress;
-import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeDiscoveryStatus;
 import com.digi.xbee.api.models.OperatingMode;
-import com.digi.xbee.api.models.XBeeTransmitStatus;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
@@ -38,150 +34,288 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * This class reads and parses XBee packets from the input stream returning
- * a generic {@code XBeeAPIPacket} which can be casted later to the 
- * corresponding high level specific API packet.
+ * a generic {@code XBeePacket} which can be casted later to the corresponding 
+ * high level specific API packet.
  * 
- * <p>All the API and API2 logic is already included so all packet reads from 
- * the input stream are independent of the XBee working mode.</p>
+ * <p>All the API and API2 logic is already included so all packet reads are 
+ * independent of the XBee operating mode.</p>
  * 
- * @see XBeeAPIPacket
+ * <p>Two API modes are supported and both can be enabled using the {@code AP} 
+ * (API Enable) command:
+ * 
+ * <ul>
+ * <li><b>API1 - API Without Escapes</b>
+ * <p>The data frame structure is defined as follows:</p>
+ * 
+ * <pre>
+ * {@code 
+ *   Start Delimiter          Length                   Frame Data                   Checksum
+ *       (Byte 1)            (Bytes 2-3)               (Bytes 4-n)                (Byte n + 1)
+ * +----------------+  +-------------------+  +--------------------------- +  +----------------+
+ * |      0x7E      |  |   MSB   |   LSB   |  |   API-specific Structure   |  |     1 Byte     |
+ * +----------------+  +-------------------+  +----------------------------+  +----------------+
+ *                MSB = Most Significant Byte, LSB = Least Significant Byte
+ * }
+ * </pre>
+ * </li>
+ * 
+ * <li><b>API2 - API With Escapes</b>
+ * <p>The data frame structure is defined as follows:</p>
+ * 
+ * <pre>
+ * {@code 
+ *   Start Delimiter          Length                   Frame Data                   Checksum
+ *       (Byte 1)            (Bytes 2-3)               (Bytes 4-n)                (Byte n + 1)
+ * +----------------+  +-------------------+  +--------------------------- +  +----------------+
+ * |      0x7E      |  |   MSB   |   LSB   |  |   API-specific Structure   |  |     1 Byte     |
+ * +----------------+  +-------------------+  +----------------------------+  +----------------+
+ *                     \___________________________________  _________________________________/
+ *                                                         \/
+ *                                             Characters Escaped If Needed
+ *                                             
+ *                MSB = Most Significant Byte, LSB = Least Significant Byte
+ * }
+ * </pre>
+ * 
+ * <p>When sending or receiving an API2 frame, specific data values must be 
+ * escaped (flagged) so they do not interfere with the data frame sequencing. 
+ * To escape an interfering data byte, the byte {@code 0x7D} is inserted before 
+ * the byte to be escaped XOR’d with {@code 0x20}.</p>
+ * 
+ * <p>The data bytes that need to be escaped:</p>
+ * <ul>
+ * <li>{@code 0x7E} - Frame Delimiter ({@link SpecialByte#HEADER_BYTE})</li>
+ * <li>{@code 0x7D} - Escape ({@link SpecialByte#ESCAPE_BYTE})</li>
+ * <li>{@code 0x11} - XON ({@link SpecialByte#XON_BYTE})</li>
+ * <li>{@code 0x13} - XOFF ({@link SpecialByte#XOFF_BYTE})</li>
+ * </ul>
+ * 
+ * </li>
+ * </ul>
+ * 
+ * <p>The <b>length</b> field has a two-byte value that specifies the number of 
+ * bytes that will be contained in the frame data field. It does not include the 
+ * checksum field.</p>
+ * 
+ * <p>The <b>frame data</b>  forms an API-specific structure as follows:</p>
+ * 
+ * <pre>
+ * {@code 
+ *   Start Delimiter          Length                   Frame Data                   Checksum
+ *       (Byte 1)            (Bytes 2-3)               (Bytes 4-n)                (Byte n + 1)
+ * +----------------+  +-------------------+  +--------------------------- +  +----------------+
+ * |      0x7E      |  |   MSB   |   LSB   |  |   API-specific Structure   |  |     1 Byte     |
+ * +----------------+  +-------------------+  +----------------------------+  +----------------+
+ *                                            /                                                 \
+ *                                           /  API Identifier        Identifier specific data   \
+ *                                           +------------------+  +------------------------------+
+ *                                           |       cmdID      |  |           cmdData            |
+ *                                           +------------------+  +------------------------------+
+ * }
+ * </pre>
+ * 
+ * <p>The {@code cmdID} frame (API-identifier) indicates which API messages 
+ * will be contained in the {@code cmdData} frame (Identifier-specific data).
+ * (see {@link com.digi.xbee.api.packet.APIFrameType}).</p>
+ * 
+ * <p>To test data integrity, a <b>checksum</b> is calculated and verified on 
+ * non-escaped data.</p>
+ * 
+ * @see XBeePacket
+ * @see OperatingMode
  */
 public class XBeePacketParser {
 	
-	private static int DEFAULT_TIMEOUT = 2000;
-
-	// Variables
-	private InputStream inputStream;
-	
-	private OperatingMode mode;
-	
-	private boolean lengthRead;
-	
-	private int readBytes = 0;
-	private int length = 0;
-	
-	private XBeeChecksum checksum;
-	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeePacketParser}
-	 * with the given parameters.
+	 * Parses the bytes from the given input stream depending on the provided 
+	 * operating mode and returns the API packet.
+	 * 
+	 * <p>The operating mode must be {@see OperatingMode.API} or 
+	 * {@see OperatingMode.API_ESCAPE}.</p>
 	 * 
 	 * @param inputStream Input stream to read bytes from.
-	 * @param mode XBee device working mode.
+	 * @param mode XBee device operating mode.
 	 * 
-	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API} and
+	 * @return Parsed packet from the inputstream.
+	 * 
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum or
+	 *                                if the payload is invalid for the specified frame type.
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
 	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws NullPointerException if {@code inputStream == null} or 
 	 *                              if {@code mode == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see OperatingMode#API
+	 * @see OperatingMode#API_ESCAPE
 	 */
-	public XBeePacketParser(InputStream inputStream, OperatingMode mode) {
+	public XBeePacket parsePacket(InputStream inputStream, OperatingMode mode) throws InvalidPacketException {
 		if (inputStream == null)
 			throw new NullPointerException("Input stream cannot be null.");
+		
 		if (mode == null)
 			throw new NullPointerException("Operating mode cannot be null.");
+		
 		if (mode != OperatingMode.API && mode != OperatingMode.API_ESCAPE)
 			throw new IllegalArgumentException("Operating mode must be API or API Escaped.");
 		
-		this.inputStream = inputStream;
-		this.mode = mode;
-	}
-	
-	/**
-	 * Parses a packet from the input stream depending on the working mode and
-	 * returns it.
-	 * 
-	 * @return Parsed packet.
-	 * 
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	public XBeePacket parsePacket() throws InvalidPacketException {
 		try {
-			// Reset variables.
-			readBytes = 0;
-			lengthRead = false;
-			
-			// Initialize checksum.
-			checksum = new XBeeChecksum();
 			// Read packet size.
-			int hSize = readByte();
-			int lSize = readByte();
-			length = hSize << 8 | lSize;
-			lengthRead = true;
+			int hSize = readByte(inputStream, mode);
+			int lSize = readByte(inputStream, mode);
+			int length = hSize << 8 | lSize;
 			
-			// Read API ID
-			int apiID = readByte();
-			APIFrameType apiType = APIFrameType.get(apiID);
+			// Read the payload.
+			byte[] payload = readBytes(inputStream, mode, length);
 			
-			// Parse API payload depending on API ID.
-			XBeePacket packet = null;
-			if (apiType == null) {
-				// Parse unknown packet.
-				// Read payload.
-				byte[] payload = readBytes(length - 1);
-				// Create packet.
-				packet = new UnknownXBeePacket(apiID, payload);
-			} else {
-				switch (apiType) {
-				case TX_64:
-					packet = parseTX64Packet();
-					break;
-				case TX_16:
-					packet = parseTX16Packet();
-					break;
-				case AT_COMMAND:
-					packet = parseATCommandPacket();
-					break;
-				case TRANSMIT_REQUEST:
-					packet = parseTransmitRequestPacket();
-					break;
-				case REMOTE_AT_COMMAND_REQUEST:
-					packet = parseRemoteATCommandRequestPacket();
-					break;
-				case RX_64:
-					packet = parseRX64Packet();
-					break;
-				case RX_16:
-					packet = parseRX16Packet();
-					break;
-				case RX_IO_64:
-					packet = parseRXIO64Packet();
-					break;
-				case RX_IO_16:
-					packet = parseRXIO16Packet();
-					break;
-				case AT_COMMAND_RESPONSE:
-					packet = parseATCommandResponsePacket();
-					break;
-				case REMOTE_AT_COMMAND_RESPONSE:
-					packet = parseRemoteATCommandResponsePacket();
-					break;
-				case TX_STATUS:
-					packet = parseTXStatusPacket();
-					break;
-				case TRANSMIT_STATUS:
-					packet = parseTransmitStatusPacket();
-					break;
-				case RECEIVE_PACKET:
-					packet = parseZigBeeReceivePacket();
-					break;
-				case IO_DATA_SAMPLE_RX_INDICATOR:
-					packet = parseIODataSampleRxIndicatorPacket();
-					break;
-				case GENERIC:
-				default:
-					packet = parseGenericPacket();
-				}
-			}
-			// Read single byte (checksum) which is automatically verified.
-			readByte();
-			return packet;
+			// Calculate the expected checksum.
+			XBeeChecksum checksum = new XBeeChecksum();
+			checksum.add(payload);
+			byte expectedChecksum = (byte)(checksum.generate() & 0xFF);
+			
+			// Read checksum from the input stream.
+			byte readChecksum = (byte)(readByte(inputStream, mode) & 0xFF);
+			
+			// Verify the checksum of the read bytes.
+			if (readChecksum != expectedChecksum)
+				throw new InvalidPacketException("Invalid checksum (expected 0x" 
+							+ HexUtils.byteToHexString(expectedChecksum) + ").");
+			
+			return parsePayload(payload);
+			
 		} catch (IOException e) {
 			throw new InvalidPacketException("Error parsing packet: " + e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * Parses the bytes from the given array depending on the provided operating
+	 * mode and returns the API packet.
+	 * 
+	 * <p>The operating mode must be {@see OperatingMode.API} or 
+	 * {@see OperatingMode.API_ESCAPE}.</p>
+	 * 
+	 * @param packetByteArray Byte array with the complete frame, starting from 
+	 *                        the header and ending in the checksum.
+	 * @param mode XBee device operating mode.
+	 * 
+	 * @return Parsed packet from the given byte array.
+	 * 
+	 * @throws InvalidPacketException if there is not enough data in the array or 
+	 *                                if there is an error verifying the checksum or
+	 *                                if the payload is invalid for the specified frame type.
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
+	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
+	 * @throws NullPointerException if {@code packetByteArray == null} or 
+	 *                              if {@code mode == null}.
+	 * 
+	 * @see XBeePacket
+	 * @see OperatingMode#API
+	 * @see OperatingMode#API_ESCAPE
+	 */
+	public XBeePacket parsePacket(byte[] packetByteArray, OperatingMode mode) throws InvalidPacketException {
+		if (packetByteArray == null)
+			throw new NullPointerException("Packet byte array cannot be null.");
+		
+		if (mode == null)
+			throw new NullPointerException("Operating mode cannot be null.");
+		
+		if (mode != OperatingMode.API && mode != OperatingMode.API_ESCAPE)
+			throw new IllegalArgumentException("Operating mode must be API or API Escaped.");
+		
+		// Check the byte array has at least 4 bytes.
+		if (packetByteArray.length < 4)
+			throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
+		
+		// Check the header of the frame.
+		if ((packetByteArray[0] & 0xFF) != SpecialByte.HEADER_BYTE.getValue())
+			throw new InvalidPacketException("Invalid start delimiter (expected 0x" 
+						+ HexUtils.byteToHexString((byte)SpecialByte.HEADER_BYTE.getValue()) + ").");
+		
+		return parsePacket(new ByteArrayInputStream(packetByteArray, 1, packetByteArray.length - 1), mode);
+	}
+	
+	/**
+	 * Parses the given API payload to get the right API packet, depending 
+	 * on its API type ({@code payload[0]}).
+	 * 
+	 * @param payload The payload of the API frame.
+	 * 
+	 * @return The corresponding API packet or {@code UnknownXBeePacket} if 
+	 *         the frame API type is unknown.
+	 *         
+	 * @throws InvalidPacketException if the payload is invalid for the 
+	 *                                specified frame type.
+	 * 
+	 * @see XBeePacket
+	 * @see APIFrameType
+	 */
+	private XBeePacket parsePayload(byte[] payload) throws InvalidPacketException {
+		// Get the API frame type.
+		APIFrameType apiType = APIFrameType.get(payload[0] & 0xFF);
+		
+		if (apiType == null)
+			// Create unknown packet.
+			return UnknownXBeePacket.createPacket(payload);
+		
+		// Parse API payload depending on API ID.
+		XBeePacket packet = null;
+		switch (apiType) {
+		case TX_64:
+			packet = TX64Packet.createPacket(payload);
+			break;
+		case TX_16:
+			packet = TX16Packet.createPacket(payload);
+			break;
+		case AT_COMMAND:
+			packet = ATCommandPacket.createPacket(payload);
+			break;
+		case TRANSMIT_REQUEST:
+			packet = TransmitPacket.createPacket(payload);
+			break;
+		case REMOTE_AT_COMMAND_REQUEST:
+			packet = RemoteATCommandPacket.createPacket(payload);
+			break;
+		case RX_64:
+			packet = RX64Packet.createPacket(payload);
+			break;
+		case RX_16:
+			packet = RX16Packet.createPacket(payload);
+			break;
+		case RX_IO_64:
+			packet = RX64IOPacket.createPacket(payload);
+			break;
+		case RX_IO_16:
+			packet = RX16IOPacket.createPacket(payload);
+			break;
+		case AT_COMMAND_RESPONSE:
+			packet = ATCommandResponsePacket.createPacket(payload);
+			break;
+		case TX_STATUS:
+			packet = TXStatusPacket.createPacket(payload);
+			break;
+		case TRANSMIT_STATUS:
+			packet = TransmitStatusPacket.createPacket(payload);
+			break;
+		case RECEIVE_PACKET:
+			packet = ReceivePacket.createPacket(payload);
+			break;
+		case IO_DATA_SAMPLE_RX_INDICATOR:
+			packet = IODataSampleRxIndicatorPacket.createPacket(payload);
+			break;
+		case REMOTE_AT_COMMAND_RESPONSE:
+			packet = RemoteATCommandResponsePacket.createPacket(payload);
+			break;
+		case GENERIC:
+		default:
+			packet = GenericXBeePacket.createPacket(payload);
+		}
+		return packet;
 	}
 	
 	/**
@@ -190,62 +324,49 @@ public class XBeePacketParser {
 	 * <p>This operation checks several things like the working mode in order 
 	 * to consider escaped bytes.</p>
 	 * 
+	 * @param inputStream Input stream to read bytes from.
+	 * @param mode XBee device working mode.
+	 * 
 	 * @return The read byte.
 	 * 
+	 * @throws InvalidPacketException if there is not enough data in the stream or 
+	 *                                if there is an error verifying the checksum.
 	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
 	 *                     if the input stream has been closed, or 
 	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
 	 */
-	private int readByte() throws IOException, InvalidPacketException {
-		// Give a bit of time to fill stream if read byte is -1.
-		long deadline = new Date().getTime() + 200;
-		int b = inputStream.read();
-		while (b == -1 && new Date().getTime() < deadline) {
-			b = inputStream.read();
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {}
-		}
+	private int readByte(InputStream inputStream, OperatingMode mode) throws InvalidPacketException, IOException {
+		int timeout = 300;
+		
+		int b = readByteFrom(inputStream, timeout);
+		
 		if (b == -1)
 			throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
-		if (mode == OperatingMode.API_ESCAPE) {
-			// Check if the byte is special.
-			if (SpecialByte.isSpecialByte(b)) {
-				// Check if the byte is ESCAPE
-				if (b == SpecialByte.ESCAPE_BYTE.getValue()) {
-					// Read next byte and unescape it.
-					// Give a bit of time to fill stream if read byte is -1.
-					deadline = new Date().getTime() + 200;
-					b = inputStream.read();
-					while (b == -1 && new Date().getTime() < deadline) {
-						b = inputStream.read();
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					}
-					if (b == -1)
-						throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
-					b ^= 0x20;
-				} else {
-					throw new InvalidPacketException("Expecting a " + SpecialByte.ESCAPE_BYTE.getValue() + ", but got " + b);
-					// This should NEVER occur!
-					// rebootTheMatrix();
-				}
-			}
-		}
-		// If length was already read add byte to read bytes and checksum computing.
-		if (lengthRead) {
-			checksum.add(b);
-			readBytes += 1;
-			// Check if packet is fully read.
-			if (readBytes >= length + 1) {
-				// Was checksum byte, verify it!
-				if (!checksum.validate())
-					throw new InvalidPacketException("Error verifying packet checksum.");
-			}
-		}
+		
+		/* Process the byte for API1. */
+		
+		if (mode == OperatingMode.API)
+			return b;
+		
+		/* Process the byte for API2. */
+		
+		// Check if the byte is special.
+		if (!SpecialByte.isSpecialByte(b))
+			return b;
+		
+		// Check if the byte is ESCAPE.
+		if (b == SpecialByte.ESCAPE_BYTE.getValue()) {
+			// Read next byte and escape it.
+			b = readByteFrom(inputStream, timeout);
+			
+			if (b == -1)
+				throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
+			
+			b ^= 0x20;
+		} else
+			// If the byte is not a escape there is a special byte not escaped.
+			throw new InvalidPacketException("Special byte not escaped: 0x" + HexUtils.byteToHexString((byte)(b & 0xFF)) + ".");
+		
 		return b;
 	}
 	
@@ -255,6 +376,8 @@ public class XBeePacketParser {
 	 * <p>This operation checks several things like the working mode in order 
 	 * to consider escaped bytes.</p>
 	 * 
+	 * @param inputStream Input stream to read bytes from.
+	 * @param mode XBee device working mode.
 	 * @param numBytes Number of bytes to read.
 	 * 
 	 * @return The read byte array.
@@ -265,410 +388,39 @@ public class XBeePacketParser {
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum.
 	 */
-	private byte[] readBytes(int numBytes) throws IOException, InvalidPacketException {
+	private byte[] readBytes(InputStream inputStream, OperatingMode mode, int numBytes) throws IOException, InvalidPacketException {
 		byte[] data = new byte[numBytes];
-		switch (mode) {
-		case API:
-			int numBytesRead = 0;
-			int currentRead = 0;
-			long deadline = new Date().getTime() + DEFAULT_TIMEOUT;
-			while (new Date().getTime() < deadline) {
-				currentRead =  inputStream.read(data, numBytesRead, numBytes - numBytesRead);
-				if (currentRead == -1)
-					throw new InvalidPacketException("Error parsing packet: Incomplete packet.");
-				numBytesRead = numBytesRead + currentRead;
-				if (numBytesRead < numBytes) {
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {}
-				} else
-					break;
-			}
-			if (numBytesRead < numBytes)
-				throw new InvalidPacketException("Not enough data in the stream.");
-			if (lengthRead) {
-				checksum.add(data);
-				readBytes += numBytes;
-				// Check if packet is fully read.
-				if (readBytes >= length + 1) {
-					// Was checksum byte, verify it!
-					if (!checksum.validate())
-						throw new InvalidPacketException("Error verifying packet checksum.");
-				}
-			}
-			break;
-		case API_ESCAPE:
-			for (int i = 0; i < numBytes; i++)
-				data[i] = (byte)readByte();
-			break;
-		default:
-			break;
-		}
+		
+		for (int i = 0; i < numBytes; i++)
+			data[i] = (byte)readByte(inputStream, mode);
+		
 		return data;
 	}
 	
 	/**
-	 * Reads an XBee 64 bit address from the input stream.
+	 * Reads a byte from the given input stream.
 	 * 
-	 * @return The read XBee 64 bit address, {@code null} if error.
+	 * @param inputStream The input stream to read the byte.
+	 * @param timeout Timeout to wait for a byte in the input stream 
+	 *                in milliseconds.
 	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
+	 * @return The read byte or {@code -1} if the timeout expires or the end
+	 *         of the stream is reached.
+	 * 
+	 * @throws IOException if an I/O errors occurs while reading the byte.
 	 */
-	private XBee64BitAddress readXBee64BitAddress() throws IOException, InvalidPacketException {
-		byte[] address = new byte[8];
-		for (int i = 0; i < 8; i++)
-			address[i] = (byte)readByte();
-		return new XBee64BitAddress(address);
-	}
-	
-	/**
-	 * Reads an XBee 16 bit address from the input stream.
-	 * 
-	 * @return The read XBee 16 bit address, {@code null} if error.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBee16BitAddress readXBee16BitAddress() throws IOException, InvalidPacketException {
-		int hsb = readByte();
-		int lsb = readByte();
-		return new XBee16BitAddress(hsb, lsb);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type Generic.
-	 * 
-	 * @return Parsed Generic packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseGenericPacket() throws IOException, InvalidPacketException {
-		byte[] commandData = null;
-		if (readBytes < length)
-			commandData = readBytes(length - readBytes);
-		return new GenericXBeePacket(commandData);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type TX (transmit) 16 
-	 * Request.
-	 * 
-	 * @return Parsed TX (transmit) 16 Request packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseTX16Packet() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		XBee16BitAddress destAddress16 = readXBee16BitAddress();
-		int transmitOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new TX16Packet(frameID, destAddress16, transmitOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type TX (transmit) 64 
-	 * Request.
-	 * 
-	 * @return Parsed TX (transmit) 64 Request packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseTX64Packet() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		XBee64BitAddress destAddress64 = readXBee64BitAddress();
-		int transmitOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new TX64Packet(frameID, destAddress64, transmitOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type AT Command.
-	 * 
-	 * @return Parsed AT Command packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, 
-	 *                     or if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseATCommandPacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		String command = new String(readBytes(2));
-		byte[] parameterData = null;
-		if (readBytes < length)
-			parameterData = readBytes(length - readBytes);
-		return new ATCommandPacket(frameID, command, parameterData);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type Transmit Request.
-	 * 
-	 * @return Parsed Transmit Request packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseTransmitRequestPacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		XBee64BitAddress destAddress64 = readXBee64BitAddress();
-		XBee16BitAddress destAddress16 = readXBee16BitAddress();
-		int broadcastRadius = readByte();
-		int options = readByte();
-		byte[] rfData = null;
-		if (readBytes < length)
-			rfData = readBytes(length - readBytes);
-		return new TransmitPacket(frameID, destAddress64, destAddress16, broadcastRadius, options, rfData);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type AT Command Response.
-	 * 
-	 * @return Parsed AT Command Response packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseATCommandResponsePacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		String command = new String(readBytes(2));
-		int status = readByte();
-		byte[] commandData = null;
-		if (readBytes < length)
-			commandData = readBytes(length - readBytes);
-		return new ATCommandResponsePacket(frameID, ATCommandStatus.get(status), command, commandData);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type TX status.
-	 * 
-	 * @return Parsed TX status packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseTXStatusPacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		int status = readByte();
-		return new TXStatusPacket(frameID, XBeeTransmitStatus.get(status));
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type Transmit Status.
-	 * 
-	 * @return Parsed Transmit Status packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseTransmitStatusPacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		XBee16BitAddress address = readXBee16BitAddress();
-		int retryCount = readByte();
-		int deliveryStatus = readByte();
-		int discoveryStatus = readByte();
-		return new TransmitStatusPacket(frameID, address, retryCount, XBeeTransmitStatus.get(deliveryStatus), XBeeDiscoveryStatus.get(discoveryStatus));
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type ZigBee Receive.
-	 * 
-	 * @return Parsed ZigBee Receive packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseZigBeeReceivePacket() throws IOException, InvalidPacketException {
-		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
-		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
-		int receiveOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new ReceivePacket(sourceAddress64, sourceAddress16, receiveOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type RX 16.
-	 * 
-	 * @return Parsed RX 16 packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseRX16Packet() throws IOException, InvalidPacketException {
-		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
-		int signalStrength = readByte();
-		int receiveOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new RX16Packet(sourceAddress16, signalStrength, receiveOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type RX 64.
-	 * 
-	 * @return Parsed RX 64 packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, or 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseRX64Packet() throws IOException, InvalidPacketException {
-		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
-		int signalStrength = readByte();
-		int receiveOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new RX64Packet(sourceAddress64, signalStrength, receiveOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type RX IO 64.
-	 * 
-	 * @return Parsed RX IO 64 packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseRXIO64Packet() throws IOException, InvalidPacketException {
-		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
-		int rssi = readByte();
-		int receiveOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new RX64IOPacket(sourceAddress64, rssi, receiveOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type RX IO 16.
-	 * 
-	 * @return Parsed RX IO 16 packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseRXIO16Packet() throws IOException, InvalidPacketException {
-		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
-		int rssi = readByte();
-		int receiveOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new RX16IOPacket(sourceAddress16, rssi, receiveOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type IO data sample RX indicator.
-	 * 
-	 * @return Parsed IO data sample RX indicator packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseIODataSampleRxIndicatorPacket() throws IOException, InvalidPacketException {
-		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
-		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
-		int receiveOptions = readByte();
-		byte[] data = null;
-		if (readBytes < length)
-			data = readBytes(length - readBytes);
-		return new IODataSampleRxIndicatorPacket(sourceAddress64, sourceAddress16, receiveOptions, data);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type Remote AT Command.
-	 * 
-	 * @return Parsed Remote AT Command packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseRemoteATCommandRequestPacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		XBee64BitAddress destAddress64 = readXBee64BitAddress();
-		XBee16BitAddress destAddress16 = readXBee16BitAddress();
-		int transmitOptions = readByte();
-		String command = new String(readBytes(2));
-		byte[] parameterData = null;
-		if (readBytes < length)
-			parameterData = readBytes(length - readBytes);
-		return new RemoteATCommandPacket(frameID, destAddress64, destAddress16, transmitOptions, command, parameterData);
-	}
-	
-	/**
-	 * Parses the input stream and returns a packet of type Remote AT Command.
-	 * 
-	 * @return Parsed Remote AT Command packet.
-	 * 
-	 * @throws IOException if the first byte cannot be read for any reason other than end of file, 
-	 *                     or if the input stream has been closed, or if some other I/O error occurs.
-	 * @throws InvalidPacketException if there is not enough data in the stream or 
-	 *                                if there is an error verifying the checksum.
-	 */
-	private XBeePacket parseRemoteATCommandResponsePacket() throws IOException, InvalidPacketException {
-		int frameID = readByte();
-		XBee64BitAddress sourceAddress64 = readXBee64BitAddress();
-		XBee16BitAddress sourceAddress16 = readXBee16BitAddress();
-		String command = new String(readBytes(2));
-		int status = readByte();
-		byte[] commandData = null;
-		if (readBytes < length)
-			commandData = readBytes(length - readBytes);
-		return new RemoteATCommandResponsePacket(frameID, sourceAddress64, sourceAddress16, command, ATCommandStatus.get(status), commandData);
+	private int readByteFrom(InputStream inputStream, int timeout) throws IOException {
+		long deadline = new Date().getTime() + timeout;
+		
+		int b = inputStream.read();
+		// Let's try again if the byte is -1.
+		while (b == -1 && new Date().getTime() < deadline) {
+			b = inputStream.read();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {}
+		}
+		
+		return b;
 	}
 }

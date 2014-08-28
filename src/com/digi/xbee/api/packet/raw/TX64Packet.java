@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.raw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -23,8 +24,20 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class represents a TX (Transmit) 64 Request packet. Packet is built 
+ * using the parameters of the constructor or providing a valid API payload.
+ * 
+ * <p>A TX Request message will cause the module to transmit data as an RF 
+ * Packet.</p>
+ * 
+ * @see XBeeAPIPacket
+ */
 public class TX64Packet extends XBeeAPIPacket {
 
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 11; // 1 (Frame type) + 1 (frame ID) + 8 (address) + 1 (transmit options)
+	
 	// Variables
 	private final int transmitOptions;
 	
@@ -34,6 +47,57 @@ public class TX64Packet extends XBeeAPIPacket {
 	
 	private Logger logger;
 	
+	/**
+	 * Creates an new {@code TX64Packet} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a TX64 Request packet ({@code 0x00}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed TX (transmit) 64 Request packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TX_64.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255} or
+	 *                                  if {@code transmitOptions < 0} or
+	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static TX64Packet createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("TX64 Request packet payload cannot be null.");
+		
+		// 1 (Frame type) + 1 (frame ID) + 8 (address) + 1 (transmit options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete TX64 Request packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.TX_64.getValue())
+			throw new IllegalArgumentException("Payload is not a TX64 Request packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 8 bytes of address, starting at 2nd byte.
+		XBee64BitAddress destAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// Transmit options byte.
+		int transmitOptions = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get data.
+		byte[] data = null;
+		if (index < payload.length)
+			data = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new TX64Packet(frameID, destAddress64, transmitOptions, data);
+	}
+
 	/**
 	 * Class constructor. Instances a new object of type {@code TX64Packet} with
 	 * the given parameters.

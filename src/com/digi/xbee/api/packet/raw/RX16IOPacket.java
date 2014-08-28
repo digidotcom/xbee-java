@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.raw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -26,8 +27,19 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class represents a RX16 Address IO packet. Packet is built using the 
+ * parameters of the constructor or providing a valid API payload.
+ * 
+ * <p>I/O data is sent out the UART using an API frame.</p>
+ * 
+ * @see XBeeAPIPacket
+ */
 public class RX16IOPacket extends XBeeAPIPacket {
 
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 5; // 1 (Frame type) + 2 (16-bit address) + 1 (RSSI) + 1 (receive options)
+	
 	// Variables
 	private final XBee16BitAddress sourceAddress;
 	
@@ -41,21 +53,75 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type Rx16IOPacket with
-	 * the given parameters.
+	 * Creates an new {@code RX16IOPacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a RX16 Address IO packet ({@code 0x83}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed RX16 Address IO packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_16.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code rssi < 0} or
+	 *                                  if {@code rssi > 100} or
+	 *                                  if {@code receiveOptions < 0} or
+	 *                                  if {@code receiveOptions > 255} or
+	 *                                  if {@code receivedData.length < 5}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static RX16IOPacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("RX16 Address IO packet payload cannot be null.");
+		
+		// 1 (Frame type) + 2 (16-bit address) + 1 (RSSI) + 1 (receive options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete RX16 Address IO packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.RX_IO_16.getValue())
+			throw new IllegalArgumentException("Payload is not a RX16 Address IO packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress sourceAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Received Signal Strength Indicator byte.
+		int rssi = payload[index] & 0xFF;
+		index = index + 1;
+				
+		// Received Signal Strength Indicator byte.
+		int receiveOptions = payload[index] & 0xFF;
+		index = index + 1;
+				
+		// Get data.
+		byte[] data = null;
+		if (index < payload.length)
+			data = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new RX16IOPacket(sourceAddress16, rssi, receiveOptions, data);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type {@code RX16IOPacket} 
+	 * with the given parameters.
 	 * 
 	 * @param sourceAddress 16-bit address of the sender.
 	 * @param rssi Received signal strength indicator.
 	 * @param receiveOptions Bitfield indicating the receive options.
 	 * @param receivedData Received RF data.
 	 * 
-	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255}.
+	 *                                  if {@code receiveOptions > 255} or
+	 *                                  if {@code receivedData.length < 5}.
+	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 * 
 	 * @see XBeeReceiveOptions
+	 * @see XBee16BitAddress
 	 */
 	public RX16IOPacket(XBee16BitAddress sourceAddress, int rssi, int receiveOptions, byte[] receivedData) {
 		super(APIFrameType.RX_IO_16);
@@ -118,6 +184,15 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	}
 	
 	/**
+	 * Retrieves the Received Signal Strength Indicator (RSSI).
+	 * 
+	 * @return The Received Signal Strength Indicator (RSSI).
+	 */
+	public int getRSSI() {
+		return rssi;
+	}
+	
+	/**
 	 * Retrieves the receive options bitfield.
 	 * 
 	 * @return Receive options bitfield.
@@ -131,8 +206,8 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	/**
 	 * Retrieves the IO sample corresponding to the data contained in the packet.
 	 * 
-	 * @return The IO sample of the packet, null if the packet has not any data or 
-	 *         if the sample could not be generated correctly.
+	 * @return The IO sample of the packet, {@code null} if the packet has not 
+	 *         any data or if the sample could not be generated correctly.
 	 * 
 	 * @see IOSample
 	 */

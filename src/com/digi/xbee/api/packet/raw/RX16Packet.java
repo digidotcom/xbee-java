@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.raw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -24,8 +25,24 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class represents a RX (Receive) 16 Request packet. Packet is built 
+ * using the parameters of the constructor or providing a valid API payload.
+ * 
+ * <p>When the module receives an RF packet, it is sent out the UART using this 
+ * message type</p>
+ * 
+ * <p>This packet is the response to TX (transmit) 16 Request packets.</p>
+ * 
+ * @see TX16Packet
+ * @see XBeeAPIPacket
+ *
+ */
 public class RX16Packet extends XBeeAPIPacket {
 
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 5; // 1 (Frame type) + 2 (16-bit address) + 1 (signal strength) + 1 (receive options)
+	
 	// Variables
 	private final XBee16BitAddress sourceAddress;
 	
@@ -35,6 +52,57 @@ public class RX16Packet extends XBeeAPIPacket {
 	private byte[] receivedData;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code RX16Packet} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a RX16 packet ({@code 0x81}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed RX 16 packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_16.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code rssi < 0} or
+	 *                                  if {@code rssi > 100} or
+	 *                                  if {@code receiveOptions < 0} or
+	 *                                  if {@code receiveOptions > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static RX16Packet createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("RX16 packet payload cannot be null.");
+		
+		// 1 (Frame type) + 2 (16-bit address) + 1 (signal strength) + 1 (receive options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete RX16 packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.RX_16.getValue())
+			throw new IllegalArgumentException("Payload is not a RX16 packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress sourceAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Signal strength byte.
+		int signalStrength = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Receive options byte.
+		int receiveOptions = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get data.
+		byte[] data = null;
+		if (index < payload.length)
+			data = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new RX16Packet(sourceAddress16, signalStrength, receiveOptions, data);
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type {@code RX16Packet} with
@@ -108,6 +176,15 @@ public class RX16Packet extends XBeeAPIPacket {
 	 */
 	public XBee16BitAddress getSourceAddress() {
 		return sourceAddress;
+	}
+	
+	/**
+	 * Retrieves the Received Signal Strength Indicator (RSSI).
+	 * 
+	 * @return The Received Signal Strength Indicator (RSSI).
+	 */
+	public int getRSSI() {
+		return rssi;
 	}
 	
 	/**

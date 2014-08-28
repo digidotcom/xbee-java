@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * This class represents a Receive Packet. Packet is built using the parameters
- * of the constructor.
+ * of the constructor or providing a valid API payload.
  * 
  * <p>When the module receives an RF packet, it is sent out the UART using this 
  * message type.</p>
@@ -43,6 +44,9 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public class ReceivePacket extends XBeeAPIPacket {
 
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 12; // 1 (Frame type) + 8 (32-bit address) + 2 (16-bit address) + 1 (receive options)
+	
 	// Variables
 	private final XBee64BitAddress sourceAddress64;
 	
@@ -54,6 +58,55 @@ public class ReceivePacket extends XBeeAPIPacket {
 	
 	private Logger logger;
 
+	/**
+	 * Creates an new {@code ReceivePacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a Receive packet ({@code 0x90}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed ZigBee Receive packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RECEIVE_PACKET.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code receiveOptions < 0} or
+	 *                                  if {@code receiveOptions > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static ReceivePacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Receive packet payload cannot be null.");
+		
+		// 1 (Frame type) + 8 (32-bit address) + 2 (16-bit address) + 1 (receive options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Receive packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.RECEIVE_PACKET.getValue())
+			throw new IllegalArgumentException("Payload is not a Receive packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// 2 bytes of 16-bit address.
+		XBee64BitAddress sourceAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress sourceAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Receive options
+		int receiveOptions = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get data.
+		byte[] data = null;
+		if (index < payload.length)
+			data = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new ReceivePacket(sourceAddress64, sourceAddress16, receiveOptions, data);
+	}
+	
 	/**
 	 * Class constructor. Instances a new object of type {@code ReceivePacket}
 	 * with the given parameters.
@@ -67,7 +120,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress64 == null} or 
 	 *                              if {@code sourceAddress16 == null}.
-	 *                              
+	 * 
 	 * @see XBee64BitAddress
 	 * @see XBee16BitAddress 
 	 * @see XBeeReceiveOptions

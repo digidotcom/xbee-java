@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * This class represents a Transmit Packet. Packet is built using the parameters 
- * of the constructor.
+ * of the constructor or providing a valid API payload.
  * 
  * <p>A Transmit Request API frame causes the module to send data as an RF 
  * packet to the specified destination.</p>
@@ -70,7 +71,10 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public class TransmitPacket extends XBeeAPIPacket {
 
-	// Variables		
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 14; // 1 (Frame type) + 1 (frame ID) + 8 (64-bit address) + 2 (16-bit address) + 1 (broadcast radious) + 1 (options)
+	
+	// Variables
 	private final XBee64BitAddress destAddress64;
 	
 	private final XBee16BitAddress destAddress16;
@@ -81,6 +85,67 @@ public class TransmitPacket extends XBeeAPIPacket {
 	private byte[] rfData;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code TransmitPacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a Transmit packet ({@code 0x10}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Transmit Request packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TRANSMIT_REQUEST.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255} or
+	 *                                  if {@code broadcastRadius < 0} or
+	 *                                  if {@code broadcastRadius > 255} or
+	 *                                  if {@code transmitOptions < 0} or
+	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static TransmitPacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Transmit packet payload cannot be null.");
+		
+		// 1 (Frame type) + 1 (frame ID) + 8 (64-bit address) + 2 (16-bit address) + 1 (broadcast radious) + 1 (options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Transmit packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.TRANSMIT_REQUEST.getValue())
+			throw new IllegalArgumentException("Payload is not a Transmit packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 8 bytes of 64-bit address.
+		XBee64BitAddress destAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress destAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Broadcast radious byte.
+		int broadcastRadius = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Options byte.
+		int options = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get RF data.
+		byte[] rfData = null;
+		if (index < payload.length)
+			rfData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new TransmitPacket(frameID, destAddress64, destAddress16, broadcastRadius, options, rfData);
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type {@code TransmitPacket} 
@@ -161,9 +226,9 @@ public class TransmitPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64 bit destination address.
+	 * Retrieves the 64-bit destination address.
 	 * 
-	 * @return The 64 bit destination address.
+	 * @return The 64-bit destination address.
 	 * 
 	 * @see XBee64BitAddress
 	 */
@@ -172,9 +237,9 @@ public class TransmitPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16 bit destination address.
+	 * Retrieves the 16-bit destination address.
 	 * 
-	 * @return The 16 bit destination address.
+	 * @return The 16-bit destination address.
 	 * 
 	 * @see XBee16BitAddress
 	 */

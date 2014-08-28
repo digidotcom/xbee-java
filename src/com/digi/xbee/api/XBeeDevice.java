@@ -85,7 +85,7 @@ public class XBeeDevice {
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
 	
-	private Logger logger;
+	protected Logger logger;
 	
 	private XBeeDevice localXBeeDevice;
 	
@@ -165,9 +165,9 @@ public class XBeeDevice {
 			throw new NullPointerException("ConnectionInterface cannot be null.");
 		
 		this.connectionInterface = connectionInterface;
-		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
+		this.logger = LoggerFactory.getLogger(this.getClass());
 		logger.debug(toString() + "Using the connection interface {}.", 
-				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
+				connectionInterface.getClass().getSimpleName());
 	}
 	
 	/**
@@ -196,9 +196,9 @@ public class XBeeDevice {
 		this.localXBeeDevice = localXBeeDevice;
 		this.connectionInterface = localXBeeDevice.getConnectionInterface();
 		this.xbee64BitAddress = xbee64BitAddress;
-		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
+		this.logger = LoggerFactory.getLogger(this.getClass());
 		logger.debug(toString() + "Using the connection interface {}.", 
-				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
+				connectionInterface.getClass().getSimpleName());
 	}
 	
 	/**

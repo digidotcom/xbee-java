@@ -383,12 +383,16 @@ public class DataReader extends Thread {
 						 */
 						@Override
 						public void run() {
-							if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
-								listener.packetReceived(packet);
-							else if (((XBeeAPIPacket)packet).needsAPIFrameID() && 
-									((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
-								listener.packetReceived(packet);
-								removeListeners.add(listener);
+							// Synchronize the listener so it is not called 
+							// twice. That is, let the listener to finish its job.
+							synchronized (listener) {
+								if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
+									listener.packetReceived(packet);
+								else if (((XBeeAPIPacket)packet).needsAPIFrameID() && 
+										((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
+									listener.packetReceived(packet);
+									removeListeners.add(listener);
+								}
 							}
 						}
 					});

@@ -226,7 +226,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
 		if (parameter != null) {
 			if (ATStringCommands.get(command) != null)
-				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + new String(parameter));
+				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + " (" + new String(parameter) + ")");
 			else
 				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)));
 		}

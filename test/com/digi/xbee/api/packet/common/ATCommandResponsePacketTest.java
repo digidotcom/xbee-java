@@ -11,10 +11,11 @@
  */
 package com.digi.xbee.api.packet.common;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+
+import static org.junit.Assert.assertThat;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -165,7 +166,7 @@ public class ATCommandResponsePacketTest {
 		byte[] atCommand = "NI".getBytes();
 		int status = ATCommandStatus.OK.getId();
 		
-		byte[] payload = new byte[2 + atCommand.length];
+		byte[] payload = new byte[3 + atCommand.length];
 		payload[0] = (byte)frameType;
 		payload[1] = (byte)frameID;
 		System.arraycopy(atCommand, 0, payload, 2, atCommand.length);

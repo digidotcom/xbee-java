@@ -11,10 +11,11 @@
  */
 package com.digi.xbee.api.packet;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;

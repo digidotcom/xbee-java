@@ -127,7 +127,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		super(APIFrameType.AT_COMMAND);
 		
 		if (command == null)
-			throw new NullPointerException("Command cannot be null.");
+			throw new NullPointerException("AT command cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		

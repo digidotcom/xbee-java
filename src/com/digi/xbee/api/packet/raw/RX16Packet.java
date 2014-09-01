@@ -44,12 +44,12 @@ public class RX16Packet extends XBeeAPIPacket {
 	private static final int MIN_API_PAYLOAD_LENGTH = 5; // 1 (Frame type) + 2 (16-bit address) + 1 (signal strength) + 1 (receive options)
 	
 	// Variables
-	private final XBee16BitAddress sourceAddress;
+	private final XBee16BitAddress sourceAddress16;
 	
 	private final int rssi;
 	private final int receiveOptions;
 	
-	private byte[] receivedData;
+	private byte[] rfData;
 	
 	private Logger logger;
 	
@@ -108,34 +108,34 @@ public class RX16Packet extends XBeeAPIPacket {
 	 * Class constructor. Instances a new object of type {@code RX16Packet} with
 	 * the given parameters.
 	 * 
-	 * @param sourceAddress 16-bit address of the sender.
+	 * @param sourceAddress16 16-bit address of the sender.
 	 * @param rssi Received signal strength indicator.
 	 * @param receiveOptions Bitfield indicating the receive options.
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 * 
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255}.
-	 * @throws NullPointerException if {@code sourceAddress == null}.
+	 * @throws NullPointerException if {@code sourceAddress16 == null}.
 	 * 
 	 * @see XBeeReceiveOptions
 	 * @see XBee16BitAddress
 	 */
-	public RX16Packet(XBee16BitAddress sourceAddress, int rssi, int receiveOptions, byte[] receivedData) {
+	public RX16Packet(XBee16BitAddress sourceAddress16, int rssi, int receiveOptions, byte[] rfData) {
 		super(APIFrameType.RX_16);
 		
-		if (sourceAddress == null)
-			throw new NullPointerException("Source address cannot be null.");
+		if (sourceAddress16 == null)
+			throw new NullPointerException("16-bit source address cannot be null.");
 		if (rssi < 0 || rssi > 100)
 			throw new IllegalArgumentException("RSSI value must be between 0 and 100.");
 		if (receiveOptions < 0 || receiveOptions > 255)
 			throw new IllegalArgumentException("Receive options value must be between 0 and 255.");
 		
-		this.sourceAddress = sourceAddress;
+		this.sourceAddress16 = sourceAddress16;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		this.receivedData = receivedData;
+		this.rfData = rfData;
 		this.logger = LoggerFactory.getLogger(RX16Packet.class);
 	}
 	
@@ -147,11 +147,11 @@ public class RX16Packet extends XBeeAPIPacket {
 	public byte[] getAPIData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(sourceAddress.getValue());
+			os.write(sourceAddress16.getValue());
 			os.write(rssi);
 			os.write(receiveOptions);
-			if (receivedData != null)
-				os.write(receivedData);
+			if (rfData != null)
+				os.write(rfData);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -174,8 +174,8 @@ public class RX16Packet extends XBeeAPIPacket {
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress getSourceAddress() {
-		return sourceAddress;
+	public XBee16BitAddress get16bitSourceAddress() {
+		return sourceAddress16;
 	}
 	
 	/**
@@ -201,10 +201,10 @@ public class RX16Packet extends XBeeAPIPacket {
 	/**
 	 * Sets the received RF data.
 	 * 
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 */
-	public void setReceivedData (byte[] receivedData) {
-		this.receivedData = receivedData;
+	public void setRFData(byte[] rfData) {
+		this.rfData = rfData;
 	}
 	
 	/**
@@ -212,8 +212,8 @@ public class RX16Packet extends XBeeAPIPacket {
 	 * 
 	 * @return Received RF data.
 	 */
-	public byte[] getReceivedData () {
-		return receivedData;
+	public byte[] getRFData() {
+		return rfData;
 	}
 	
 	/*
@@ -223,11 +223,11 @@ public class RX16Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress.toString()));
+		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("RSSI", HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1)));
 		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
-		if (receivedData != null)
-			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(receivedData)));
+		if (rfData != null)
+			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
 		return parameters;
 	}
 }

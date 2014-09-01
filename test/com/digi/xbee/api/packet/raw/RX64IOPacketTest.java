@@ -202,10 +202,10 @@ public class RX64IOPacketTest {
 		
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned source 64-bit address is not the expected one", packet.getSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
 		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
-		assertThat("Returned Received Data is not the expected one", packet.getReceivedData(), is(nullValue()));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(nullValue()));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -237,10 +237,10 @@ public class RX64IOPacketTest {
 		
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned source 64-bit address is not the expected one", packet.getSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
 		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
-		assertThat("Returned Received Data is not the expected one", packet.getReceivedData(), is(equalTo(data)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}

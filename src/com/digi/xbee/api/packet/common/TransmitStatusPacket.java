@@ -182,13 +182,13 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16 bit destination address. 
+	 * Retrieves the 16-bit destination address. 
 	 * 
-	 * @return The 16 bit destination address.
+	 * @return The 16-bit destination address.
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress get16BitDestinationAddress() {
+	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	

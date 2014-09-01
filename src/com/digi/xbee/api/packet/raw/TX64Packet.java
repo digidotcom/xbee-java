@@ -105,7 +105,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @param frameID Frame ID.
 	 * @param destAddress64 64-bit address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options.
-	 * @param data RF Data that is sent to the destination device.
+	 * @param rfData RF Data that is sent to the destination device.
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
@@ -120,7 +120,7 @@ public class TX64Packet extends XBeeAPIPacket {
 		super(APIFrameType.TX_64);
 		
 		if (destAddress64 == null)
-			throw new NullPointerException("Destination address cannot be null.");
+			throw new NullPointerException("64-bit destination address cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		if (transmitOptions < 0 || transmitOptions > 255)
@@ -162,13 +162,13 @@ public class TX64Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64 bit destination address.
+	 * Retrieves the 64-bit destination address.
 	 * 
-	 * @return The 64 bit destination address.
+	 * @return The 64-bit destination address.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public XBee64BitAddress get64BitDestinationAddress() {
+	public XBee64BitAddress get64bitDestinationAddress() {
 		return destAddress64;
 	}
 	
@@ -186,7 +186,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	/**
 	 * Sets the RF data to send.
 	 * 
-	 * @param data RF Data to send.
+	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
 		this.rfData = rfData;

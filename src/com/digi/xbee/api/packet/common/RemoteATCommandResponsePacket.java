@@ -201,9 +201,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64 bit source address. 
+	 * Retrieves the 64-bit source address. 
 	 * 
-	 * @return The 64 bit source address.
+	 * @return The 64-bit source address.
 	 * 
 	 * @see XBee64BitAddress
 	 */
@@ -212,9 +212,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16 bit source address.
+	 * Retrieves the 16-bit source address.
 	 * 
-	 * @return The 16 bit source address.
+	 * @return The 16-bit source address.
 	 * 
 	 * @see XBee16BitAddress
 	 */

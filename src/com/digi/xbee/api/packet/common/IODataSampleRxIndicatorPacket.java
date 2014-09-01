@@ -57,7 +57,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	
 	private final int receiveOptions;
 	
-	private byte[] receivedData;
+	private byte[] rfData;
 	
 	private Logger logger;
 	
@@ -75,7 +75,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}}} or
 	 *                                  if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255} or 
-	 *                                  if {@code receivedData.length < 5}.
+	 *                                  if {@code rfData.length < 5}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static IODataSampleRxIndicatorPacket createPacket(byte[] payload) {
@@ -119,11 +119,11 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 * @param sourceAddress64 64-bit address of the sender.
 	 * @param sourceAddress16 16-bit address of the sender.
 	 * @param receiveOptions Receive options.
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 * 
 	 * @throws IllegalArgumentException if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255} or
-	 *                                  if {@code receivedData.length < 5}.
+	 *                                  if {@code rfData.length < 5}.
 	 * @throws NullPointerException if {@code sourceAddress64 == null} or 
 	 *                              if {@code sourceAddress16 == null}.
 	 * 
@@ -131,7 +131,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 * @see XBee16BitAddress 
 	 * @see XBeeReceiveOptions
 	 */
-	public IODataSampleRxIndicatorPacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, int receiveOptions, byte[] receivedData) {
+	public IODataSampleRxIndicatorPacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, int receiveOptions, byte[] rfData) {
 		super(APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR);
 		
 		if (sourceAddress64 == null)
@@ -144,9 +144,9 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.sourceAddress16 = sourceAddress16;
 		this.receiveOptions = receiveOptions;
-		this.receivedData = receivedData;
-		if (receivedData != null)
-			ioSample = new IOSample(receivedData);
+		this.rfData = rfData;
+		if (rfData != null)
+			ioSample = new IOSample(rfData);
 		else
 			ioSample = null;
 		this.logger = LoggerFactory.getLogger(RX64Packet.class);
@@ -163,8 +163,8 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 			os.write(sourceAddress64.getValue());
 			os.write(sourceAddress16.getValue());
 			os.write(receiveOptions);
-			if (receivedData != null)
-				os.write(receivedData);
+			if (rfData != null)
+				os.write(rfData);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -228,10 +228,10 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	/**
 	 * Sets the received RF data.
 	 * 
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 */
-	public void setReceivedData (byte[] receivedData) {
-		this.receivedData = receivedData;
+	public void setRFData(byte[] rfData) {
+		this.rfData = rfData;
 	}
 	
 	/**
@@ -239,8 +239,8 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Received RF data.
 	 */
-	public byte[] getReceivedData () {
-		return receivedData;
+	public byte[] getRFData() {
+		return rfData;
 	}
 	
 	/*
@@ -269,8 +269,8 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 				try {
 					parameters.put("Power supply value", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getPowerSupplyValue(), 2)));
 				} catch (OperationNotSupportedException e) { }
-		} else if (receivedData != null)
-			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(receivedData)));
+		} else if (rfData != null)
+			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
 		return parameters;
 	}
 }

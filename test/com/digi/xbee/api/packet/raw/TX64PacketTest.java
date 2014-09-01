@@ -176,7 +176,7 @@ public class TX64PacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64BitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
 		assertThat("Returned transmit options is not the expected one", packet.getTransmitOptions(), is(equalTo(options)));
 		assertThat("Returned RF Data is not the expected one", packet.getRFData(), is(nullValue()));
 		
@@ -211,7 +211,7 @@ public class TX64PacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64BitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
 		assertThat("Returned transmit options is not the expected one", packet.getTransmitOptions(), is(equalTo(options)));
 		assertThat("Returned RF Data is not the expected one", packet.getRFData(), is(equalTo(data)));
 		

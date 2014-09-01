@@ -176,10 +176,10 @@ public class ReceivePacketTest {
 		
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitAddress(), is(equalTo(source64Addr)));
-		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
-		assertThat("Returned Received Data is not the expected one", packet.getReceivedData(), is(nullValue()));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(nullValue()));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -211,10 +211,10 @@ public class ReceivePacketTest {
 		
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitAddress(), is(equalTo(source64Addr)));
-		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
-		assertThat("Returned Received Data is not the expected one", packet.getReceivedData(), is(equalTo(data)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}

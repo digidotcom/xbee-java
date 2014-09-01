@@ -253,7 +253,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public XBee64BitAddress get64bitAddress() {
+	public XBee64BitAddress get64bitDestinationAddress() {
 		return destAddress64;
 	}
 	
@@ -264,7 +264,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress get16bitAddress() {
+	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	

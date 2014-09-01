@@ -187,7 +187,7 @@ public class TransmitStatusPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16BitDestinationAddress(), is(equalTo(address)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(address)));
 		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
 		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(deliveryStatus)));
 		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus().getId(), is(equalTo(discoveryStatus)));

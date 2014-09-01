@@ -103,7 +103,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.
-	 * @param destAddress 16-bit address of the destination device.
+	 * @param destAddress16 16-bit address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options. See {@link com.digi.xbee.api.models.api.XBeeTransmitOptions}.
 	 * @param rfData RF Data that is sent to the destination device.
 	 * 
@@ -116,18 +116,18 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * @see XBeeTransmitOptions
 	 * @see XBee16BitAddress
 	 */
-	public TX16Packet(int frameID, XBee16BitAddress destAddress, int transmitOptions, byte[] rfData) {
+	public TX16Packet(int frameID, XBee16BitAddress destAddress16, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TX_16);
 		
-		if (destAddress == null)
-			throw new NullPointerException("Destination address cannot be null.");
+		if (destAddress16 == null)
+			throw new NullPointerException("16-bit destination address cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		if (transmitOptions < 0 || transmitOptions > 255)
 			throw new IllegalArgumentException("Transmit options must be between 0 and 255.");
 		
 		this.frameID = frameID;
-		this.destAddress16 = destAddress;
+		this.destAddress16 = destAddress16;
 		this.transmitOptions = transmitOptions;
 		this.rfData = rfData;
 		this.logger = LoggerFactory.getLogger(TX16Packet.class);
@@ -162,13 +162,13 @@ public class TX16Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16 bit destination address.
+	 * Retrieves the 16-bit destination address.
 	 * 
-	 * @return The 16 bit destination address.
+	 * @return The 16-bit destination address.
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress get16BitDestinationAddress() {
+	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	
@@ -188,7 +188,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * 
 	 * @param data RF Data to send.
 	 */
-	public void setData(byte[] rfData) {
+	public void setRFData(byte[] rfData) {
 		this.rfData = rfData;
 	}
 	

@@ -191,8 +191,8 @@ public class RemoteATCommandPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitAddress(), is(equalTo(dest64Addr)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
 		assertThat("Returned transmit options is not the expected one", packet.getTransmitOptions(), is(equalTo(options)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(cmd)));
 		assertThat("Returned Parameter Data is not the expected one", packet.getParameter(), is(nullValue()));
@@ -232,8 +232,8 @@ public class RemoteATCommandPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitAddress(), is(equalTo(dest64Addr)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
 		assertThat("Returned transmit options is not the expected one", packet.getTransmitOptions(), is(equalTo(options)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(cmd)));
 		assertThat("Returned Parameter Data is not the expected one", packet.getParameter(), is(equalTo(data)));

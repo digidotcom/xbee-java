@@ -54,7 +54,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	
 	private final int receiveOptions;
 	
-	private byte[] receivedData;
+	private byte[] rfData;
 	
 	private Logger logger;
 
@@ -114,7 +114,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	 * @param sourceAddress64 64-bit address of the sender.
 	 * @param sourceAddress16 16-bit address of the sender.
 	 * @param receiveOptions Bitfield indicating the receive options.
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 * 
 	 * @throws IllegalArgumentException if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255}.
@@ -125,7 +125,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	 * @see XBee16BitAddress 
 	 * @see XBeeReceiveOptions
 	 */
-	public ReceivePacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, int receiveOptions, byte[] receivedData){
+	public ReceivePacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, int receiveOptions, byte[] rfData){
 		super(APIFrameType.RECEIVE_PACKET);
 		
 		if (sourceAddress64 == null)
@@ -138,7 +138,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.sourceAddress16 = sourceAddress16;
 		this.receiveOptions = receiveOptions;
-		this.receivedData = receivedData;
+		this.rfData = rfData;
 		this.logger = LoggerFactory.getLogger(ReceivePacket.class);
 	}
 
@@ -153,8 +153,8 @@ public class ReceivePacket extends XBeeAPIPacket {
 			data.write(sourceAddress64.getValue());
 			data.write(sourceAddress16.getValue());
 			data.write(receiveOptions);
-			if (receivedData != null)
-				data.write(receivedData);
+			if (rfData != null)
+				data.write(rfData);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -171,24 +171,24 @@ public class ReceivePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64 bit sender/source address. 
+	 * Retrieves the 64-bit sender/source address. 
 	 * 
-	 * @return The 64 bit sender/source address.
+	 * @return The 64-bit sender/source address.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public XBee64BitAddress get64bitAddress() {
+	public XBee64BitAddress get64bitSourceAddress() {
 		return sourceAddress64;
 	}
 	
 	/**
-	 * Retrieves the 16 bit sender/source address.
+	 * Retrieves the 16-bit sender/source address.
 	 * 
-	 * @return The 16 bit sender/source address.
+	 * @return The 16-bit sender/source address.
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress get16bitAddress() {
+	public XBee16BitAddress get16bitSourceAddress() {
 		return sourceAddress16;
 	}
 	
@@ -206,10 +206,10 @@ public class ReceivePacket extends XBeeAPIPacket {
 	/**
 	 * Sets the received RF data.
 	 * 
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 */
-	public void setReceivedData(byte[] receivedData) {
-		this.receivedData = receivedData;
+	public void setRFData(byte[] rfData) {
+		this.rfData = rfData;
 	}
 	
 	/**
@@ -217,8 +217,8 @@ public class ReceivePacket extends XBeeAPIPacket {
 	 * 
 	 * @return Received RF data.
 	 */
-	public byte[] getReceivedData() {
-		return receivedData;
+	public byte[] getRFData() {
+		return rfData;
 	}
 	
 	/*
@@ -231,8 +231,8 @@ public class ReceivePacket extends XBeeAPIPacket {
 		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
 		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("Receive options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
-		if (receivedData != null)
-			parameters.put("Received data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(receivedData)));
+		if (rfData != null)
+			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
 		return parameters;
 	}
 }

@@ -13,8 +13,18 @@ package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
+import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
+import com.digi.xbee.api.models.XBeeTransmitOptions;
+import com.digi.xbee.api.packet.XBeePacket;
+import com.digi.xbee.api.packet.raw.TX16Packet;
+import com.digi.xbee.api.packet.raw.TX64Packet;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class Raw802Device extends XBeeDevice {
 
@@ -113,5 +123,147 @@ public class Raw802Device extends XBeeDevice {
 	@Override
 	public XBeeProtocol getXBeeProtocol() {
 		return XBeeProtocol.RAW_802_15_4;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendSerialDataAsync(com.digi.xbee.api.models.XBee64BitAddress, byte[])
+	 */
+	@Override
+	public void sendSerialDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
+		// Verify the parameters are not null, if they are null, throw an exception.
+		if (address == null)
+			throw new NullPointerException("Address cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
+		
+		logger.info(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
+		
+		XBeePacket xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
+		sendAndCheckXBeePacket(xbeePacket, true);
+	}
+	
+	/**
+	 * Sends the provided data to the XBee device of the network corresponding 
+	 * to the given 16-bit address asynchronously.
+	 * 
+	 * <p>Asynchronous transmissions do not wait for answer from the remote 
+	 * device or for transmit status packet</p>
+	 * 
+	 * @param address The 16-bit address of the XBee that will receive the data.
+	 * @param data Byte array containing data to be sent.
+	 * 
+	 * @throws XBeeException if there is any XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code address == null} or 
+	 *                              if {@code data == null}.
+	 * 
+	 * @see XBee16BitAddress
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
+	 * @see #sendSerialData(XBee16BitAddress, byte[])
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
+	 */
+	public void sendSerialDataAsync(XBee16BitAddress address, byte[] data) throws XBeeException {
+		// Verify the parameters are not null, if they are null, throw an exception.
+		if (address == null)
+			throw new NullPointerException("Address cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
+		
+		logger.info(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
+		
+		XBeePacket xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
+		sendAndCheckXBeePacket(xbeePacket, true);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendSerialData(com.digi.xbee.api.models.XBee64BitAddress, byte[])
+	 */
+	public void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
+		// Verify the parameters are not null, if they are null, throw an exception.
+		if (address == null)
+			throw new NullPointerException("Address cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
+		
+		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
+		
+		XBeePacket xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
+		sendAndCheckXBeePacket(xbeePacket, false);
+	}
+	
+	/**
+	 * Sends the provided data to the XBee device of the network corresponding 
+	 * to the given 16-bit address.
+	 * 
+	 * <p>This method blocks till a success or error response arrives or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations use the method 
+	 * {@link #sendSerialData(XBee16BitAddress, byte[])}.</p>
+	 * 
+	 * @param address The 16-bit address of the XBee that will receive the data.
+	 * @param data Byte array containing data to be sent.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code address == null} or 
+	 *                              if {@code data == null}.
+	 * 
+	 * @see XBee16BitAddress
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #sendSerialData(XBee64BitAddress, byte[])
+	 * @see #sendSerialData(XBeeDevice, byte[])
+	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
+	 */
+	public void sendSerialData(XBee16BitAddress address, byte[] data) throws TimeoutException, XBeeException {
+		// Verify the parameters are not null, if they are null, throw an exception.
+		if (address == null)
+			throw new NullPointerException("Address cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
+		
+		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
+		
+		XBeePacket xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
+		sendAndCheckXBeePacket(xbeePacket, false);
 	}
 }

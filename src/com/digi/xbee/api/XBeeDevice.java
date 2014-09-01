@@ -48,13 +48,10 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
-import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
-import com.digi.xbee.api.packet.raw.RX16IOPacket;
-import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
@@ -86,12 +83,6 @@ public class XBeeDevice {
 	protected Logger logger;
 	
 	private XBeeDevice localXBeeDevice;
-	
-	private Object ioLock = new Object();
-	
-	private boolean ioPacketReceived = false;
-	
-	private byte[] ioPacketPayload;
 	
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
@@ -1498,43 +1489,8 @@ public class XBeeDevice {
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
-		// Check IO line.
-		if (ioLine == null)
-			throw new NullPointerException("IO line cannot be null.");
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		IOSample ioSample;
-		byte[] samplePayload = null;
-		
-		// If the protocol is 802.15.4 we need to receive an Rx16 or Rx64 IO packet
-		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
-			samplePayload = receiveIOPacket();
-			if (samplePayload == null)
-				throw new TimeoutException("Timeout waiting for the IO response packet.");
-		} else
-			samplePayload = response.getResponse();
-		
-		// Try to build an IO Sample from the sample payload.
-		try {
-			ioSample = new IOSample(samplePayload);
-		} catch (IllegalArgumentException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		} catch (NullPointerException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		}
+		// Obtain an IO Sample from the XBee device.
+		IOSample ioSample = getIOSample(ioLine);
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
@@ -1676,40 +1632,9 @@ public class XBeeDevice {
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		IOSample ioSample;
-		byte[] samplePayload = null;
-		
-		// If the protocol is 802.15.4 we need to receive an Rx16 or Rx64 IO packet
-		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
-			samplePayload = receiveIOPacket();
-			if (samplePayload == null)
-				throw new TimeoutException("Timeout waiting for the IO response packet.");
-		} else
-			samplePayload = response.getResponse();
-		
-		// Try to build an IO Sample from the sample payload.
-		try {
-			ioSample = new IOSample(samplePayload);
-		} catch (IllegalArgumentException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		} catch (NullPointerException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		}
+		// Obtain an IO Sample from the XBee device.
+		IOSample ioSample = getIOSample(ioLine);
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
@@ -1728,7 +1653,7 @@ public class XBeeDevice {
 	 * @throws ATCommandException if {@code response == null} or 
 	 *                            if {@code response.getResponseStatus() != ATCommandStatus.OK}.
 	 */
-	private void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
+	protected void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
 		if (response == null || response.getResponseStatus() == null)
 			throw new ATCommandException(null);
 		else if (response.getResponseStatus() != ATCommandStatus.OK)
@@ -1736,67 +1661,46 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the latest IO packet and returns its value.
+	 * Retrieves an IO sample from the XBee device containing the value of the 
+	 * provided IO line.
 	 * 
-	 * @return The value of the latest received IO packet. 
+	 * @param ioLine The IO line to obtain its associated IO sample.
+	 * @return An IO sample containing the value of the provided IO line.
+	 * 
+	 * @throws TimeoutException if there is a timeout getting the IO sample.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
+	 * @see IOSample
+	 * @see IOLine
 	 */
-	private byte[] receiveIOPacket() {
-		ioPacketReceived = false;
-		ioPacketPayload = null;
-		startListeningForPackets(IOPacketReceiveListener);
-		synchronized (ioLock) {
-			try {
-				ioLock.wait(receiveTimeout);
-			} catch (InterruptedException e) { }
+	protected IOSample getIOSample(IOLine ioLine) throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
 		}
-		stopListeningForPackets(IOPacketReceiveListener);
-		if (ioPacketReceived)
-			return ioPacketPayload;
-		return null;
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Try to build an IO Sample from the sample payload.
+		IOSample ioSample;
+		try {
+			ioSample = new IOSample(response.getResponse());
+		} catch (IllegalArgumentException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		} catch (NullPointerException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		}
+		return ioSample;
 	}
-	
-	/**
-	 * Custom listener for IO packets. It will try to receive an IO sample packet.
-	 * 
-	 * <p>When an IO sample packet is received, it saves its payload and notifies 
-	 * the object that was waiting for the reception.</p>
-	 */
-	private IPacketReceiveListener IOPacketReceiveListener = new IPacketReceiveListener() {
-		/*
-		 * (non-Javadoc)
-		 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
-		 */
-		public void packetReceived(XBeePacket receivedPacket) {
-			// Discard non API packets.
-			if (!(receivedPacket instanceof XBeeAPIPacket))
-				return;
-			// If we already have received an IO packet, ignore this packet.
-			if (ioPacketReceived)
-				return;
-			
-			// Save the packet value (IO sample payload)
-			switch (((XBeeAPIPacket)receivedPacket).getFrameType()) {
-			case IO_DATA_SAMPLE_RX_INDICATOR:
-				ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getReceivedData();
-				break;
-			case RX_IO_16:
-				ioPacketPayload = ((RX16IOPacket)receivedPacket).getReceivedData();
-				break;
-			case RX_IO_64:
-				ioPacketPayload = ((RX64IOPacket)receivedPacket).getReceivedData();
-				break;
-			default:
-				return;
-			}
-			// Set the IO packet received flag.
-			ioPacketReceived = true;
-			
-			// Continue execution by notifying the lock object.
-			synchronized (ioLock) {
-				ioLock.notify();
-			}
-		}
-	};
 	
 	/*
 	 * (non-Javadoc)

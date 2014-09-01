@@ -138,8 +138,8 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
-	 * @throws NullPointerException if {@code destAddress64 == null} or
-	 *                              if {@code destAddress16 == null} or
+	 * @throws NullPointerException if {@code sourceAddress64 == null} or
+	 *                              if {@code sourceAddress16 == null} or
 	 *                              if {@code command == null} or
 	 *                              if {@code status == null}.
 	 * 
@@ -151,9 +151,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		super(APIFrameType.REMOTE_AT_COMMAND_RESPONSE);
 		
 		if (sourceAddress64 == null)
-			throw new NullPointerException("64-bit destination address cannot be null.");
+			throw new NullPointerException("64-bit source address cannot be null.");
 		if (sourceAddress16 == null)
-			throw new NullPointerException("16-bit destination address cannot be null.");
+			throw new NullPointerException("16-bit source address cannot be null.");
 		if (command == null)
 			throw new NullPointerException("AT command cannot be null.");
 		if (status == null)

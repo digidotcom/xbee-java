@@ -122,6 +122,23 @@ public abstract class XBeePacket {
 	}
 	
 	/**
+	 * Retrieves the packet checksum.
+	 * 
+	 * <p>To calculate: Not including frame delimiters and length, add all 
+	 * bytes keeping only the lowest 8 bits of the result and subtract the 
+	 * result from {@code 0xFF}.</p>
+	 * 
+	 * @return The packet checksum.
+	 */
+	public int getChecksum() {
+		checksum.reset();
+		byte[] packetData = getPacketData();
+		if (packetData != null)
+			checksum.add(packetData);
+		return (byte)checksum.generate() & 0xFF;
+	}
+	
+	/**
 	 * Retrieves a map with the XBee packet parameters and their values.
 	 * 
 	 * @return A sorted map containing the XBee packet parameters with their 

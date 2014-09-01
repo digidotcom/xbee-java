@@ -15,12 +15,12 @@ package com.digi.xbee.api.packet;
  * This class stores, computes and verifies the checksum of the API packets.
  * 
  * <p>To test data integrity, a checksum is calculated and verified on 
- * non-escaped API data.<p>
+ * non-escaped API data.</p>
  * 
  * <p><b>To calculate</b></p>
  * 
  * <p>Not including frame delimiters and length, add all bytes keeping only the 
- * lowest 8 bits of the result and subtract the result from {@code 0xFF}.
+ * lowest 8 bits of the result and subtract the result from {@code 0xFF}.</p>
  * 
  * <p><b>To verify</b></p>
  * 

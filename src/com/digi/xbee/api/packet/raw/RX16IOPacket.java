@@ -146,10 +146,10 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(sourceAddress16.getValue());

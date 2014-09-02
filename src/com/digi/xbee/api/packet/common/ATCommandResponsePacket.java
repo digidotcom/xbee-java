@@ -144,10 +144,9 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(frameID);
 			os.write(command.getBytes());
 			os.write(status.getId());
 			if (commandValue != null)
@@ -236,7 +235,6 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
 		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")");
 		if (commandValue != null) {

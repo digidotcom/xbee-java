@@ -105,14 +105,11 @@ public class TXStatusPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
-		byte[] data = new byte[2];
-		data[0] = (byte)frameID;
-		data[1] = (byte)transmitStatus.getId();
-		return data;
+	protected byte[] getAPIPacketSpecificData() {
+		return new byte[] {(byte)transmitStatus.getId()};
 	}
 
 	/*
@@ -142,7 +139,6 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) + " (" + transmitStatus.getDescription() + ")");
 		return parameters;
 	}

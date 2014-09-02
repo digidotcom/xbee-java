@@ -84,10 +84,10 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
 			if (rfData != null)

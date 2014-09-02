@@ -157,7 +157,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(sourceAddress64.getValue());

@@ -172,12 +172,11 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		data.write(frameID);
 		try {
 			data.write(sourceAddress64.getValue());
 			data.write(sourceAddress16.getValue());
@@ -291,7 +290,6 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
 		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");

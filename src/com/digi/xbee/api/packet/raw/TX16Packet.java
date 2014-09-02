@@ -135,13 +135,12 @@ public class TX16Packet extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(frameID);
 			os.write(destAddress16.getValue());
 			os.write(transmitOptions);
 			if (rfData != null)
@@ -208,7 +207,6 @@ public class TX16Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
 		if (rfData != null)

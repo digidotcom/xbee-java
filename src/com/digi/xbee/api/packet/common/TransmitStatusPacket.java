@@ -155,13 +155,12 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
-			data.write(frameID);
 			data.write(destAddress16.getValue());
 			data.write(tranmistRetryCount);
 			data.write(transmitStatus.getId());
@@ -230,7 +229,6 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Tx. retry count", HexUtils.prettyHexString(HexUtils.integerToHexString(tranmistRetryCount, 1)) + " (" + tranmistRetryCount + ")");
 		parameters.put("Delivery status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) + " (" + transmitStatus.getDescription() + ")");

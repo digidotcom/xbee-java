@@ -197,13 +197,12 @@ public class TransmitPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
-			data.write(frameID);
 			data.write(destAddress64.getValue());
 			data.write(destAddress16.getValue());
 			data.write(broadcastRadius);
@@ -290,7 +289,6 @@ public class TransmitPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("64-bit dest. address", HexUtils.prettyHexString(destAddress64.toString()));
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Broadcast radius", HexUtils.prettyHexString(HexUtils.integerToHexString(broadcastRadius, 1)) + " (" + broadcastRadius + ")");

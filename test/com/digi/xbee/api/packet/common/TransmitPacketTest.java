@@ -15,6 +15,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.LinkedHashMap;
+
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -28,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class TransmitPacketTest {
 
@@ -237,5 +240,382 @@ public class TransmitPacketTest {
 		assertThat("Returned RF Data is not the expected one", packet.getRFData(), is(equalTo(data)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a {@code null} 64-bit address. 
+	 * This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacket64BitAddressNull() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee64BitAddress dest64Addr = null;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("64-bit destination address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a {@code null} 16-bit address. 
+	 * This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacket16BitAddressNull() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = null;
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("16-bit destination address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a frame ID bigger than 255. 
+	 * This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketFrameIDBiggerThan255() {
+		// Setup the resources for the test.
+		int frameID = 524;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a negative frame ID. This 
+	 * must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketFrameIDNegative() {
+		// Setup the resources for the test.
+		int frameID = -6;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a broadcast radious bigger 
+	 * than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketBroadcastRadiousBiggerThan255() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 589;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Broadcast radius must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a negative broadcast radious.
+	 * This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketBroadcastRadiousNegative() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = -86;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Broadcast radius must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with transmit options bigger 
+	 * than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketTransmitOptinsBiggerThan255() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 2360;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Transmit options must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with a negative transmit options.
+	 * This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketTransmitOptionsNegative() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = -40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Transmit options must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with valid parameters but without 
+	 * data ({@code null}).</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketValidDataNull() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = null;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* broadcast radious */ + 1 /* options */;
+		
+		// Call the method under test.
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned broadcast radious is not the expected one", packet.getBroadcastRadius(), is(equalTo(broadcastRadious)));
+		assertThat("Returned transmit options are not the expected one", packet.getTransmitOptions(), is(equalTo(options)));
+		assertThat("Returned Command Data is not the expected one", packet.getRFData(), is(nullValue(byte[].class)));
+		assertThat("Transmit packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#TransmitPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Transmit packet but with valid parameters with data.</p>
+	 */
+	@Test
+	public final void testCreateTransmitPacketValidDataNonNull() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* broadcast radious */ + 1 /* options */ + data.length /* Data */;
+		
+		// Call the method under test.
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned broadcast radious is not the expected one", packet.getBroadcastRadius(), is(equalTo(broadcastRadious)));
+		assertThat("Returned transmit options are not the expected one", packet.getTransmitOptions(), is(equalTo(options)));
+		assertThat("Returned Command Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Transmit packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIDataReceivedDataNull() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = null;
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		int expectedLength = 1 /* Frame ID */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* Broadcast radious */ + 1 /* options */;
+		byte[] expectedData = new byte[expectedLength];
+		expectedData[0] = (byte)frameID;
+		System.arraycopy(dest64Addr.getValue(), 0, expectedData, 1, dest64Addr.getValue().length);
+		System.arraycopy(dest16Addr.getValue(), 0, expectedData, 9, dest16Addr.getValue().length);
+		expectedData[11] = (byte)broadcastRadious;
+		expectedData[12] = (byte)options;
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a not-{@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIDataReceivedDataNotNull() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		int expectedLength = 1 /* Frame ID */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* Broadcast radious */ + 1 /* options */ + data.length /* Data */;
+		byte[] expectedData = new byte[expectedLength];
+		expectedData[0] = (byte)frameID;
+		System.arraycopy(dest64Addr.getValue(), 0, expectedData, 1, dest64Addr.getValue().length);
+		System.arraycopy(dest16Addr.getValue(), 0, expectedData, 9, dest16Addr.getValue().length);
+		expectedData[11] = (byte)broadcastRadious;
+		expectedData[12] = (byte)options;
+		System.arraycopy(data, 0, expectedData, 13, data.length);
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersReceivedDataNull() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = null;
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		String expectedDest64Addr = HexUtils.prettyHexString(dest64Addr.getValue());
+		String expectedDest16Addr = HexUtils.prettyHexString(dest16Addr.getValue());
+		String expectedBroadcastRadious = HexUtils.prettyHexString(Integer.toHexString(broadcastRadious)) + " (" + broadcastRadious + ")";
+		String expectedOptions = HexUtils.prettyHexString(Integer.toHexString(options));
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
+		assertThat("Destination 64-bit Address is not the expected one", packetParams.get("64-bit dest. address"), is(equalTo(expectedDest64Addr)));
+		assertThat("Destination 16-bit Address is not the expected one", packetParams.get("16-bit dest. address"), is(equalTo(expectedDest16Addr)));
+		assertThat("Broadcast Radious is not the expected", packetParams.get("Broadcast radius"), is(equalTo(expectedBroadcastRadious)));
+		assertThat("Transmit options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
+		assertThat("Data is not the expected", packetParams.get("RF data"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a non-{@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersReceivedDataNotNull() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		String expectedDest64Addr = HexUtils.prettyHexString(dest64Addr.getValue());
+		String expectedDest16Addr = HexUtils.prettyHexString(dest16Addr.getValue());
+		String expectedOptions = HexUtils.prettyHexString(Integer.toHexString(options));
+		String expectedBroadcastRadious = HexUtils.prettyHexString(Integer.toHexString(broadcastRadious)) + " (" + broadcastRadious + ")";
+		String expectedData = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data));
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(5)));
+		assertThat("Destination 64-bit Address is not the expected one", packetParams.get("64-bit dest. address"), is(equalTo(expectedDest64Addr)));
+		assertThat("Destination 16-bit Address is not the expected one", packetParams.get("16-bit dest. address"), is(equalTo(expectedDest16Addr)));
+		assertThat("Broadcast Radious is not the expected", packetParams.get("Broadcast radius"), is(equalTo(expectedBroadcastRadious)));
+		assertThat("Receive options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
+		assertThat("Data is not the expected", packetParams.get("RF data"), is(equalTo(expectedData)));
 	}
 }

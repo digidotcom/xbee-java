@@ -14,6 +14,8 @@ package com.digi.xbee.api.packet.common;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 
+import java.util.LinkedHashMap;
+
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -28,6 +30,7 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBeeDiscoveryStatus;
 import com.digi.xbee.api.models.XBeeTransmitStatus;
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class TransmitStatusPacketTest {
 	
@@ -193,5 +196,249 @@ public class TransmitStatusPacketTest {
 		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus().getId(), is(equalTo(discoveryStatus)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a {@code null} 16-bit 
+	 * address. This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacket16BitAddressNull() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee16BitAddress dest16Addr = null;
+		int retryCount = 0;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("16-bit destination address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a {@code null} 
+	 * transmit status. This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketTransmitStatusNull() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 0;
+		XBeeTransmitStatus transmitStatus = null;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("Delivery status cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a {@code null} 
+	 * discovery status. This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketDiscoveryStatusNull() {
+		// Setup the resources for the test.
+		int frameID = 5;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 0;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = null;
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("Discovery status cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a frame ID bigger 
+	 * than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketFrameIDBiggerThan255() {
+		// Setup the resources for the test.
+		int frameID = 2398;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 0;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw a IllegalArgumentException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a negative frame ID. 
+	 * This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketFrameIDNegative() {
+		// Setup the resources for the test.
+		int frameID = -2398;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 0;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw a IllegalArgumentException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a retry count bigger 
+	 * than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketRetryCountBiggerThan255() {
+		// Setup the resources for the test.
+		int frameID = 85;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 865;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Transmit retry count must be between 0 and 255.")));
+		
+		// Call the method under test that should throw a IllegalArgumentException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet but with a negative retry count. 
+	 * This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketRetryCountNegative() {
+		// Setup the resources for the test.
+		int frameID = 85;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = -865;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Transmit retry count must be between 0 and 255.")));
+		
+		// Call the method under test that should throw a IllegalArgumentException.
+		new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet with valid parameters.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketValid() {
+		// Setup the resources for the test.
+		int frameID = 85;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 2;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 2 /* 16-bit address */ + 1 /* retry count */ + 1 /* delivery status */ + 1 /* discovery status */;
+		
+		// Call the method under test.
+		TransmitStatusPacket packet = new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
+		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus(), is(equalTo(transmitStatus)));
+		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus(), is(equalTo(discoveryStatus)));
+		assertThat("Transmit status packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters.</p>
+	 */
+	@Test
+	public final void testGetAPIData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 2;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		TransmitStatusPacket packet = new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+		
+		int expectedLength = 1 /* Frame ID */ + 2 /* 16-bit address */ + 1 /* retry count */ + 1 /* delivery status */ + 1 /* discovery status */;
+		byte[] expectedData = new byte[expectedLength];
+		expectedData[0] = (byte)frameID;
+		System.arraycopy(dest16Addr.getValue(), 0, expectedData, 1, dest16Addr.getValue().length);
+		expectedData[3] = (byte)retryCount;
+		expectedData[4] = (byte)transmitStatus.getId();
+		expectedData[5] = (byte)discoveryStatus.getId();
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParameters() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 2;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		TransmitStatusPacket packet = new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+		
+		String expectedDest16Addr = HexUtils.prettyHexString(dest16Addr.getValue());
+		String expectedRetryCount = HexUtils.prettyHexString(Integer.toHexString(retryCount)) + " (" + retryCount + ")";
+		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getId())) + " (" + transmitStatus.getDescription() + ")";
+		String expectedDiscoveryStatus = HexUtils.prettyHexString(Integer.toHexString(discoveryStatus.getId())) + " (" + discoveryStatus.getDescription() + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
+		assertThat("Destination 16-bit Address is not the expected one", packetParams.get("16-bit dest. address"), is(equalTo(expectedDest16Addr)));
+		assertThat("Retry count is not the expected", packetParams.get("Tx. retry count"), is(equalTo(expectedRetryCount)));
+		assertThat("Delivery status is not the expected", packetParams.get("Delivery status"), is(equalTo(expectedTransmitStatus)));
+		assertThat("Discovery status not the expected", packetParams.get("Discovery status"), is(equalTo(expectedDiscoveryStatus)));
 	}
 }

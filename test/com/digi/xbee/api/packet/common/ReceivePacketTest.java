@@ -17,6 +17,8 @@ import static org.hamcrest.core.IsNull.nullValue;
 
 import static org.junit.Assert.assertThat;
 
+import java.util.LinkedHashMap;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -28,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class ReceivePacketTest {
 
@@ -217,5 +220,257 @@ public class ReceivePacketTest {
 		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#ReceivePacket(XBee64BitAddress, XBee16BitAddress, int, byte[])}.
+	 * 
+	 * <p>Construct a new Receive packet but with a {@code null} 64-bit address. 
+	 * This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateReceivePacket64BitAddressNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = null;
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("64-bit source address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new ReceivePacket(source64Addr, source16Addr, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#ReceivePacket(XBee64BitAddress, XBee16BitAddress, int, byte[])}.
+	 * 
+	 * <p>Construct a new Receive packet but with a {@code null} 16-bit address. 
+	 * This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateReceivePacket16BitAddressNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = null;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("16-bit source address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new ReceivePacket(source64Addr, source16Addr, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#ReceivePacket(XBee64BitAddress, XBee16BitAddress, int, byte[])}.
+	 * 
+	 * <p>Construct a new Receive packet but with a receive options bigger than
+	 *  255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateReceivePacketReceiveOptionsBiggerThan255() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 621;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Receive options value must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ReceivePacket(source64Addr, source16Addr, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#ReceivePacket(XBee64BitAddress, XBee16BitAddress, int, byte[])}.
+	 * 
+	 * <p>Construct a new Receive packet but with a negative receive options. 
+	 * This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateReceivePacketReceiveOptionsNegative() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = -8;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Receive options value must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ReceivePacket(source64Addr, source16Addr, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#ReceivePacket(XBee64BitAddress, XBee16BitAddress, int, byte[])}.
+	 * 
+	 * <p>Construct a new Receive packet but with {@code null} data.</p>
+	 */
+	@Test
+	public final void testCreateReceivePacketReceiveDataNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x52;
+		byte[] data = null;
+		
+		int expectedLength = 1 /* Frame type */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* options */;
+		
+		// Call the method under test.
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Receive packet does NOT need API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#ReceivePacket(XBee64BitAddress, XBee16BitAddress, int, byte[])}.
+	 * 
+	 * <p>Construct a new Receive packet but with non-{@code null} data.</p>
+	 */
+	@Test
+	public final void testCreateReceivePacketReceiveDataNotNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x52;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		int expectedLength = 1 /* Frame type */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* options */ + data.length /* Data */;
+		
+		// Call the method under test.
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Receive packet does NOT need API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIDataReceivedDataNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x52;
+		byte[] receivedData = null;
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, receivedData);
+		
+		int expectedLength = 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* options */;
+		byte[] expectedData = new byte[expectedLength];
+		System.arraycopy(source64Addr.getValue(), 0, expectedData, 0, source64Addr.getValue().length);
+		System.arraycopy(source16Addr.getValue(), 0, expectedData, 8, source16Addr.getValue().length);
+		expectedData[10] = (byte)options;
+		
+		// Call the method under test.
+		byte[] data = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", data, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a not-{@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIDataReceivedDataNotNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x52;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, receivedData);
+		
+		int expectedLength = 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* options */ + receivedData.length /* Data */;
+		byte[] expectedData = new byte[expectedLength];
+		System.arraycopy(source64Addr.getValue(), 0, expectedData, 0, source64Addr.getValue().length);
+		System.arraycopy(source16Addr.getValue(), 0, expectedData, 8, source16Addr.getValue().length);
+		expectedData[10] = (byte)options;
+		System.arraycopy(receivedData, 0, expectedData, 11, receivedData.length);
+		
+		// Call the method under test.
+		byte[] data = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", data, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersReceivedDataNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 40;
+		byte[] receivedData = null;
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, receivedData);
+		
+		String expectedSource64Addr = HexUtils.prettyHexString(source64Addr.getValue());
+		String expectedSource16Addr = HexUtils.prettyHexString(source16Addr.getValue());
+		String expectedOptions = HexUtils.prettyHexString(Integer.toHexString(options));
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(3)));
+		assertThat("Source 64-bit Address is not the expected one", packetParams.get("64-bit source address"), is(equalTo(expectedSource64Addr)));
+		assertThat("Source 16-bit Address is not the expected one", packetParams.get("16-bit source address"), is(equalTo(expectedSource16Addr)));
+		assertThat("Receive options are not the expected", packetParams.get("Receive options"), is(equalTo(expectedOptions)));
+		assertThat("Received data is not the expected", packetParams.get("RF data"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a non-{@code null} received data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersReceivedDataNotNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 40;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, receivedData);
+		
+		String expectedSource64Addr = HexUtils.prettyHexString(source64Addr.getValue());
+		String expectedSource16Addr = HexUtils.prettyHexString(source16Addr.getValue());
+		String expectedOptions = HexUtils.prettyHexString(Integer.toHexString(options));
+		String expectedReceivedData = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(receivedData));
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
+		assertThat("Source 64-bit Address is not the expected one", packetParams.get("64-bit source address"), is(equalTo(expectedSource64Addr)));
+		assertThat("Source 16-bit Address is not the expected one", packetParams.get("16-bit source address"), is(equalTo(expectedSource16Addr)));
+		assertThat("Receive options are not the expected", packetParams.get("Receive options"), is(equalTo(expectedOptions)));
+		assertThat("Received data is not the expected", packetParams.get("RF data"), is(equalTo(expectedReceivedData)));
 	}
 }

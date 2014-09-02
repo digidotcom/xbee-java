@@ -15,6 +15,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.LinkedHashMap;
+
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -26,6 +28,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class GenericXBeePacketTest {
 	
@@ -143,5 +146,129 @@ public class GenericXBeePacketTest {
 		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#GenericXBeePacket(byte[])}.
+	 * 
+	 * <p>Construct a new Generic packet but with {@code null} data.</p>
+	 */
+	@Test
+	public final void testCreateGenericPacketDataNull() {
+		// Setup the resources for the test.
+		byte[] data = null;
+		
+		int expectedLength = 1 /* Frame type */;
+		
+		// Call the method under test.
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned RF data is not the expected one", packet.getRFData(), is(nullValue(byte[].class)));
+		assertThat("Generic packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#GenericXBeePacket(byte[])}.
+	 * 
+	 * <p>Construct a new Generic packet but with non-{@code null} data.</p>
+	 */
+	@Test
+	public final void testCreateGenericPacketDataNotNull() {
+		// Setup the resources for the test.
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		int expectedLength = 1 /* Frame type */ + data.length /* Data */;
+		
+		// Call the method under test.
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned RF data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Generic packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters, data {@code null}.</p>
+	 */
+	@Test
+	public final void testGetAPIDataNullData() {
+		// Setup the resources for the test.
+		byte[] data = null;
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		int expectedLength = 0;
+		byte[] expectedData = new byte[expectedLength];
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters, data not {@code null}.</p>
+	 */
+	@Test
+	public final void testGetAPIDataNotNullData() {
+		// Setup the resources for the test.
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		byte[] expectedData = data;
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+		
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters, {@code null} data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersNullData() {
+		// Setup the resources for the test.
+		byte[] data = null;
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+				
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(0)));
+		assertThat("RF Data is not the expected one", packetParams.get("RF Data"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters, non-{@code null} data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersNotNullData() {
+		// Setup the resources for the test.
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};;
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		String expectedData = HexUtils.prettyHexString(data);
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+				
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
+		assertThat("RF Data is not the expected one", packetParams.get("RF Data"), is(equalTo(expectedData)));
 	}
 }

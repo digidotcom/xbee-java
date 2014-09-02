@@ -17,6 +17,8 @@ import static org.hamcrest.core.IsNull.nullValue;
 
 import static org.junit.Assert.assertThat;
 
+import java.util.LinkedHashMap;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -26,6 +28,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class ATCommandPacketTest {
 
@@ -239,5 +242,353 @@ public class ATCommandPacketTest {
 		assertThat("Returned Command Data is not the expected one", packet.getParameter(), is(equalTo(data)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, String)}.
+	 * 
+	 * <p>Construct a new AT Command packet but with a {@code null} command. 
+	 * This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketCommandNullParameterString() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		String command = null;
+		String parameter = "Param value";
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("AT command cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new ATCommandPacket(frameID, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, byte[])}.
+	 * 
+	 * <p>Construct a new AT Command packet but with a {@code null} command. 
+	 * This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketCommandNullParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		String command = null;
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("AT command cannot be null.")));
+		
+		// Call the method under test that should throw n NullPointerException.
+		new ATCommandPacket(frameID, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, String)}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an invalid frame ID, 
+	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketInvalidFrameIDBiggerThan255ParameterString() {
+		// Setup the resources for the test.
+		int frameID = 2000;
+		String command = "NI";
+		String parameter = "Param value";
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ATCommandPacket(frameID, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, byte[])}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an invalid frame ID, 
+	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketInvalidFrameIDBiggerThan255ParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 2000;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ATCommandPacket(frameID, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, String)}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an invalid frame ID with 
+	 * negative value. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketInvalidFrameIDNegativeParameterString() {
+		// Setup the resources for the test.
+		int frameID = -4;
+		String command = "NI";
+		String parameter = "Param value";
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ATCommandPacket(frameID, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, byte[])}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an invalid frame ID with 
+	 * negative value. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketInvalidFrameIDNegativeParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = -4;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Frame ID must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ATCommandPacket(frameID, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, String)}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an valid parameters but
+	 * without parameter value ({@code null}).</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketValidParameterNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameter = null;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + command.length() /* AT command */;
+		
+		// Call the method under test.
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
+		assertThat("Returned Command Data is not the expected one", packet.getParameter(), is(nullValue(byte[].class)));
+		assertThat("AT Command needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, String)}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an valid parameters but
+	 * with a parameter value.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketValidParameterString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameter = "MyDevice";
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + command.length() /* AT command */ + parameter.length() /* Value */;
+		
+		// Call the method under test.
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
+		assertThat("Returned Command Data is not the expected one", packet.getParameter(), is(equalTo(parameter.getBytes())));
+		assertThat("AT Command needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#ATCommandPacket(int, String, byte[])}.
+	 * 
+	 * <p>Construct a new AT Command packet but with an valid parameters but
+	 * with a parameter value.</p>
+	 */
+	@Test
+	public final void testCreateATCommandPacketValidParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + command.length() /* AT command */ + parameter.length /* Value */;
+		
+		// Call the method under test.
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
+		assertThat("Returned Command Data is not the expected one", packet.getParameter(), is(equalTo(parameter)));
+		assertThat("AT Command needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIDataATCommandParameterNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameter = null;
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		int expectedLength = 1 /* Frame ID */ + command.length() /* AT command */;
+		byte[] expectedData = new byte[expectedLength];
+		expectedData[0] = (byte)frameID;
+		System.arraycopy(command.getBytes(), 0, expectedData, 1, command.length());
+		
+		// Call the method under test.
+		byte[] data = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", data, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a non-{@code null} parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIDataATCommandParameterNotNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		int expectedLength = 1 /* Frame ID */ + command.length() /* AT command */ + parameter.length /* Value */;
+		byte[] expectedData = new byte[expectedLength];
+		expectedData[0] = (byte)frameID;
+		System.arraycopy(command.getBytes(), 0, expectedData, 1, command.length());
+		System.arraycopy(parameter, 0, expectedData, 1 + command.length(), parameter.length);
+		
+		// Call the method under test.
+		byte[] data = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", data, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersATCommandParameterNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameter = null;
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
+		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
+		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersATCommandParameterString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameter = "myDevice";
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
+		String expectedATParameter = HexUtils.prettyHexString(parameter.getBytes()) + " (" + parameter + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(2)));
+		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
+		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(equalTo(expectedATParameter)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersATCommandParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
+		String expectedATParameter = HexUtils.prettyHexString(parameter) + " (" + new String(parameter) + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(2)));
+		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
+		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(equalTo(expectedATParameter)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersATCommandParameterByteArrayNonStringCmd() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "DL";
+		byte[] parameter = new byte[]{0x6D, 0x79};
+		ATCommandPacket packet = new ATCommandPacket(frameID, command, parameter);
+		
+		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
+		String expectedATParameter = HexUtils.prettyHexString(parameter);
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(2)));
+		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
+		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(equalTo(expectedATParameter)));
 	}
 }

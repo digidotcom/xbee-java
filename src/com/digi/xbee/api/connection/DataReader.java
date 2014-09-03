@@ -283,22 +283,22 @@ public class DataReader extends Thread {
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			address = receivePacket.get64bitAddress().toString();
-			data = receivePacket.getReceivedData();
+			address = receivePacket.get64bitSourceAddress().toString();
+			data = receivePacket.getRFData();
 			isBroadcastData = ByteUtils.isBitEnabled(receivePacket.getReceiveOptions(), 1);
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			address = rx64Packet.getSourceAddress().toString();
-			data = rx64Packet.getReceivedData();
+			address = rx64Packet.get64bitSourceAddress().toString();
+			data = rx64Packet.getRFData();
 			if (ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 1)
 					|| ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 2))
 				isBroadcastData = true;
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			address = rx16Packet.getSourceAddress().toString();
-			data = rx16Packet.getReceivedData();
+			address = rx16Packet.get16bitSourceAddress().toString();
+			data = rx16Packet.getRFData();
 			if (ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 1)
 					|| ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 2))
 				isBroadcastData = true;

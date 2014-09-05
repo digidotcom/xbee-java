@@ -84,7 +84,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>When sending or receiving an API2 frame, specific data values must be 
  * escaped (flagged) so they do not interfere with the data frame sequencing. 
  * To escape an interfering data byte, the byte {@code 0x7D} is inserted before 
- * the byte to be escaped XOR’d with {@code 0x20}.</p>
+ * the byte to be escaped XOR'd with {@code 0x20}.</p>
  * 
  * <p>The data bytes that need to be escaped:</p>
  * <ul>

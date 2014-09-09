@@ -543,7 +543,7 @@ public class XBeeDevice {
 	 */
 	public XBeePacket sendXBeePacket(XBeePacket packet) throws XBeeException {
 		try {
-			return sendXBeePacket(packet, isRemote());
+			return sendXBeePacket(packet, !isRemote());
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}
@@ -753,6 +753,8 @@ public class XBeeDevice {
 	 * @param packet XBee packet to be sent.
 	 * @param packetReceiveListener Listener for the operation, {@code null} 
 	 *                              not to be notified when the answer arrives.
+	 * @param sentFromLocalDevice Indicates whether or not the packet was sent 
+	 *                            from a local device.
 	 *                              
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
@@ -813,6 +815,8 @@ public class XBeeDevice {
 	 * {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
 	 * 
 	 * @param packet XBee packet to be sent asynchronously.
+	 * @param sentFromLocalDevice Indicates whether or not the packet was sent 
+	 *                            from a local device.
 	 * 
 	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
@@ -853,7 +857,7 @@ public class XBeeDevice {
 	public void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
 			throws XBeeException {
 		try {
-			sendXBeePacket(packet, packetReceiveListener, isRemote());
+			sendXBeePacket(packet, packetReceiveListener, !isRemote());
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}
@@ -878,7 +882,7 @@ public class XBeeDevice {
 	public void sendXBeePacketAsync(XBeePacket packet) 
 			throws IOException, XBeeException {
 		try {
-			sendXBeePacket(packet, null, isRemote());
+			sendXBeePacket(packet, null, !isRemote());
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}

@@ -471,7 +471,7 @@ public class XBeeDevice {
 				throw new OperationNotSupportedException("Couldn't get the NI value.");
 			if (response.getResponseStatus() != ATCommandStatus.OK)
 				throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
-			nodeID = response.getResponseString();
+			nodeID = new String(response.getResponse());
 		}
 		// Get the hardware version.
 		if (hardwareVersion == null) {
@@ -558,7 +558,7 @@ public class XBeeDevice {
 	 * @see #getNodeID(boolean)
 	 */
 	public String getNodeID() {
-		return getNodeID();
+		return nodeID;
 	}
 	
 	/**

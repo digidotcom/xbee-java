@@ -27,8 +27,19 @@ public class HardwareVersion {
 	 * 
 	 * @param value The hardware version value.
 	 * @param description The hardware version description.
+	 * 
+	 * @throws IllegalArgumentException if {@code value < 0} or
+	 *                                  if {@code description.length() < 1}.
+	 * @throws NullPointerException if {@code description == null}.
 	 */
 	private HardwareVersion(int value, String description) {
+		if (description == null)
+			throw new NullPointerException("Description cannot be null.");
+		if (value < 0)
+			throw new IllegalArgumentException("Value cannot be less than 0.");
+		if (description.length() < 1)
+			throw new IllegalArgumentException("Description cannot be empty.");
+		
 		this.value = value;
 		this.description = description;
 	}
@@ -70,6 +81,10 @@ public class HardwareVersion {
 	 * @param value Hardware version value to retrieve.
 	 * @param description The hardware description.
 	 * @return The Hardware version for the given ID, null if not exists.
+	 * 
+	 * @throws IllegalArgumentException if {@code value < 0} or
+	 *                                  if {@code description.length() < 1}.
+	 * @throws NullPointerException if {@code description == null}.
 	 */
 	public static HardwareVersion get(int value, String description) {
 		return new HardwareVersion(value, description);
@@ -84,7 +99,10 @@ public class HardwareVersion {
 		if (!(obj instanceof HardwareVersion))
 			return false;
 		HardwareVersion hwVersion = (HardwareVersion)obj;
-		return hwVersion.getValue() == getValue();
+		if (hwVersion.getValue() == getValue() 
+				&& hwVersion.getDescription().equals(getDescription()))
+			return true;
+		return false;
 	}
 	
 	/*

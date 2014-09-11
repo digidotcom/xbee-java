@@ -70,6 +70,8 @@ public class RemoteXBeeDeviceConnectTest {
 		
 		// Instantiate the remote XBee device.
 		remoteXBeeDevice = PowerMockito.spy(new XBeeDevice(mockedLocalXBeeDevice, mockedAddress));
+		// Stub the initializeDevice method to do nothing (it has its own test file).
+		Mockito.doNothing().when(remoteXBeeDevice).initializeDevice();
 	}
 	
 	/**
@@ -79,7 +81,7 @@ public class RemoteXBeeDeviceConnectTest {
 	 * @throws XBeeException
 	 */
 	@Test
-	public void testOpemRemoteXBeeSuccess() throws XBeeException {
+	public void testOpenRemoteXBeeSuccess() throws XBeeException {
 		// Execute the connect method.
 		remoteXBeeDevice.open();
 		

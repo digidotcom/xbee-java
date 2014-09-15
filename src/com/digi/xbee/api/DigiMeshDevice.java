@@ -102,7 +102,7 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public DigiMeshDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public DigiMeshDevice(DigiMeshDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
 	}
 	

@@ -130,7 +130,7 @@ public class Raw802Device extends XBeeDevice {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public Raw802Device(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public Raw802Device(Raw802Device localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
 	}
 	

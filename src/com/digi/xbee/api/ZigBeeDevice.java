@@ -105,7 +105,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public ZigBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public ZigBeeDevice(ZigBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
 	}
 	

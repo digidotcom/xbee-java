@@ -105,7 +105,7 @@ public class DigiPointDevice extends XBeeDevice {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public DigiPointDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public DigiPointDevice(DigiPointDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
 	}
 	

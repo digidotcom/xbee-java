@@ -58,7 +58,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 			throw new IllegalArgumentException("Incomplete Unknown packet.");
 		
 		// payload[0] is the frame type.
-		int apiID = payload[0];
+		int apiID = payload[0] & 0xFF;
 		int index = 1;
 		
 		byte[] commandData = null;

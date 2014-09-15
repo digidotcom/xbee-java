@@ -13,6 +13,7 @@ package com.digi.xbee.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class XBeeDevice {
 	protected static int TIMEOUT_BEFORE_COMMAND_MODE = 1200;
 	protected static int TIMEOUT_ENTER_COMMAND_MODE = 1500;
 	
+	private static int SOFTWARE_RESET_TIMEOUT = 5000;
+	
 	private static String COMMAND_MODE_CHAR = "+";
 	private static String COMMAND_MODE_OK = "OK\r";
 	
@@ -84,6 +87,8 @@ public class XBeeDevice {
 	
 	private XBeeDevice localXBeeDevice;
 	
+	private Object resetLock = new Object();
+	private boolean modemStatusReceived = false;
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
 	 * given port name and baud rate.
@@ -468,7 +473,7 @@ public class XBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		ATCommandResponse response = null;
-		OperatingMode operatingMode = getOperatingMode();
+		OperatingMode operatingMode = isRemote() ? localXBeeDevice.getOperatingMode() : getOperatingMode();
 		switch (operatingMode) {
 		case AT:
 		case UNKNOWN:
@@ -488,7 +493,7 @@ public class XBeeDevice {
 				logger.debug(toString() + "Sending AT command '{} {}'.", command.getCommand(), HexUtils.prettyHexString(command.getParameter()));
 			try {
 				// Send the packet and build response.
-				XBeePacket answerPacket = sendXBeePacket(packet, true);
+				XBeePacket answerPacket = isRemote() ? localXBeeDevice.sendXBeePacket(packet, true) : sendXBeePacket(packet, true);
 				if (answerPacket instanceof ATCommandResponsePacket)
 					response = new ATCommandResponse(command, ((ATCommandResponsePacket)answerPacket).getCommandValue(), ((ATCommandResponsePacket)answerPacket).getStatus());
 				else if (answerPacket instanceof RemoteATCommandResponsePacket)
@@ -583,7 +588,7 @@ public class XBeeDevice {
 		if (!sentFromLocalDevice)
 			throw new OperationNotSupportedException("Remote devices cannot send data to other remote devices.");
 		
-		OperatingMode operatingMode = getOperatingMode();
+		OperatingMode operatingMode = isRemote() ? localXBeeDevice.getOperatingMode() : getOperatingMode();
 		switch (operatingMode) {
 		case AT:
 		case UNKNOWN:
@@ -1708,6 +1713,88 @@ public class XBeeDevice {
 		}
 		return ioSample;
 	}
+	
+	/**
+	 * Performs a software reset on the module and blocks until the process
+	 * is completed.
+	 * 
+	 * @throws TimeoutException if the configured time expires while waiting 
+	 *                          for the command reply.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void reset() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		if (!isRemote())
+			logger.info(toString() + "Resetting the local module...");
+		else
+			logger.info(toString() + "Resetting the remote module ({})...", get64BitAddress());
+		
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("FR"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Wait for a Modem Status packet.
+		if (!waitForModemStatusPacket())
+			throw new TimeoutException("Timeout waiting for the Modem Status packet.");
+		
+		logger.info(toString() + "Module reset successfully.");
+	}
+	
+	/**
+	 * Waits until a Modem Status packet with status 0x00 (hardware reset) or 
+	 * 0x01 (Watchdog timer reset) is received or the timeout is reached.
+	 * 
+	 * @return True if the Modem Status packet is received, false otherwise.
+	 */
+	private boolean waitForModemStatusPacket() {
+		modemStatusReceived = false;
+		startListeningForPackets(modemStatusListener);
+		synchronized (resetLock) {
+			try {
+				resetLock.wait(SOFTWARE_RESET_TIMEOUT);
+			} catch (InterruptedException e) { }
+		}
+		stopListeningForPackets(modemStatusListener);
+		return isRemote() ? true : modemStatusReceived;
+	}
+	
+	/**
+	 * Custom listener for Modem Status packets.
+	 * 
+	 * <p>When a Modem Status packet is received with status 0x00 or 0x01, it 
+	 * notifies the object that was waiting for the reception.</p>
+	 */
+	private IPacketReceiveListener modemStatusListener = new IPacketReceiveListener() {
+		/*
+		 * (non-Javadoc)
+		 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
+		 */
+		public void packetReceived(XBeePacket receivedPacket) {
+			// Discard non API packets.
+			if (!(receivedPacket instanceof XBeeAPIPacket))
+				return;
+			
+			byte[] hardwareReset = new byte[] {(byte) 0x8A, 0x00};
+			byte[] watchdogTimerReset = new byte[] {(byte) 0x8A, 0x01};
+			if (Arrays.equals(receivedPacket.getPacketData(), hardwareReset) ||
+					Arrays.equals(receivedPacket.getPacketData(), watchdogTimerReset)) {
+				modemStatusReceived = true;
+				// Continue execution by notifying the lock object.
+				synchronized (resetLock) {
+					resetLock.notify();
+				}
+			}
+		}
+	};
 	
 	/*
 	 * (non-Javadoc)

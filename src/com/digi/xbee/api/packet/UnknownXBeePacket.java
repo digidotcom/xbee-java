@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -28,16 +29,53 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public class UnknownXBeePacket extends XBeeAPIPacket {
 	
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 1; // 1 (Frame type)
+	
 	// Variables
 	protected byte[] rfData;
 	
 	private Logger logger;
 	
 	/**
+	 * Creates an new {@code UnknownXBeePacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. The first byte will be the frame 
+	 *                type.
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Unknown packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static UnknownXBeePacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Unknown packet payload cannot be null.");
+		
+		// 1 (Frame type)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Unknown packet.");
+		
+		// payload[0] is the frame type.
+		int apiID = payload[0];
+		int index = 1;
+		
+		byte[] commandData = null;
+		if (index < payload.length)
+			commandData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new UnknownXBeePacket(apiID, commandData);
+	}
+	
+	/**
 	 * Class constructor. Instances an XBee packet with the given packet data.
 	 * 
 	 * @param apiIDValue The XBee API integer value of the packet.
 	 * @param rfData The XBee RF Data.
+	 * 
+	 * @throws IllegalArgumentException if {@code apiIDValue < 0} or
+	 *                                  if {@code apiIDValue > 255}.
 	 */
 	public UnknownXBeePacket(int apiIDValue, byte[] rfData) {
 		super(apiIDValue);
@@ -47,10 +85,10 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
 			if (rfData != null)

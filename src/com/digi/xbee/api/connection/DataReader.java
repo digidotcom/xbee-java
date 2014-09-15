@@ -62,6 +62,8 @@ public class DataReader extends Thread {
 	
 	private Logger logger;
 	
+	private XBeePacketParser parser;
+	
 	/**
 	 * Class constructor. Instances a new {@code DataReader} object for the 
 	 * given interface.
@@ -81,6 +83,7 @@ public class DataReader extends Thread {
 		this.connectionInterface = connectionInterface;
 		this.mode = mode;
 		this.logger = LoggerFactory.getLogger(DataReader.class);
+		parser = new XBeePacketParser();
 	}
 	
 	/**
@@ -216,9 +219,8 @@ public class DataReader extends Thread {
 						int headerByte = connectionInterface.getInputStream().read();
 						// If it is packet header parse the packet, if not discard this byte and continue.
 						if (headerByte == SpecialByte.HEADER_BYTE.getValue()) {
-							XBeePacketParser parser = new XBeePacketParser(connectionInterface.getInputStream(), mode);
 							try {
-								XBeePacket packet = parser.parsePacket();
+								XBeePacket packet = parser.parsePacket(connectionInterface.getInputStream(), mode);
 								packetReceived(packet);
 							} catch (InvalidPacketException e) {
 								logger.error("Error parsing the API packet.", e);
@@ -280,22 +282,25 @@ public class DataReader extends Thread {
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
-			address = ((ReceivePacket)apiPacket).get64bitAddress().toString();
-			data = ((ReceivePacket)apiPacket).getReceivedData();
-			isBroadcastData = ByteUtils.isBitEnabled(((ReceivePacket)apiPacket).getReceiveOptions(), 1);
+			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
+			address = receivePacket.get64bitSourceAddress().toString();
+			data = receivePacket.getRFData();
+			isBroadcastData = ByteUtils.isBitEnabled(receivePacket.getReceiveOptions(), 1);
 			break;
 		case RX_64:
-			address = ((RX64Packet)apiPacket).getSourceAddress().toString();
-			data = ((RX64Packet)apiPacket).getReceivedData();
-			if (ByteUtils.isBitEnabled(((RX64Packet)apiPacket).getReceiveOptions(), 1)
-					|| ByteUtils.isBitEnabled(((RX64Packet)apiPacket).getReceiveOptions(), 2))
+			RX64Packet rx64Packet = (RX64Packet)apiPacket;
+			address = rx64Packet.get64bitSourceAddress().toString();
+			data = rx64Packet.getRFData();
+			if (ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 1)
+					|| ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 2))
 				isBroadcastData = true;
 			break;
 		case RX_16:
-			address = ((RX16Packet)apiPacket).getSourceAddress().toString();
-			data = ((RX16Packet)apiPacket).getReceivedData();
-			if (ByteUtils.isBitEnabled(((RX16Packet)apiPacket).getReceiveOptions(), 1)
-					|| ByteUtils.isBitEnabled(((RX16Packet)apiPacket).getReceiveOptions(), 2))
+			RX16Packet rx16Packet = (RX16Packet)apiPacket;
+			address = rx16Packet.get16bitSourceAddress().toString();
+			data = rx16Packet.getRFData();
+			if (ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 1)
+					|| ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 2))
 				isBroadcastData = true;
 			break;
 		default:

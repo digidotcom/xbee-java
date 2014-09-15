@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.common;
 
 import java.io.ByteArrayOutputStream;
@@ -26,19 +26,23 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * <p>This class represents a Transmit Status Packet. Packet is built using the 
- * parameters of the constructor.</p>
+ * This class represents a Transmit Status Packet. Packet is built using the 
+ * parameters of the constructor or providing a valid API payload.
  * 
- * <p>When a TX Request is completed, the module sends a TX Status message. 
- * This message will indicate if the packet was transmitted successfully or if 
- * there was a failure. This packet is the response to standard and explicit 
- * transmit requests.</p>
+ * <p>When a Transmit Request is completed, the module sends a Transmit Status 
+ * message. This message will indicate if the packet was transmitted 
+ * successfully or if there was a failure.</p>
+ * 
+ * <p>This packet is the response to standard and explicit transmit requests.</p>
  * 
  * @see TransmitPacket
  * @see ExplicitAddressingZigBeePacket
  */
 public class TransmitStatusPacket extends XBeeAPIPacket {
 	
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 7; // 1 (Frame type) + 1 (frame ID) + 2 (16-bit address) + 1 (retry count) + 1 (delivery status) + 1 (discovery status)
+		
 	// Variables
 	private final XBee16BitAddress destAddress16;
 	
@@ -47,6 +51,61 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	private final XBeeDiscoveryStatus discoveryStatus;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code TransmitStatusPacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a Transmit Status packet ({@code 0x8B}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Transmit Status packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TRANSMIT_STATUS.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255} or
+	 *                                  if {@code tranmistRetryCount < 0} or
+	 *                                  if {@code tranmistRetryCount > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static TransmitStatusPacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Transmit Status packet payload cannot be null.");
+		
+		// 1 (Frame type) + 1 (frame ID) + 2 (16-bit address) + 1 (retry count) + 1 (delivery status) + 1 (discovery status)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Transmit Status packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.TRANSMIT_STATUS.getValue())
+			throw new IllegalArgumentException("Payload is not a Transmit Status packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress address = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Retry count byte.
+		int retryCount = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Delivery status byte.
+		int deliveryStatus = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Discovery status byte.
+		int discoveryStatus = payload[index] & 0xFF;
+		
+		// TODO if XBeeTransmitStatus is unknown????
+		return new TransmitStatusPacket(frameID, address, retryCount, 
+				XBeeTransmitStatus.get(deliveryStatus), XBeeDiscoveryStatus.get(discoveryStatus));
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type 
@@ -96,13 +155,12 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
-			data.write(frameID);
 			data.write(destAddress16.getValue());
 			data.write(tranmistRetryCount);
 			data.write(transmitStatus.getId());
@@ -123,13 +181,13 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16 bit destination address. 
+	 * Retrieves the 16-bit destination address. 
 	 * 
-	 * @return The 16 bit destination address.
+	 * @return The 16-bit destination address.
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress get16BitDestinationAddress() {
+	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	
@@ -171,7 +229,6 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Tx. retry count", HexUtils.prettyHexString(HexUtils.integerToHexString(tranmistRetryCount, 1)) + " (" + tranmistRetryCount + ")");
 		parameters.put("Delivery status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) + " (" + transmitStatus.getDescription() + ")");

@@ -371,13 +371,13 @@ public class Raw802Device extends XBeeDevice {
 			// Save the packet value (IO sample payload)
 			switch (((XBeeAPIPacket)receivedPacket).getFrameType()) {
 			case IO_DATA_SAMPLE_RX_INDICATOR:
-				ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getReceivedData();
+				ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getRFData();
 				break;
 			case RX_IO_16:
-				ioPacketPayload = ((RX16IOPacket)receivedPacket).getReceivedData();
+				ioPacketPayload = ((RX16IOPacket)receivedPacket).getRFData();
 				break;
 			case RX_IO_64:
-				ioPacketPayload = ((RX64IOPacket)receivedPacket).getReceivedData();
+				ioPacketPayload = ((RX64IOPacket)receivedPacket).getRFData();
 				break;
 			default:
 				return;

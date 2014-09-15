@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import com.digi.xbee.api.models.ATStringCommands;
 
 /**
  * This class represents an AT Command Response packet. Packet is built using 
- * the parameters of the constructor.
+ * the parameters of the constructor or providing a valid API payload.
  * 
  * <p>In response to an AT Command message, the module will send an AT Command 
  * Response message. Some commands will send back multiple frames (for example, 
@@ -43,6 +44,9 @@ import com.digi.xbee.api.models.ATStringCommands;
  */
 public class ATCommandResponsePacket extends XBeeAPIPacket {
 	
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 5; // 1 (Frame type) + 1 (frame ID) + 2 (AT command) + 1 (status byte)
+	
 	// Variables
 	private final ATCommandStatus status;
 	
@@ -51,6 +55,56 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	private byte[] commandValue;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code ATCommandResponsePacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a AT Command Response packet ({@code 0x88}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed AT Command Response packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.AT_COMMAND.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static ATCommandResponsePacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("AT Command Response packet payload cannot be null.");
+		
+		// 1 (Frame type) + 1 (frame ID) + 2 (AT command) + 1 (status byte)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete AT Command Response packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.AT_COMMAND_RESPONSE.getValue())
+			throw new IllegalArgumentException("Payload is not an AT Command Response packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 2 bytes of AT command, starting at 2nd byte.
+		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		index = index + 2;
+		
+		// Status byte.
+		int status = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get data.
+		byte[] commandData = null;
+		if (index < payload.length)
+			commandData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		// TODO if ATCommandStatus is unknown????
+		return new ATCommandResponsePacket(frameID, ATCommandStatus.get(status), command, commandData);
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type 
@@ -72,9 +126,9 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		super(APIFrameType.AT_COMMAND_RESPONSE);
 		
 		if (command == null)
-			throw new NullPointerException("Command cannot be null.");
+			throw new NullPointerException("AT command cannot be null.");
 		if (status == null)
-			throw new NullPointerException("Command status cannot be null.");
+			throw new NullPointerException("AT command status cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		
@@ -90,10 +144,9 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(frameID);
 			os.write(command.getBytes());
 			os.write(status.getId());
 			if (commandValue != null)
@@ -182,7 +235,6 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
 		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")");
 		if (commandValue != null) {

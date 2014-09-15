@@ -73,9 +73,9 @@ public final class XBee16BitAddress {
 	 */
 	public XBee16BitAddress(int hsb, int lsb) {
 		if (hsb > 255 || hsb < 0)
-			throw new IllegalArgumentException("HSB must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("HSB must be between 0 and 255.");
 		if (lsb > 255 || lsb < 0)
-			throw new IllegalArgumentException("LSB must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("LSB must be between 0 and 255.");
 		
 		address = new byte[2];
 		address[0] = (byte) hsb;

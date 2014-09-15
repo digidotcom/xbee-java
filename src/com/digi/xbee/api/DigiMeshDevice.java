@@ -27,8 +27,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 *                 Other connection parameters will be set as default (8 
 	 *                 data bits, 1 stop bit, no parity, no flow control).
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 */
 	public DigiMeshDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -45,12 +45,12 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @param parity Serial port data bits.
 	 * @param flowControl Serial port data bits.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
 	 *                                  if {@code dataBits < 0} or
 	 *                                  if {@code stopBits < 0} or
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 */
 	public DigiMeshDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -97,6 +97,7 @@ public class DigiMeshDevice extends XBeeDevice {
 	 *                        remote DigiMesh device
 	 * @param xbee64BitAddress The 64-bit address to identify this remote DigiMesh 
 	 *                         device.
+	 * 
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code xbee64BitAddress == null}.
 	 * 

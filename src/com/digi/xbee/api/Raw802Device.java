@@ -55,8 +55,8 @@ public class Raw802Device extends XBeeDevice {
 	 *                 Other connection parameters will be set as default (8 
 	 *                 data bits, 1 stop bit, no parity, no flow control).
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 */
 	public Raw802Device(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -73,12 +73,12 @@ public class Raw802Device extends XBeeDevice {
 	 * @param parity Serial port data bits.
 	 * @param flowControl Serial port data bits.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
 	 *                                  if {@code dataBits < 0} or
 	 *                                  if {@code stopBits < 0} or
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 */
 	public Raw802Device(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -125,6 +125,7 @@ public class Raw802Device extends XBeeDevice {
 	 *                        remote 802.15.4 device
 	 * @param xbee64BitAddress The 64-bit address to identify this remote 802.15.4 
 	 *                         device.
+	 * 
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code xbee64BitAddress == null}.
 	 * 
@@ -178,10 +179,10 @@ public class Raw802Device extends XBeeDevice {
 	 * @param address The 16-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
 	 * 
-	 * @throws XBeeException if there is any XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code address == null} or 
 	 *                              if {@code data == null}.
+	 * @throws XBeeException if there is any XBee related exception.
 	 * 
 	 * @see XBee16BitAddress
 	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
@@ -250,11 +251,11 @@ public class Raw802Device extends XBeeDevice {
 	 * @param address The 16-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
 	 * 
-	 * @throws TimeoutException if there is a timeout sending the serial data.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code address == null} or 
 	 *                              if {@code data == null}.
+	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see XBee16BitAddress
 	 * @see #getReceiveTimeout()
@@ -291,6 +292,8 @@ public class Raw802Device extends XBeeDevice {
 	 */
 	@Override
 	protected IOSample getIOSample(IOLine ioLine) throws TimeoutException, XBeeException {
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -356,6 +359,7 @@ public class Raw802Device extends XBeeDevice {
 		 * (non-Javadoc)
 		 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
 		 */
+		@Override
 		public void packetReceived(XBeePacket receivedPacket) {
 			// Discard non API packets.
 			if (!(receivedPacket instanceof XBeeAPIPacket))

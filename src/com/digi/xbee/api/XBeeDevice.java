@@ -1667,14 +1667,17 @@ public class XBeeDevice {
 	 * @param ioLine The IO line to obtain its associated IO sample.
 	 * @return An IO sample containing the value of the provided IO line.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws TimeoutException if there is a timeout getting the IO sample.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
 	 * 
 	 * @see IOSample
 	 * @see IOLine
 	 */
 	protected IOSample getIOSample(IOLine ioLine) throws TimeoutException, XBeeException {
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();

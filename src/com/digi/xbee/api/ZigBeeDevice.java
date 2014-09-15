@@ -30,8 +30,8 @@ public class ZigBeeDevice extends XBeeDevice {
 	 *                 Other connection parameters will be set as default (8 
 	 *                 data bits, 1 stop bit, no parity, no flow control).
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 */
 	public ZigBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -48,12 +48,12 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @param parity Serial port data bits.
 	 * @param flowControl Serial port data bits.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
 	 *                                  if {@code dataBits < 0} or
 	 *                                  if {@code stopBits < 0} or
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
+	 * @throws NullPointerException if {@code port == null}.
 	 */
 	public ZigBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -100,6 +100,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 *                        remote ZigBee device
 	 * @param xbee64BitAddress The 64-bit address to identify this remote ZigBee 
 	 *                         device.
+	 * 
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code xbee64BitAddress == null}.
 	 * 
@@ -132,7 +133,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#sendSerialData(com.digi.xbee.api.models.XBee64BitAddress, com.digi.xbee.api.models.XBee16BitAddress, byte[])
 	 */
 	@Override
-	protected void sendSerialData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
+	public void sendSerialData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
 		super.sendSerialData(address64Bit, address16bit, data);
 	}
 }

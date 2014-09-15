@@ -14,7 +14,7 @@ package com.digi.xbee.api.localdio;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.ZigBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
@@ -56,7 +56,7 @@ public class MainApp {
 		System.out.println(" | XBee Java Library Get/Set Local DIO Sample  |");
 		System.out.println(" +---------------------------------------------+\n");
 		
-		final XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
+		final ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
 		
 		Timer readADCTimer = new Timer();
 		
@@ -85,9 +85,9 @@ public class MainApp {
 	 * @see TimerTask
 	 */
 	private static class UpdateOutputTask extends TimerTask {
-		private XBeeDevice xbeeDevice;
+		private ZigBeeDevice xbeeDevice;
 		
-		public UpdateOutputTask(XBeeDevice xbeeDevice) {
+		public UpdateOutputTask(ZigBeeDevice xbeeDevice) {
 			this.xbeeDevice = xbeeDevice;
 		}
 		

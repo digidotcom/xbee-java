@@ -9,6 +9,9 @@
   the output to follow the input.
   
   While the push button is pressed the LED should be lighting.
+  
+  NOTE: This example uses the XBee ZigBee device (ZigBeeDevice) class, but all
+  the features described are also applicable to any XBee device class.
 
 
   Files
@@ -23,7 +26,7 @@
   ------------
   To run this example you will need:
   
-    * One XBee radio in API mode and its corresponding carrier board 
+    * One XBee ZigBee radio in API mode and its corresponding carrier board 
       (XBIB or XBee Development Board).
 
 

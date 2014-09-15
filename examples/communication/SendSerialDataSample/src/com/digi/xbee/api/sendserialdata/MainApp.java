@@ -11,7 +11,7 @@
 */
 package com.digi.xbee.api.sendserialdata;
 
-import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.ZigBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 //TODO Uncomment this import if you are using a 16-bit destination address.
 //import com.digi.xbee.api.models.XBee16BitAddress;
@@ -54,7 +54,7 @@ public class MainApp {
 		System.out.println(" |  XBee Java Library Send Data Sample  |");
 		System.out.println(" +--------------------------------------+\n");
 		
-		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
+		ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
 		byte[] dataToSend = DATA_TO_SEND.getBytes();
 		
 		// Use an XBee64BitAddress object when using a 64-bit destination address.

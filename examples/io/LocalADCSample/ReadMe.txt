@@ -5,6 +5,9 @@
   
   The application configures an IO line of the XBee device as ADC. Then, 
   periodically reads its value and prints it in the output console.
+  
+  NOTE: This example uses the XBee ZigBee device (ZigBeeDevice) class, but all
+  the features described are also applicable to any XBee device class.
 
 
   Files
@@ -19,7 +22,7 @@
   ------------
   To run this example you will need:
   
-    * One XBee radio in API mode and its corresponding carrier board 
+    * One XBee ZigBee radio in API mode and its corresponding carrier board 
       (XBIB or XBee Development Board).
 
 

@@ -11,7 +11,7 @@
 */
 package com.digi.xbee.api.receiveserialdata;
 
-import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.ZigBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 /**
@@ -41,7 +41,7 @@ public class MainApp {
 		System.out.println(" |  XBee Java Library Receive Data Sample  |");
 		System.out.println(" +-----------------------------------------+\n");
 		
-		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
+		ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
 		
 		try {
 			myDevice.open();

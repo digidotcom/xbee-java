@@ -48,15 +48,10 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
-import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
-import com.digi.xbee.api.packet.raw.RX16IOPacket;
-import com.digi.xbee.api.packet.raw.RX64IOPacket;
-import com.digi.xbee.api.packet.raw.TX16Packet;
-import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
@@ -85,15 +80,9 @@ public class XBeeDevice {
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
 	
-	private Logger logger;
+	protected Logger logger;
 	
 	private XBeeDevice localXBeeDevice;
-	
-	private Object ioLock = new Object();
-	
-	private boolean ioPacketReceived = false;
-	
-	private byte[] ioPacketPayload;
 	
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
@@ -165,9 +154,9 @@ public class XBeeDevice {
 			throw new NullPointerException("ConnectionInterface cannot be null.");
 		
 		this.connectionInterface = connectionInterface;
-		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
+		this.logger = LoggerFactory.getLogger(this.getClass());
 		logger.debug(toString() + "Using the connection interface {}.", 
-				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
+				connectionInterface.getClass().getSimpleName());
 	}
 	
 	/**
@@ -196,9 +185,9 @@ public class XBeeDevice {
 		this.localXBeeDevice = localXBeeDevice;
 		this.connectionInterface = localXBeeDevice.getConnectionInterface();
 		this.xbee64BitAddress = xbee64BitAddress;
-		this.logger = LoggerFactory.getLogger(XBeeDevice.class);
+		this.logger = LoggerFactory.getLogger(this.getClass());
 		logger.debug(toString() + "Using the connection interface {}.", 
-				connectionInterface.getClass().getSimpleName(),  connectionInterface.toString());
+				connectionInterface.getClass().getSimpleName());
 	}
 	
 	/**
@@ -1061,69 +1050,7 @@ public class XBeeDevice {
 		
 		logger.info(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
-		// Depending on the protocol of the XBee device, the packet to send may vary.
-		XBeePacket xbeePacket;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			// Generate and send the Tx64 packet.
-			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			break;
-		default:
-			// Generate and send the Transmit packet.
-			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-		}
-		sendAndCheckXBeePacket(xbeePacket, true);
-	}
-	
-	/**
-	 * Sends the provided data to the XBee device of the network corresponding 
-	 * to the given 16-bit address asynchronously.
-	 * 
-	 * <p>Asynchronous transmissions do not wait for answer from the remote 
-	 * device or for transmit status packet.</p>
-	 * 
-	 * @param address The 16-bit address of the XBee that will receive the data.
-	 * @param data Byte array containing data to be sent.
-	 * 
-	 * @throws XBeeException if there is any XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code address == null} or 
-	 *                              if {@code data == null}.
-	 * 
-	 * @see XBee16BitAddress
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(XBeeDevice, byte[])
-	 */
-	public void sendSerialDataAsync(XBee16BitAddress address, byte[] data) throws XBeeException {
-		// Verify the parameters are not null, if they are null, throw an exception.
-		if (address == null)
-			throw new NullPointerException("Address cannot be null");
-		if (data == null)
-			throw new NullPointerException("Data cannot be null");
-		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		// Check if device is remote.
-		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
-		
-		logger.info(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
-		
-		// Depending on the protocol of the XBee device, the packet to send may vary.
-		XBeePacket xbeePacket;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			// Generate and send the Tx16 packet.
-			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			break;
-		default:
-			// Generate and send the Transmit packet.
-			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-		}
+		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
 	}
 	
@@ -1160,7 +1087,7 @@ public class XBeeDevice {
 	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
 	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
 	 */
-	public void sendSerialDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws XBeeException {
+	protected void sendSerialDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address64Bit == null)
 			throw new NullPointerException("64-bit address cannot be null");
@@ -1179,18 +1106,7 @@ public class XBeeDevice {
 		logger.info(toString() + "Sending serial data asynchronously to {}[{}] >> {}.", 
 				address64Bit, address16bit, HexUtils.prettyHexString(data));
 		
-		// Depending on the protocol of the XBee device, the packet to send may vary.
-		XBeePacket xbeePacket;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			// TODO We don't know which address should be used: 16-bit/64-bit.
-			// For the moment we are going to use 64-bit address by default.
-			xbeePacket = new TX64Packet(getNextFrameID(), address64Bit, XBeeTransmitOptions.NONE, data);
-			break;
-		default:
-			// Generate and send the Transmit packet.
-			xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
-		}
+		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
 	}
 	
@@ -1267,78 +1183,7 @@ public class XBeeDevice {
 		
 		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
-		// Depending on the protocol of the XBee device, the packet to send may vary.
-		XBeePacket xbeePacket;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			// Generate and send the Tx64 packet.
-			xbeePacket = new TX64Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			break;
-		default:
-			// Generate and send the Transmit packet.
-			xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
-		}
-		sendAndCheckXBeePacket(xbeePacket, false);
-	}
-	
-	/**
-	 * Sends the provided data to the XBee device of the network corresponding 
-	 * to the given 16-bit address.
-	 * 
-	 * <p>This method blocks till a success or error response arrives or the 
-	 * configured receive timeout expires.</p>
-	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
-	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
-	 * 
-	 * <p>For non-blocking operations use the method 
-	 * {@link #sendSerialData(XBee16BitAddress, byte[])}.</p>
-	 * 
-	 * @param address The 16-bit address of the XBee that will receive the data.
-	 * @param data Byte array containing data to be sent.
-	 * 
-	 * @throws TimeoutException if there is a timeout sending the serial data.
-	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code address == null} or 
-	 *                              if {@code data == null}.
-	 * 
-	 * @see XBee16BitAddress
-	 * @see #getReceiveTimeout()
-	 * @see #setReceiveTimeout(int)
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(XBeeDevice, byte[])
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
-	 */
-	public void sendSerialData(XBee16BitAddress address, byte[] data) throws TimeoutException, XBeeException {
-		// Verify the parameters are not null, if they are null, throw an exception.
-		if (address == null)
-			throw new NullPointerException("Address cannot be null");
-		if (data == null)
-			throw new NullPointerException("Data cannot be null");
-		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		// Check if device is remote.
-		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
-		
-		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
-		
-		// Depending on the protocol of the XBee device, the packet to send may vary.
-		XBeePacket xbeePacket;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			// Generate and send the Tx16 packet.
-			xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
-			break;
-		default:
-			// Generate and send the Transmit packet.
-			xbeePacket = new TransmitPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, address, 0, XBeeTransmitOptions.NONE, data);
-		}
+		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);
 	}
 	
@@ -1382,7 +1227,7 @@ public class XBeeDevice {
 	 * @see #sendSerialDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
 	 * @see #sendSerialDataAsync(XBeeDevice, byte[])
 	 */
-	public void sendSerialData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
+	protected void sendSerialData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address64Bit == null)
 			throw new NullPointerException("64-bit address cannot be null");
@@ -1401,18 +1246,7 @@ public class XBeeDevice {
 		logger.info(toString() + "Sending serial data to {}[{}] >> {}.", 
 				address64Bit, address16bit, HexUtils.prettyHexString(data));
 		
-		// Depending on the protocol of the XBee device, the packet to send may vary.
-		XBeePacket xbeePacket;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			// TODO We don't know which address should be used: 16-bit/64-bit.
-			// For the moment we are going to use 64-bit address by default.
-			xbeePacket = new TX64Packet(getNextFrameID(), address64Bit, XBeeTransmitOptions.NONE, data);
-			break;
-		default:
-			// Generate and send the Transmit packet.
-			xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
-		}
+		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);
 	}
 	
@@ -1467,7 +1301,7 @@ public class XBeeDevice {
 	 * 
 	 * @see XBeePacket
 	 */
-	private void sendAndCheckXBeePacket(XBeePacket packet, boolean asyncTransmission) throws TransmitException, XBeeException {
+	protected void sendAndCheckXBeePacket(XBeePacket packet, boolean asyncTransmission) throws TransmitException, XBeeException {
 		XBeePacket receivedPacket = null;
 		
 		// Send the XBee packet.
@@ -1659,43 +1493,8 @@ public class XBeeDevice {
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
-		// Check IO line.
-		if (ioLine == null)
-			throw new NullPointerException("IO line cannot be null.");
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		IOSample ioSample;
-		byte[] samplePayload = null;
-		
-		// If the protocol is 802.15.4 we need to receive an Rx16 or Rx64 IO packet
-		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
-			samplePayload = receiveIOPacket();
-			if (samplePayload == null)
-				throw new TimeoutException("Timeout waiting for the IO response packet.");
-		} else
-			samplePayload = response.getResponse();
-		
-		// Try to build an IO Sample from the sample payload.
-		try {
-			ioSample = new IOSample(samplePayload);
-		} catch (IllegalArgumentException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		} catch (NullPointerException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		}
+		// Obtain an IO Sample from the XBee device.
+		IOSample ioSample = getIOSample(ioLine);
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
@@ -1837,40 +1636,9 @@ public class XBeeDevice {
 		// Check IO line.
 		if (ioLine == null)
 			throw new NullPointerException("IO line cannot be null.");
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		IOSample ioSample;
-		byte[] samplePayload = null;
-		
-		// If the protocol is 802.15.4 we need to receive an Rx16 or Rx64 IO packet
-		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
-			samplePayload = receiveIOPacket();
-			if (samplePayload == null)
-				throw new TimeoutException("Timeout waiting for the IO response packet.");
-		} else
-			samplePayload = response.getResponse();
-		
-		// Try to build an IO Sample from the sample payload.
-		try {
-			ioSample = new IOSample(samplePayload);
-		} catch (IllegalArgumentException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		} catch (NullPointerException e) {
-			throw new XBeeException("Couldn't create the IO sample.", e);
-		}
+		// Obtain an IO Sample from the XBee device.
+		IOSample ioSample = getIOSample(ioLine);
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
@@ -1889,7 +1657,7 @@ public class XBeeDevice {
 	 * @throws ATCommandException if {@code response == null} or 
 	 *                            if {@code response.getResponseStatus() != ATCommandStatus.OK}.
 	 */
-	private void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
+	protected void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
 		if (response == null || response.getResponseStatus() == null)
 			throw new ATCommandException(null);
 		else if (response.getResponseStatus() != ATCommandStatus.OK)
@@ -1897,67 +1665,49 @@ public class XBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the latest IO packet and returns its value.
+	 * Retrieves an IO sample from the XBee device containing the value of the 
+	 * provided IO line.
 	 * 
-	 * @return The value of the latest received IO packet. 
+	 * @param ioLine The IO line to obtain its associated IO sample.
+	 * @return An IO sample containing the value of the provided IO line.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws TimeoutException if there is a timeout getting the IO sample.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see IOSample
+	 * @see IOLine
 	 */
-	private byte[] receiveIOPacket() {
-		ioPacketReceived = false;
-		ioPacketPayload = null;
-		startListeningForPackets(IOPacketReceiveListener);
-		synchronized (ioLock) {
-			try {
-				ioLock.wait(receiveTimeout);
-			} catch (InterruptedException e) { }
+	protected IOSample getIOSample(IOLine ioLine) throws TimeoutException, XBeeException {
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
 		}
-		stopListeningForPackets(IOPacketReceiveListener);
-		if (ioPacketReceived)
-			return ioPacketPayload;
-		return null;
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Try to build an IO Sample from the sample payload.
+		IOSample ioSample;
+		try {
+			ioSample = new IOSample(response.getResponse());
+		} catch (IllegalArgumentException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		} catch (NullPointerException e) {
+			throw new XBeeException("Couldn't create the IO sample.", e);
+		}
+		return ioSample;
 	}
-	
-	/**
-	 * Custom listener for IO packets. It will try to receive an IO sample packet.
-	 * 
-	 * <p>When an IO sample packet is received, it saves its payload and notifies 
-	 * the object that was waiting for the reception.</p>
-	 */
-	private IPacketReceiveListener IOPacketReceiveListener = new IPacketReceiveListener() {
-		/*
-		 * (non-Javadoc)
-		 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
-		 */
-		public void packetReceived(XBeePacket receivedPacket) {
-			// Discard non API packets.
-			if (!(receivedPacket instanceof XBeeAPIPacket))
-				return;
-			// If we already have received an IO packet, ignore this packet.
-			if (ioPacketReceived)
-				return;
-			
-			// Save the packet value (IO sample payload)
-			switch (((XBeeAPIPacket)receivedPacket).getFrameType()) {
-			case IO_DATA_SAMPLE_RX_INDICATOR:
-				ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getRFData();
-				break;
-			case RX_IO_16:
-				ioPacketPayload = ((RX16IOPacket)receivedPacket).getRFData();
-				break;
-			case RX_IO_64:
-				ioPacketPayload = ((RX64IOPacket)receivedPacket).getRFData();
-				break;
-			default:
-				return;
-			}
-			// Set the IO packet received flag.
-			ioPacketReceived = true;
-			
-			// Continue execution by notifying the lock object.
-			synchronized (ioLock) {
-				ioLock.notify();
-			}
-		}
-	};
 	
 	/*
 	 * (non-Javadoc)

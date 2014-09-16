@@ -2,6 +2,9 @@
   ------------
   This is a sample Java application to show how to perform a software reset on
   the local XBee module.
+  
+  NOTE: This example uses the XBee ZigBee device (ZigBeeDevice) class, but all
+  the features described are also applicable to any XBee device class.
 
 
   Files
@@ -15,7 +18,7 @@
   ------------
   To run this example you will need:
   
-    * One XBee radio in API mode and its corresponding carrier board 
+    * One XBee ZigBee radio in API mode and its corresponding carrier board 
       (XBIB or XBee Development Board).
 
 

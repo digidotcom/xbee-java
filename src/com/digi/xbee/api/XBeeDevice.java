@@ -64,7 +64,7 @@ public class XBeeDevice {
 	protected static int TIMEOUT_BEFORE_COMMAND_MODE = 1200;
 	protected static int TIMEOUT_ENTER_COMMAND_MODE = 1500;
 	
-	private static int SOFTWARE_RESET_TIMEOUT = 5000;
+	private static int TIMEOUT_RESET = 5000;
 	
 	private static String COMMAND_MODE_CHAR = "+";
 	private static String COMMAND_MODE_OK = "OK\r";
@@ -1742,11 +1742,13 @@ public class XBeeDevice {
 		// Check if AT Command response is valid.
 		checkATCommandResponseIsValid(response);
 		
-		// Wait for a Modem Status packet.
-		if (!waitForModemStatusPacket())
-			throw new TimeoutException("Timeout waiting for the Modem Status packet.");
-		
-		logger.info(toString() + "Module reset successfully.");
+		if (!isRemote()) {
+			// Wait for a Modem Status packet.
+			if (!waitForModemStatusPacket())
+				throw new TimeoutException("Timeout waiting for the Modem Status packet.");
+			
+			logger.info(toString() + "Module reset successfully.");
+		}
 	}
 	
 	/**
@@ -1760,11 +1762,11 @@ public class XBeeDevice {
 		startListeningForPackets(modemStatusListener);
 		synchronized (resetLock) {
 			try {
-				resetLock.wait(SOFTWARE_RESET_TIMEOUT);
+				resetLock.wait(TIMEOUT_RESET);
 			} catch (InterruptedException e) { }
 		}
 		stopListeningForPackets(modemStatusListener);
-		return isRemote() ? true : modemStatusReceived;
+		return modemStatusReceived;
 	}
 	
 	/**

@@ -76,18 +76,13 @@ public class ResetModuleTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected=InterfaceNotOpenException.class)
 	public void testSoftwareResetConnectionClosed() throws Exception {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Perform a software reset.
-		try {
-			xbeeDevice.reset();
-			fail("Software reset shouldn't have been performed successfully.");
-		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
-		}
+		xbeeDevice.reset();
 	}
 	
 	/**
@@ -114,18 +109,13 @@ public class ResetModuleTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected=ATCommandException.class)
 	public void testSoftwareResetError() throws Exception {
 		// Return the mocked ATCommand OK packet when sending the mocked atCommandPacket object.
 		PowerMockito.doReturn(atCommandResponseError).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(atCommandPacket), Mockito.anyBoolean());
 		
 		// Perform a software reset.
-		try {
-			xbeeDevice.reset();
-			fail("Software reset shouldn't have been performed successfully.");
-		} catch (Exception e) {
-			assertEquals(ATCommandException.class, e.getClass());
-		}
+		xbeeDevice.reset();
 	}
 	
 	/**
@@ -134,35 +124,27 @@ public class ResetModuleTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected=TimeoutException.class)
 	public void testSoftwareResetModemStatusPacketNotReceived() throws Exception {
 		// Return False when waiting for the Modem Status packet.
 		PowerMockito.doReturn(false).when(xbeeDevice, WAIT_FOR_MODEM_STATUS_PACKET_METHOD);
 		
 		// Perform a software reset.
-		try {
-			xbeeDevice.reset();
-			fail("Software reset shouldn't have been performed successfully.");
-		} catch (Exception e) {
-			assertEquals(TimeoutException.class, e.getClass());
-		}
+		xbeeDevice.reset();
 	}
 	
 	/**
 	 * Verify that the software reset fails when the operating mode is AT.
+	 * 
+	 * @throws Exception 
 	 */
-	@Test
-	public void testSoftwareResetInvalidOperatingMode() {
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testSoftwareResetInvalidOperatingMode() throws Exception {
 		// Return that the operating mode of the device is AT when asked.
 		Mockito.when(xbeeDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
 		
 		// Perform a software reset.
-		try {
-			xbeeDevice.reset();
-			fail("Software reset shouldn't have been performed successfully.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
+		xbeeDevice.reset();
 	}
 	
 	/**
@@ -171,18 +153,13 @@ public class ResetModuleTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+	@Test(expected=TimeoutException.class)
 	public void testSoftwareResetTimeout() throws Exception {
 		// Throw a TimeoutException exception when sending the mocked atCommandPacket packet.
 		PowerMockito.doThrow(new TimeoutException()).when(xbeeDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(atCommandPacket), Mockito.anyBoolean());
 		
 		// Perform a software reset.
-		try {
-			xbeeDevice.reset();
-			fail("Software reset shouldn't have been performed successfully.");
-		} catch (Exception e) {
-			assertEquals(TimeoutException.class, e.getClass());
-		}
+		xbeeDevice.reset();
 	}
 	
 	/**

@@ -95,6 +95,7 @@ public enum XBeeProtocol {
 	 * 
 	 * @param hardwareVersion The hardware version to determine its protocol.
 	 * @param firmwareVersion The firmware version to determine its protocol.
+	 * @return The XBee protocol corresponding to the given hardware and firmware versions.
 	 */
 	public static XBeeProtocol determineProtocol(HardwareVersion hardwareVersion, String firmwareVersion) {
 		if (hardwareVersion == null || firmwareVersion == null || hardwareVersion.getValue() < 0x09)

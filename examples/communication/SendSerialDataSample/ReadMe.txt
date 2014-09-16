@@ -5,8 +5,8 @@
   Library.
   
   The application sends data to a remote XBee device on the network, by using 
-  its 64-bit/16-bit address. Note that the address of the remote device has to 
-  be written in the code before running the application.
+  its 64-bit address. Note that the address of the remote device has to be 
+  written in the code before running the application.
   
   NOTE: This example uses the XBee ZigBee device (ZigBeeDevice) class, but all
   the features described are also applicable to any XBee device class.

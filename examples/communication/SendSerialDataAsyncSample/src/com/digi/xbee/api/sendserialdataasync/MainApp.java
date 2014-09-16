@@ -13,8 +13,6 @@ package com.digi.xbee.api.sendserialdataasync;
 
 import com.digi.xbee.api.ZigBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
-//TODO Uncomment this import if you are using a 16-bit destination address.
-//import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -22,7 +20,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * XBee Java Library Send Data Asynchronously sample application.
  * 
  * <p>This example sends data asynchronously to a remote device with the 
- * provided 64-bit or 16-bit address.</p>
+ * provided 64-bit address.</p>
  * 
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>
@@ -38,8 +36,6 @@ public class MainApp {
 	
 	// TODO Replace with the 64-bit address of your receiver module.
 	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
-	// TODO Replace with the 16-bit address of your receiver module.
-	//private static final XBee16BitAddress DESTINATION_16_BIT_ADDRESS = new XBee16BitAddress("XXXX");
 	
 	// TODO Replace with the data to send.
 	private static final String DATA_TO_SEND = "Hello XBee!";
@@ -59,8 +55,6 @@ public class MainApp {
 		
 		// Use an XBee64BitAddress object when using a 64-bit destination address.
 		XBee64BitAddress destinationAddress = DESTINATION_64_BIT_ADDRESS;
-		// Use an XBee16BitAddress object when using a 16-bit destination address.
-		//XBee16BitAddress destinationAddress = DESTINATION_16_BIT_ADDRESS;
 		
 		try {
 			myDevice.open();

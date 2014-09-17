@@ -38,6 +38,8 @@ import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
+import com.digi.xbee.api.models.HardwareVersion;
+import com.digi.xbee.api.models.HardwareVersionEnum;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
@@ -89,6 +91,11 @@ public class XBeeDevice {
 	
 	private Object resetLock = new Object();
 	private boolean modemStatusReceived = false;
+	private String nodeID;
+	private String firmwareVersion;
+	
+	private HardwareVersion hardwareVersion;
+	
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object in the 
 	 * given port name and baud rate.
@@ -218,25 +225,26 @@ public class XBeeDevice {
 		
 		// Data reader initialization and determining operating mode should be only 
 		// done for local XBee devices.
-		if (isRemote())
-			return;
-		
-		// Initialize the data reader.
-		dataReader = new DataReader(connectionInterface, operatingMode);
-		dataReader.start();
-		
-		// Determine the operating mode of the XBee device if it is unknown.
-		if (operatingMode == OperatingMode.UNKNOWN)
-			operatingMode = determineOperatingMode();
-		
-		// Check if the operating mode is a valid and supported one.
-		if (operatingMode == OperatingMode.UNKNOWN) {
-			close();
-			throw new InvalidOperatingModeException("Could not determine operating mode.");
-		} else if (operatingMode == OperatingMode.AT) {
-			close();
-			throw new InvalidOperatingModeException(operatingMode);
+		if (!isRemote()) {
+			// Initialize the data reader.
+			dataReader = new DataReader(connectionInterface, operatingMode);
+			dataReader.start();
+			
+			// Determine the operating mode of the XBee device if it is unknown.
+			if (operatingMode == OperatingMode.UNKNOWN)
+				operatingMode = determineOperatingMode();
+			
+			// Check if the operating mode is a valid and supported one.
+			if (operatingMode == OperatingMode.UNKNOWN) {
+				close();
+				throw new InvalidOperatingModeException("Could not determine operating mode.");
+			} else if (operatingMode == OperatingMode.AT) {
+				close();
+				throw new InvalidOperatingModeException(operatingMode);
+			}
 		}
+		// Initialize the device (obtain its parameters and protocol).
+		initializeDevice();
 	}
 	
 	/**
@@ -392,6 +400,104 @@ public class XBeeDevice {
 	}
 	
 	/**
+	 * Initializes the XBee device. Reads some parameters from the device and 
+	 * obtains its protocol.
+	 * 
+	 * @throws InvalidOperatingModeException if the operating mode of the device is not supported.
+	 * @throws TimeoutException if there is a timeout reading the parameters.
+	 * @throws OperationNotSupportedException if any of the operations performed in the method is not supported.
+	 * @throws ATCommandException if there is any problem sending the AT commands.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
+	 * @see #xbee64BitAddress
+	 * @see #nodeID
+	 * @see #hardwareVersion
+	 * @see #firmwareVersion
+	 * @see #xbeeProtocol
+	 * @see HardwareVersion
+	 * @see HardwareVersionEnum
+	 * @see XBeeProtocol
+	 */
+	protected void initializeDevice() 
+			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
+			ATCommandException, XBeeException {
+		ATCommandResponse response = null;
+		// Get the 64-bit address only if the XBee device is a local device. Remote devices already 
+		// have the 64-bit address set.
+		if (!isRemote()) {
+			if (xbee64BitAddress == null) {
+				String addressHigh;
+				String addressLow;
+				try {
+					response = sendATCommand(new ATCommand("SH"));
+				} catch (IOException e) {
+					throw new XBeeException("Error writing in the communication interface.", e);
+				}
+				if (response == null || response.getResponse() == null)
+					throw new OperationNotSupportedException("Couldn't get the SH value.");
+				if (response.getResponseStatus() != ATCommandStatus.OK)
+					throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
+				addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
+				try {
+					response = sendATCommand(new ATCommand("SL"));
+				} catch (IOException e) {
+					throw new XBeeException("Error writing in the communication interface.", e);
+				}
+				if (response == null || response.getResponse() == null)
+					throw new OperationNotSupportedException("Couldn't get the SL value.");
+				if (response.getResponseStatus() != ATCommandStatus.OK)
+					throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
+				addressLow = HexUtils.byteArrayToHexString(response.getResponse());
+				while(addressLow.length() < 8)
+					addressLow = "0" + addressLow;
+				xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
+			}
+		}
+		// Get the Node ID.
+		if (nodeID == null) {
+			try {
+				response = sendATCommand(new ATCommand("NI"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the NI value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
+			nodeID = new String(response.getResponse());
+		}
+		// Get the hardware version.
+		if (hardwareVersion == null) {
+			try {
+				response = sendATCommand(new ATCommand("HV"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the HV value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the HV value.", response.getResponseStatus());
+			hardwareVersion = HardwareVersion.get(response.getResponse()[0]);
+		}
+		// Get the firmware version.
+		if (firmwareVersion == null) {
+			try {
+				response = sendATCommand(new ATCommand("VR"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the VR value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the VR value.", response.getResponseStatus());
+			firmwareVersion = HexUtils.byteArrayToHexString(response.getResponse());
+		}
+		// Obtain the device protocol.
+		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
+	}
+	
+	/**
 	 * Retrieves the 64-bit address of the XBee device.
 	 * 
 	 * @return The 64-bit address of the XBee device.
@@ -435,6 +541,110 @@ public class XBeeDevice {
 	 */
 	protected void setXBeeProtocol(XBeeProtocol xbeeProtocol) {
 		this.xbeeProtocol = xbeeProtocol;
+	}
+	
+	/**
+	 * Retrieves the node identifier of the XBee device.
+	 * 
+	 * @return The node identifier of the device.
+	 * 
+	 * @see #setNodeID(String)
+	 * @see #getNodeID(boolean)
+	 */
+	public String getNodeID() {
+		return nodeID;
+	}
+	
+	/**
+	 * Retrieves the node identifier of the XBee device. This method allows for refreshing 
+	 * the value reading it again from the device or retrieving the cached value.
+	 * 
+	 * @param refresh Indicates whether or not the value of the node ID should be refreshed 
+	 *                (read again from the device)
+	 * @return The node identifier of the device.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the node ID value.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
+	 * @see #setNodeID(String)
+	 * @see #getNodeID()
+	 */
+	public String getNodeID(boolean refresh) throws TimeoutException, XBeeException {
+		if (!refresh)
+			return nodeID;
+		ATCommandResponse response;
+		try {
+			response = sendATCommand(new ATCommand("NI"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		if (response == null || response.getResponse() == null)
+			throw new OperationNotSupportedException("Couldn't get the NI value.");
+		if (response.getResponseStatus() != ATCommandStatus.OK)
+			throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
+		
+		nodeID = new String(response.getResponse());
+		return nodeID;
+	}
+	
+	/**
+	 * Sets the node identifier of the XBee device.
+	 * 
+	 * @param nodeID The new node id of the device.
+	 * 
+	 * @throws TimeoutException if there is a timeout setting the node ID value.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code nodeID == null}.
+	 * @throws IllegalArgumentException if {@code nodeID.length > 20}.
+	 * 
+	 * @see #getNodeID()
+	 * @see #getNodeID(boolean)
+	 */
+	public void setNodeID(String nodeID) throws TimeoutException, XBeeException {
+		if (nodeID == null)
+			throw new NullPointerException("Node ID cannot be null.");
+		if (nodeID.length() > 20)
+			throw new IllegalArgumentException("Node ID length must be less than 21.");
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		ATCommandResponse response;
+		try {
+			response = sendATCommand(new ATCommand("NI", nodeID));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		if (response == null)
+			throw new OperationNotSupportedException("Couldn't set the NI value.");
+		if (response.getResponseStatus() != ATCommandStatus.OK)
+			throw new ATCommandException("Couldn't set the NI value.", response.getResponseStatus());
+		
+		this.nodeID = nodeID;
+	}
+	
+	/**
+	 * Retrieves the firmware version (hexadecimal string value) of the XBee device.
+	 * 
+	 * @return The firmware version of the XBee device.
+	 */
+	public String getFirmwareVersion() {
+		return firmwareVersion;
+	}
+	
+	/**
+	 * Retrieves the hardware version of the XBee device.
+	 * 
+	 * @return The hardware version of the XBee device.
+	 * 
+	 * @see HardwareVersion
+	 * @see HardwareVersionEnum
+	 */
+	public HardwareVersion getHardwareVersion() {
+		return hardwareVersion;
 	}
 	
 	/**

@@ -65,6 +65,8 @@ public class XBeeDeviceConnectTest {
 		
 		// Instantiate an XBeeDevice object with basic parameters.
 		xbeeDevice = PowerMockito.spy(new XBeeDevice(connectionInterface));
+		// Stub the initializeDevice method to do nothing (it has its own test file).
+		Mockito.doNothing().when(xbeeDevice).initializeDevice();
 		
 		// Mock a DataReader object (used in the XBeeDevice connect process).
 		dataReader = Mockito.mock(DataReader.class);

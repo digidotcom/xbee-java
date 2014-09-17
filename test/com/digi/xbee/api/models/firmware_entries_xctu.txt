@@ -1,0 +1,551 @@
+01 ; 42AF ; Unknown
+01 ; 42B0 ; Unknown
+01 ; 42B5 ; Unknown
+01 ; 5000 ; Unknown
+02 ; 42AF ; Unknown
+02 ; 42B0 ; Unknown
+02 ; 42B5 ; Unknown
+02 ; 5000 ; Unknown
+03 ; 42AF ; Unknown
+03 ; 42B0 ; Unknown
+03 ; 42B5 ; Unknown
+03 ; 5000 ; Unknown
+04 ; 42AF ; Unknown
+04 ; 42B0 ; Unknown
+04 ; 42B5 ; Unknown
+04 ; 5000 ; Unknown
+05 ; 42AF ; Unknown
+05 ; 42B0 ; Unknown
+05 ; 42B5 ; Unknown
+05 ; 5000 ; Unknown
+06 ; 42AF ; Unknown
+06 ; 42B0 ; Unknown
+06 ; 42B5 ; Unknown
+06 ; 5000 ; Unknown
+0A ; 10C ; XCite
+0A ; 10F ; XCite
+0A ; 121 ; XCite
+0A ; 20C ; XCite
+0A ; 20F ; XCite
+0A ; 221 ; XCite
+0B ; 30C ; XCite
+0B ; 30F ; XCite
+0B ; 321 ; XCite
+0B ; 40C ; XCite
+0B ; 40F ; XCite
+0B ; 421 ; XCite
+14 ; 1243 ; XTend (Legacy)
+14 ; 124 ; XTend (Legacy)
+14 ; 2001 ; XTend (Legacy)
+14 ; 2040 ; XTend (Legacy)
+14 ; 2060 ; XTend (Legacy)
+14 ; 2067 ; XTend (Legacy)
+14 ; 206C ; XTend (Legacy)
+14 ; 206E ; XTend (Legacy)
+14 ; 2201 ; XTend (Legacy)
+14 ; 2240 ; XTend (Legacy)
+14 ; 2267 ; XTend (Legacy)
+14 ; 2268 ; XTend (Legacy)
+14 ; 226E ; XTend (Legacy)
+14 ; 8020 ; XTend (DigiMesh)
+14 ; 8021 ; XTend (DigiMesh)
+14 ; 8221 ; XTend (DigiMesh)
+14 ; 28062 ; XTend (DigiMesh)
+14 ; 8062 ; XTend (DigiMesh)
+14 ; 8064 ; XTend (DigiMesh)
+17 ; 1081 ; 802.15.4
+17 ; 1083 ; 802.15.4
+17 ; 1084 ; 802.15.4
+17 ; 10A1 ; 802.15.4
+17 ; 10A2 ; 802.15.4
+17 ; 10A4 ; 802.15.4
+17 ; 10A5 ; 802.15.4
+17 ; 10CD ; 802.15.4
+17 ; 10E6 ; 802.15.4
+17 ; 10E8 ; 802.15.4
+17 ; 10EC ; 802.15.4
+17 ; 10ED ; 802.15.4
+17 ; 11E6 ; 802.15.4
+17 ; 11E8 ; 802.15.4
+17 ; 11EC ; 802.15.4
+17 ; 11ED ; 802.15.4
+17 ; 12E6 ; 802.15.4
+17 ; 13E6 ; 802.15.4
+17 ; 13E8 ; 802.15.4
+17 ; 13EC ; 802.15.4
+17 ; 13ED ; 802.15.4
+17 ; 14E6 ; 802.15.4
+17 ; 14E8 ; 802.15.4
+17 ; 14EC ; 802.15.4
+17 ; 14ED ; 802.15.4
+17 ; 15CF ; 802.15.4
+17 ; 16CF ; 802.15.4
+17 ; 16E6 ; 802.15.4
+17 ; 16E8 ; 802.15.4
+17 ; 16EC ; 802.15.4
+17 ; 16ED ; 802.15.4
+17 ; 17CF ; 802.15.4
+17 ; 17E6 ; 802.15.4
+17 ; 17E8 ; 802.15.4
+17 ; 17EC ; 802.15.4
+17 ; 17ED ; 802.15.4
+17 ; 8003 ; DigiMesh
+17 ; 804B ; DigiMesh
+17 ; 8062 ; DigiMesh
+17 ; 8064 ; DigiMesh
+17 ; 8065 ; DigiMesh
+17 ; 8067 ; DigiMesh
+17 ; 8070 ; DigiMesh
+17 ; 814B ; DigiMesh
+17 ; 8162 ; DigiMesh
+17 ; 8164 ; DigiMesh
+17 ; 8165 ; DigiMesh
+17 ; 8167 ; DigiMesh
+17 ; 8170 ; DigiMesh
+17 ; 834B ; DigiMesh
+17 ; 8362 ; DigiMesh
+17 ; 8364 ; DigiMesh
+17 ; 8365 ; DigiMesh
+17 ; 8367 ; DigiMesh
+17 ; 8370 ; DigiMesh
+17 ; 844B ; DigiMesh
+17 ; 8462 ; DigiMesh
+17 ; 8464 ; DigiMesh
+17 ; 8465 ; DigiMesh
+17 ; 8467 ; DigiMesh
+17 ; 8470 ; DigiMesh
+17 ; 864B ; DigiMesh
+17 ; 8662 ; DigiMesh
+17 ; 8664 ; DigiMesh
+17 ; 8665 ; DigiMesh
+17 ; 8667 ; DigiMesh
+17 ; 8670 ; DigiMesh
+17 ; 874B ; DigiMesh
+17 ; 8762 ; DigiMesh
+17 ; 8764 ; DigiMesh
+17 ; 8765 ; DigiMesh
+17 ; 8767 ; DigiMesh
+17 ; 8770 ; DigiMesh
+17 ; 8862 ; DigiMesh
+17 ; 8864 ; DigiMesh
+17 ; 8865 ; DigiMesh
+17 ; 8867 ; DigiMesh
+17 ; 8870 ; DigiMesh
+18 ; 1081 ; 802.15.4
+18 ; 1083 ; 802.15.4
+18 ; 1084 ; 802.15.4
+18 ; 10A1 ; 802.15.4
+18 ; 10A2 ; 802.15.4
+18 ; 10A4 ; 802.15.4
+18 ; 10A5 ; 802.15.4
+18 ; 10CD ; 802.15.4
+18 ; 10E6 ; 802.15.4
+18 ; 10E8 ; 802.15.4
+18 ; 10EC ; 802.15.4
+18 ; 10ED ; 802.15.4
+18 ; 11E6 ; 802.15.4
+18 ; 11E8 ; 802.15.4
+18 ; 11EC ; 802.15.4
+18 ; 11ED ; 802.15.4
+18 ; 12E6 ; 802.15.4
+18 ; 13E6 ; 802.15.4
+18 ; 13E8 ; 802.15.4
+18 ; 13EC ; 802.15.4
+18 ; 13ED ; 802.15.4
+18 ; 14E6 ; 802.15.4
+18 ; 14E8 ; 802.15.4
+18 ; 14EC ; 802.15.4
+18 ; 14ED ; 802.15.4
+18 ; 15CF ; 802.15.4
+18 ; 16CF ; 802.15.4
+18 ; 16E6 ; 802.15.4
+18 ; 16E8 ; 802.15.4
+18 ; 16EC ; 802.15.4
+18 ; 16ED ; 802.15.4
+18 ; 17CF ; 802.15.4
+18 ; 17E6 ; 802.15.4
+18 ; 17E8 ; 802.15.4
+18 ; 17EC ; 802.15.4
+18 ; 17ED ; 802.15.4
+18 ; 8003 ; DigiMesh
+18 ; 804B ; DigiMesh
+18 ; 8062 ; DigiMesh
+18 ; 8064 ; DigiMesh
+18 ; 8065 ; DigiMesh
+18 ; 8067 ; DigiMesh
+18 ; 8070 ; DigiMesh
+18 ; 814B ; DigiMesh
+18 ; 8162 ; DigiMesh
+18 ; 8164 ; DigiMesh
+18 ; 8165 ; DigiMesh
+18 ; 8167 ; DigiMesh
+18 ; 8170 ; DigiMesh
+18 ; 834B ; DigiMesh
+18 ; 8362 ; DigiMesh
+18 ; 8364 ; DigiMesh
+18 ; 8365 ; DigiMesh
+18 ; 8367 ; DigiMesh
+18 ; 8370 ; DigiMesh
+18 ; 844B ; DigiMesh
+18 ; 8462 ; DigiMesh
+18 ; 8464 ; DigiMesh
+18 ; 8465 ; DigiMesh
+18 ; 8467 ; DigiMesh
+18 ; 8470 ; DigiMesh
+18 ; 864B ; DigiMesh
+18 ; 8662 ; DigiMesh
+18 ; 8664 ; DigiMesh
+18 ; 8665 ; DigiMesh
+18 ; 8667 ; DigiMesh
+18 ; 8670 ; DigiMesh
+18 ; 874B ; DigiMesh
+18 ; 8762 ; DigiMesh
+18 ; 8764 ; DigiMesh
+18 ; 8765 ; DigiMesh
+18 ; 8767 ; DigiMesh
+18 ; 8770 ; DigiMesh
+18 ; 8862 ; DigiMesh
+18 ; 8864 ; DigiMesh
+18 ; 8865 ; DigiMesh
+18 ; 8867 ; DigiMesh
+18 ; 8870 ; DigiMesh
+19 ; 1020 ; ZigBee
+19 ; 1041 ; ZNet 2.5
+19 ; 1047 ; ZNet 2.5
+19 ; 1120 ; ZigBee
+19 ; 1141 ; ZNet 2.5
+19 ; 1147 ; ZNet 2.5
+19 ; 1220 ; ZigBee
+19 ; 1241 ; ZNet 2.5
+19 ; 1244 ; ZNet 2.5
+19 ; 1247 ; ZNet 2.5
+19 ; 1320 ; ZigBee
+19 ; 1341 ; ZNet 2.5
+19 ; 1347 ; ZNet 2.5
+19 ; 1420 ; ZigBee
+19 ; 1441 ; ZNet 2.5
+19 ; 1447 ; ZNet 2.5
+19 ; 1541 ; ZNet 2.5
+19 ; 1547 ; ZNet 2.5
+19 ; 1641 ; ZNet 2.5
+19 ; 1647 ; ZNet 2.5
+19 ; 1747 ; ZNet 2.5
+19 ; 3119 ; Smart Energy
+19 ; 3123 ; Smart Energy
+19 ; 3128 ; Smart Energy
+19 ; 3130 ; Smart Energy
+19 ; 3132 ; Smart Energy
+19 ; 3319 ; Smart Energy
+19 ; 3323 ; Smart Energy
+19 ; 3328 ; Smart Energy
+19 ; 3330 ; Smart Energy
+19 ; 3332 ; Smart Energy
+19 ; 3423 ; Smart Energy
+19 ; 3919 ; Smart Energy
+19 ; 3923 ; Smart Energy
+19 ; 3928 ; Smart Energy
+19 ; 3930 ; Smart Energy
+19 ; 3932 ; Smart Energy
+19 ; 2021 ; ZigBee
+19 ; 2041 ; ZigBee
+19 ; 2064 ; ZigBee
+19 ; 2070 ; ZigBee
+19 ; 208C ; ZigBee
+19 ; 20A0 ; ZigBee
+19 ; 20A7 ; ZigBee
+19 ; 2121 ; ZigBee
+19 ; 2141 ; ZigBee
+19 ; 2164 ; ZigBee
+19 ; 2170 ; ZigBee
+19 ; 218C ; ZigBee
+19 ; 21A0 ; ZigBee
+19 ; 21A7 ; ZigBee
+19 ; 2221 ; ZigBee
+19 ; 2241 ; ZigBee
+19 ; 2242 ; ZigBee
+19 ; 2264 ; ZigBee
+19 ; 2270 ; ZigBee
+19 ; 228C ; ZigBee
+19 ; 22A0 ; ZigBee
+19 ; 22A7 ; ZigBee
+19 ; 2321 ; ZigBee
+19 ; 2341 ; ZigBee
+19 ; 2364 ; ZigBee
+19 ; 2370 ; ZigBee
+19 ; 238C ; ZigBee
+19 ; 23A0 ; ZigBee
+19 ; 23A7 ; ZigBee
+19 ; 2421 ; ZigBee
+19 ; 2441 ; ZigBee
+19 ; 2464 ; ZigBee
+19 ; 2521 ; ZigBee
+19 ; 2541 ; ZigBee
+19 ; 2564 ; ZigBee
+19 ; 2621 ; ZigBee
+19 ; 2641 ; ZigBee
+19 ; 2664 ; ZigBee
+19 ; 268C ; ZigBee
+19 ; 26A0 ; ZigBee
+19 ; 26A7 ; ZigBee
+19 ; 2721 ; ZigBee
+19 ; 2741 ; ZigBee
+19 ; 2764 ; ZigBee
+19 ; 278C ; ZigBee
+19 ; 27A0 ; ZigBee
+19 ; 27A7 ; ZigBee
+19 ; 2821 ; ZigBee
+19 ; 2841 ; ZigBee
+19 ; 2864 ; ZigBee
+19 ; 2870 ; ZigBee
+19 ; 288C ; ZigBee
+19 ; 28A0 ; ZigBee
+19 ; 28A7 ; ZigBee
+19 ; 2921 ; ZigBee
+19 ; 2941 ; ZigBee
+19 ; 2964 ; ZigBee
+19 ; 2970 ; ZigBee
+19 ; 298C ; ZigBee
+19 ; 29A0 ; ZigBee
+19 ; 29A7 ; ZigBee
+19 ; 2BA7 ; ZigBee
+19 ; 2CA7 ; ZigBee
+1A ; 1041 ; ZNet 2.5
+1A ; 1047 ; ZNet 2.5
+1A ; 1141 ; ZNet 2.5
+1A ; 1147 ; ZNet 2.5
+1A ; 1241 ; ZNet 2.5
+1A ; 1247 ; ZNet 2.5
+1A ; 1341 ; ZNet 2.5
+1A ; 1347 ; ZNet 2.5
+1A ; 1441 ; ZNet 2.5
+1A ; 1447 ; ZNet 2.5
+1A ; 1541 ; ZNet 2.5
+1A ; 1547 ; ZNet 2.5
+1A ; 1641 ; ZNet 2.5
+1A ; 1647 ; ZNet 2.5
+1A ; 1747 ; ZNet 2.5
+1A ; 3119 ; Smart Energy
+1A ; 3123 ; Smart Energy
+1A ; 3128 ; Smart Energy
+1A ; 3130 ; Smart Energy
+1A ; 3132 ; Smart Energy
+1A ; 3319 ; Smart Energy
+1A ; 3323 ; Smart Energy
+1A ; 3328 ; Smart Energy
+1A ; 3330 ; Smart Energy
+1A ; 3332 ; Smart Energy
+1A ; 3423 ; Smart Energy
+1A ; 3919 ; Smart Energy
+1A ; 3923 ; Smart Energy
+1A ; 3928 ; Smart Energy
+1A ; 3930 ; Smart Energy
+1A ; 3932 ; Smart Energy
+1A ; 2021 ; ZigBee
+1A ; 2041 ; ZigBee
+1A ; 2064 ; ZigBee
+1A ; 2070 ; ZigBee
+1A ; 208C ; ZigBee
+1A ; 20A0 ; ZigBee
+1A ; 20A7 ; ZigBee
+1A ; 2121 ; ZigBee
+1A ; 2141 ; ZigBee
+1A ; 2164 ; ZigBee
+1A ; 2170 ; ZigBee
+1A ; 218C ; ZigBee
+1A ; 21A0 ; ZigBee
+1A ; 21A7 ; ZigBee
+1A ; 2221 ; ZigBee
+1A ; 2241 ; ZigBee
+1A ; 2242 ; ZigBee
+1A ; 2264 ; ZigBee
+1A ; 2270 ; ZigBee
+1A ; 228C ; ZigBee
+1A ; 22A0 ; ZigBee
+1A ; 22A7 ; ZigBee
+1A ; 2321 ; ZigBee
+1A ; 2341 ; ZigBee
+1A ; 2364 ; ZigBee
+1A ; 2370 ; ZigBee
+1A ; 238C ; ZigBee
+1A ; 23A0 ; ZigBee
+1A ; 23A7 ; ZigBee
+1A ; 2421 ; ZigBee
+1A ; 2441 ; ZigBee
+1A ; 2464 ; ZigBee
+1A ; 2521 ; ZigBee
+1A ; 2541 ; ZigBee
+1A ; 2564 ; ZigBee
+1A ; 2621 ; ZigBee
+1A ; 2641 ; ZigBee
+1A ; 2664 ; ZigBee
+1A ; 268C ; ZigBee
+1A ; 26A0 ; ZigBee
+1A ; 26A7 ; ZigBee
+1A ; 2721 ; ZigBee
+1A ; 2741 ; ZigBee
+1A ; 2764 ; ZigBee
+1A ; 278C ; ZigBee
+1A ; 27A0 ; ZigBee
+1A ; 27A7 ; ZigBee
+1A ; 2821 ; ZigBee
+1A ; 2841 ; ZigBee
+1A ; 2864 ; ZigBee
+1A ; 2870 ; ZigBee
+1A ; 288C ; ZigBee
+1A ; 28A0 ; ZigBee
+1A ; 28A7 ; ZigBee
+1A ; 2921 ; ZigBee
+1A ; 2941 ; ZigBee
+1A ; 2964 ; ZigBee
+1A ; 2970 ; ZigBee
+1A ; 298C ; ZigBee
+1A ; 29A0 ; ZigBee
+1A ; 29A7 ; ZigBee
+1A ; 2BA7 ; ZigBee
+1A ; 2CA7 ; ZigBee
+1B ; 1820 ; DigiMesh
+1B ; 28044 ; DigiMesh
+1B ; 28062 ; DigiMesh
+1B ; 8044 ; DigiMesh
+1B ; 8062 ; DigiMesh
+1B ; 8144 ; DigiMesh
+1B ; 8162 ; DigiMesh
+1B ; 8344 ; DigiMesh
+1B ; 8362 ; DigiMesh
+1B ; 8444 ; DigiMesh
+1B ; 8462 ; DigiMesh
+1B ; 8644 ; DigiMesh
+1B ; 8662 ; DigiMesh
+1B ; 8744 ; DigiMesh
+1B ; 8762 ; DigiMesh
+1B ; 1002 ; Point-to-multipoint
+1B ; 1067 ; Point-to-multipoint
+1B ; 21067 ; Point-to-multipoint
+1B ; 1061 ; Point-to-multipoint
+1B ; 1161 ; Point-to-multipoint
+1B ; 1361 ; Point-to-multipoint
+1B ; 1461 ; Point-to-multipoint
+1B ; 1661 ; Point-to-multipoint
+1B ; 1761 ; Point-to-multipoint
+1B ; 21061 ; Point-to-multipoint
+1B ; 21161 ; Point-to-multipoint
+1B ; 21361 ; Point-to-multipoint
+1B ; 21461 ; Point-to-multipoint
+1B ; 21661 ; Point-to-multipoint
+1B ; 21761 ; Point-to-multipoint
+1C ; 1020 ; XSC
+1C ; 1022 ; XSC
+1D ; 1022 ; Point-to-multipoint
+1D ; 1023 ; Point-to-multipoint
+1D ; 1025 ; Point-to-multipoint
+1D ; 1027 ; Point-to-multipoint
+1D ; 1061 ; Point-to-multipoint
+1D ; 1127 ; Point-to-multipoint
+1D ; 1161 ; Point-to-multipoint
+1D ; 1327 ; Point-to-multipoint
+1D ; 1361 ; Point-to-multipoint
+1D ; 1427 ; Point-to-multipoint
+1D ; 1461 ; Point-to-multipoint
+1D ; 1627 ; Point-to-multipoint
+1D ; 1661 ; Point-to-multipoint
+1D ; 1727 ; Point-to-multipoint
+1D ; 1761 ; Point-to-multipoint
+1E ; 3123 ; Smart Energy
+1E ; 3128 ; Smart Energy
+1E ; 3130 ; Smart Energy
+1E ; 3132 ; Smart Energy
+1E ; 3323 ; Smart Energy
+1E ; 3328 ; Smart Energy
+1E ; 3330 ; Smart Energy
+1E ; 3332 ; Smart Energy
+1E ; 3423 ; Smart Energy
+1E ; 3923 ; Smart Energy
+1E ; 3928 ; Smart Energy
+1E ; 3930 ; Smart Energy
+1E ; 3932 ; Smart Energy
+1E ; 2070 ; ZigBee
+1E ; 208C ; ZigBee
+1E ; 20A0 ; ZigBee
+1E ; 20A7 ; ZigBee
+1E ; 2170 ; ZigBee
+1E ; 218C ; ZigBee
+1E ; 21A0 ; ZigBee
+1E ; 21A7 ; ZigBee
+1E ; 2270 ; ZigBee
+1E ; 228C ; ZigBee
+1E ; 22A0 ; ZigBee
+1E ; 22A7 ; ZigBee
+1E ; 2370 ; ZigBee
+1E ; 238C ; ZigBee
+1E ; 23A0 ; ZigBee
+1E ; 23A7 ; ZigBee
+1E ; 268C ; ZigBee
+1E ; 26A0 ; ZigBee
+1E ; 26A7 ; ZigBee
+1E ; 278C ; ZigBee
+1E ; 27A0 ; ZigBee
+1E ; 27A7 ; ZigBee
+1E ; 2870 ; ZigBee
+1E ; 288C ; ZigBee
+1E ; 28A0 ; ZigBee
+1E ; 28A7 ; ZigBee
+1E ; 2970 ; ZigBee
+1E ; 298C ; ZigBee
+1E ; 29A0 ; ZigBee
+1E ; 29A7 ; ZigBee
+1E ; 2BA7 ; ZigBee
+1E ; 2CA7 ; ZigBee
+1F ; 1015 ; Wi-Fi
+1F ; 101E ; Wi-Fi
+1F ; 102B ; Wi-Fi
+1F ; 102D ; Wi-Fi
+21 ; 401E ; ZigBee
+21 ; 4020 ; ZigBee
+21 ; 4023 ; ZigBee
+21 ; 4041 ; ZigBee
+21 ; 4043 ; ZigBee
+21 ; 5122 ; Smart Energy
+21 ; 5132 ; Smart Energy
+22 ; 401E ; ZigBee
+22 ; 4020 ; ZigBee
+22 ; 4023 ; ZigBee
+22 ; 4041 ; ZigBee
+22 ; 4043 ; ZigBee
+22 ; 5122 ; Smart Energy
+22 ; 5132 ; Smart Energy
+23 ; 1067 ; Point-to-multipoint
+23 ; 106A ; Point-to-multipoint
+23 ; 1070 ; Point-to-multipoint
+23 ; 1071 ; Point-to-multipoint
+23 ; 8067 ; DigiMesh
+23 ; 806A ; DigiMesh
+23 ; 8070 ; DigiMesh
+23 ; 8071 ; DigiMesh
+23 ; 300C ; XSC
+23 ; 300D ; XSC
+23 ; 300E ; XSC
+23 ; 3011 ; XSC
+23 ; 310C ; XSC
+23 ; 310D ; XSC
+23 ; 310E ; XSC
+23 ; 3111 ; XSC
+23 ; 320C ; XSC
+23 ; 320D ; XSC
+23 ; 320E ; XSC
+23 ; 3211 ; XSC
+23 ; 330C ; XSC
+23 ; 330D ; XSC
+23 ; 330E ; XSC
+23 ; 3311 ; XSC
+23 ; 3009 ; XSC
+23 ; 3109 ; XSC
+23 ; 3209 ; XSC
+23 ; 3309 ; XSC
+24 ; 1059 ; Point-to-multipoint
+24 ; 1072 ; Point-to-multipoint
+24 ; 8059 ; DigiMesh
+24 ; 8072 ; DigiMesh
+27 ; 2004 ; Wi-Fi
+27 ; 2021 ; Wi-Fi
+28 ; 2004 ; Wi-Fi
+28 ; 2021 ; Wi-Fi

@@ -18,6 +18,7 @@ import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOSample;
@@ -133,6 +134,19 @@ public class Raw802Device extends XBeeDevice {
 	 */
 	public Raw802Device(Raw802Device localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#open()
+	 */
+	@Override
+	public void open() throws XBeeException {
+		super.open();
+		if (isRemote())
+			return;
+		if (xbeeProtocol != XBeeProtocol.RAW_802_15_4)
+			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
 	}
 	
 	/*

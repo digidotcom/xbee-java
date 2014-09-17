@@ -13,6 +13,8 @@ package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.XBeeDeviceException;
+import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
@@ -105,6 +107,19 @@ public class DigiMeshDevice extends XBeeDevice {
 	 */
 	public DigiMeshDevice(DigiMeshDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#open()
+	 */
+	@Override
+	public void open() throws XBeeException {
+		super.open();
+		if (isRemote())
+			return;
+		if (xbeeProtocol != XBeeProtocol.DIGI_MESH)
+			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
 	}
 	
 	/*

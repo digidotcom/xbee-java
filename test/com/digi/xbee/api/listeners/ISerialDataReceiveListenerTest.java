@@ -92,22 +92,22 @@ public class ISerialDataReceiveListenerTest {
 		// Mock Rx16 Packet.
 		rx16Packet = Mockito.mock(RX16Packet.class);
 		Mockito.when(rx16Packet.getFrameType()).thenReturn(APIFrameType.RX_16);
-		Mockito.when(rx16Packet.getReceivedData()).thenReturn(RECEIVED_DATA_BYTES);
-		Mockito.when(rx16Packet.getSourceAddress()).thenReturn(XBEE_16BIT_ADDRESS);
+		Mockito.when(rx16Packet.getRFData()).thenReturn(RECEIVED_DATA_BYTES);
+		Mockito.when(rx16Packet.get16bitSourceAddress()).thenReturn(XBEE_16BIT_ADDRESS);
 		Mockito.when(rx16Packet.getReceiveOptions()).thenReturn(RECEIVE_OPTIONS_UNICAST);
 		
 		// Mock Rx64 Packet.
 		rx64Packet = Mockito.mock(RX64Packet.class);
 		Mockito.when(rx64Packet.getFrameType()).thenReturn(APIFrameType.RX_64);
-		Mockito.when(rx64Packet.getReceivedData()).thenReturn(RECEIVED_DATA_BYTES);
-		Mockito.when(rx64Packet.getSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(rx64Packet.getRFData()).thenReturn(RECEIVED_DATA_BYTES);
+		Mockito.when(rx64Packet.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		Mockito.when(rx64Packet.getReceiveOptions()).thenReturn(RECEIVE_OPTIONS_UNICAST);
 		
 		// Mock Receive Packet.
 		receivePacket = Mockito.mock(ReceivePacket.class);
 		Mockito.when(receivePacket.getFrameType()).thenReturn(APIFrameType.RECEIVE_PACKET);
-		Mockito.when(receivePacket.getReceivedData()).thenReturn(RECEIVED_DATA_BYTES);
-		Mockito.when(receivePacket.get64bitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(receivePacket.getRFData()).thenReturn(RECEIVED_DATA_BYTES);
+		Mockito.when(receivePacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		Mockito.when(receivePacket.getReceiveOptions()).thenReturn(RECEIVE_OPTIONS_UNICAST);
 		
 		// Mock an invalid packet.

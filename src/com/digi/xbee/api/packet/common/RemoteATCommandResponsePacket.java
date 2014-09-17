@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * This class represents a Remote AT Command Response packet. Packet is built 
- * using the parameters of the constructor.
+ * using the parameters of the constructor or providing a valid API payload.
  * 
  * <p>If a module receives a remote command response RF data frame in response 
  * to a Remote AT Command Request, the module will send a Remote AT Command 
@@ -47,6 +48,9 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 15; // 1 (Frame type) + 1 (frame ID) + 8 (32-bit address) + 2 (16-bit address) + 2 (AT command) + 1 (status)
+	
 	// Variables
 	private final XBee64BitAddress sourceAddress64;
 	
@@ -59,6 +63,66 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	private byte[] commandValue;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code RemoteATCommandResponsePacket} from the given 
+	 * payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a Remote AT Command Response packet ({@code 0x97}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Remote AT Command Response packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.REMOTE_AT_COMMAND_RESPONSE.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static RemoteATCommandResponsePacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Remote AT Command Response packet payload cannot be null.");
+		
+		// 1 (Frame type) + 1 (frame ID) + 8 (32-bit address) + 2 (16-bit address) + 2 (AT command) + 1 (status)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Remote AT Command Response packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.REMOTE_AT_COMMAND_RESPONSE.getValue())
+			throw new IllegalArgumentException("Payload is not a Remote AT Command Response packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 8 bytes of 64-bit address.
+		XBee64BitAddress sourceAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress sourceAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// 2 bytes of AT command.
+		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		index = index + 2;
+				
+		// Status byte.
+		int status = payload[index] & 0xFF;
+		index = index + 1;
+				
+		// Get data.
+		byte[] commandData = null;
+		if (index < payload.length)
+			commandData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		// TODO if ATCommandStatus is unknown????
+		return new RemoteATCommandResponsePacket(frameID, sourceAddress64, 
+				sourceAddress16, command, ATCommandStatus.get(status), commandData);
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type 
@@ -74,8 +138,8 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
-	 * @throws NullPointerException if {@code destAddress64 == null} or
-	 *                              if {@code destAddress16 == null} or
+	 * @throws NullPointerException if {@code sourceAddress64 == null} or
+	 *                              if {@code sourceAddress16 == null} or
 	 *                              if {@code command == null} or
 	 *                              if {@code status == null}.
 	 * 
@@ -87,9 +151,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		super(APIFrameType.REMOTE_AT_COMMAND_RESPONSE);
 		
 		if (sourceAddress64 == null)
-			throw new NullPointerException("64-bit destination address cannot be null.");
+			throw new NullPointerException("64-bit source address cannot be null.");
 		if (sourceAddress16 == null)
-			throw new NullPointerException("16-bit destination address cannot be null.");
+			throw new NullPointerException("16-bit source address cannot be null.");
 		if (command == null)
 			throw new NullPointerException("AT command cannot be null.");
 		if (status == null)
@@ -108,12 +172,11 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		data.write(frameID);
 		try {
 			data.write(sourceAddress64.getValue());
 			data.write(sourceAddress16.getValue());
@@ -137,9 +200,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64 bit source address. 
+	 * Retrieves the 64-bit source address. 
 	 * 
-	 * @return The 64 bit source address.
+	 * @return The 64-bit source address.
 	 * 
 	 * @see XBee64BitAddress
 	 */
@@ -148,9 +211,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16 bit source address.
+	 * Retrieves the 16-bit source address.
 	 * 
-	 * @return The 16 bit source address.
+	 * @return The 16-bit source address.
 	 * 
 	 * @see XBee16BitAddress
 	 */
@@ -227,7 +290,6 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
 		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");

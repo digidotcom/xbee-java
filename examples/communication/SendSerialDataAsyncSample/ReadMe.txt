@@ -6,8 +6,11 @@
   be blocked during the transmit request.
   
   The application sends data asynchronously to a remote XBee device on the 
-  network, by using its 64-bit/16-bit address. Note that the address of the 
-  remote device has to be written in the code before running the application.
+  network, by using its 64-bit address. Note that the address of the remote 
+  device has to be written in the code before running the application.
+  
+  NOTE: This example uses the XBee ZigBee device (ZigBeeDevice) class, but all
+  the features described are also applicable to any XBee device class.
 
 
   Files
@@ -22,8 +25,8 @@
   ------------
   To run this example you will need:
   
-    * At least two XBee radios in API mode and their corresponding carrier
-      board (XBIB or equivalent).
+    * At least two XBee ZigBee radios in API mode and their corresponding 
+      carrier board (XBIB or equivalent).
     * The XCTU application (available at www.digi.com/xctu).
 
 

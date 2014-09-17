@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.raw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -26,53 +27,118 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class represents a RX64 Address IO packet. Packet is built using the 
+ * parameters of the constructor or providing a valid API payload.
+ * 
+ * <p>I/O data is sent out the UART using an API frame.</p>
+ * 
+ * @see XBeeAPIPacket
+ */
 public class RX64IOPacket extends XBeeAPIPacket {
 
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 11; // 1 (Frame type) + 8 (64-bit address) + 1 (RSSI) + 1 (receive options)
+	
 	// Variables
-	private final XBee64BitAddress sourceAddress;
+	private final XBee64BitAddress sourceAddress64;
 	
 	private final IOSample ioSample;
 	
 	private final int rssi;
 	private final int receiveOptions;
 	
-	private byte[] receivedData;
+	private byte[] rfData;
 	
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type Receive64IOPacket with
+	 * Creates an new {@code RX64IOPacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a RX64 Address IO packet ({@code 0x82}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed RX64 Address IO packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_64.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code rssi < 0} or
+	 *                                  if {@code rssi > 100} or
+	 *                                  if {@code receiveOptions < 0} or
+	 *                                  if {@code receiveOptions > 255} or 
+	 *                                  if {@code rfData.length < 5}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static RX64IOPacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("RX64 Address IO packet payload cannot be null.");
+		
+		// 1 (Frame type) + 8 (64-bit address) + 1 (RSSI) + 1 (receive options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete RX64 Address IO packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.RX_IO_64.getValue())
+			throw new IllegalArgumentException("Payload is not a RX64 Address IO packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// 8 bytes of 64-bit address.
+		XBee64BitAddress sourceAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// Received Signal Strength Indicator byte.
+		int rssi = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Received Options byte.
+		int receiveOptions = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get data.
+		byte[] data = null;
+		if (index < payload.length)
+			data = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new RX64IOPacket(sourceAddress64, rssi, receiveOptions, data);
+	}
+	
+	/**
+	 * Class constructor. Instances a new object of type {@code RX64IOPacket} with
 	 * the given parameters.
 	 * 
-	 * @param sourceAddress 64-bit address of the sender.
+	 * @param sourceAddress64 64-bit address of the sender.
 	 * @param rssi Received signal strength indicator.
-	 * @param receiveOptions Bitfield indicating the receive options. See {@link com.digi.xbee.models.XBeeReceiveOptions}.
-	 * @param receivedData Received RF data.
+	 * @param receiveOptions Bitfield indicating the receive options.
+	 * @param rfData Received RF data.
 	 * 
-	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255}.
+	 *                                  if {@code receiveOptions > 255} or 
+	 *                                  if {@code rfData.length < 5}.
+	 * @throws NullPointerException if {@code sourceAddress64 == null}.
 	 * 
 	 * @see XBeeReceiveOptions
+	 * @see XBee64BitAddress
 	 */
-	public RX64IOPacket(XBee64BitAddress sourceAddress, int rssi, int receiveOptions, byte[] receivedData) {
+	public RX64IOPacket(XBee64BitAddress sourceAddress64, int rssi, int receiveOptions, byte[] rfData) {
 		super(APIFrameType.RX_IO_64);
 		
-		if (sourceAddress == null)
-			throw new NullPointerException("Source address cannot be null.");
+		if (sourceAddress64 == null)
+			throw new NullPointerException("64-bit source address cannot be null.");
 		if (rssi < 0 || rssi > 100)
 			throw new IllegalArgumentException("RSSI value must be between 0 and 100.");
 		if (receiveOptions < 0 || receiveOptions > 255)
 			throw new IllegalArgumentException("Receive options value must be between 0 and 255.");
 		
-		this.sourceAddress = sourceAddress;
+		this.sourceAddress64 = sourceAddress64;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		this.receivedData = receivedData;
-		if (receivedData != null)
-			ioSample = new IOSample(receivedData);
+		this.rfData = rfData;
+		if (rfData != null)
+			ioSample = new IOSample(rfData);
 		else
 			ioSample = null;
 		this.logger = LoggerFactory.getLogger(RX64Packet.class);
@@ -80,17 +146,17 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(sourceAddress.getValue());
+			os.write(sourceAddress64.getValue());
 			os.write(rssi);
 			os.write(receiveOptions);
-			if (receivedData != null)
-				os.write(receivedData);
+			if (rfData != null)
+				os.write(rfData);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -99,7 +165,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.packet.XBeeAPIPacket#hasAPIFrameID()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
 	@Override
 	public boolean needsAPIFrameID() {
@@ -113,8 +179,17 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public XBee64BitAddress getSourceAddress() {
-		return sourceAddress;
+	public XBee64BitAddress get64bitSourceAddress() {
+		return sourceAddress64;
+	}
+	
+	/**
+	 * Retrieves the Received Signal Strength Indicator (RSSI).
+	 * 
+	 * @return The Received Signal Strength Indicator (RSSI).
+	 */
+	public int getRSSI() {
+		return rssi;
 	}
 	
 	/**
@@ -131,8 +206,8 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	/**
 	 * Retrieves the IO sample corresponding to the data contained in the packet.
 	 * 
-	 * @return The IO sample of the packet, null if the packet has not any data or 
-	 *         if the sample could not be generated correctly.
+	 * @return The IO sample of the packet, {@code null} if the packet has not 
+	 *         any data or if the sample could not be generated correctly.
 	 * 
 	 * @see IOSample
 	 */
@@ -143,10 +218,10 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	/**
 	 * Sets the received RF data.
 	 * 
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 */
-	public void setReceivedData (byte[] receivedData){
-		this.receivedData = receivedData;
+	public void setRFData(byte[] rfData){
+		this.rfData = rfData;
 	}
 	
 	/**
@@ -154,8 +229,8 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Received RF data.
 	 */
-	public byte[] getReceivedData (){
-		return receivedData;
+	public byte[] getRFData(){
+		return rfData;
 	}
 	
 	/*
@@ -165,7 +240,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress.toString()));
+		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
 		parameters.put("RSSI", HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1)));
 		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
 		if (ioSample != null) {
@@ -180,8 +255,8 @@ public class RX64IOPacket extends XBeeAPIPacket {
 				if (ioSample.hasAnalogValue(IOLine.getDIO(i)))
 					parameters.put(IOLine.getDIO(i).getName() + " analog value", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getAnalogValue(IOLine.getDIO(i)), 2)));
 			}
-		} else if (receivedData != null)
-			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(receivedData)));
+		} else if (rfData != null)
+			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
 		return parameters;
 	}
 }

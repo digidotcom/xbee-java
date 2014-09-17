@@ -142,21 +142,21 @@ public final class XBee64BitAddress {
 	 */
 	public XBee64BitAddress(int b0, int b1, int b2, int b3, int b4, int b5, int b6, int b7) {
 		if (b0 > 255 || b0 < 0)
-			throw new IllegalArgumentException("B0 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B0 must be between 0 and 255.");
 		if (b1 > 255 || b1 < 0)
-			throw new IllegalArgumentException("B1 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B1 must be between 0 and 255.");
 		if (b2 > 255 || b2 < 0)
-			throw new IllegalArgumentException("B2 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B2 must be between 0 and 255.");
 		if (b3 > 255 || b3 < 0)
-			throw new IllegalArgumentException("B3 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B3 must be between 0 and 255.");
 		if (b5 > 255 || b5 < 0)
-			throw new IllegalArgumentException("B4 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B4 must be between 0 and 255.");
 		if (b5 > 255 || b5 < 0)
-			throw new IllegalArgumentException("B5 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B5 must be between 0 and 255.");
 		if (b6 > 255 || b6 < 0)
-			throw new IllegalArgumentException("B6 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B6 must be between 0 and 255.");
 		if (b7 > 255 || b7 < 0)
-			throw new IllegalArgumentException("B7 must be betwwen 0 and 255.");
+			throw new IllegalArgumentException("B7 must be between 0 and 255.");
 		
 		address = new byte[8];
 		address[0] = (byte) b0;

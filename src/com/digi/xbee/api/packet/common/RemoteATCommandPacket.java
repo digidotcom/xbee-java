@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * This class represents a Remote AT Command Request packet. Packet is built
- * using the parameters of the constructor.
+ * using the parameters of the constructor or providing a valid API payload.
  * 
  * <p>Used to query or set module parameters on a remote device. For parameter 
  * changes on the remote device to take effect, changes must be applied, either 
@@ -46,6 +47,9 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public class RemoteATCommandPacket extends XBeeAPIPacket {
 	
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 15; // 1 (Frame type) + 1 (frame ID) + 8 (64-bit address) + 2 (16-bit address) + 1 (transmit options byte) + 2 (AT command)
+	
 	// Variables
 	private final XBee64BitAddress destAddress64;
 	
@@ -58,6 +62,66 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	private byte[] parameter;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code RemoteATCommandPacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a Remote AT Command packet ({@code 0x17}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Remote AT Command Request packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.REMOTE_AT_COMMAND_REQUEST.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255} or
+	 *                                  if {@code transmitOptions < 0} or
+	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static RemoteATCommandPacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Remote AT Command packet payload cannot be null.");
+		
+		// 1 (Frame type) + 1 (frame ID) + 8 (64-bit address) + 2 (16-bit address) + 1 (transmit options byte) + 2 (AT command)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Remote AT Command packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.REMOTE_AT_COMMAND_REQUEST.getValue())
+			throw new IllegalArgumentException("Payload is not a Remote AT Command packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 8 bytes of 64-bit address.
+		XBee64BitAddress destAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress destAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Options byte.
+		int transmitOptions = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 2 bytes of AT command.
+		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		index = index + 2;
+		
+		// Get data.
+		byte[] parameterData = null;
+		if (index < payload.length)
+			parameterData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new RemoteATCommandPacket(frameID, destAddress64, destAddress16, transmitOptions, 
+				command, parameterData);
+	}
 	
 	/**
 	 * Class constructor. Instances a new object of type 
@@ -154,12 +218,11 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		data.write(frameID);
 		try {
 			data.write(destAddress64.getValue());
 			data.write(destAddress16.getValue());
@@ -189,7 +252,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public XBee64BitAddress get64bitAddress() {
+	public XBee64BitAddress get64bitDestinationAddress() {
 		return destAddress64;
 	}
 	
@@ -200,7 +263,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * 
 	 * @see XBee16BitAddress
 	 */
-	public XBee16BitAddress get16bitAddress() {
+	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	
@@ -271,7 +334,6 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Frame ID", HexUtils.prettyHexString(HexUtils.integerToHexString(frameID, 1)) + " (" + frameID + ")");
 		parameters.put("64-bit dest. address", HexUtils.prettyHexString(destAddress64.toString()));
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Command options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));

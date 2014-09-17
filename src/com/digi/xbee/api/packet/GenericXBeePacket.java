@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.packet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
@@ -28,10 +29,47 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public class GenericXBeePacket extends XBeeAPIPacket {
 	
+	// Constants.
+	private static final int MIN_API_PAYLOAD_LENGTH = 1; // 1 (Frame type)
+	
 	// Variables.
-	byte[] rfData;
+	private byte[] rfData;
 	
 	private Logger logger;
+	
+	/**
+	 * Creates an new {@code GenericXBeePacket} from the given payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to a Generic packet ({@code 0xFF}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Generic packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.GENERIC.getValue()} or
+	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static GenericXBeePacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Generic packet payload cannot be null.");
+		
+		// 1 (Frame type)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Generic packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.GENERIC.getValue())
+			throw new IllegalArgumentException("Payload is not a Generic packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		byte[] commandData = null;
+		if (index < payload.length)
+			commandData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new GenericXBeePacket(commandData);
+	}
 	
 	/**
 	 * Class constructor. Instances an XBee packet with the given packet data.
@@ -46,10 +84,10 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIData()
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
 	@Override
-	public byte[] getAPIData() {
+	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
 			if (rfData != null)

@@ -37,9 +37,9 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		System.out.println(" +----------------------------------------------+");
-		System.out.println(" |  XBee Java Library Reset Module Data Sample  |");
-		System.out.println(" +----------------------------------------------+\n");
+		System.out.println(" +-----------------------------------------+");
+		System.out.println(" |  XBee Java Library Reset Module Sample  |");
+		System.out.println(" +-----------------------------------------+\n");
 		
 		ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
 		

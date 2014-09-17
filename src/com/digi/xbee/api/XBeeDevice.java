@@ -212,20 +212,21 @@ public class XBeeDevice {
 	 * @see #close()
 	 */
 	public void open() throws XBeeException {
-		logger.info(toString() + "Opening the connection interface...");
-		
-		// First, verify that the connection is not already open.
-		if (connectionInterface.isOpen())
-			throw new InterfaceAlreadyOpenException();
-		
-		// Connect the interface.
-		connectionInterface.open();
-		
-		logger.info(toString() + "Connection interface open.");
-		
-		// Data reader initialization and determining operating mode should be only 
-		// done for local XBee devices.
-		if (!isRemote()) {
+		if (isRemote()) {
+			if (!localXBeeDevice.isOpen())
+				localXBeeDevice.open();
+		} else {
+			logger.info(toString() + "Opening the connection interface...");
+			
+			// First, verify that the connection is not already open.
+			if (connectionInterface.isOpen())
+				throw new InterfaceAlreadyOpenException();
+			
+			// Connect the interface.
+			connectionInterface.open();
+			
+			logger.info(toString() + "Connection interface open.");
+			
 			// Initialize the data reader.
 			dataReader = new DataReader(connectionInterface, operatingMode);
 			dataReader.start();
@@ -243,7 +244,9 @@ public class XBeeDevice {
 				throw new InvalidOperatingModeException(operatingMode);
 			}
 		}
-		// Initialize the device (obtain its parameters and protocol).
+		
+		// Always initialize the device (obtain its parameters and protocol). It doesn't matter 
+		// if it is local or remote.
 		initializeDevice();
 	}
 	

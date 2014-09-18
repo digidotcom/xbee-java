@@ -156,7 +156,7 @@ public class UnkownXBeePacketTest {
 	public final void testCreatePacketIdBiggerThan128() {
 		// Setup the resources for the test.
 		int frameType = 0x60;
-		byte[] data = new byte[]{0xF5, 0x6F, 0x6C, 0x61};
+		byte[] data = new byte[]{(byte)0xF5, 0x6F, 0x6C, 0x61};
 		
 		byte[] payload = new byte[1 + data.length];
 		payload[0] = (byte)frameType;

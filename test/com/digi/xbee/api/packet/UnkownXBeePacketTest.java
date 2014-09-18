@@ -102,7 +102,7 @@ public class UnkownXBeePacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.UnknownXBeePacket#createPacket(byte[])}.
 	 * 
-	 * <p>A valid API Generic packet with the provided options.</p>
+	 * <p>A valid API Unknown packet with the provided options.</p>
 	 */
 	@Test
 	public final void testCreatePacketValidPayloadWithoutData() {
@@ -125,13 +125,38 @@ public class UnkownXBeePacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.UnknownXBeePacket#createPacket(byte[])}.
 	 * 
-	 * <p>A valid API Generic packet with the provided options.</p>
+	 * <p>A valid API Unknown packet with the provided options.</p>
 	 */
 	@Test
 	public final void testCreatePacketValidPayloadWithData() {
 		// Setup the resources for the test.
 		int frameType = 0x60;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		byte[] payload = new byte[1 + data.length];
+		payload[0] = (byte)frameType;
+		System.arraycopy(data, 0, payload, 1, data.length);
+		
+		// Call the method under test.
+		UnknownXBeePacket packet = UnknownXBeePacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.UnknownXBeePacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid API Unknown packet with the provided options.</p>
+	 */
+	@Test
+	public final void testCreatePacketIdBiggerThan128() {
+		// Setup the resources for the test.
+		int frameType = 0x60;
+		byte[] data = new byte[]{0xF5, 0x6F, 0x6C, 0x61};
 		
 		byte[] payload = new byte[1 + data.length];
 		payload[0] = (byte)frameType;

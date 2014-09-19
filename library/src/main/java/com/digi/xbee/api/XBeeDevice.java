@@ -1950,6 +1950,12 @@ public class XBeeDevice {
 			response = sendATCommand(new ATCommand("FR"));
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
+		} catch (TimeoutException e) {
+			// Remote 802.15.4 devices do not respond to the AT command.
+			if (localXBeeDevice != null && localXBeeDevice.getXBeeProtocol() == XBeeProtocol.RAW_802_15_4)
+				return;
+			else
+				throw e;
 		}
 		
 		// Check if AT Command response is valid.

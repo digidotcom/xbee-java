@@ -1,18 +1,19 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -89,26 +90,6 @@ public class DigiMeshDevice extends XBeeDevice {
 		super(connectionInterface);
 	}
 	
-	/**
-	 * Class constructor. Instantiates a new remote {@code DigiMeshDevice} object 
-	 * with the given local {@code DigiMeshDevice} which contains the connection 
-	 * interface to be used.
-	 * 
-	 * @param localXBeeDevice The local DigiMesh device that will behave as 
-	 *                        connection interface to communicate with this 
-	 *                        remote DigiMesh device
-	 * @param xbee64BitAddress The 64-bit address to identify this remote DigiMesh 
-	 *                         device.
-	 * 
-	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
-	 * 
-	 * @see XBee64BitAddress
-	 */
-	public DigiMeshDevice(DigiMeshDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
-		super(localXBeeDevice, xbee64BitAddress);
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.XBeeDevice#open()
@@ -116,8 +97,6 @@ public class DigiMeshDevice extends XBeeDevice {
 	@Override
 	public void open() throws XBeeException {
 		super.open();
-		if (isRemote())
-			return;
 		if (xbeeProtocol != XBeeProtocol.DIGI_MESH)
 			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
 	}
@@ -129,5 +108,23 @@ public class DigiMeshDevice extends XBeeDevice {
 	@Override
 	public XBeeProtocol getXBeeProtocol() {
 		return XBeeProtocol.DIGI_MESH;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendSerialDataAsync(com.digi.xbee.api.models.XBee64BitAddress, byte[])
+	 */
+	@Override
+	public void sendSerialDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
+		super.sendSerialDataAsync(address, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendSerialData(com.digi.xbee.api.models.XBee64BitAddress, byte[])
+	 */
+	@Override
+	public void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
+		super.sendSerialData(address, data);
 	}
 }

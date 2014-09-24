@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api;
 
 import static org.junit.Assert.assertEquals;
@@ -30,14 +30,16 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 public class RemoteXBeeDeviceInstantiateTest {
 
 	/**
-	 * Verify that a remote XBeeDevice object is not correctly instantiated when the local 
-	 * XBee device associated is null or the remote XBee64BitAddress is null.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, XBee64BitAddress)}.
+	 * 
+	 * <p>Verify that a remote XBeeDevice object is not correctly instantiated when the local 
+	 * XBee device associated is null or the remote XBee64BitAddress is null.</p>
 	 */
 	@Test
 	public void testInstantiateRemoteXBeeDeviceBadParameters() {
 		// Instantiate a remote XBeeDevice object with a null local XBeeDevice.
 		try {
-			new XBeeDevice(null, PowerMockito.mock(XBee64BitAddress.class));
+			new RemoteXBeeDevice(null, PowerMockito.mock(XBee64BitAddress.class));
 			fail("Remote device shouldn't have been instantiated correctly.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -45,7 +47,7 @@ public class RemoteXBeeDeviceInstantiateTest {
 		
 		// Instantiate a remote XBeeDevice object with a null XBee64Bitaddress.
 		try {
-			new XBeeDevice(Mockito.mock(XBeeDevice.class), null);
+			new RemoteXBeeDevice(Mockito.mock(XBeeDevice.class), null);
 			fail("Remote device shouldn't have been instantiated correctly.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -53,23 +55,9 @@ public class RemoteXBeeDeviceInstantiateTest {
 	}
 	
 	/**
-	 * Verify that a remote XBeeDevice object is not correctly instantiated when the local 
-	 * XBee device provided is actually a remote device.
-	 */
-	@Test(expected=IllegalArgumentException.class)
-	public void testInstantiateRemoteXBeeDeviceBadLocalDevice() {
-		// Mock the necessary objects to instantiate a remote XBee device.
-		XBeeDevice mockedLocalDevice = Mockito.mock(XBeeDevice.class);
-		Mockito.when(mockedLocalDevice.isRemote()).thenReturn(true);
-		
-		XBee64BitAddress mockedAddress = PowerMockito.mock(XBee64BitAddress.class);
-		
-		// Instantiate the remote XBee device.
-		new XBeeDevice(mockedLocalDevice, mockedAddress);
-	}
-	
-	/**
-	 * Verify that a remote XBeeDevice object can be instantiated correctly.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, XBee64BitAddress)}.
+	 * 
+	 * <p>Verify that a remote XBeeDevice object can be instantiated correctly.</p>
 	 */
 	@Test
 	public void testInstantiateRemoteXBeeDeviceSuccess() {
@@ -81,7 +69,7 @@ public class RemoteXBeeDeviceInstantiateTest {
 		XBee64BitAddress mockedAddress = PowerMockito.mock(XBee64BitAddress.class);
 		
 		// Instantiate the remote XBee device.
-		XBeeDevice remoteXBeeDevice = new XBeeDevice(mockedLocalDevice, mockedAddress);
+		RemoteXBeeDevice remoteXBeeDevice = new RemoteXBeeDevice(mockedLocalDevice, mockedAddress);
 		
 		// Verify the 64-bit address and connection interface are the expected.
 		assertEquals(mockedAddress, remoteXBeeDevice.get64BitAddress());

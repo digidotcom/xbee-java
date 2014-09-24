@@ -50,7 +50,7 @@ public class SendSerialDataAsyncZigBeeTest {
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	private ZigBeeDevice zigbeeDevice;
-	private ZigBeeDevice mockedDevice;
+	private RemoteZigBeeDevice mockedRemoteDevice;
 	
 	private TransmitPacket transmitPacket;
 	
@@ -67,9 +67,9 @@ public class SendSerialDataAsyncZigBeeTest {
 		// Mock Transmit Request packet.
 		transmitPacket = Mockito.mock(TransmitPacket.class);
 		
-		// Mock a ZigbeeDevice to be used as parameter in the send serial data async. command.
-		mockedDevice = Mockito.mock(ZigBeeDevice.class);
-		Mockito.when(mockedDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		// Mock a RemoteZigBeeDevice to be used as parameter in the send serial data async. command.
+		mockedRemoteDevice = Mockito.mock(RemoteZigBeeDevice.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
 		// Whenever a TransmitPacket class is instantiated, the mocked transmitPacket packet should be returned.
 		PowerMockito.whenNew(TransmitPacket.class).withAnyArguments().thenReturn(transmitPacket);
@@ -81,13 +81,6 @@ public class SendSerialDataAsyncZigBeeTest {
 	 */
 	@Test
 	public void testSendSerialDataAsyncZigBeeInvalidParams() {
-		// Try to send serial data with a null 64-bit address.
-		try {
-			zigbeeDevice.sendSerialDataAsync((XBee64BitAddress)null, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
 		// Try to send serial data with a null 64-bit address.
 		try {
 			zigbeeDevice.sendSerialDataAsync((XBee64BitAddress)null, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -109,20 +102,13 @@ public class SendSerialDataAsyncZigBeeTest {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with a null XBeeDevice.
+		// Try to send serial data with a null RemoteZigBeeDevice.
 		try {
-			zigbeeDevice.sendSerialDataAsync((XBeeDevice)null, SEND_DATA_BYTES);
+			zigbeeDevice.sendSerialDataAsync((RemoteZigBeeDevice)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		} 
-		// Try to send serial data with null data. 64-bit address.
-		try {
-			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, null);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
 		// Try to send serial data with null data. 64-bit/16-bit addresses.
 		try {
 			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, null);
@@ -130,9 +116,9 @@ public class SendSerialDataAsyncZigBeeTest {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with null data. XBee device.
+		// Try to send serial data with null data. RemoteZigBeeDevice device.
 		try {
-			zigbeeDevice.sendSerialDataAsync(mockedDevice, null);
+			zigbeeDevice.sendSerialDataAsync(mockedRemoteDevice, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -147,13 +133,6 @@ public class SendSerialDataAsyncZigBeeTest {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
-		// Send serial data using the 64-bit address.
-		try {
-			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
-		}
 		// Send serial data using the 64-bit and 16-bit addresses.
 		try {
 			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -161,9 +140,9 @@ public class SendSerialDataAsyncZigBeeTest {
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteZigBeeDevice as parameter.
 		try {
-			zigbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+			zigbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
@@ -179,17 +158,16 @@ public class SendSerialDataAsyncZigBeeTest {
 	@Test
 	public void testSendSerialDataAsyncZigBeeSuccess() throws Exception {
 		// Stub the sendXBeePacketAsync method to do nothing when called.
-		PowerMockito.doNothing().when(zigbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doNothing().when(zigbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
 		
-		// Verify that the packet is sent successfully when using the 64-bit address.
-		zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using the 64-bit and 16-bit addresses.
 		zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
-		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
-		zigbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using a RemoteZigBeeDevice as parameter.
+		zigbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 		
-		// Verify the sendXBeePacketAsync method was called 3 times (one for each data send).
-		PowerMockito.verifyPrivate(zigbeeDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());	}
+		// Verify the sendXBeePacketAsync method was called 2 times (one for each data send).
+		PowerMockito.verifyPrivate(zigbeeDevice, Mockito.times(2)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any());
+	}
 	
 	/**
 	 * Verify that serial data send fails when the operating mode is AT.
@@ -199,13 +177,6 @@ public class SendSerialDataAsyncZigBeeTest {
 		// Return that the operating mode of the device is AT when asked.
 		Mockito.when(zigbeeDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
 		
-		// Send serial data using the 64-bit address.
-		try {
-			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
 		// Send serial data using the 64-bit and 16-bit addresses.
 		try {
 			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -213,9 +184,9 @@ public class SendSerialDataAsyncZigBeeTest {
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteZigBeeDevice as parameter.
 		try {
-			zigbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+			zigbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -231,16 +202,8 @@ public class SendSerialDataAsyncZigBeeTest {
 	@Test
 	public void testSendSerialDataAsyncZigBeeIOError() throws Exception {
 		// Throw an IO exception when trying to send an XBee packet asynchronously.
-		PowerMockito.doThrow(new IOException()).when(zigbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doThrow(new IOException()).when(zigbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
 		
-		// Send serial data using the 64-bit address.
-		try {
-			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(XBeeException.class, e.getClass());
-			assertEquals(IOException.class, e.getCause().getClass());
-		}
 		// Send serial data using the 64-bit and 16-bit addresses.
 		try {
 			zigbeeDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -249,9 +212,9 @@ public class SendSerialDataAsyncZigBeeTest {
 			assertEquals(XBeeException.class, e.getClass());
 			assertEquals(IOException.class, e.getCause().getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteZigBeeDevice as parameter.
 		try {
-			zigbeeDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+			zigbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
@@ -268,13 +231,6 @@ public class SendSerialDataAsyncZigBeeTest {
 		// Return that the XBee device is remote when asked.
 		Mockito.when(zigbeeDevice.isRemote()).thenReturn(true);
 		
-		// Send serial data using the 64-bit address.
-		try {
-			zigbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(OperationNotSupportedException.class, e.getClass());
-		}
 		// Send serial data using the 64-bit and 16-bit addresses.
 		try {
 			zigbeeDevice.sendSerialData(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
@@ -282,9 +238,9 @@ public class SendSerialDataAsyncZigBeeTest {
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteZigBeeDevice as parameter.
 		try {
-			zigbeeDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			zigbeeDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());

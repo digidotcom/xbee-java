@@ -28,7 +28,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee64BitAddress;
 
 @RunWith(PowerMockRunner.class)
@@ -36,25 +35,26 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 public class RemoteXBeeDeviceConnectTest {
 
 	// Variables.
-	private SerialPortRxTx connectionInterface;
-	private XBeeDevice remoteXBeeDevice;
+	private RemoteXBeeDevice remoteXBeeDevice;
 	private XBeeDevice localXBeeDevice;
 	
 	@Before
 	public void setup() throws Exception {
 		// Mock the connection interface to be returned by the XBee class.
-		connectionInterface = Mockito.mock(SerialPortRxTx.class);
+		SerialPortRxTx connectionInterface = Mockito.mock(SerialPortRxTx.class);
 		
 		// Mock the local XBee device and 64-bit address objects necessary to instantiate a remote 
 		// XBee device.
 		localXBeeDevice = Mockito.mock(XBeeDevice.class);
 		Mockito.when(localXBeeDevice.getConnectionInterface()).thenReturn(connectionInterface);
 		
+		XBee64BitAddress mockedAddress = Mockito.mock(XBee64BitAddress.class);
+		
 		// Stub the 'open' method of the localXBeeDevice mock so when checking if the 
 		// interface is open next time it returns true.
 		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				Mockito.when(connectionInterface.isOpen()).thenReturn(true);
+				Mockito.when(localXBeeDevice.isOpen()).thenReturn(true);
 				return null;
 			}
 		}).when(localXBeeDevice).open();
@@ -62,38 +62,19 @@ public class RemoteXBeeDeviceConnectTest {
 		// interface is open next time it returns false.
 		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				Mockito.when(connectionInterface.isOpen()).thenReturn(false);
+				Mockito.when(localXBeeDevice.isOpen()).thenReturn(false);
 				return null;
 			}
 		}).when(localXBeeDevice).close();
 		
-		// Stub the 'open' method of the connectionInterface mock so when checking if the 
-		// interface is open next time it returns true.
-		Mockito.doAnswer(new Answer<Object>() {
-			public Object answer(InvocationOnMock invocation) throws Exception {
-				Mockito.when(connectionInterface.isOpen()).thenReturn(true);
-				return null;
-			}
-		}).when(connectionInterface).open();
-		// Stub the 'close' method of the connectionInterface mock so when checking if the 
-		// interface is open next time it returns false.
-		Mockito.doAnswer(new Answer<Object>() {
-			public Object answer(InvocationOnMock invocation) throws Exception {
-				Mockito.when(connectionInterface.isOpen()).thenReturn(false);
-				return null;
-			}
-		}).when(connectionInterface).close();
-		
-		XBee64BitAddress mockedAddress = PowerMockito.mock(XBee64BitAddress.class);
-		
 		// Instantiate the remote XBee device.
-		remoteXBeeDevice = PowerMockito.spy(new XBeeDevice(localXBeeDevice, mockedAddress));
+		remoteXBeeDevice = PowerMockito.spy(new RemoteXBeeDevice(localXBeeDevice, mockedAddress));
 		// Stub the initializeDevice method to do nothing (it has its own test file).
 		Mockito.doNothing().when(remoteXBeeDevice).initializeDevice();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#open()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#open()}.
 	 * 
 	 * <p>Verify that when connecting a remote XBee device, the process opens the local XBee device 
 	 * interface, but does not try to determine the operating mode of the remote one.</p>
@@ -105,17 +86,12 @@ public class RemoteXBeeDeviceConnectTest {
 		// Execute the connect method.
 		remoteXBeeDevice.open();
 		
-		// As the device is remote, the determineOperatingMode method should be never called when opening 
-		// it. So, the operating mode will be unknown.
-		Mockito.verify(remoteXBeeDevice, Mockito.never()).determineOperatingMode();
-		assertEquals(OperatingMode.UNKNOWN, remoteXBeeDevice.getOperatingMode());
-		
 		// Verify that the device was opened correctly.
 		assertTrue(remoteXBeeDevice.isOpen());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#open()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#open()}.
 	 * 
 	 * <p>Verify that when there is a problem opening the remote device (indeed the problem is 
 	 * raised opening the local one), an exception is thrown, and the remote device is not open.</p>
@@ -141,7 +117,7 @@ public class RemoteXBeeDeviceConnectTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#open()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#open()}.
 	 * 
 	 * <p>Verify that if the local device is already open and the {@code open()} method of the 
 	 * remote one is called, there is not any error and the remote device will be open.</p>

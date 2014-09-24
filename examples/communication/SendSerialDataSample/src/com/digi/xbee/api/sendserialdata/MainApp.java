@@ -11,6 +11,7 @@
 */
 package com.digi.xbee.api.sendserialdata;
 
+import com.digi.xbee.api.RemoteZigBeeDevice;
 import com.digi.xbee.api.ZigBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -56,6 +57,8 @@ public class MainApp {
 		// Use an XBee64BitAddress object when using a 64-bit destination address.
 		XBee64BitAddress destinationAddress = DESTINATION_64_BIT_ADDRESS;
 		
+		RemoteZigBeeDevice remoteDevice = new RemoteZigBeeDevice(myDevice, destinationAddress);
+		
 		try {
 			myDevice.open();
 			
@@ -63,7 +66,7 @@ public class MainApp {
 					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
 					new String(dataToSend));
 			
-			myDevice.sendSerialData(destinationAddress, dataToSend);
+			myDevice.sendSerialData(remoteDevice, dataToSend);
 			
 			System.out.println("Success");
 			

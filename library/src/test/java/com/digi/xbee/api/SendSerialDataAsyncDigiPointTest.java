@@ -50,7 +50,7 @@ public class SendSerialDataAsyncDigiPointTest {
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	private DigiPointDevice digiPointDevice;
-	private DigiPointDevice mockedDevice;
+	private RemoteDigiPointDevice mockedRemoteDevice;
 	
 	private TransmitPacket transmitPacket;
 	
@@ -67,9 +67,9 @@ public class SendSerialDataAsyncDigiPointTest {
 		// Mock Transmit Request packet.
 		transmitPacket = Mockito.mock(TransmitPacket.class);
 		
-		// Mock a DigiPointDevice to be used as parameter in the send serial data async. command.
-		mockedDevice = Mockito.mock(DigiPointDevice.class);
-		Mockito.when(mockedDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		// Mock a RemoteDigiPointDevice to be used as parameter in the send serial data async. command.
+		mockedRemoteDevice = Mockito.mock(RemoteDigiPointDevice.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
 		// Whenever a TransmitPacket class is instantiated, the mocked transmitPacket packet should be returned.
 		PowerMockito.whenNew(TransmitPacket.class).withAnyArguments().thenReturn(transmitPacket);
@@ -109,9 +109,9 @@ public class SendSerialDataAsyncDigiPointTest {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with a null XBeeDevice.
+		// Try to send serial data with a null RemoteDigiPointDevice.
 		try {
-			digiPointDevice.sendSerialDataAsync((XBeeDevice)null, SEND_DATA_BYTES);
+			digiPointDevice.sendSerialDataAsync((RemoteDigiPointDevice)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -130,9 +130,9 @@ public class SendSerialDataAsyncDigiPointTest {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with null data. XBee device.
+		// Try to send serial data with null data. RemoteDigiPointDevice device.
 		try {
-			digiPointDevice.sendSerialDataAsync(mockedDevice, null);
+			digiPointDevice.sendSerialDataAsync(mockedRemoteDevice, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -161,9 +161,9 @@ public class SendSerialDataAsyncDigiPointTest {
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiPointDevice as parameter.
 		try {
-			digiPointDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+			digiPointDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
@@ -179,17 +179,18 @@ public class SendSerialDataAsyncDigiPointTest {
 	@Test
 	public void testSendSerialDataAsyncDigiPointSuccess() throws Exception {
 		// Stub the sendXBeePacketAsync method to do nothing when called.
-		PowerMockito.doNothing().when(digiPointDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doNothing().when(digiPointDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
 		
 		// Verify that the packet is sent successfully when using the 64-bit address.
 		digiPointDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using the 64-bit and 16-bit addresses.
 		digiPointDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
-		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
-		digiPointDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using a RemoteDigiPointDevice as parameter.
+		digiPointDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacketAsync method was called 3 times (one for each data send).
-		PowerMockito.verifyPrivate(digiPointDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());	}
+		PowerMockito.verifyPrivate(digiPointDevice, Mockito.times(3)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any());
+	}
 	
 	/**
 	 * Verify that serial data send fails when the operating mode is AT.
@@ -213,9 +214,9 @@ public class SendSerialDataAsyncDigiPointTest {
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiPointDevice as parameter.
 		try {
-			digiPointDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+			digiPointDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -231,7 +232,7 @@ public class SendSerialDataAsyncDigiPointTest {
 	@Test
 	public void testSendSerialDataAsyncDigiPointIOError() throws Exception {
 		// Throw an IO exception when trying to send an XBee packet asynchronously.
-		PowerMockito.doThrow(new IOException()).when(digiPointDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doThrow(new IOException()).when(digiPointDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
 		
 		// Send serial data using the 64-bit address.
 		try {
@@ -249,9 +250,9 @@ public class SendSerialDataAsyncDigiPointTest {
 			assertEquals(XBeeException.class, e.getClass());
 			assertEquals(IOException.class, e.getCause().getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiPointDevice as parameter.
 		try {
-			digiPointDevice.sendSerialDataAsync(mockedDevice, SEND_DATA_BYTES);
+			digiPointDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
@@ -282,9 +283,9 @@ public class SendSerialDataAsyncDigiPointTest {
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiPointDevice as parameter.
 		try {
-			digiPointDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiPointDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());

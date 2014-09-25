@@ -34,8 +34,8 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({DigiMeshDevice.class})
-public class SendSerialDataAsyncDigiMeshTest {
+@PrepareForTest({ZigBeeDevice.class})
+public class SendSerialDataAsyncXBeeTest {
 	
 	// Constants.
 	private static final XBee64BitAddress XBEE_64BIT_ADDRESS = new XBee64BitAddress("0123456789ABCDEF");
@@ -47,8 +47,8 @@ public class SendSerialDataAsyncDigiMeshTest {
 	
 	// Variables.
 	private SerialPortRxTx mockedPort;
-	private DigiMeshDevice digiMeshDevice;
-	private RemoteDigiMeshDevice mockedRemoteDevice;
+	private ZigBeeDevice xbeeDevice;
+	private RemoteXBeeDevice mockedRemoteDevice;
 	
 	private TransmitPacket transmitPacket;
 	
@@ -59,14 +59,14 @@ public class SendSerialDataAsyncDigiMeshTest {
 		// When checking if the connection is open, return true.
 		Mockito.when(mockedPort.isOpen()).thenReturn(true);
 		
-		// Instantiate a DigiMeshDevice object with the mocked interface.
-		digiMeshDevice = PowerMockito.spy(new DigiMeshDevice(mockedPort));
+		// Instantiate a ZigbeeDevice object with the mocked interface.
+		xbeeDevice = PowerMockito.spy(new ZigBeeDevice(mockedPort));
 		
 		// Mock Transmit Request packet.
 		transmitPacket = Mockito.mock(TransmitPacket.class);
 		
-		// Mock a RemoteDigiMeshDevice to be used as parameter in the send serial data async. command.
-		mockedRemoteDevice = Mockito.mock(RemoteDigiMeshDevice.class);
+		// Mock a RemoteXBeeDevice to be used as parameter in the send serial data async. command.
+		mockedRemoteDevice = Mockito.mock(RemoteXBeeDevice.class);
 		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
 		// Whenever a TransmitPacket class is instantiated, the mocked transmitPacket packet should be returned.
@@ -78,31 +78,17 @@ public class SendSerialDataAsyncDigiMeshTest {
 	 * data to be sent is null.
 	 */
 	@Test
-	public void testSendSerialDataAsyncDigiMeshInvalidParams() {
-		// Try to send serial data with a null 64-bit address.
+	public void testSendSerialDataAsyncZigBeeInvalidParams() {
+		// Try to send serial data with a null RemoteZigBeeDevice.
 		try {
-			digiMeshDevice.sendSerialDataAsync((XBee64BitAddress)null, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
-		// Try to send serial data with a null RemoteDigiMeshDevice.
-		try {
-			digiMeshDevice.sendSerialDataAsync((RemoteDigiMeshDevice)null, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialDataAsync((RemoteXBeeDevice)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		} 
-		// Try to send serial data with null data. 64-bit address.
+		// Try to send serial data with null data. RemoteXBeeDevice device.
 		try {
-			digiMeshDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, null);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(NullPointerException.class, e.getClass());
-		}
-		// Try to send serial data with null data. RemoteDigiMeshDevice device.
-		try {
-			digiMeshDevice.sendSerialDataAsync(mockedRemoteDevice, null);
+			xbeeDevice.sendSerialDataAsync(mockedRemoteDevice, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -113,20 +99,13 @@ public class SendSerialDataAsyncDigiMeshTest {
 	 * Verify that serial data send fails when the connection is closed.
 	 */
 	@Test
-	public void testSendSerialDataAsyncDigiMeshConnectionClosed() {
+	public void testSendSerialDataAsyncZigBeeConnectionClosed() {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
-		// Send serial data using the 64-bit address.
+		// Send serial data using a RemoteXBeeDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("Serial data shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(InterfaceNotOpenException.class, e.getClass());
-		}
-		// Send serial data using a RemoteDigiMeshDevice as parameter.
-		try {
-			digiMeshDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
@@ -140,37 +119,28 @@ public class SendSerialDataAsyncDigiMeshTest {
 	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataAsyncDigiMeshSuccess() throws Exception {
+	public void testSendSerialDataAsyncZigBeeSuccess() throws Exception {
 		// Stub the sendXBeePacketAsync method to do nothing when called.
-		PowerMockito.doNothing().when(digiMeshDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
+		PowerMockito.doNothing().when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
 		
-		// Verify that the packet is sent successfully when using the 64-bit address.
-		digiMeshDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-		// Verify that the packet is sent successfully when using a RemoteDigiMeshDevice as parameter.
-		digiMeshDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using a RemoteXBeeDevice as parameter.
+		xbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 		
-		// Verify the sendXBeePacketAsync method was called 2 times (one for each data send).
-		PowerMockito.verifyPrivate(digiMeshDevice, Mockito.times(2)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any());
+		// Verify the sendXBeePacketAsync method was called 1 time.
+		PowerMockito.verifyPrivate(xbeeDevice, Mockito.times(1)).invoke(SEND_XBEE_PACKET_ASYNC_METHOD, (XBeeAPIPacket)Mockito.any());
 	}
 	
 	/**
 	 * Verify that serial data send fails when the operating mode is AT.
 	 */
 	@Test
-	public void testSendSerialDataAsyncDigiMeshInvalidOperatingMode() {
+	public void testSendSerialDataAsyncZigBeeInvalidOperatingMode() {
 		// Return that the operating mode of the device is AT when asked.
-		Mockito.when(digiMeshDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
+		Mockito.when(xbeeDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
 		
-		// Send serial data using the 64-bit address.
+		// Send serial data using a RemoteXBeeDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(InvalidOperatingModeException.class, e.getClass());
-		}
-		// Send serial data using a RemoteDigiMeshDevice as parameter.
-		try {
-			digiMeshDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -184,21 +154,13 @@ public class SendSerialDataAsyncDigiMeshTest {
 	 * @throws Exception 
 	 */
 	@Test
-	public void testSendSerialDataAsyncDigiMeshIOError() throws Exception {
+	public void testSendSerialDataAsyncZigBeeIOError() throws Exception {
 		// Throw an IO exception when trying to send an XBee packet asynchronously.
-		PowerMockito.doThrow(new IOException()).when(digiMeshDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
+		PowerMockito.doThrow(new IOException()).when(xbeeDevice, SEND_XBEE_PACKET_ASYNC_METHOD, Mockito.eq(transmitPacket));
 		
-		// Send serial data using the 64-bit address.
+		// Send serial data using a RemoteXBeeDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialDataAsync(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(XBeeException.class, e.getClass());
-			assertEquals(IOException.class, e.getCause().getClass());
-		}
-		// Send serial data using a RemoteDigiMeshDevice as parameter.
-		try {
-			digiMeshDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialDataAsync(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
@@ -207,24 +169,17 @@ public class SendSerialDataAsyncDigiMeshTest {
 	}
 	
 	/**
-	 * Verify that when trying to send serial data from a remote DigiMesh XBee device to 
+	 * Verify that when trying to send serial data from a remote ZigBee XBee device to 
 	 * other device, an OperationNotSupportedException is thrown.
 	 */
 	@Test
-	public void testSendSerialDataAsyncDigiMeshFromRemoteDevices() {
+	public void testSendSerialDataAsyncZigBeeFromRemoteDevices() {
 		// Return that the XBee device is remote when asked.
-		Mockito.when(digiMeshDevice.isRemote()).thenReturn(true);
+		Mockito.when(xbeeDevice.isRemote()).thenReturn(true);
 		
-		// Send serial data using the 64-bit address.
+		// Send serial data using a RemoteXBeeDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-			fail("TransmitRequest frame shouldn't have been sent successfully.");
-		} catch (Exception e) {
-			assertEquals(OperationNotSupportedException.class, e.getClass());
-		}
-		// Send serial data using a RemoteDigiMeshDevice as parameter.
-		try {
-			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
+			xbeeDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());

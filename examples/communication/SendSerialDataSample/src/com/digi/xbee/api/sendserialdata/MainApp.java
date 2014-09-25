@@ -1,17 +1,18 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.sendserialdata;
 
-import com.digi.xbee.api.ZigBeeDevice;
+import com.digi.xbee.api.RemoteXBeeDevice;
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.utils.HexUtils;
@@ -50,11 +51,13 @@ public class MainApp {
 		System.out.println(" |  XBee Java Library Send Data Sample  |");
 		System.out.println(" +--------------------------------------+\n");
 		
-		ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
+		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		byte[] dataToSend = DATA_TO_SEND.getBytes();
 		
 		// Use an XBee64BitAddress object when using a 64-bit destination address.
 		XBee64BitAddress destinationAddress = DESTINATION_64_BIT_ADDRESS;
+		
+		RemoteXBeeDevice remoteDevice = new RemoteXBeeDevice(myDevice, destinationAddress);
 		
 		try {
 			myDevice.open();
@@ -63,7 +66,7 @@ public class MainApp {
 					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
 					new String(dataToSend));
 			
-			myDevice.sendSerialData(destinationAddress, dataToSend);
+			myDevice.sendSerialData(remoteDevice, dataToSend);
 			
 			System.out.println("Success");
 			

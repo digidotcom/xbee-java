@@ -6,8 +6,8 @@
   The application prints the broadcast data that was received to the standard 
   output in ASCII and hexadecimal formats after the sender address.
   
-  NOTE: This example uses the XBee ZigBee device (ZigBeeDevice) class, but all
-  the features described are also applicable to any XBee device class.
+  NOTE: This example uses the generic XBee Device device (XBeeDevice) class, 
+        but it can be applied to any other local XBee device class.
 
 
   Files
@@ -24,8 +24,8 @@
   ------------
   To run this example you will need:
   
-    * At least two XBee ZigBee radios in API mode and their corresponding 
-      carrier board (XBIB or equivalent).
+    * At least two XBee radios in API mode and their corresponding carrier 
+      board (XBIB or equivalent).
     * The XCTU application (available at www.digi.com/xctu).
 
 

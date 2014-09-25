@@ -42,7 +42,7 @@ public class GetADCTest {
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	
-	private AbstractXBeeDevice xbeeDevice;
+	private XBeeDevice xbeeDevice;
 	
 	@Before
 	public void setup() {

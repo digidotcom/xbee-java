@@ -29,6 +29,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({XBee64BitAddress.class})
@@ -47,6 +48,7 @@ public class RemoteXBeeDeviceConnectTest {
 		// XBee device.
 		localXBeeDevice = Mockito.mock(XBeeDevice.class);
 		Mockito.when(localXBeeDevice.getConnectionInterface()).thenReturn(connectionInterface);
+		Mockito.when(localXBeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		XBee64BitAddress mockedAddress = Mockito.mock(XBee64BitAddress.class);
 		
@@ -69,6 +71,7 @@ public class RemoteXBeeDeviceConnectTest {
 		
 		// Instantiate the remote XBee device.
 		remoteXBeeDevice = PowerMockito.spy(new RemoteXBeeDevice(localXBeeDevice, mockedAddress));
+		
 		// Stub the initializeDevice method to do nothing (it has its own test file).
 		Mockito.doNothing().when(remoteXBeeDevice).initializeDevice();
 	}

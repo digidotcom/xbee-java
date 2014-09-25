@@ -51,8 +51,8 @@ public class RemoteDeviceInitializationTest {
 	
 	// Variables.
 	private SerialPortRxTx connectionInterface;
-	private XBeeDevice mockedDevice;
 	private RemoteXBeeDevice remoteXBeeDevice;
+	private XBeeDevice localXBeeDevice;
 	
 	private static ATCommand atCommandNI;
 	private static ATCommand atCommandHV;
@@ -89,15 +89,17 @@ public class RemoteDeviceInitializationTest {
 		// Mock a connection interface used for the mocked local device.
 		connectionInterface = Mockito.mock(SerialPortRxTx.class);
 		Mockito.when(connectionInterface.isOpen()).thenReturn(true);
-		// Mock a local XBee device to instantiate the remote one.
-		mockedDevice = Mockito.mock(XBeeDevice.class);
-		Mockito.when(mockedDevice.getConnectionInterface()).thenReturn(connectionInterface);
-		// Mock an XBee 64-bit address to instantiate the remote device.
+		
+		// Mock the local XBee device and 64-bit address objects necessary to instantiate a remote 
+		// XBee device.
+		localXBeeDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(localXBeeDevice.getConnectionInterface()).thenReturn(connectionInterface);
+		Mockito.when(localXBeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+		
 		XBee64BitAddress mockedAddress = Mockito.mock(XBee64BitAddress.class);
 		
 		// Instantiate a RemoteXBeeDevice object with basic parameters.
-		remoteXBeeDevice = PowerMockito.spy(new RemoteXBeeDevice(mockedDevice, mockedAddress));
-		Mockito.when(remoteXBeeDevice.getOperatingMode()).thenReturn(OperatingMode.API);
+		remoteXBeeDevice = PowerMockito.spy(new RemoteXBeeDevice(localXBeeDevice, mockedAddress));
 		
 		PowerMockito.whenNew(ATCommand.class).withArguments("NI").thenReturn(atCommandNI);
 		PowerMockito.whenNew(ATCommand.class).withArguments("HV").thenReturn(atCommandHV);
@@ -135,7 +137,7 @@ public class RemoteDeviceInitializationTest {
 	@Test(expected=InvalidOperatingModeException.class)
 	public void testInitializeDeviceErrorInvalidOperatingMode() throws XBeeException {
 		// Return AT operating mode when asked.
-		Mockito.doReturn(OperatingMode.AT).when(mockedDevice).getOperatingMode();
+		Mockito.doReturn(OperatingMode.AT).when(localXBeeDevice).getOperatingMode();
 		
 		// Initialize the device.
 		remoteXBeeDevice.initializeDevice();
@@ -152,7 +154,7 @@ public class RemoteDeviceInitializationTest {
 	@Test(expected=InvalidOperatingModeException.class)
 	public void testInitializeDeviceErrorUnknownOperatingMode() throws XBeeException {
 		// Return UNKKNOWN operating mode when asked.
-		Mockito.doReturn(OperatingMode.UNKNOWN).when(mockedDevice).getOperatingMode();
+		Mockito.doReturn(OperatingMode.UNKNOWN).when(localXBeeDevice).getOperatingMode();
 		
 		// Initialize the device.
 		remoteXBeeDevice.initializeDevice();

@@ -31,7 +31,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public RemoteRaw802Device(DigiMeshDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public RemoteRaw802Device(Raw802Device localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
 	}
 	

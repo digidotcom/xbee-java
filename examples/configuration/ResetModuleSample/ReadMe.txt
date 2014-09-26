@@ -3,7 +3,7 @@
   This is a sample Java application to show how to perform a software reset on
   the local XBee module.
   
-  NOTE: This example uses the generic XBee Device device (XBeeDevice) class, 
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 

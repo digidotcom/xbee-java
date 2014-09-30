@@ -42,14 +42,14 @@ public class XBeePacketsQueue {
 	private static LinkedList<XBeePacket> packetsList;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeePacketsQueue}.
+	 * Class constructor. Instantiates a new object of type {@code XBeePacketsQueue}.
 	 */
 	public XBeePacketsQueue() {
 		this(DEFAULT_MAX_LENGTH);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeePacketsQueue} 
+	 * Class constructor. Instantiates a new object of type {@code XBeePacketsQueue} 
 	 * with the given maximum length.
 	 * 
 	 * @param maxLength Maximum length of the queue.
@@ -86,76 +86,137 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the first packet from the queue. Null if the queue is empty.
+	 * Retrieves the first packet from the queue waiting up to the specified timeout if 
+	 * necessary for an XBee packet to become available. Null if the queue is empty.
 	 * 
+	 * @param timeout The time in milliseconds to wait for an XBee packet to become 
+	 *                available. 0 to return immediately.
 	 * @return The first packet from the queue, null if it is empty.
 	 * 
 	 * @see XBeePacket
 	 */
-	public XBeePacket getFirstPacket() {
-		if (packetsList.isEmpty())
-			return null;
-		return packetsList.pop();
+	public XBeePacket getFirstPacket(int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstPacket(0);
+			// Wait for a timeout or until an XBee packet is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstPacket(0);
+			}
+			return xbeePacket;
+		} else if (!packetsList.isEmpty())
+			return packetsList.pop();
+		return null;
 	}
 	
 	/**
-	 * Retrieves the first packet from the queue which its 64-bit source address matches with 
+	 * Retrieves the first packet from the queue whose 64-bit source address matches with 
 	 * the address of the provided remote XBee device.
 	 * 
+	 * <p>The methods waits up to the specified timeout if necessary for an XBee packet to 
+	 * become available. Null if the queue is empty or there is not any XBee packet sent 
+	 * by the provided remote XBee device.</p>
+	 * 
 	 * @param remoteXBeeDevice The XBee device containing the 64-bit address to look for in 
 	 *                         the list of packets.
-	 * @return The first XBee packet which its 64-bit address matches with the address of 
-	 *         the provided remote XBee device.
+	 * @param timeout The time in milliseconds to wait for an XBee packet from the specified 
+	 *                remote XBee device to become available. 0 to return immediately.
+	 * @return The first XBee packet whose 64-bit address matches with the address of 
+	 *         the provided remote XBee device. Null if no packets from the specified XBee 
+	 *         device are found in the queue.
 	 * 
 	 * @see RemoteXBeeDevice
 	 * @see XBeePacket
 	 */
-	public XBeePacket getFirstPacketFrom(RemoteXBeeDevice remoteXBeeDevice) {
-		for (int i = 0; i < packetsList.size(); i++) {
-			XBeePacket xbeePacket = packetsList.get(i);
-			if (addressesMatch(xbeePacket, remoteXBeeDevice))
-				return packetsList.remove(i);
+	public XBeePacket getFirstPacketFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstPacketFrom(remoteXBeeDevice, 0);
+			// Wait for a timeout or until an XBee packet from remoteXBeeDevice is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstPacketFrom(remoteXBeeDevice, 0);
+			}
+			return xbeePacket;
+		} else {
+			for (int i = 0; i < packetsList.size(); i++) {
+				XBeePacket xbeePacket = packetsList.get(i);
+				if (addressesMatch(xbeePacket, remoteXBeeDevice))
+					return packetsList.remove(i);
+			}
 		}
 		return null;
 	}
 	
 	/**
-	 * Retrieves the first data packet from the queue. Null if the queue is empty or there 
-	 * is not any data packet inside.
+	 * Retrieves the first data packet from the queue waiting up to the specified timeout 
+	 * if necessary for an XBee data packet to become available. Null if the queue is 
+	 * empty or there is not any data packet inside.
 	 * 
-	 * @return The first packet from the queue, null if it is empty or there is not any 
-	 *         data packet inside.
+	 * @param timeout The time in milliseconds to wait for an XBee data packet to become 
+	 *                available. 0 to return immediately.
+	 * @return The first data packet from the queue, null if it is empty or no data packets 
+	 *         are contained.
 	 * 
 	 * @see XBeePacket
 	 */
-	public XBeePacket getFirstDataPacket() {
-		if (packetsList.isEmpty())
-			return null;
-		for (int i = 0; i < packetsList.size(); i++) {
-			XBeePacket xbeePacket = packetsList.get(i);
-			if (isDataPacket(xbeePacket))
-				return packetsList.remove(i);
+	public XBeePacket getFirstDataPacket(int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstDataPacket(0);
+			// Wait for a timeout or until a data XBee packet is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstDataPacket(0);
+			}
+			return xbeePacket;
+		} else {
+			for (int i = 0; i < packetsList.size(); i++) {
+				XBeePacket xbeePacket = packetsList.get(i);
+				if (isDataPacket(xbeePacket))
+					return packetsList.remove(i);
+			}
 		}
 		return null;
 	}
 	
 	/**
-	 * Retrieves the first data packet from the queue which its 64-bit source address matches 
-	 * with  the address of the provided remote XBee device.
+	 * Retrieves the first data packet from the queue whose 64-bit source address matches with 
+	 * the address of the provided remote XBee device.
+	 * 
+	 * <p>The methods waits up to the specified timeout if necessary for an XBee data packet 
+	 * to become available. Null if the queue is empty or there is not any XBee data packet 
+	 * sent by the provided remote XBee device.</p>
 	 * 
 	 * @param remoteXBeeDevice The XBee device containing the 64-bit address to look for in 
 	 *                         the list of packets.
-	 * @return The first XBee data packet which its 64-bit address matches with the address of 
-	 *         the provided remote XBee device.
+	 * @param timeout The time in milliseconds to wait for an XBee data packet from the 
+	 *                specified remote XBee device to become available. 0 to return 
+	 *                immediately.
+	 * @return The first XBee data packet whose its 64-bit address matches with the address of 
+	 *         the provided remote XBee device. Null if no data packets from the specified XBee 
+	 *         device are found in the queue.
 	 * 
 	 * @see RemoteXBeeDevice
 	 * @see XBeePacket
 	 */
-	public XBeePacket getFirstDataPacketFrom(RemoteXBeeDevice remoteXBeeDevice) {
-		for (int i = 0; i < packetsList.size(); i++) {
-			XBeePacket xbeePacket = packetsList.get(i);
-			if (isDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
-				return packetsList.remove(i);
+	public XBeePacket getFirstDataPacketFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstDataPacketFrom(remoteXBeeDevice, 0);
+			// Wait for a timeout or until an XBee packet from remoteXBeeDevice is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstDataPacketFrom(remoteXBeeDevice, 0);
+			}
+			return xbeePacket;
+		} else {
+			for (int i = 0; i < packetsList.size(); i++) {
+				XBeePacket xbeePacket = packetsList.get(i);
+				if (isDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
+					return packetsList.remove(i);
+			}
 		}
 		return null;
 	}
@@ -224,5 +285,16 @@ public class XBeePacketsQueue {
 			default:
 				return false;
 		}
+	}
+	
+	/**
+	 * Sleeps the thread for the given number of milliseconds.
+	 * 
+	 * @param milliseconds The number of milliseconds that the thread should be sleeping.
+	 */
+	private void sleep(int milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch (InterruptedException e) { }
 	}
 }

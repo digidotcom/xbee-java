@@ -24,7 +24,7 @@ public class XBeeMessage {
 	private final byte[] data;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeeMessage} with the 
+	 * Class constructor. Instantiates a new object of type {@code XBeeMessage} with the 
 	 * given parameters.
 	 * 
 	 * @param address The address of the XBee device the message belongs to.

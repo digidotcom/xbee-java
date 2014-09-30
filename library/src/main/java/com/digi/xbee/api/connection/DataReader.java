@@ -25,6 +25,7 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
@@ -64,6 +65,8 @@ public class DataReader extends Thread {
 	
 	private XBeePacketParser parser;
 	
+	private XBeePacketsQueue xbeePacketsQueue;
+	
 	/**
 	 * Class constructor. Instances a new {@code DataReader} object for the 
 	 * given interface.
@@ -84,6 +87,7 @@ public class DataReader extends Thread {
 		this.mode = mode;
 		this.logger = LoggerFactory.getLogger(DataReader.class);
 		parser = new XBeePacketParser();
+		xbeePacketsQueue = new XBeePacketsQueue();
 	}
 	
 	/**
@@ -203,6 +207,8 @@ public class DataReader extends Thread {
 	public void run() {
 		logger.debug(connectionInterface.toString() + "Data reader started.");
 		running = true;
+		// Clear the list of read packets.
+		xbeePacketsQueue.clearQueue();
 		try {
 			synchronized (connectionInterface) {
 				connectionInterface.wait();
@@ -263,6 +269,8 @@ public class DataReader extends Thread {
 	 * @see XBeePacket
 	 */
 	private void packetReceived(XBeePacket packet) {
+		// Add the packet to the packets queue.
+		xbeePacketsQueue.addPacket(packet);
 		// Notify that a packet has been received to the corresponding listeners.
 		notifyPacketReceived(packet);
 		
@@ -431,5 +439,14 @@ public class DataReader extends Thread {
 			connectionInterface.notify();
 		}
 		logger.debug(connectionInterface.toString() + "Data reader stopped.");
+	}
+	
+	/**
+	 * Retrieves the queue of read XBee packets.
+	 * 
+	 * @return The queue of read XBee packets.
+	 */
+	public XBeePacketsQueue getXBeePacketsQueue() {
+		return xbeePacketsQueue;
 	}
 }

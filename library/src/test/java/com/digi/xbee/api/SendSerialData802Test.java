@@ -55,7 +55,7 @@ public class SendSerialData802Test {
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	private Raw802Device raw802Device;
-	private Raw802Device mockedDevice;
+	private RemoteRaw802Device mockedRemoteDevice;
 	
 	private TX16Packet tx16Packet;
 	private TX64Packet tx64Packet;
@@ -86,9 +86,9 @@ public class SendSerialData802Test {
 		txStatusError = Mockito.mock(TXStatusPacket.class);
 		Mockito.when(txStatusError.getTransmitStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
 		
-		// Mock a Raw802Device to be used as parameter in the send serial data command.
-		mockedDevice = Mockito.mock(Raw802Device.class);
-		Mockito.when(mockedDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		// Mock a RemoteRaw802Device to be used as parameter in the send serial data command.
+		mockedRemoteDevice = Mockito.mock(RemoteRaw802Device.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
 		// Whenever a TX16Packet class is instantiated, the mocked tx16Packet packet should be returned.
 		PowerMockito.whenNew(TX16Packet.class).withAnyArguments().thenReturn(tx16Packet);
@@ -117,9 +117,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with a null XBeeDevice.
+		// Try to send serial data with a null RemoteRaw802Device.
 		try {
-			raw802Device.sendSerialData((XBeeDevice)null, SEND_DATA_BYTES);
+			raw802Device.sendSerialData((RemoteRaw802Device)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -138,9 +138,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with null data. XBee device.
+		// Try to send serial data with null data. RemoteRaw802Device device.
 		try {
-			raw802Device.sendSerialData(mockedDevice, null);
+			raw802Device.sendSerialData(mockedRemoteDevice, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -172,9 +172,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteRaw802Device as parameter.
 		try {
-			raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Serial data frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
@@ -190,18 +190,18 @@ public class SendSerialData802Test {
 	@Test
 	public void testSendSerialData802Success() throws Exception {
 		// Return the mocked TxStatus success packet when sending the mocked tx16Packet or tx64Packet packets.
-		PowerMockito.doReturn(txStatusSuccess).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
-		PowerMockito.doReturn(txStatusSuccess).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
+		PowerMockito.doReturn(txStatusSuccess).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet));
+		PowerMockito.doReturn(txStatusSuccess).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet));
 		
 		// Verify that the packet is sent successfully when using the 16-bit address.
 		raw802Device.sendSerialData(XBEE_16BIT_ADDRESS, SEND_DATA_BYTES);
 		// Verify that the packet is sent successfully when using the 64-bit address.
 		raw802Device.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
-		raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using a RemoteRaw802Device as parameter.
+		raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacket method was called 3 times (one for each data send).
-		PowerMockito.verifyPrivate(raw802Device, Mockito.times(3)).invoke(SEND_XBEE_PACKET_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
+		PowerMockito.verifyPrivate(raw802Device, Mockito.times(3)).invoke(SEND_XBEE_PACKET_METHOD, (XBeeAPIPacket)Mockito.any());
 	}
 	
 	/**
@@ -213,8 +213,8 @@ public class SendSerialData802Test {
 	@Test
 	public void testSendSerialData802TxStatusError() throws Exception {
 		// Return the mocked TxStatus error packet when sending the mocked tx16Packet or tx64Packet packets.
-		PowerMockito.doReturn(txStatusError).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
-		PowerMockito.doReturn(txStatusError).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
+		PowerMockito.doReturn(txStatusError).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet));
+		PowerMockito.doReturn(txStatusError).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet));
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -230,9 +230,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteRaw802Device as parameter.
 		try {
-			raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
@@ -261,9 +261,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteRaw802Device as parameter.
 		try {
-			raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -279,8 +279,8 @@ public class SendSerialData802Test {
 	@Test
 	public void testSendSerialData802Timeout() throws Exception {
 		// Throw a timeout exception when sending the mocked tx16Packet or tx64Packet packets.
-		PowerMockito.doThrow(new TimeoutException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
-		PowerMockito.doThrow(new TimeoutException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
+		PowerMockito.doThrow(new TimeoutException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet));
+		PowerMockito.doThrow(new TimeoutException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet));
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -296,9 +296,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(TimeoutException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteRaw802Device as parameter.
 		try {
-			raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TimeoutException.class, e.getClass());
@@ -314,8 +314,8 @@ public class SendSerialData802Test {
 	@Test
 	public void testSendSerialData802IOError() throws Exception {
 		// Throw an IO exception when trying to send an XBee packet.
-		PowerMockito.doThrow(new IOException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet), Mockito.anyBoolean());
-		PowerMockito.doThrow(new IOException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet), Mockito.anyBoolean());
+		PowerMockito.doThrow(new IOException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx16Packet));
+		PowerMockito.doThrow(new IOException()).when(raw802Device, SEND_XBEE_PACKET_METHOD, Mockito.eq(tx64Packet));
 		
 		// Send serial data using the 16-bit address.
 		try {
@@ -333,9 +333,9 @@ public class SendSerialData802Test {
 			assertEquals(XBeeException.class, e.getClass());
 			assertEquals(IOException.class, e.getCause().getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteRaw802Device as parameter.
 		try {
-			raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
@@ -366,9 +366,9 @@ public class SendSerialData802Test {
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteRaw802Device as parameter.
 		try {
-			raw802Device.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			raw802Device.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Tx64 frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());

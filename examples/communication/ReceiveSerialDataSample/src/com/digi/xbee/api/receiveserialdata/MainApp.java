@@ -1,17 +1,17 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.receiveserialdata;
 
-import com.digi.xbee.api.ZigBeeDevice;
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 /**
@@ -41,7 +41,7 @@ public class MainApp {
 		System.out.println(" |  XBee Java Library Receive Data Sample  |");
 		System.out.println(" +-----------------------------------------+\n");
 		
-		ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
+		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
 		try {
 			myDevice.open();

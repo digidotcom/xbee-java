@@ -52,7 +52,7 @@ public class SendSerialDataDigiMeshTest {
 	// Variables.
 	private SerialPortRxTx mockedPort;
 	private DigiMeshDevice digiMeshDevice;
-	private DigiMeshDevice mockedDevice;
+	private RemoteDigiMeshDevice mockedRemoteDevice;
 	
 	private TransmitPacket transmitPacket;
 	private TransmitStatusPacket transmitStatusSuccess;
@@ -79,9 +79,9 @@ public class SendSerialDataDigiMeshTest {
 		transmitStatusError = Mockito.mock(TransmitStatusPacket.class);
 		Mockito.when(transmitStatusError.getTransmitStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
 		
-		// Mock a DigiMeshDevice to be used as parameter in the send serial data command.
-		mockedDevice = Mockito.mock(DigiMeshDevice.class);
-		Mockito.when(mockedDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		// Mock a RemoteDigiMeshDevice to be used as parameter in the send serial data command.
+		mockedRemoteDevice = Mockito.mock(RemoteDigiMeshDevice.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		
 		// Whenever a TransmitPacket class is instantiated, the mocked transmitPacket packet should be returned.
 		PowerMockito.whenNew(TransmitPacket.class).withAnyArguments().thenReturn(transmitPacket);
@@ -102,7 +102,7 @@ public class SendSerialDataDigiMeshTest {
 		}
 		// Try to send serial data with a null XBeeDevice.
 		try {
-			digiMeshDevice.sendSerialData((XBeeDevice)null, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData((RemoteDigiMeshDevice)null, SEND_DATA_BYTES);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -114,9 +114,9 @@ public class SendSerialDataDigiMeshTest {
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
-		// Try to send serial data with null data. XBee device.
+		// Try to send serial data with null data. RemoteDigiMeshDevice device.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, null);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, null);
 			fail("Serial data shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -141,9 +141,9 @@ public class SendSerialDataDigiMeshTest {
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiMeshDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("Serial data frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InterfaceNotOpenException.class, e.getClass());
@@ -159,15 +159,15 @@ public class SendSerialDataDigiMeshTest {
 	@Test
 	public void testSendSerialDataDigiMeshSuccess() throws Exception {
 		// Return the mocked TransmitStatus success packet when sending the mocked transmitPacket packet.
-		PowerMockito.doReturn(transmitStatusSuccess).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doReturn(transmitStatusSuccess).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket));
 		
 		// Verify that the packet is sent successfully when using the 64-bit address.
 		digiMeshDevice.sendSerialData(XBEE_64BIT_ADDRESS, SEND_DATA_BYTES);
-		// Verify that the packet is sent successfully when using an XBeeDevice as parameter.
-		digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+		// Verify that the packet is sent successfully when using a RemoteDigiMeshDevice as parameter.
+		digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 		
 		// Verify the sendXBeePacket method was called 3 times (one for each data send).
-		PowerMockito.verifyPrivate(digiMeshDevice, Mockito.times(2)).invoke(SEND_XBEE_PACKET_METHOD, (XBeeAPIPacket)Mockito.any(), Mockito.anyBoolean());
+		PowerMockito.verifyPrivate(digiMeshDevice, Mockito.times(2)).invoke(SEND_XBEE_PACKET_METHOD, (XBeeAPIPacket)Mockito.any());
 	}
 	
 	/**
@@ -179,7 +179,7 @@ public class SendSerialDataDigiMeshTest {
 	@Test
 	public void testSendSerialDataDigiMeshTxStatusError() throws Exception {
 		// Return the mocked TransmitStatus error packet when sending the mocked transmitPacket packet.
-		PowerMockito.doReturn(transmitStatusError).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doReturn(transmitStatusError).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket));
 		
 		// Send serial data using the 64-bit address.
 		try {
@@ -188,9 +188,9 @@ public class SendSerialDataDigiMeshTest {
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiMeshDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TransmitException.class, e.getClass());
@@ -212,9 +212,9 @@ public class SendSerialDataDigiMeshTest {
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiMeshDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(InvalidOperatingModeException.class, e.getClass());
@@ -230,7 +230,7 @@ public class SendSerialDataDigiMeshTest {
 	@Test
 	public void testSendSerialDataDigiMeshTimeout() throws Exception {
 		// Throw a timeout exception when sending the mocked transmitPacket packet.
-		PowerMockito.doThrow(new TimeoutException()).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doThrow(new TimeoutException()).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket));
 		
 		// Send serial data using the 64-bit address.
 		try {
@@ -239,9 +239,9 @@ public class SendSerialDataDigiMeshTest {
 		} catch (Exception e) {
 			assertEquals(TimeoutException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiMeshDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(TimeoutException.class, e.getClass());
@@ -257,7 +257,7 @@ public class SendSerialDataDigiMeshTest {
 	@Test
 	public void testSendSerialDataDigiMeshIOError() throws Exception {
 		// Throw an IO exception when trying to send an XBee packet.
-		PowerMockito.doThrow(new IOException()).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket), Mockito.anyBoolean());
+		PowerMockito.doThrow(new IOException()).when(digiMeshDevice, SEND_XBEE_PACKET_METHOD, Mockito.eq(transmitPacket));
 		
 		// Send serial data using the 64-bit address.
 		try {
@@ -267,9 +267,9 @@ public class SendSerialDataDigiMeshTest {
 			assertEquals(XBeeException.class, e.getClass());
 			assertEquals(IOException.class, e.getCause().getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiMeshDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(XBeeException.class, e.getClass());
@@ -293,9 +293,9 @@ public class SendSerialDataDigiMeshTest {
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());
 		}
-		// Send serial data using an XBeeDevice as parameter.
+		// Send serial data using a RemoteDigiMeshDevice as parameter.
 		try {
-			digiMeshDevice.sendSerialData(mockedDevice, SEND_DATA_BYTES);
+			digiMeshDevice.sendSerialData(mockedRemoteDevice, SEND_DATA_BYTES);
 			fail("TransmitRequest frame shouldn't have been sent successfully.");
 		} catch (Exception e) {
 			assertEquals(OperationNotSupportedException.class, e.getClass());

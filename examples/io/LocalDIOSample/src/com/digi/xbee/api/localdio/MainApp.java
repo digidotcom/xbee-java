@@ -1,20 +1,20 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.localdio;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.digi.xbee.api.ZigBeeDevice;
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
@@ -56,7 +56,7 @@ public class MainApp {
 		System.out.println(" | XBee Java Library Get/Set Local DIO Sample  |");
 		System.out.println(" +---------------------------------------------+\n");
 		
-		final ZigBeeDevice myDevice = new ZigBeeDevice(PORT, BAUD_RATE);
+		final XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
 		Timer readADCTimer = new Timer();
 		
@@ -85,9 +85,9 @@ public class MainApp {
 	 * @see TimerTask
 	 */
 	private static class UpdateOutputTask extends TimerTask {
-		private ZigBeeDevice xbeeDevice;
+		private XBeeDevice xbeeDevice;
 		
-		public UpdateOutputTask(ZigBeeDevice xbeeDevice) {
+		public UpdateOutputTask(XBeeDevice xbeeDevice) {
 			this.xbeeDevice = xbeeDevice;
 		}
 		

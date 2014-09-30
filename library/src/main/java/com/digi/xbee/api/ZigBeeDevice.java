@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
@@ -91,26 +91,6 @@ public class ZigBeeDevice extends XBeeDevice {
 		super(connectionInterface);
 	}
 	
-	/**
-	 * Class constructor. Instantiates a new remote {@code ZigBeeDevice} object 
-	 * with the given local {@code ZigBeeDevice} which contains the connection 
-	 * interface to be used.
-	 * 
-	 * @param localXBeeDevice The local ZigBee device that will behave as 
-	 *                        connection interface to communicate with this 
-	 *                        remote ZigBee device
-	 * @param xbee64BitAddress The 64-bit address to identify this remote ZigBee 
-	 *                         device.
-	 * 
-	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
-	 * 
-	 * @see XBee64BitAddress
-	 */
-	public ZigBeeDevice(ZigBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
-		super(localXBeeDevice, xbee64BitAddress);
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.XBeeDevice#open()
@@ -118,8 +98,6 @@ public class ZigBeeDevice extends XBeeDevice {
 	@Override
 	public void open() throws XBeeException {
 		super.open();
-		if (isRemote())
-			return;
 		if (xbeeProtocol != XBeeProtocol.ZIGBEE)
 			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
 	}

@@ -27,7 +27,7 @@ public class XBeeMessageTest {
 	 * <p>Verify that the {@code XBeeMessage} cannot be created if the address is null.</p>
 	 */
 	@Test(expected=NullPointerException.class)
-	public void TestCreateNullAddress() {
+	public void testCreateNullAddress() {
 		new XBeeMessage(null, DATA.getBytes());
 	}
 	
@@ -37,7 +37,7 @@ public class XBeeMessageTest {
 	 * <p>Verify that the {@code XBeeMessage} cannot be created if the address is empty.</p>
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void TestCreateEmptyAddress() {
+	public void testCreateEmptyAddress() {
 		new XBeeMessage("", DATA.getBytes());
 	}
 	
@@ -47,7 +47,7 @@ public class XBeeMessageTest {
 	 * <p>Verify that the {@code XBeeMessage} cannot be created if the data is null.</p>
 	 */
 	@Test(expected=NullPointerException.class)
-	public void TestCreateNullData() {
+	public void testCreateNullData() {
 		new XBeeMessage(ADDRESS, null);
 	}
 	
@@ -61,7 +61,7 @@ public class XBeeMessageTest {
 	 * properly.</p>
 	 */
 	@Test
-	public void TestCreateSuccess() {
+	public void testCreateSuccess() {
 		XBeeMessage xbeeMessage = new XBeeMessage(ADDRESS, DATA.getBytes());
 		
 		assertEquals(ADDRESS, xbeeMessage.getAddress());

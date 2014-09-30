@@ -34,12 +34,12 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 public class XBeePacketsQueue {
 
 	// Constants.
-	private static final int DEFAULT_MAX_LENGTH = 50;
+	public static final int DEFAULT_MAX_LENGTH = 50;
 	
 	// Variables.
 	private int maxLength = DEFAULT_MAX_LENGTH;
 	
-	private static LinkedList<XBeePacket> packetsList;
+	private LinkedList<XBeePacket> packetsList;
 	
 	/**
 	 * Class constructor. Instantiates a new object of type {@code XBeePacketsQueue}.
@@ -296,5 +296,23 @@ public class XBeePacketsQueue {
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException e) { }
+	}
+	
+	/**
+	 * Retrieves the maximum size of the XBee packets queue.
+	 * 
+	 * @return The maximum size of the XBee packets queue.
+	 */
+	public int getMaxSize() {
+		return maxLength;
+	}
+	
+	/**
+	 * Retrieves the current size of the XBee packets queue.
+	 * 
+	 * @return The current size of the XBee packets queue.
+	 */
+	public int getCurrentSize() {
+		return packetsList.size();
 	}
 }

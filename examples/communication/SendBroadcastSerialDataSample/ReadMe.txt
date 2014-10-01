@@ -3,6 +3,9 @@
   This is a sample Java application to show how to send data from the local XBee 
   device to all remote devices on the same network (broadcast) using the XBee 
   Java Library.
+  
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
+        but it can be applied to any other local XBee device class.
 
 
   Files

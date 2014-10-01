@@ -4,6 +4,9 @@
   the XBee device to all remote devices on the same network (broadcast) using 
   the XBee Java Library. Transmitting data asynchronously means the execution 
   will not be blocked during the transmit request.
+  
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
+        but it can be applied to any other local XBee device class.
 
 
   Files

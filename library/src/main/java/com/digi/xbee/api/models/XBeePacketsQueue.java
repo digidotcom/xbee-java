@@ -241,28 +241,35 @@ public class XBeePacketsQueue {
 		case RECEIVE_PACKET:
 			if (((ReceivePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
+			break;
 		case REMOTE_AT_COMMAND_RESPONSE:
 			if (((RemoteATCommandResponsePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
+			break;
 		case RX_16:
 			// TODO: Uncomment these lines when the get16BitAddress() method of the XBee device is implemented.
 			//if (((RX16Packet)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
 			//	return true;
+			//break;
 			return false;
 		case RX_64:
 			if (((RX64Packet)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
+			break;
 		case RX_IO_16:
 			// TODO: Uncomment these lines when the get16BitAddress() method of the XBee device is implemented.
 			//if (((RX16IOPacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
 			//	return true;
+			//break;
 			return false;
 		case RX_IO_64:
 			if (((RX64IOPacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
+			break;
 		default:
 			return false;
 		}
+		return false;
 	}
 	
 	/**

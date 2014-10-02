@@ -13,6 +13,7 @@ package com.digi.xbee.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1382,6 +1383,293 @@ public abstract class AbstractXBeeDevice {
 		
 		// Return the analog value.
 		return ioSample.getAnalogValues().get(ioLine);
+	}
+	
+	/**
+	 * Sets the 64 bit destination extended address.
+	 * 
+	 * <p>{@code 0x000000000000FFFF} is the broadcast address for the PAN.
+	 * {@code 0x0000000000000000} can be used to address the Pan Coordinator.
+	 * </p>
+	 * 
+	 * @param address Destination address.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the set 
+	 *                          destination address command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
+		if (xbee64BitAddress == null)
+			throw new NullPointerException("Address cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] address = xbee64BitAddress.getValue();
+		// TODO Replace these two methods with the getParameter method.
+		setDestinationAddressHigh(Arrays.copyOfRange(address, 0, 4));
+		setDestinationAddressLow(Arrays.copyOfRange(address, 4, 8));
+		if (isRemote())
+			applyChanges();
+	}
+	
+	private void setDestinationAddressHigh(byte[] address) throws TimeoutException, XBeeException {
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("DH", address));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+	}
+	
+	private void setDestinationAddressLow(byte[] address) throws TimeoutException, XBeeException {
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("DL", address));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+	}
+	
+	/**
+	 * Retrieves the 64 bit destination extended address.
+	 * 
+	 * @return 64 bit destination address.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get
+	 *                          destination address command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public XBee64BitAddress getDestinationAddress() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// TODO Replace these two methods with the setParameter method.
+		byte[] dh = getDestinationAddressHigh();
+		byte[] dl = getDestinationAddressLow();
+		byte[] address = new byte[dh.length + dl.length];
+		
+		System.arraycopy(dh, 0, address, 0, dh.length);
+		System.arraycopy(dl, 0, address, dh.length, dl.length);
+		
+		return new XBee64BitAddress(address);
+	}
+	
+	private byte[] getDestinationAddressHigh() throws TimeoutException, XBeeException {
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("DH"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Check if the response contains the DH value.
+		if (response.getResponse() == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException("Answer does not contain DH value.");
+		
+		return response.getResponse();
+	}
+	
+	private byte[] getDestinationAddressLow() throws TimeoutException, XBeeException {
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("DL"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Check if the response contains the DL value.
+		if (response.getResponse() == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException("Answer does not contain DL value.");
+		
+		return response.getResponse();
+	}
+	
+	/**
+	 * Sets the IO sampling rate to enable periodic sampling.
+	 * 
+	 * <p>If set > 0, all enabled digital IO and analog inputs will be sampled
+	 * and transmitted every {@code rate} milliseconds to the configured
+	 * destination address.</p>
+	 * 
+	 * @param rate IO sampling rate in milliseconds.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the set IO
+	 *                          sampling rate command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDestinationAddress(XBee64BitAddress)
+	 * @see #getDestinationAddress()
+	 */
+	public void setIOSamplingRate(int rate) throws TimeoutException, XBeeException {
+		if (rate < 0)
+			throw new IllegalArgumentException("Rate must be >= 0.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			if (isRemote())
+				response = sendATCommand(new ATCommand("IR", ByteUtils.intToByteArray(rate)), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand("IR", ByteUtils.intToByteArray(rate)));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+	}
+	
+	/**
+	 * Retrieves the IO sampling rate.
+	 * 
+	 * @return IO sampling rate in milliseconds.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get IO
+	 *                          sampling rate command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public int getIOSamplingRate() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("IR"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Check if the response contains the IO sampling rate.
+		if (response.getResponse() == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException("Answer does not contain IO sampling rate.");
+		
+		// Return the IO sampling rate.
+		return ByteUtils.byteArrayToInt(response.getResponse());
+	}
+	
+	/**
+	 * Sets the bitfield that configures which digital IO pins should be
+	 * monitored for change detection.
+	 * 
+	 * <p>If a change is detected on an enabled digital IO pin, a digital IO
+	 * sample is immediately transmitted to the configured destination address.
+	 * </p>
+	 * 
+	 * @param bitfield Byte array that defines which pins should be monitored.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the set DIO
+	 *                          change detection command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDestinationAddress(XBee64BitAddress)
+	 * @see #getDestinationAddress()
+	 */
+	public void setDIOChangeDetection(byte[] bitfield) throws TimeoutException, XBeeException {
+		if (bitfield == null)
+			throw new NullPointerException("Bitfield cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			if (isRemote())
+				response = sendATCommand(new ATCommand("IC", bitfield), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand("IC", bitfield));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+	}
+	
+	/**
+	 * Retrieves the bitfield that defines which digital IO pins are monitored
+	 * for change detection.
+	 * 
+	 * @return Bitfield that defines which digital IO pins are monitored
+	 * for change detection.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get DIO
+	 *                          change detection command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public byte[] getDIOChangeDetection() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("IC"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Check if the response contains the bitfield.
+		if (response.getResponse() == null || response.getResponse().length == 0)
+			throw new OperationNotSupportedException("Answer does not contain DIO change detection bitfield.");
+		
+		// Return the IO sampling rate.
+		return response.getResponse();
+	}
+	
+	/**
+	 * Applies changes to all command registers causing queued command register
+	 * values to be applied.
+	 * 
+	 * @throws TimeoutException if there is a timeout sending the get Apply
+	 *                          Changes command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void applyChanges() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(new ATCommand("AC"));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
 	}
 	
 	/**

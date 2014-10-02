@@ -98,7 +98,7 @@ import com.digi.xbee.api.utils.ByteUtils;
  *      <p>bit 6 = N/A</p>
  *      <p>bit 7 = Supply Voltage Value</p>
  * <br>
- *      <p>Example: mask of {@code 0x83} means AD0, and AD1 enabled.</p>
+ *      <p>Example: mask of {@code 0x03} means AD0, and AD1 enabled.</p>
  *      <p>0 0 0 0 0 0 1 1</p>
  * </BLOCKQUOTE>
  */

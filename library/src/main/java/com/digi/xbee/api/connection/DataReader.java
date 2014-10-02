@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.exceptions.InvalidPacketException;
+import com.digi.xbee.api.io.IOSample;
+import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
@@ -29,8 +31,11 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
+import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
+import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
+import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
@@ -59,6 +64,7 @@ public class DataReader extends Thread {
 	// The packetReceiveListeners requires to be a HashMap with an associated integer. The integer is used to determine 
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
+	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
 	
 	private Logger logger;
 	
@@ -195,6 +201,42 @@ public class DataReader extends Thread {
 		}
 	}
 	
+	/**
+	 * Adds the given IO sample receive listener to the list of listeners to 
+	 * be notified when IO samples are received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new IO samples are received.
+	 * 
+	 * @see IIOSampleReceiveListener
+	 * @see #removeIOSampleReceiveListener(IIOSampleReceiveListener)
+	 */
+	public void addIOSampleReceiveListener(IIOSampleReceiveListener listener) {
+		synchronized (ioSampleReceiveListeners) {
+			if (!ioSampleReceiveListeners.contains(listener))
+				ioSampleReceiveListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given IO sample receive listener from the list of IO sample 
+	 * receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * 
+	 * @param listener IO sample receive listener to remove.
+	 * 
+	 * @see IIOSampleReceiveListener
+	 * @see #addIOSampleReceiveListener(IIOSampleReceiveListener)
+	 */
+	public void removeIOSampleReceiveListener(IIOSampleReceiveListener listener) {
+		synchronized (ioSampleReceiveListeners) {
+			if (ioSampleReceiveListeners.contains(listener))
+				ioSampleReceiveListeners.remove(listener);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -286,6 +328,8 @@ public class DataReader extends Thread {
 			address = receivePacket.get64bitSourceAddress().toString();
 			data = receivePacket.getRFData();
 			isBroadcastData = ByteUtils.isBitEnabled(receivePacket.getReceiveOptions(), 1);
+			// Notify that serial data was received to the corresponding listeners.
+			notifySerialDataReceived(address, data, isBroadcastData);
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
@@ -294,6 +338,8 @@ public class DataReader extends Thread {
 			if (ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 1)
 					|| ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 2))
 				isBroadcastData = true;
+			// Notify that serial data was received to the corresponding listeners.
+			notifySerialDataReceived(address, data, isBroadcastData);
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
@@ -302,13 +348,27 @@ public class DataReader extends Thread {
 			if (ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 1)
 					|| ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 2))
 				isBroadcastData = true;
+			// Notify that serial data was received to the corresponding listeners.
+			notifySerialDataReceived(address, data, isBroadcastData);
+			break;
+		case IO_DATA_SAMPLE_RX_INDICATOR:
+			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+			// Notify that IO sample was received to the corresponding listeners.
+			notifyIOSampleReceived(ioSamplePacket.getIOSample());
+			break;
+		case RX_IO_64:
+			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+			// Notify that IO sample was received to the corresponding listeners.
+			notifyIOSampleReceived(rx64IOPacket.getIOSample());
+			break;
+		case RX_IO_16:
+			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+			// Notify that IO sample was received to the corresponding listeners.
+			notifyIOSampleReceived(rx16IOPacket.getIOSample());
 			break;
 		default:
 			break;
 		}
-		// Notify that serial data was received to the corresponding listeners.
-		if (address != null && data != null)
-			notifySerialDataReceived(address, data, isBroadcastData);
 	}
 	
 	/**
@@ -406,6 +466,43 @@ public class DataReader extends Thread {
 				// Remove required listeners.
 				for (IPacketReceiveListener listener:removeListeners)
 					packetReceiveListeners.remove(listener);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed IO sample listeners that an IO sample has been received.
+	 *
+	 * @param ioSample The IO sample.
+	 * 
+	 * @see IOSample
+	 */
+	private void notifyIOSampleReceived(final IOSample ioSample) {
+		logger.debug(connectionInterface.toString() + "IO sample received.");
+		
+		try {
+			synchronized (ioSampleReceiveListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						ioSampleReceiveListeners.size()));
+				for (final IIOSampleReceiveListener listener:ioSampleReceiveListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							// Synchronize the listener so it is not called 
+							// twice. That is, let the listener to finish its job.
+							synchronized (listener) {
+								listener.ioSampleReceived(ioSample);
+							}
+						}
+					});
+				}
+				executor.shutdown();
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

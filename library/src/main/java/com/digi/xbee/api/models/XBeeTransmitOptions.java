@@ -31,7 +31,13 @@ public class XBeeTransmitOptions {
 	public static final int DISABLE_ACK = 0x01;
 	
 	/**
-	 * Send packet with broadcast {@code PAN ID}. Packet will be sent to all 
+	 * Applies changes in the remote device. If this option is
+	 * not set, an AC command must be sent before changes will take effect.
+	 */
+	public final static int APPLY_CHANGES = 0x02;
+	
+	/**
+	 * Sends packet with broadcast {@code PAN ID}. Packet will be sent to all 
 	 * devices in the same channel ignoring the {@code PAN ID} (value: {@value}).
 	 * 
 	 * <p>It cannot be combined with other options. Only valid for 
@@ -50,7 +56,7 @@ public class XBeeTransmitOptions {
 	public static final int ENABLE_APS_ENCRYPTION = 0x20;
 	
 	/**
-	 * Use the extended transmission timeout (value: {@value}).
+	 * Uses the extended transmission timeout (value: {@value}).
 	 * 
 	 * <p>Setting the extended timeout bit causes the stack to set the extended 
 	 * transmission timeout for the destination address.</p>

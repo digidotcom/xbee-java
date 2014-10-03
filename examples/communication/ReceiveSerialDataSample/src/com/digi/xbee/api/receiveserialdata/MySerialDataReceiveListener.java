@@ -12,6 +12,7 @@
 package com.digi.xbee.api.receiveserialdata;
 
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
+import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -28,22 +29,12 @@ import com.digi.xbee.api.utils.HexUtils;
 public class MySerialDataReceiveListener implements ISerialDataReceiveListener {
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.listeners.ISerialDataReceiveListener#serialDataReceived(java.lang.String, byte[])
+	 * @see com.digi.xbee.api.listeners.ISerialDataReceiveListener#serialDataReceived(com.digi.xbee.api.models.XBeeMessage)
 	 */
 	@Override
-	public void serialDataReceived(String address, byte[] data) {
-		System.out.format("From %s >> %s | %s%n", address, 
-				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)), 
-				new String(data));
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.listeners.ISerialDataReceiveListener#broadcastSerialDataReceived(java.lang.String, byte[])
-	 */
-	@Override
-	public void broadcastSerialDataReceived(String address, byte[] data) {
-		// This callback is executed when broadcast serial data is received from any node 
-		// of the network.
+	public void serialDataReceived(XBeeMessage xbeeMessage) {
+		System.out.format("From %s >> %s | %s%n", xbeeMessage.getDevice().get64BitAddress(), 
+				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(xbeeMessage.getData())), 
+				new String(xbeeMessage.getData()));
 	}
 }

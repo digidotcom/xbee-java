@@ -18,7 +18,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 
 	/**
 	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
-	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * with the given local {@code ZigBee} which contains the connection 
 	 * interface to be used.
 	 * 
 	 * @param localXBeeDevice The local ZigBee device that will behave as 
@@ -26,6 +26,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 *                        remote ZigBee device.
 	 * @param xbee64BitAddress The 64-bit address to identify this remote ZigBee 
 	 *                         device.
+	 * 
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code xbee64BitAddress == null}.
 	 * 
@@ -33,6 +34,31 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 */
 	public RemoteZigBeeDevice(ZigBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote ZigBee device.
+	 * @param xbee64BitAddress The 64-bit address to identify this remote ZigBee 
+	 *                         device.
+	 * 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.ZIGBEE}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code xbee64BitAddress == null}.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public RemoteZigBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+		super(localXBeeDevice, xbee64BitAddress);
+		
+		// Verify the local device has ZigBee protocol.
+		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.ZIGBEE)
+			throw new IllegalArgumentException("The protocol of the local XBee device is not " + XBeeProtocol.ZIGBEE.getDescription() + ".");
 	}
 	
 	/*

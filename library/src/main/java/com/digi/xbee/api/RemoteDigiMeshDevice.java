@@ -18,7 +18,7 @@ public class RemoteDigiMeshDevice extends RemoteXBeeDevice {
 
 	/**
 	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
-	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * with the given local {@code DigiMeshDevice} which contains the connection 
 	 * interface to be used.
 	 * 
 	 * @param localXBeeDevice The local DigiMesh device that will behave as 
@@ -26,6 +26,7 @@ public class RemoteDigiMeshDevice extends RemoteXBeeDevice {
 	 *                        remote DigiMesh device.
 	 * @param xbee64BitAddress The 64-bit address to identify this remote DigiMesh 
 	 *                         device.
+	 * 
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code xbee64BitAddress == null}.
 	 * 
@@ -33,6 +34,31 @@ public class RemoteDigiMeshDevice extends RemoteXBeeDevice {
 	 */
 	public RemoteDigiMeshDevice(DigiMeshDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
 		super(localXBeeDevice, xbee64BitAddress);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote DigiMesh device.
+	 * @param xbee64BitAddress The 64-bit address to identify this remote DigiMesh 
+	 *                         device.
+	 * 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_MESH}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code xbee64BitAddress == null}.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public RemoteDigiMeshDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+		super(localXBeeDevice, xbee64BitAddress);
+		
+		// Verify the local device has DigiMesh protocol.
+		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_MESH)
+			throw new IllegalArgumentException("The protocol of the local XBee device is not " + XBeeProtocol.DIGI_MESH.getDescription() + ".");
 	}
 	
 	/*

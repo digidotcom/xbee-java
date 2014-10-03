@@ -13,59 +13,82 @@ package com.digi.xbee.api.models;
 
 import static org.junit.Assert.*;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.digi.xbee.api.RemoteXBeeDevice;
 
 public class XBeeMessageTest {
 
 	// Constants.
 	private final static String DATA = "Data";
-	private final static String ADDRESS = "0123456789ABCDEF";
+	
+	// Variables.
+	private static RemoteXBeeDevice remoteXBeeDevice;
+	
+	@BeforeClass
+	public static void setupOnce() {
+		remoteXBeeDevice = Mockito.mock(RemoteXBeeDevice.class);
+	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(RemoteXBeeDevice, byte[])}.
 	 * 
-	 * <p>Verify that the {@code XBeeMessage} cannot be created if the address is null.</p>
+	 * <p>Verify that the {@code XBeeMessage} cannot be created if the remote XBee device is null.</p>
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testCreateNullAddress() {
+	public void testCreateNullDevice() {
 		new XBeeMessage(null, DATA.getBytes());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(String, byte[])}.
-	 * 
-	 * <p>Verify that the {@code XBeeMessage} cannot be created if the address is empty.</p>
-	 */
-	@Test(expected=IllegalArgumentException.class)
-	public void testCreateEmptyAddress() {
-		new XBeeMessage("", DATA.getBytes());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(RemoteXBeeDevice, byte[])}.
 	 * 
 	 * <p>Verify that the {@code XBeeMessage} cannot be created if the data is null.</p>
 	 */
 	@Test(expected=NullPointerException.class)
 	public void testCreateNullData() {
-		new XBeeMessage(ADDRESS, null);
+		new XBeeMessage(remoteXBeeDevice, null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(String, byte[])}, 
-	 * {@link com.digi.xbee.api.models.XBeeMessage#getAddress()}, 
+	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(RemoteXBeeDevice, byte[])}, 
+	 * {@link com.digi.xbee.api.models.XBeeMessage#getDevice()}, 
 	 * {@link com.digi.xbee.api.models.XBeeMessage#getData()} and 
-	 * {@link com.digi.xbee.api.models.XBeeMessage#getDataString()}.
+	 * {@link com.digi.xbee.api.models.XBeeMessage#getDataString()}, 
+	 * {@link com.digi.xbee.api.models.XBeeMessage#isBroadcast()}.
 	 * 
 	 * <p>Verify that the {@code XBeeMessage} can be created successfully and the getters work 
-	 * properly.</p>
+	 * properly when the message is unicast.</p>
 	 */
 	@Test
-	public void testCreateSuccess() {
-		XBeeMessage xbeeMessage = new XBeeMessage(ADDRESS, DATA.getBytes());
+	public void testCreateSuccessNotBroadcast() {
+		XBeeMessage xbeeMessage = new XBeeMessage(remoteXBeeDevice, DATA.getBytes(), false);
 		
-		assertEquals(ADDRESS, xbeeMessage.getAddress());
+		assertEquals(remoteXBeeDevice, xbeeMessage.getDevice());
 		assertArrayEquals(DATA.getBytes(), xbeeMessage.getData());
 		assertEquals(DATA, xbeeMessage.getDataString());
+		assertFalse(xbeeMessage.isBroadcast());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeeMessage#XBeeMessage(RemoteXBeeDevice, byte[], boolean)}, 
+	 * {@link com.digi.xbee.api.models.XBeeMessage#getDevice()}, 
+	 * {@link com.digi.xbee.api.models.XBeeMessage#getData()} and 
+	 * {@link com.digi.xbee.api.models.XBeeMessage#getDataString()}, 
+	 * {@link com.digi.xbee.api.models.XBeeMessage#isBroadcast()}.
+	 * 
+	 * <p>Verify that the {@code XBeeMessage} can be created successfully and the getters work 
+	 * properly when the message is broadcast.</p>
+	 */
+	@Test
+	public void testCreateSuccessBroadcast() {
+		XBeeMessage xbeeMessage = new XBeeMessage(remoteXBeeDevice, DATA.getBytes(), true);
+		
+		assertEquals(remoteXBeeDevice, xbeeMessage.getDevice());
+		assertArrayEquals(DATA.getBytes(), xbeeMessage.getData());
+		assertEquals(DATA, xbeeMessage.getDataString());
+		assertTrue(xbeeMessage.isBroadcast());
 	}
 }

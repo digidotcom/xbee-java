@@ -20,11 +20,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.RemoteRaw802Device;
+import com.digi.xbee.api.RemoteXBeeDevice;
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -33,7 +37,6 @@ import com.digi.xbee.api.packet.XBeePacketParser;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64Packet;
-import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -67,17 +70,20 @@ public class DataReader extends Thread {
 	
 	private XBeePacketsQueue xbeePacketsQueue;
 	
+	private XBeeDevice xbeeDevice;
+	
 	/**
 	 * Class constructor. Instances a new {@code DataReader} object for the 
 	 * given interface.
 	 * 
 	 * @param connectionInterface Connection interface to read from.
 	 * @param mode XBee operating mode.
+	 * @param XBeeDevice Reference to the XBee device containing this DataReader object.
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null} or
 	 *                                 {@code mode == null}.
 	 */
-	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode) {
+	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode, XBeeDevice xbeeDevice) {
 		if (connectionInterface == null)
 			throw new NullPointerException("Connection interface cannot be null.");
 		if (mode == null)
@@ -85,6 +91,7 @@ public class DataReader extends Thread {
 		
 		this.connectionInterface = connectionInterface;
 		this.mode = mode;
+		this.xbeeDevice = xbeeDevice;
 		this.logger = LoggerFactory.getLogger(DataReader.class);
 		parser = new XBeePacketParser();
 		xbeePacketsQueue = new XBeePacketsQueue();
@@ -284,58 +291,58 @@ public class DataReader extends Thread {
 		if (apiType == null)
 			return;
 		
-		String address = null;
+		RemoteXBeeDevice remoteDevice = null;
 		byte[] data = null;
-		boolean isBroadcastData = false;
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			address = receivePacket.get64bitSourceAddress().toString();
+			// TODO: This should be replaced when the Network is implemented.
+			remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
 			data = receivePacket.getRFData();
-			isBroadcastData = ByteUtils.isBitEnabled(receivePacket.getReceiveOptions(), 1);
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			address = rx64Packet.get64bitSourceAddress().toString();
+			// TODO: This should be replaced when the Network is implemented.
+			remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
 			data = rx64Packet.getRFData();
-			if (ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 1)
-					|| ByteUtils.isBitEnabled(rx64Packet.getReceiveOptions(), 2))
-				isBroadcastData = true;
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			address = rx16Packet.get16bitSourceAddress().toString();
+			// TODO: This should be replaced when the Network is implemented.
+			remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
 			data = rx16Packet.getRFData();
-			if (ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 1)
-					|| ByteUtils.isBitEnabled(rx16Packet.getReceiveOptions(), 2))
-				isBroadcastData = true;
 			break;
 		default:
 			break;
 		}
+		
+		// TODO: The remote XBee device should be retrieved from the XBee Network (contained 
+		// in the xbeeDevice variable). If the network does not contain such remote device, 
+		// then it should be instantiated and added there.
+		
 		// Notify that serial data was received to the corresponding listeners.
-		if (address != null && data != null)
-			notifySerialDataReceived(address, data, isBroadcastData);
+		if (remoteDevice != null && data != null)
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 	}
 	
 	/**
 	 * Notifies subscribed serial data receive listeners that serial data has 
 	 * been received.
 	 *
-	 * @param address The address of the node that sent the data.
+	 * @param address The XBee address of the node that sent the data.
 	 * @param data The received data.
 	 * @param isBroadcastData Indicates whether or not the data was sent via 
 	 *                        broadcast to execute the corresponding broadcast 
 	 *                        callback.
 	 */
-	private void notifySerialDataReceived(final String address, final byte[] data, final boolean isBroadcastData) {
-		if (isBroadcastData)
+	private void notifySerialDataReceived(final XBeeMessage xbeeMessage) {
+		if (xbeeMessage.isBroadcast())
 			logger.info(connectionInterface.toString() + 
-					"Broadcast serial data received from {} >> {}.", address, HexUtils.prettyHexString(data));
+					"Broadcast serial data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
 		else
 			logger.info(connectionInterface.toString() + 
-					"Serial data received from {} >> {}.", address, HexUtils.prettyHexString(data));
+					"Serial data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
 		
 		try {
 			synchronized (serialDataReceiveListeners) {
@@ -358,10 +365,7 @@ public class DataReader extends Thread {
 							 data is waiting till it finishes, and the other 
 							 way around. */
 							synchronized (listener) {
-								if (isBroadcastData)
-									listener.broadcastSerialDataReceived(address, data);
-								else
-									listener.serialDataReceived(address, data);
+								listener.serialDataReceived(xbeeMessage);
 							}
 						}
 					});

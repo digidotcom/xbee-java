@@ -144,7 +144,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		logger.info(toString() + "Connection interface open.");
 		
 		// Initialize the data reader.
-		dataReader = new DataReader(connectionInterface, operatingMode);
+		dataReader = new DataReader(connectionInterface, operatingMode, this);
 		dataReader.start();
 		
 		// Determine the operating mode of the XBee device if it is unknown.
@@ -974,28 +974,32 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			return null;
 		
 		// Obtain the source address and data from the packet.
-		String address;
+		RemoteXBeeDevice remoteDevice;
 		byte[] data;
 		
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
 		switch (packetType) {
 		case RECEIVE_PACKET:
-			address = ((ReceivePacket)xbeePacket).get64bitSourceAddress().toString();
+			remoteDevice = new RemoteXBeeDevice(this, ((ReceivePacket)xbeePacket).get64bitSourceAddress());
 			data = ((ReceivePacket)xbeePacket).getRFData();
 			break;
 		case RX_16:
-			address = ((RX16Packet)xbeePacket).get16bitSourceAddress().toString();
+			remoteDevice = new RemoteRaw802Device(this, ((RX16Packet)xbeePacket).get16bitSourceAddress());
 			data = ((RX16Packet)xbeePacket).getRFData();
 			break;
 		case RX_64:
-			address = ((RX64Packet)xbeePacket).get64bitSourceAddress().toString();
+			remoteDevice = new RemoteXBeeDevice(this, ((RX64Packet)xbeePacket).get64bitSourceAddress());
 			data = ((RX64Packet)xbeePacket).getRFData();
 			break;
 		default:
 			return null;
 		}
 		
+		// TODO: The remote XBee device should be retrieved from the XBee Network (contained 
+		// in the xbeeDevice variable). If the network does not contain such remote device, 
+		// then it should be instantiated and added there.
+		
 		// Create and return the XBee message.
-		return new XBeeMessage(address, data);
+		return new XBeeMessage(remoteDevice, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());
 	}
 }

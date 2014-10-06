@@ -1462,7 +1462,8 @@ public abstract class AbstractXBeeDevice {
 	 * @param parameterValue The value of the parameter to set.
 	 * 
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
-	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws NullPointerException if {@code parameter == null} or 
+	 *                              if {@code parameterValue == null}.
 	 * @throws TimeoutException if there is a timeout setting the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
@@ -1471,6 +1472,9 @@ public abstract class AbstractXBeeDevice {
 	 * @see #sendParameter(String, byte[])
 	 */
 	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
+		if (parameterValue == null)
+			throw new NullPointerException("Value of the parameter cannot be null.");
+		
 		sendParameter(parameter, parameterValue);
 	}
 	

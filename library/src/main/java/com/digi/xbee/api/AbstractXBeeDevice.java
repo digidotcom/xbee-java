@@ -582,10 +582,14 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param listener Listener to be notified when new IO samples are received.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
 	 * @see IIOSampleReceiveListener
 	 * @see #stopListeningForIOSamples(IIOSampleReceiveListener)
 	 */
 	protected void startListeningForIOSamples(IIOSampleReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
 		if (dataReader == null)
 			return;
 		dataReader.addIOSampleReceiveListener(listener);
@@ -1409,6 +1413,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout sending the set 
 	 *                          destination address command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see XBee64BitAddress#COORDINATOR_ADDRESS
+	 * @see XBee64BitAddress#BROADCAST_ADDRESS
 	 */
 	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
 		if (xbee64BitAddress == null)
@@ -1517,9 +1524,11 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Sets the IO sampling rate to enable periodic sampling.
 	 * 
-	 * <p>If set > 0, all enabled digital IO and analog inputs will be sampled
-	 * and transmitted every {@code rate} milliseconds to the configured
-	 * destination address.</p>
+	 * <p>All enabled digital IO and analog inputs will be sampled and
+	 * transmitted every {@code rate} milliseconds to the configured destination
+	 * address.</p>
+	 * 
+	 * <p>A sample rate of {@code 0} ms. disables this feature.</p>
 	 * 
 	 * @param rate IO sampling rate in milliseconds.
 	 * 
@@ -1554,6 +1563,9 @@ public abstract class AbstractXBeeDevice {
 	
 	/**
 	 * Retrieves the IO sampling rate.
+	 * 
+	 * <p>A sample rate of {@code 0} means the IO sampling feature is disabled.
+	 * </p>
 	 * 
 	 * @return IO sampling rate in milliseconds.
 	 * 

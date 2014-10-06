@@ -78,6 +78,7 @@ public abstract class AbstractXBeeDevice {
 	
 	protected OperatingMode operatingMode = OperatingMode.UNKNOWN;
 	
+	protected XBee16BitAddress xbee16BitAddress;
 	protected XBee64BitAddress xbee64BitAddress;
 	
 	protected int currentFrameID = 0xFF;
@@ -349,6 +350,17 @@ public abstract class AbstractXBeeDevice {
 		}
 		// Obtain the device protocol.
 		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
+	}
+	
+	/**
+	 * Retrieves the 16-bit address of the XBee device.
+	 * 
+	 * @return The 16-bit address of the XBee device.
+	 * 
+	 * @see XBee16BitAddress
+	 */
+	public XBee16BitAddress get16BitAddress() {
+		return xbee16BitAddress;
 	}
 	
 	/**

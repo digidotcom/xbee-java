@@ -11,6 +11,7 @@
 */
 package com.digi.xbee.api.listeners;
 
+import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.io.IOSample;
 
 /**
@@ -24,9 +25,10 @@ public interface IIOSampleReceiveListener {
 	 * Called when an IO sample is received through the connection interface.
 	 * 
 	 * @param ioSample The IO sample.
+	 * @param remoteDevice The device that sent the sample.
 	 * 
 	 * @see IOSample
 	 */
-	public void ioSampleReceived(IOSample ioSample);
+	public void ioSampleReceived(IOSample ioSample, RemoteXBeeDevice remoteDevice);
 
 }

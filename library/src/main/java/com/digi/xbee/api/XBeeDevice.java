@@ -137,7 +137,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		logger.info(toString() + "Connection interface open.");
 		
 		// Initialize the data reader.
-		dataReader = new DataReader(connectionInterface, operatingMode);
+		dataReader = new DataReader(connectionInterface, operatingMode, this);
 		dataReader.start();
 		
 		// Determine the operating mode of the XBee device if it is unknown.

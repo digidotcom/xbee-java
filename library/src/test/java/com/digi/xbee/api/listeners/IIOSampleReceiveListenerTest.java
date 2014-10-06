@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -26,10 +27,15 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.RemoteRaw802Device;
+import com.digi.xbee.api.RemoteXBeeDevice;
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
@@ -44,18 +50,58 @@ public class IIOSampleReceiveListenerTest {
 	private static final byte[] IO_SAMPLE_PAYLOAD = new byte[] {0x01, 0x00, 0x08, 0x00, 0x00, 0x08};
 	private static final IOSample IO_SAMPLE = new IOSample(IO_SAMPLE_PAYLOAD);
 	
+	private static final XBee64BitAddress XBEE_64BIT_ADDRESS = new XBee64BitAddress("0123456789ABCDEF");
+	private static final XBee16BitAddress XBEE_16BIT_ADDRESS = new XBee16BitAddress("0123");
+	
 	private static final String PACKET_RECEIVED_METHOD = "packetReceived";
 	private static final String NOTIFY_IO_SAMPLE_RECEIVED_METHOD = "notifyIOSampleReceived";
 	
 	// Variables.
+	private static RemoteXBeeDevice remoteDevice;
+	private static RemoteRaw802Device remote802Device;
+	
 	private MyReceiveListener receiveIOSampleListener;
 	
-	private IODataSampleRxIndicatorPacket ioDataSampleRxIndicatorPacket;
-	private RX16IOPacket rx16ioPacket;
-	private RX64IOPacket rx64ioPacket;
-	private ATCommandResponsePacket invalidPacket;
+	private static IODataSampleRxIndicatorPacket ioDataSampleRxIndicatorPacket;
+	private static RX16IOPacket rx16ioPacket;
+	private static RX64IOPacket rx64ioPacket;
+	private static ATCommandResponsePacket invalidPacket;
 	
 	private DataReader dataReader;
+	
+	@BeforeClass
+	public static void setupOnce() {
+		// Mock the RemoteXBeeDevice.
+		remoteDevice = Mockito.mock(RemoteXBeeDevice.class);
+		Mockito.when(remoteDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(remoteDevice.get16BitAddress()).thenReturn(XBEE_16BIT_ADDRESS);
+		
+		// Mock the RemoteRaw802Device.
+		remote802Device = Mockito.mock(RemoteRaw802Device.class);
+		Mockito.when(remote802Device.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(remote802Device.get16BitAddress()).thenReturn(XBEE_16BIT_ADDRESS);
+		
+		// Mock an IODataSampleRXIndicator packet.
+		ioDataSampleRxIndicatorPacket = Mockito.mock(IODataSampleRxIndicatorPacket.class);
+		Mockito.when(ioDataSampleRxIndicatorPacket.getFrameType()).thenReturn(APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR);
+		Mockito.when(ioDataSampleRxIndicatorPacket.getIOSample()).thenReturn(IO_SAMPLE);
+		Mockito.when(ioDataSampleRxIndicatorPacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		
+		// Mock a RX16IO packet.
+		rx16ioPacket = Mockito.mock(RX16IOPacket.class);
+		Mockito.when(rx16ioPacket.getFrameType()).thenReturn(APIFrameType.RX_IO_16);
+		Mockito.when(rx16ioPacket.getIOSample()).thenReturn(IO_SAMPLE);
+		Mockito.when(rx16ioPacket.get16bitSourceAddress()).thenReturn(XBEE_16BIT_ADDRESS);
+		
+		// Mock a RX64IO packet.
+		rx64ioPacket = Mockito.mock(RX64IOPacket.class);
+		Mockito.when(rx64ioPacket.getFrameType()).thenReturn(APIFrameType.RX_IO_64);
+		Mockito.when(rx64ioPacket.getIOSample()).thenReturn(IO_SAMPLE);
+		Mockito.when(rx64ioPacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		
+		// Mock an invalid packet.
+		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);
+	}
 	
 	@Before
 	public void setup() throws Exception {
@@ -63,36 +109,19 @@ public class IIOSampleReceiveListenerTest {
 		receiveIOSampleListener = PowerMockito.spy(new MyReceiveListener());
 		
 		// Data reader.
-		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN));
+		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, Mockito.mock(XBeeDevice.class)));
 		// Stub the 'notifyIOSampleReceived' method of the dataReader instance so it directly notifies the 
 		// listeners instead of opening a new thread per listener (which is what the real method does). This avoids us 
 		// having to wait for the executor to run the threads.
 		PowerMockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
-				IOSample ioSample = (IOSample)args[0];
-				notifyIOSampleReceivedListeners(ioSample);
+				IOSample ioSample = (IOSample) args[0];
+				RemoteXBeeDevice remoteDevice = (RemoteXBeeDevice) args[1];
+				notifyIOSampleReceivedListeners(ioSample, remoteDevice);
 				return null;
 			}
-		}).when(dataReader, NOTIFY_IO_SAMPLE_RECEIVED_METHOD, (IOSample)Mockito.any());
-		
-		// Mock an IODataSampleRXIndicator packet.
-		ioDataSampleRxIndicatorPacket = Mockito.mock(IODataSampleRxIndicatorPacket.class);
-		Mockito.when(ioDataSampleRxIndicatorPacket.getFrameType()).thenReturn(APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR);
-		Mockito.when(ioDataSampleRxIndicatorPacket.getIOSample()).thenReturn(IO_SAMPLE);
-		
-		// Mock a RX16IO packet.
-		rx16ioPacket = Mockito.mock(RX16IOPacket.class);
-		Mockito.when(rx16ioPacket.getFrameType()).thenReturn(APIFrameType.RX_IO_16);
-		Mockito.when(rx16ioPacket.getIOSample()).thenReturn(IO_SAMPLE);
-		
-		// Mock a RX64IO packet.
-		rx64ioPacket = Mockito.mock(RX64IOPacket.class);
-		Mockito.when(rx64ioPacket.getFrameType()).thenReturn(APIFrameType.RX_IO_64);
-		Mockito.when(rx64ioPacket.getIOSample()).thenReturn(IO_SAMPLE);
-		
-		// Mock an invalid packet.
-		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);
+		}).when(dataReader, NOTIFY_IO_SAMPLE_RECEIVED_METHOD, (IOSample) Mockito.any(), (RemoteXBeeDevice) Mockito.any());
 	}
 	
 	/**
@@ -100,9 +129,10 @@ public class IIOSampleReceiveListenerTest {
 	 */
 	@Test
 	public void testIOSampleReceiveEvent() {
-		receiveIOSampleListener.ioSampleReceived(IO_SAMPLE);
+		receiveIOSampleListener.ioSampleReceived(IO_SAMPLE, remoteDevice);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
+		assertEquals(remoteDevice, receiveIOSampleListener.getRemoteXBeeDevice());
 	}
 	
 	/**
@@ -113,16 +143,19 @@ public class IIOSampleReceiveListenerTest {
 	 */
 	@Test
 	public void testIOSampleReceiveNotSubscribed() throws Exception {
-		// Fire the private packetReceived method of the dataReader with a RX64Packet.
+		// Whenever a new Remote device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteXBeeDevice.class).withAnyArguments().thenReturn(remoteDevice);
+		
+		// Fire the private packetReceived method of the dataReader with an IODataSampleRxIndicatorPacket.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, ioDataSampleRxIndicatorPacket);
 		
-		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, 
-				IO_SAMPLE);
+		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remoteDevice);
 		
 		// As the receiveIOSampleListener was not subscribed in the ioSampleReceiveListeners of the dataReader object, the 
-		// IOSample of the receiveIOSampleListener should be null.
+		// IOSample and the RemoteXBeeDevice of the receiveIOSampleListener should be null.
 		assertNull(receiveIOSampleListener.getIOSample());
+		assertNull(receiveIOSampleListener.getRemoteXBeeDevice());
 	}
 	
 	/**
@@ -136,17 +169,20 @@ public class IIOSampleReceiveListenerTest {
 		// Subscribe to listen for IO samples.
 		dataReader.addIOSampleReceiveListener(receiveIOSampleListener);
 		
+		// Whenever a new Remote device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteXBeeDevice.class).withAnyArguments().thenReturn(remoteDevice);
+		
 		// Fire the private packetReceived method of the dataReader with an IODataSampleRxIndicatorPacket.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, ioDataSampleRxIndicatorPacket);
 		
-		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, 
-				IO_SAMPLE);
+		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remoteDevice);
 		
 		// Verify that the listener callback was executed one time.
-		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE);
+		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE, remoteDevice);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
+		assertEquals(remoteDevice, receiveIOSampleListener.getRemoteXBeeDevice());
 	}
 	
 	/**
@@ -160,17 +196,20 @@ public class IIOSampleReceiveListenerTest {
 		// Subscribe to listen for IO samples.
 		dataReader.addIOSampleReceiveListener(receiveIOSampleListener);
 		
+		// Whenever a new Remote device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteRaw802Device.class).withAnyArguments().thenReturn(remote802Device);
+		
 		// Fire the private packetReceived method of the dataReader with an RX16IOPacket.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx16ioPacket);
 		
-		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, 
-				IO_SAMPLE);
+		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remote802Device);
 		
 		// Verify that the listener callback was executed one time.
-		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE);
+		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE, remote802Device);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
+		assertEquals(remote802Device, receiveIOSampleListener.getRemoteXBeeDevice());
 	}
 	
 	/**
@@ -184,17 +223,20 @@ public class IIOSampleReceiveListenerTest {
 		// Subscribe to listen for IO samples.
 		dataReader.addIOSampleReceiveListener(receiveIOSampleListener);
 		
+		// Whenever a new Remote device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteXBeeDevice.class).withAnyArguments().thenReturn(remoteDevice);
+		
 		// Fire the private packetReceived method of the dataReader with an RX64IOPacket.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx64ioPacket);
 		
-		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, 
-				IO_SAMPLE);
+		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remoteDevice);
 		
 		// Verify that the listener callback was executed one time.
-		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE);
+		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE, remoteDevice);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
+		assertEquals(remoteDevice, receiveIOSampleListener.getRemoteXBeeDevice());
 	}
 
 	
@@ -209,17 +251,20 @@ public class IIOSampleReceiveListenerTest {
 		// Subscribe to listen for IO samples.
 		dataReader.addIOSampleReceiveListener(receiveIOSampleListener);
 		
+		// Whenever a new Remote device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteXBeeDevice.class).withAnyArguments().thenReturn(remoteDevice);
+		
 		// Fire the private packetReceived method of the dataReader with an invalid packet.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, invalidPacket);
 		
 		// Verify that the notifyIOSampleReceived private method was not called.
-		PowerMockito.verifyPrivate(dataReader, Mockito.never()).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, 
-				Mockito.anyObject());
+		PowerMockito.verifyPrivate(dataReader, Mockito.never()).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, Mockito.anyObject(), Mockito.anyObject());
 		
 		// Verify that the listener callback is not executed
-		Mockito.verify(receiveIOSampleListener, Mockito.never()).ioSampleReceived((IOSample)Mockito.any());
+		Mockito.verify(receiveIOSampleListener, Mockito.never()).ioSampleReceived((IOSample) Mockito.any(), (RemoteXBeeDevice) Mockito.any());
 		
 		assertNull(receiveIOSampleListener.getIOSample());
+		assertNull(receiveIOSampleListener.getRemoteXBeeDevice());
 	}
 	
 	/**
@@ -229,11 +274,12 @@ public class IIOSampleReceiveListenerTest {
 	 * 
 	 * @param ioSample The IO sample received.
 	 */
-	private void notifyIOSampleReceivedListeners(IOSample ioSample) {
+	private void notifyIOSampleReceivedListeners(IOSample ioSample, RemoteXBeeDevice remoteDevice) {
 		@SuppressWarnings("unchecked")
-		ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = (ArrayList<IIOSampleReceiveListener>)Whitebox.getInternalState(dataReader, "ioSampleReceiveListeners");
-		for (IIOSampleReceiveListener listener:ioSampleReceiveListeners) {
-			listener.ioSampleReceived(ioSample);
+		ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = (ArrayList<IIOSampleReceiveListener>) 
+				Whitebox.getInternalState(dataReader, "ioSampleReceiveListeners");
+		for (IIOSampleReceiveListener listener : ioSampleReceiveListeners) {
+			listener.ioSampleReceived(ioSample, remoteDevice);
 		}
 	}
 	
@@ -244,14 +290,16 @@ public class IIOSampleReceiveListenerTest {
 		
 		// Variables.
 		private IOSample ioSample = null;
+		private RemoteXBeeDevice remoteDevice = null;
 		
 		/*
 		 * (non-Javadoc)
 		 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener#ioSampleReceived(com.digi.xbee.api.io.IOSample)
 		 */
 		@Override
-		public void ioSampleReceived(IOSample ioSample) {
+		public void ioSampleReceived(IOSample ioSample, RemoteXBeeDevice remoteDevice) {
 			this.ioSample = ioSample;
+			this.remoteDevice = remoteDevice;
 			
 		}
 		
@@ -262,6 +310,15 @@ public class IIOSampleReceiveListenerTest {
 		 */
 		public IOSample getIOSample() {
 			return ioSample;
+		}
+		
+		/**
+		 * Retrieves the remote XBee device.
+		 * 
+		 * @return The remote XBee device.
+		 */
+		public RemoteXBeeDevice getRemoteXBeeDevice() {
+			return remoteDevice;
 		}
 	}
 }

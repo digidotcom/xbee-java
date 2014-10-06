@@ -20,6 +20,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.RemoteRaw802Device;
+import com.digi.xbee.api.RemoteXBeeDevice;
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
@@ -70,17 +73,20 @@ public class DataReader extends Thread {
 	
 	private XBeePacketParser parser;
 	
+	private XBeeDevice xbeeDevice;
+	
 	/**
 	 * Class constructor. Instances a new {@code DataReader} object for the 
 	 * given interface.
 	 * 
 	 * @param connectionInterface Connection interface to read from.
 	 * @param mode XBee operating mode.
+	 * @param XBeeDevice Reference to the XBee device containing this DataReader object.
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null} or
 	 *                                 {@code mode == null}.
 	 */
-	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode) {
+	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode, XBeeDevice xbeeDevice) {
 		if (connectionInterface == null)
 			throw new NullPointerException("Connection interface cannot be null.");
 		if (mode == null)
@@ -88,6 +94,7 @@ public class DataReader extends Thread {
 		
 		this.connectionInterface = connectionInterface;
 		this.mode = mode;
+		this.xbeeDevice = xbeeDevice;
 		this.logger = LoggerFactory.getLogger(DataReader.class);
 		parser = new XBeePacketParser();
 	}
@@ -319,6 +326,7 @@ public class DataReader extends Thread {
 			return;
 		
 		String address = null;
+		RemoteXBeeDevice remoteXBeeDevice = null;
 		byte[] data = null;
 		boolean isBroadcastData = false;
 		
@@ -353,18 +361,21 @@ public class DataReader extends Thread {
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+			remoteXBeeDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
 			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(ioSamplePacket.getIOSample());
+			notifyIOSampleReceived(ioSamplePacket.getIOSample(), remoteXBeeDevice);
 			break;
 		case RX_IO_64:
 			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+			remoteXBeeDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
 			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(rx64IOPacket.getIOSample());
+			notifyIOSampleReceived(rx64IOPacket.getIOSample(), remoteXBeeDevice);
 			break;
 		case RX_IO_16:
 			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+			remoteXBeeDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
 			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(rx16IOPacket.getIOSample());
+			notifyIOSampleReceived(rx16IOPacket.getIOSample(), remoteXBeeDevice);
 			break;
 		default:
 			break;
@@ -476,10 +487,11 @@ public class DataReader extends Thread {
 	 * Notifies subscribed IO sample listeners that an IO sample has been received.
 	 *
 	 * @param ioSample The IO sample.
+	 * @param remoteDevice The device that sent the sample.
 	 * 
 	 * @see IOSample
 	 */
-	private void notifyIOSampleReceived(final IOSample ioSample) {
+	private void notifyIOSampleReceived(final IOSample ioSample, final RemoteXBeeDevice remoteDevice) {
 		logger.debug(connectionInterface.toString() + "IO sample received.");
 		
 		try {
@@ -497,7 +509,7 @@ public class DataReader extends Thread {
 							// Synchronize the listener so it is not called 
 							// twice. That is, let the listener to finish its job.
 							synchronized (listener) {
-								listener.ioSampleReceived(ioSample);
+								listener.ioSampleReceived(ioSample, remoteDevice);
 							}
 						}
 					});

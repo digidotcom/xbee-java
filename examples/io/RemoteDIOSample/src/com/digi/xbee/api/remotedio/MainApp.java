@@ -36,18 +36,18 @@ public class MainApp {
 	/* Constants */
 	
 	// TODO Replace with the serial port where your local module is connected to.
-	private static final String PORT = "COM12";
+	private static final String PORT = "COM1";
 	// TODO Replace with the baud rate of your local module.
 	private static final int BAUD_RATE = 9600;
 	private static final int READ_TIMEOUT = 250;
 	
 	// TODO Replace with the 64-bit address of your remote module.
-	private static final XBee64BitAddress REMOTE_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040521BDA");
+	private static final XBee64BitAddress REMOTE_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
 	
 	// TODO Comment this line if your are not using the XBIB-U-DEV.
-//	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
+	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
 	// TODO Uncomment this line if you are using the XBee Development board.
-	private static final IOLine IOLINE_IN = IOLine.DIO4_AD4;
+//	private static final IOLine IOLINE_IN = IOLine.DIO4_AD4;
 	
 	private static final IOLine IOLINE_OUT = IOLine.DIO12;
 	

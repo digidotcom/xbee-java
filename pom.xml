@@ -28,6 +28,7 @@
 		<module>examples/communication/SendSerialDataAsyncSample</module>
 		<module>examples/communication/SendSerialDataSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
+		<module>examples/io/IOSamplingSample</module>
 		<module>examples/io/LocalADCSample</module>
 		<module>examples/io/LocalDIOSample</module>
 		<module>examples/io/RemoteADCSample</module>

@@ -9,7 +9,7 @@
   network, by using its 64-bit address. Note that the address of the remote 
   device has to be written in the code before running the application.
   
-  NOTE: This example uses the generic XBee Device device (XBeeDevice) class, 
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 

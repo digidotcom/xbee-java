@@ -1467,6 +1467,112 @@ public abstract class AbstractXBeeDevice {
 	 */
 	abstract public void reset() throws TimeoutException, XBeeException;
 	
+	/**
+	 * Sets the given parameter with the provided value in the XBee device.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be set.
+	 * @param parameterValue The value of the parameter to set.
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null} or 
+	 *                              if {@code parameterValue == null}.
+	 * @throws TimeoutException if there is a timeout setting the parameter.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getParameter(String)
+	 * @see #executeParameter(String)
+	 * @see #sendParameter(String, byte[])
+	 */
+	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
+		if (parameterValue == null)
+			throw new NullPointerException("Value of the parameter cannot be null.");
+		
+		sendParameter(parameter, parameterValue);
+	}
+	
+	/**
+	 * Gets the value of the given parameter from the XBee device.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be get.
+	 * @return A byte array containing the value of the parameter.
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws TimeoutException if there is a timeout getting the parameter value.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setParameter(String)
+	 * @see #executeParameter(String)
+	 * @see #sendParameter(String, byte[])
+	 */
+	public byte[] getParameter(String parameter) throws TimeoutException, XBeeException {
+		byte[] parameterValue = sendParameter(parameter, null);
+		
+		// Check if the response is null, if so throw an exception (maybe it was a write-only parameter).
+		if (parameterValue == null)
+			throw new OperationNotSupportedException("Couldn't get the '" + parameter + "' value.");
+		return parameterValue;
+	}
+	
+	/**
+	 * Executes the given parameter in the XBee device. This method is intended to be used for 
+	 * those parameters that cannot be read or written, they just execute some action in the 
+	 * XBee module.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be executed.
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws TimeoutException if there is a timeout executing the parameter.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setParameter(String)
+	 * @see #getParameter(String)
+	 * @see #sendParameter(String, byte[])
+	 */
+	public void executeParameter(String parameter) throws TimeoutException, XBeeException {
+		sendParameter(parameter, null);
+	}
+	
+	/**
+	 * Sends the given AT parameter to the XBee device with an optional argument or value 
+	 * and returns the response (likely the value) of that parameter in a byte array format.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be executed.
+	 * @param parameterValue The value of the parameter to set (if any).
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws TimeoutException if there is a timeout executing the parameter.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setParameter(String)
+	 * @see #getParameter(String)
+	 * @see #executeParameter(String)
+	 */
+	protected byte[] sendParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
+		if (parameter == null)
+			throw new NullPointerException("Parameter cannot be null.");
+		if (parameter.length() != 2)
+			throw new IllegalArgumentException("Parameter must contain exactly 2 characters.");
+		
+		ATCommand atCommand = new ATCommand(parameter, parameterValue);
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(atCommand);
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Return the response value.
+		return response.getResponse();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()

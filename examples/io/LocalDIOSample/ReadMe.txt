@@ -10,7 +10,7 @@
   
   While the push button is pressed the LED should be lighting.
   
-  NOTE: This example uses the generic XBee Device device (XBeeDevice) class, 
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 

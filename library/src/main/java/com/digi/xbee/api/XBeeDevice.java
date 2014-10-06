@@ -123,7 +123,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#open()
 	 */
 	@Override
-	public void open() throws XBeeException  {
+	public void open() throws XBeeException {
 		logger.info(toString() + "Opening the connection interface...");
 		
 		// First, verify that the connection is not already open.
@@ -138,6 +138,14 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		// Initialize the data reader.
 		dataReader = new DataReader(connectionInterface, operatingMode);
 		dataReader.start();
+		
+		// Wait 10 milliseconds until the dataReader thread is started.
+		// This is because when the connection is opened immediately after 
+		// closing it, there is sometimes a concurrency problem and the 
+		// dataReader thread never dies.
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {}
 		
 		// Determine the operating mode of the XBee device if it is unknown.
 		if (operatingMode == OperatingMode.UNKNOWN)

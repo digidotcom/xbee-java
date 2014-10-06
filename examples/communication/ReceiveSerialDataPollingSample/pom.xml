@@ -7,10 +7,10 @@
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
-	<artifactId>receive-broadcast-data-sample</artifactId>
+	<artifactId>receive-data-polling-sample</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Receive Broadcast Data Sample</name>
+	<name>Receive Data Polling Sample</name>
 
 	<properties>
 		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
@@ -18,7 +18,7 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		<directory>../../../target/examples/communication/ReceiveBroadcastSerialDataSample</directory>
+		<directory>../../../target/examples/communication/ReceiveSerialDataPollingSample</directory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -32,7 +32,7 @@
 						<!-- automatically creates the classpath using all project dependencies,
 							 also adding the project build directory -->
 						<classpath/>
-						<argument>com.digi.xbee.api.receivebroadcastserialdata.MainApp</argument>
+						<argument>com.digi.xbee.api.receiveserialdatapolling.MainApp</argument>
 					</arguments>
 				</configuration>
 			</plugin>

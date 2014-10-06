@@ -11,6 +11,8 @@
 */
 package com.digi.xbee.api.listeners;
 
+import com.digi.xbee.api.models.XBeeMessage;
+
 /**
  * This interface defines the required methods that should be implemented to 
  * behave as a serial data listener and be notified when new serial data is 
@@ -21,17 +23,9 @@ public interface ISerialDataReceiveListener {
 	/**
 	 * Called when serial data is received from a remote node.
 	 * 
-	 * @param address The address of the remote node that sent the data.
-	 * @param data The received data.
+	 * @param xbeeMessage XBeeMessage object containing the data, the address 
+	 *                    of the remote XBee device that sent the data and a flag 
+	 *                    indicating if the data was sent via broadcast.
 	 */
-	public void serialDataReceived(String address, byte[] data);
-	
-	/**
-	 * Called when serial data is received from a remote node via broadcast.
-	 * 
-	 * @param address The address of the remote node that sent the broadcast 
-	 *                data.
-	 * @param data The received data.
-	 */
-	public void broadcastSerialDataReceived(String address, byte[] data);
+	public void serialDataReceived(XBeeMessage xbeeMessage);
 }

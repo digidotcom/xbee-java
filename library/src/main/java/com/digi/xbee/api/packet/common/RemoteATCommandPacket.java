@@ -245,6 +245,18 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		return true;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#isBroadcast()
+	 */
+	@Override
+	public boolean isBroadcast() {
+		if (get64bitDestinationAddress().equals(XBee64BitAddress.BROADCAST_ADDRESS) 
+				|| get16bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS))
+			return true;
+		return false;
+	}
+	
 	/**
 	 * Retrieves the 64 bit destination address.
 	 * 

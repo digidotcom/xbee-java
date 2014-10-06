@@ -1,10 +1,10 @@
   Introduction
   ------------
-  This is a sample Java application to show how broadcast data packets are 
-  received from another XBee device on the same network.
+  This is a sample Java application to show how data packets are received 
+  from another XBee device on the same network using a polling mechanism.
   
-  The application prints the broadcast data that was received to the standard 
-  output in ASCII and hexadecimal formats after the sender address.
+  The application prints the data that was received to the standard output 
+  in ASCII and hexadecimal formats after the sender address.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
@@ -12,12 +12,9 @@
 
   Files
   ----------
-    * com.digi.xbee.api.receivebroadcastserialdata.MainApp.java:
+    * com.digi.xbee.api.receiveserialdatapolling.MainApp.java:
       Main application class. It instantiates an XBee device and establishes a 
       serial connection with it.
-      
-    * com.digi.xbee.api.receivebroadcastserialdata.MyBroadcastSerialDataReceiveListener.java:
-      Class that handles the received broadcast data packets.
 
 
   Requirements
@@ -46,11 +43,12 @@
   Running the example
   -------------------
   First, build and launch the application.
-  To test the functionality send broadcast data to the receiver module from 
-  other devices on the network. If you want to send broadcast data, follow 
-  these steps:
+  To test the functionality send data to the receiver module from other 
+  devices on the network. If you want to send data to this module, follow these 
+  steps:
   
-    a) Use the 'SendBroadcastSerialDataSample' example included in the library.
+    a) Use the 'SendSerialDataSample' or 'SendSerialDataAsyncSample' example 
+       included in the library.
        Follow the instructions in the 'ReadMe' file to perform the task.
        
     b) Use the XCTU:
@@ -68,15 +66,15 @@
           - Protocol:                               Select the protocol of your device.
           - Frame type:                             Select a 64-bit Transmit Request frame.
           - Frame ID:                               01
-          - 64-bit dest. address:                   00 00 00 00 00 00 FF FF
+          - 64-bit dest. address:                   Use the 64-bit address you copied before.
           - 16-bit dest. address (only if present): FF FE
           - Broadcast radius (only if present):     00
           - Options:                                00
-          - RF data (ASCII):                        Hello everyone!
+          - RF data (ASCII):                        Hello XBee!
           
        5) Send this frame and check the launched application output console: 
           The packet has been received and a line containing the data included 
           in the 'RF data' field of the sent frame is printed out:
           
-          Broadcast from 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 65 76 65 72 79 6F 6E 65 21 | Hello everyone!
+          From 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
           

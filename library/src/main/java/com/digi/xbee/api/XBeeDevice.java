@@ -30,10 +30,16 @@ import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeMessage;
+import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
+import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
+import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
+import com.digi.xbee.api.packet.raw.RX16Packet;
+import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -41,12 +47,14 @@ public class XBeeDevice extends AbstractXBeeDevice {
 
 	// Constants.
 	private static int TIMEOUT_RESET = 5000;
+	private static int TIMEOUT_READ_PACKET = 3000;
 	
 	private static String COMMAND_MODE_CHAR = "+";
 	private static String COMMAND_MODE_OK = "OK\r";
 	
 	// Variables.
 	private Object resetLock = new Object();
+	
 	private boolean modemStatusReceived = false;
 	
 	/**
@@ -136,7 +144,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		logger.info(toString() + "Connection interface open.");
 		
 		// Initialize the data reader.
-		dataReader = new DataReader(connectionInterface, operatingMode);
+		dataReader = new DataReader(connectionInterface, operatingMode, this);
 		dataReader.start();
 		
 		// Wait 10 milliseconds until the dataReader thread is started.
@@ -873,5 +881,179 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			throw new TimeoutException("Timeout waiting for the Modem Status packet.");
 		
 		logger.info(toString() + "Module reset successfully.");
+	}
+	
+	/**
+	 * Retrieves an XBee Message object received by the local XBee device and 
+	 * containing the data and the source address of the node that sent the 
+	 * data.
+	 * 
+	 * <p>The method will try to read (receive) a data packet during the configured 
+	 * receive timeout.</p> 
+	 * 
+	 * @return An XBee Message object containing the data and the source address 
+	 *         of the node that sent the data. Null if the local device didn't 
+	 *         receive a data packet during the configured receive timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
+	 * @see XBeeMessage
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 */
+	public XBeeMessage readData() {
+		return readDataPacket(null, TIMEOUT_READ_PACKET);
+	}
+	
+	/**
+	 * Retrieves an XBee Message object received by the local XBee device and 
+	 * containing the data and the source address of the node that sent the 
+	 * data.
+	 * 
+	 * <p>The method will try to read (receive) a data packet during the provided 
+	 * timeout.</p> 
+	 * 
+	 * @param timeout The time to wait for a data packet in milliseconds.
+	 * @return An XBee Message object containing the data and the source address 
+	 *         of the node that sent the data. Null if the local device didn't 
+	 *         receive a data packet during the provided timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws IllegalArgumentException if {@code timeout < 0}.
+	 * 
+	 * @see XBeeMessage
+	 */
+	public XBeeMessage readData(int timeout) {
+		if (timeout < 0)
+			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
+		
+		return readDataPacket(null, timeout);
+	}
+	
+	/**
+	 * Retrieves an XBee Message object received by the local XBee device that was 
+	 * sent by the provided remote XBee device. The XBee Message contains the data 
+	 * and the source address of the node that sent the data.
+	 * 
+	 * <p>The method will try to read (receive) a data packet from the provided 
+	 * remote device during the configured receive timeout.</p> 
+	 * 
+	 * @param remoteXBeeDevice The remote device to get a data packet from.
+	 * @return An XBee Message object containing the data and the source address 
+	 *         of the node that sent the data. Null if the local device didn't 
+	 *         receive a data packet from the remote XBee device during the 
+	 *         configured receive timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null}.
+	 * 
+	 * @see XBeeMessage
+	 * @see RemoteXBeeDevice
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 */
+	public XBeeMessage readDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
+		if (remoteXBeeDevice == null)
+			throw new NullPointerException("Remote XBee device cannot be null.");
+		
+		return readDataPacket(remoteXBeeDevice, TIMEOUT_READ_PACKET);
+	}
+	
+	/**
+	 * Retrieves an XBee Message object received by the local XBee device that was 
+	 * sent by the provided remote XBee device. The XBee Message contains the data 
+	 * and the source address of the node that sent the data.
+	 * 
+	 * <p>The method will try to read (receive) a data packet from the provided 
+	 * remote device during the provided timeout.</p> 
+	 * 
+	 * @param remoteXBeeDevice The remote device to get a data packet from.
+	 * @param timeout The time to wait for a data packet in milliseconds.
+	 * @return An XBee Message object containing the data and the source address 
+	 *         of the node that sent the data. Null if the local device didn't 
+	 *         receive a data packet from the remote XBee device during the 
+	 *         provided timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws IllegalArgumentException if {@code timeout < 0}.
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null}.
+	 * 
+	 * @see XBeeMessage
+	 * @see RemoteXBeeDevice
+	 */
+	public XBeeMessage readDataFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		if (remoteXBeeDevice == null)
+			throw new NullPointerException("Remote XBee device cannot be null.");
+		if (timeout < 0)
+			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
+		
+		return readDataPacket(remoteXBeeDevice, timeout);
+	}
+	
+	/**
+	 * Retrieves an XBee Message object received by the local XBee device. The 
+	 * XBee Message contains the data and the source address of the node that 
+	 * sent the data. Depending on if the provided remote XBee device is null 
+	 * or not, the method will get the first data packet read from any remote 
+	 * XBee device or from the provided one.
+	 * 
+	 * <p>The method will try to read (receive) a data packet from the provided 
+	 * remote device or any other device during the provided timeout.</p> 
+	 * 
+	 * @param remoteXBeeDevice The remote device to get a data packet from. Null to 
+	 *                         read a data packet sent by any remote XBee device.
+	 * @param timeout The time to wait for a data packet in milliseconds.
+	 * @return An XBee Message object containing the data and the source address 
+	 *         of the node that sent the data.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * 
+	 * @see XBeeMessage
+	 * @see RemoteXBeeDevice
+	 */
+	private XBeeMessage readDataPacket(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		XBeePacketsQueue xbeePacketsQueue = dataReader.getXBeePacketsQueue();
+		XBeePacket xbeePacket = null;
+		
+		if (remoteXBeeDevice != null)
+			xbeePacket = xbeePacketsQueue.getFirstDataPacketFrom(remoteXBeeDevice, timeout);
+		else
+			xbeePacket = xbeePacketsQueue.getFirstDataPacket(timeout);
+		
+		if (xbeePacket == null)
+			return null;
+		
+		// Obtain the source address and data from the packet.
+		RemoteXBeeDevice remoteDevice;
+		byte[] data;
+		
+		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
+		switch (packetType) {
+		case RECEIVE_PACKET:
+			remoteDevice = new RemoteXBeeDevice(this, ((ReceivePacket)xbeePacket).get64bitSourceAddress());
+			data = ((ReceivePacket)xbeePacket).getRFData();
+			break;
+		case RX_16:
+			remoteDevice = new RemoteRaw802Device(this, ((RX16Packet)xbeePacket).get16bitSourceAddress());
+			data = ((RX16Packet)xbeePacket).getRFData();
+			break;
+		case RX_64:
+			remoteDevice = new RemoteXBeeDevice(this, ((RX64Packet)xbeePacket).get64bitSourceAddress());
+			data = ((RX64Packet)xbeePacket).getRFData();
+			break;
+		default:
+			return null;
+		}
+		
+		// TODO: The remote XBee device should be retrieved from the XBee Network (contained 
+		// in the xbeeDevice variable). If the network does not contain such remote device, 
+		// then it should be instantiated and added there.
+		
+		// Create and return the XBee message.
+		return new XBeeMessage(remoteDevice, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());
 	}
 }

@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.listeners;
 
 import static org.junit.Assert.*;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.OperatingMode;
@@ -52,36 +54,19 @@ public class IPacketReceiveListenerTest {
 	// Variables.
 	private MyReceiveListener receivePacketListener;
 	
-	private RX16Packet rx16Packet;
-	private RX64Packet rx64Packet;
-	private ReceivePacket receivePacket;
-	private ATCommandResponsePacket atResponsePacket;
-	private TransmitStatusPacket transmitStatusPacket;
-	private IODataSampleRxIndicatorPacket ioSamplePacket;
+	private static RX16Packet rx16Packet;
+	private static RX64Packet rx64Packet;
+	private static ReceivePacket receivePacket;
+	private static ATCommandResponsePacket atResponsePacket;
+	private static TransmitStatusPacket transmitStatusPacket;
+	private static IODataSampleRxIndicatorPacket ioSamplePacket;
 	
-	private ArrayList<XBeePacket> xbeePackets = new ArrayList<XBeePacket>();
+	private static ArrayList<XBeePacket> xbeePackets = new ArrayList<XBeePacket>();
 	
 	private DataReader dataReader;
 	
-	@Before
-	public void setup() throws Exception {
-		// Serial data receive listener.
-		receivePacketListener = PowerMockito.spy(new MyReceiveListener());
-		
-		// Data reader.
-		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN));
-		// Stub the 'notifyPacketReceived' method of the dataReader instance so it directly notifies the 
-		// listeners instead of opening a new thread per listener (which is what the real method does). This avoids us 
-		// having to wait for the executor to run the threads.
-		PowerMockito.doAnswer(new Answer<Object>() {
-			public Object answer(InvocationOnMock invocation) {
-				Object[] args = invocation.getArguments();
-				XBeePacket receivedPacket = (XBeePacket)args[0];
-				notifyPacketReceivedListeners(receivedPacket);
-				return null;
-			}
-		}).when(dataReader, NOTIFY_PACKET_RECEIVED_METHOD, (XBeePacket)Mockito.any());
-		
+	@BeforeClass
+	public static void setupOnce() {
 		// Mock Rx16 Packet.
 		rx16Packet = Mockito.mock(RX16Packet.class);
 		
@@ -109,8 +94,30 @@ public class IPacketReceiveListenerTest {
 		xbeePackets.add(ioSamplePacket);
 	}
 	
+	@Before
+	public void setup() throws Exception {
+		// Serial data receive listener.
+		receivePacketListener = PowerMockito.spy(new MyReceiveListener());
+		
+		// Data reader.
+		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, Mockito.mock(XBeeDevice.class)));
+		// Stub the 'notifyPacketReceived' method of the dataReader instance so it directly notifies the 
+		// listeners instead of opening a new thread per listener (which is what the real method does). This avoids us 
+		// having to wait for the executor to run the threads.
+		PowerMockito.doAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) {
+				Object[] args = invocation.getArguments();
+				XBeePacket receivedPacket = (XBeePacket)args[0];
+				notifyPacketReceivedListeners(receivedPacket);
+				return null;
+			}
+		}).when(dataReader, NOTIFY_PACKET_RECEIVED_METHOD, (XBeePacket)Mockito.any());
+	}
+	
 	/**
-	 * Verify that the callback of the IPacketReceiveListener interface is executed correctly.
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * 
+	 * <p>Verify that the callback of the IPacketReceiveListener interface is executed correctly.</p>
 	 */
 	@Test
 	public void testUnicastSerialDataReceiveEvent() {
@@ -122,8 +129,11 @@ public class IPacketReceiveListenerTest {
 	}
 	
 	/**
-	 * Verify that if the listener is not subscribed to receive packets, the callback is not 
-	 * executed although a packet is received.
+	 * Test method for {@link com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(XBeePacket)} and
+	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * 
+	 * <p>Verify that if the listener is not subscribed to receive packets, the callback is not 
+	 * executed although a packet is received.</p>
 	 * 
 	 * @throws Exception
 	 */
@@ -143,8 +153,11 @@ public class IPacketReceiveListenerTest {
 	}
 	
 	/**
-	 * Verify that, when subscribed to receive packets with any frame ID, and any packet is received, the 
-	 * callback of the listener is always executed.
+	 * Test method for {@link com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(XBeePacket)} and
+	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * 
+	 * <p>Verify that, when subscribed to receive packets with any frame ID, and any packet is received, the 
+	 * callback of the listener is always executed.</p>
 	 * 
 	 * @throws Exception
 	 */
@@ -169,9 +182,12 @@ public class IPacketReceiveListenerTest {
 	}
 	
 	/**
-	 * Verify that, when subscribed to receive packets of a specific frame ID, and a packet with that ID is 
+	 * Test method for {@link com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(XBeePacket)} and
+	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * 
+	 * <p>Verify that, when subscribed to receive packets of a specific frame ID, and a packet with that ID is 
 	 * received, the callback of the listener is executed, but next time that the same packet or other packets 
-	 * are received, it is not.
+	 * are received, it is not.</p>
 	 * 
 	 * @throws Exception
 	 */

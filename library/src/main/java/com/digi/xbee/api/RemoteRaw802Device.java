@@ -111,6 +111,17 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 		this.xbee16BitAddress = xbee16BitAddress;
 	}
 	
+	/**
+	 * Sets the XBee64BitAddress of this remote 802.15.4 device.
+	 * 
+	 * @param xbee64BitAddress The XBee64BitAddress to be set to the device.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public void set64BitAddress(XBee64BitAddress xbee64BitAddress) {
+		this.xbee64BitAddress = xbee64BitAddress;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#getXBeeProtocol()

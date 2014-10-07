@@ -126,11 +126,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		super(connectionInterface);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#open()
+	/**
+	 * Opens the connection interface associated with this XBee device.
+	 * 
+	 * @throws XBeeException if there is any problem opening the device.
+	 * @throws InterfaceAlreadyOpenException if the device is already open.
+	 * 
+	 * @see #isOpen()
+	 * @see #close()
 	 */
-	@Override
 	public void open() throws XBeeException {
 		logger.info(toString() + "Opening the connection interface...");
 		
@@ -173,11 +177,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		initializeDevice();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#close()
+	/**
+	 * Closes the connection interface associated with this XBee device.
+	 * 
+	 * @see #isOpen()
+	 * @see #open()
 	 */
-	@Override
 	public void close() {
 		// Stop XBee reader.
 		if (dataReader != null && dataReader.isRunning())
@@ -187,11 +192,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		logger.info(toString() + "Connection interface closed.");
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#isOpen()
+	/**
+	 * Retrieves whether or not the connection interface associated to the 
+	 * device is open.
+	 * 
+	 * @return {@code true} if the interface is open, {@code false} otherwise.
+	 * 
+	 * @see #open()
+	 * @see #close()
 	 */
-	@Override
 	public boolean isOpen()  {
 		if (connectionInterface != null)
 			return connectionInterface.isOpen();

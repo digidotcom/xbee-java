@@ -41,7 +41,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({XBeeDevice.class, XBeeProtocol.class})
-public class DeviceInitializationTest {
+public class XBeeDeviceInitializationTest {
 
 	// Constants.
 	private static final byte[] RESPONSE_SH = new byte[]{0x01, 0x23, 0x45, 0x67};                             // 0x01234567

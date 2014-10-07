@@ -21,7 +21,6 @@ import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
-import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -204,36 +203,6 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Opens the connection interface associated with this XBee device.
-	 * 
-	 * @throws XBeeException if there is any problem opening the device.
-	 * @throws InterfaceAlreadyOpenException if the device is already open.
-	 * 
-	 * @see #isOpen()
-	 * @see #close()
-	 */
-	public abstract void open() throws XBeeException;
-	
-	/**
-	 * Closes the connection interface associated with this XBee device.
-	 * 
-	 * @see #isOpen()
-	 * @see #open()
-	 */
-	public abstract void close();
-	
-	/**
-	 * Retrieves whether or not the connection interface associated to the 
-	 * device is open.
-	 * 
-	 * @return {@code true} if the interface is open, {@code false} otherwise.
-	 * 
-	 * @see #open()
-	 * @see #close()
-	 */
-	public abstract boolean isOpen();
-	
-	/**
 	 * Retrieves the connection interface associated to this XBee device.
 	 * 
 	 * @return XBee device's connection interface.
@@ -276,36 +245,33 @@ public abstract class AbstractXBeeDevice {
 			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
 			ATCommandException, XBeeException {
 		ATCommandResponse response = null;
-		// Get the 64-bit address only if the XBee device is a local device. Remote devices already 
-		// have the 64-bit address set.
-		if (!isRemote()) {
-			if (xbee64BitAddress == null) {
-				String addressHigh;
-				String addressLow;
-				try {
-					response = sendATCommand(new ATCommand("SH"));
-				} catch (IOException e) {
-					throw new XBeeException("Error writing in the communication interface.", e);
-				}
-				if (response == null || response.getResponse() == null)
-					throw new OperationNotSupportedException("Couldn't get the SH value.");
-				if (response.getResponseStatus() != ATCommandStatus.OK)
-					throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
-				addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
-				try {
-					response = sendATCommand(new ATCommand("SL"));
-				} catch (IOException e) {
-					throw new XBeeException("Error writing in the communication interface.", e);
-				}
-				if (response == null || response.getResponse() == null)
-					throw new OperationNotSupportedException("Couldn't get the SL value.");
-				if (response.getResponseStatus() != ATCommandStatus.OK)
-					throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
-				addressLow = HexUtils.byteArrayToHexString(response.getResponse());
-				while(addressLow.length() < 8)
-					addressLow = "0" + addressLow;
-				xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
+		// Get the 64-bit address.
+		if (xbee64BitAddress == null || xbee64BitAddress == XBee64BitAddress.UNKNOWN_ADDRESS) {
+			String addressHigh;
+			String addressLow;
+			try {
+				response = sendATCommand(new ATCommand("SH"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
 			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the SH value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
+			addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
+			try {
+				response = sendATCommand(new ATCommand("SL"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the SL value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
+			addressLow = HexUtils.byteArrayToHexString(response.getResponse());
+			while(addressLow.length() < 8)
+				addressLow = "0" + addressLow;
+			xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
 		}
 		// Get the Node ID.
 		if (nodeID == null) {

@@ -41,7 +41,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({RemoteXBeeDevice.class, XBeeProtocol.class, XBee64BitAddress.class})
-public class RemoteDeviceInitializationTest {
+public class RemoteXBeeDeviceInitialization64BitTest {
 
 	// Constants.
 	private static final byte[] RESPONSE_NI = new byte[]{0x58, 0x42, 0x45, 0x45};                             // XBEE

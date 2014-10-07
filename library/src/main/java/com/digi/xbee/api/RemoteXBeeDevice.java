@@ -42,33 +42,13 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 		super(localXBeeDevice, xbee64BitAddress);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#open()
+	/**
+	 * 
+	 * @throws TimeoutException
+	 * @throws XBeeException
 	 */
-	@Override
-	public void open() throws XBeeException {
-		if (!localXBeeDevice.isOpen())
-			localXBeeDevice.open();
-		initializeDevice();
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#close()
-	 */
-	@Override
-	public void close() {
-		localXBeeDevice.close();
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#isOpen()
-	 */
-	@Override
-	public boolean isOpen() {
-		return localXBeeDevice.isOpen();
+	public void initializeDevice() throws TimeoutException, XBeeException {
+		super.initializeDevice();
 	}
 	
 	/*

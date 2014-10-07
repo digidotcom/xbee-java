@@ -663,7 +663,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the given XBee device.
+	 * Sends the provided data to the given XBee device choosing the optimal send method 
+	 * depending on the protocol of the local XBee device.
 	 * 
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
@@ -694,7 +695,28 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	public void sendSerialData(RemoteXBeeDevice xbeeDevice, byte[] data) throws TimeoutException, XBeeException {
 		if (xbeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null");
-		sendSerialData(xbeeDevice.get64BitAddress(), data);
+		
+		switch (getXBeeProtocol()) {
+		case ZIGBEE:
+		case DIGI_POINT:
+			if (xbeeDevice.get64BitAddress() != null && xbeeDevice.get16BitAddress() != null)
+				sendSerialData(xbeeDevice.get64BitAddress(), xbeeDevice.get16BitAddress(), data);
+			else
+				sendSerialData(xbeeDevice.get64BitAddress(), data);
+			break;
+		case RAW_802_15_4:
+			if (this instanceof Raw802Device) {
+				if (xbeeDevice.get64BitAddress() != null)
+					((Raw802Device)this).sendSerialData(xbeeDevice.get64BitAddress(), data);
+				else
+					((Raw802Device)this).sendSerialData(xbeeDevice.get16BitAddress(), data);
+			} else
+				sendSerialData(xbeeDevice.get64BitAddress(), data);
+			break;
+		case DIGI_MESH:
+		default:
+			sendSerialData(xbeeDevice.get64BitAddress(), data);
+		}
 	}
 	
 	/**

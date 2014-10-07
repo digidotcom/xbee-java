@@ -708,14 +708,14 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		switch (getXBeeProtocol()) {
 		case ZIGBEE:
 		case DIGI_POINT:
-			if (xbeeDevice.get64BitAddress() != null && xbeeDevice.get16BitAddress() != null)
+			if (xbeeDevice.get16BitAddress() != null)
 				sendSerialData(xbeeDevice.get64BitAddress(), xbeeDevice.get16BitAddress(), data);
 			else
 				sendSerialData(xbeeDevice.get64BitAddress(), data);
 			break;
 		case RAW_802_15_4:
 			if (this instanceof Raw802Device) {
-				if (xbeeDevice.get64BitAddress() != null)
+				if (xbeeDevice.get64BitAddress() != null && xbeeDevice.get64BitAddress() != XBee64BitAddress.UNKNOWN_ADDRESS)
 					((Raw802Device)this).sendSerialData(xbeeDevice.get64BitAddress(), data);
 				else
 					((Raw802Device)this).sendSerialData(xbeeDevice.get16BitAddress(), data);

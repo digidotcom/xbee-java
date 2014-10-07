@@ -70,15 +70,6 @@ public class IOLineTest {
 	}
 	
 	/**
-	 * Verify that all the IO lines have a read IO command.
-	 */
-	@Test
-	public void testNotNullReadIOCommand() {
-		for (IOLine ioLine:ioLines)
-			assertNotNull(ioLine.getReadIOATCommand());
-	}
-	
-	/**
 	 * Verify that only DIO10 and DIO11 lines are PWM capable.
 	 */
 	@Test

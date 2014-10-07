@@ -44,9 +44,6 @@ public enum IOLine {
 	DIO18("DIO18", 18, "P8", null),
 	DIO19("DIO19", 19, "P9", null);
 	
-	// Constants.
-	private final static String READ_IO_AT_COMMAND = "IS";
-	
 	// Variables.
 	private final static HashMap <Integer, IOLine> lookupTableIndex = new HashMap<Integer, IOLine>();
 	
@@ -122,16 +119,6 @@ public enum IOLine {
 	 */
 	public String getPWMDutyCycleATCommand() {
 		return atPWMCommand;
-	}
-	
-	/**
-	 * Retrieves the read IO AT command associated to the IO line. 
-	 * By default all the lines will return the same command.
-	 * 
-	 * @return The read IO AT command.
-	 */
-	public String getReadIOATCommand() {
-		return READ_IO_AT_COMMAND;
 	}
 	
 	/**

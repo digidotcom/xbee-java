@@ -39,7 +39,7 @@ import com.digi.xbee.api.models.OperatingMode;
 public class GetIOSample802Test {
 
 	// Constants.
-	private final static String METHOD_GET_IO_SAMPLE = "getIOSample";
+	private final static String METHOD_READ_IO_SAMPLE = "readIOSample";
 	private final static String METHOD_RECEIVE_RAW_IO_PACKET = "receiveRaw802IOPacket";
 		
 	// Variables.
@@ -70,7 +70,7 @@ public class GetIOSample802Test {
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(OperatingMode.AT).when(raw802Device).getOperatingMode();
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(raw802Device).getOperatingMode();
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -122,7 +122,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(mockedResponse).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -139,7 +139,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(null).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -156,7 +156,7 @@ public class GetIOSample802Test {
 		Mockito.doThrow(new TimeoutException()).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -179,7 +179,7 @@ public class GetIOSample802Test {
 		PowerMockito.doReturn(null).when(raw802Device, METHOD_RECEIVE_RAW_IO_PACKET);
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 	}
 	
 	/**
@@ -207,7 +207,7 @@ public class GetIOSample802Test {
 		PowerMockito.whenNew(IOSample.class).withAnyArguments().thenReturn(mockedIOSample);
 		
 		// Get an IOSample from the 802.15.4 device.
-		IOSample receivedSample = Whitebox.invokeMethod(raw802Device, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		IOSample receivedSample = Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
 		
 		// Verify the sample is the expected one.
 		assertEquals(mockedIOSample, receivedSample);

@@ -1229,11 +1229,11 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The digital value corresponding to the provided IO line.
 	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO values 
 	 *                          command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see IOLine
 	 * @see IOMode#DIGITAL_IN
@@ -1243,8 +1243,12 @@ public abstract class AbstractXBeeDevice {
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		
 		// Obtain an IO Sample from the XBee device.
-		IOSample ioSample = getIOSample(ioLine);
+		IOSample ioSample = readIOSample();
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
@@ -1391,7 +1395,7 @@ public abstract class AbstractXBeeDevice {
 			throw new NullPointerException("IO line cannot be null.");
 		
 		// Obtain an IO Sample from the XBee device.
-		IOSample ioSample = getIOSample(ioLine);
+		IOSample ioSample = readIOSample();
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
@@ -1713,23 +1717,19 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves an IO sample from the XBee device containing the value of the 
-	 * provided IO line.
+	 * Retrieves an IO sample from the XBee device containing the value of all
+	 * enabled digital IO and analog input channels.
 	 * 
-	 * @param ioLine The IO line to obtain its associated IO sample.
-	 * @return An IO sample containing the value of the provided IO line.
+	 * @return An IO sample containing the value of all enabled digital IO and
+	 *         analog input channels.
 	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws TimeoutException if there is a timeout getting the IO sample.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see IOSample
-	 * @see IOLine
 	 */
-	private IOSample getIOSample(IOLine ioLine) throws TimeoutException, XBeeException {
-		if (ioLine == null)
-			throw new NullPointerException("IO line cannot be null.");
+	public IOSample readIOSample() throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1737,7 +1737,7 @@ public abstract class AbstractXBeeDevice {
 		// Create and send the AT Command.
 		ATCommandResponse response = null;
 		try {
-			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
+			response = sendATCommand(new ATCommand("IS"));
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}

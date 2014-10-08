@@ -18,6 +18,7 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
+import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
@@ -31,15 +32,42 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 	 * @param localXBeeDevice The local XBee device that will behave as 
 	 *                        connection interface to communicate with this 
 	 *                        remote XBee device.
-	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee 
-	 *                         device.
+	 * @param addr64 The 64-bit address to identify this remote XBee device.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
+	 *                              if {@code addr64 == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
-		super(localXBeeDevice, xbee64BitAddress);
+	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+		super(localXBeeDevice, addr64);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param addr64 The 64-bit address to identify this remote XBee device.
+	 * @param addr16 The 16-bit address to identify this remote XBee device. It 
+	 *               might be {@code null}.
+	 * @param id The node identifier of this remote XBee device. It might be 
+	 *           {@code null}.
+	 * 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code addr64 == null}.
+	 * 
+	 * @see XBee64BitAddress
+	 * @see XBee16BitAddress
+	 */
+	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
+			XBee16BitAddress addr16, String ni) {
+		super(localXBeeDevice, addr64, addr16, ni);
 	}
 	
 	/**
@@ -87,5 +115,17 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 		
 		// Check if AT Command response is valid.
 		checkATCommandResponseIsValid(response);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#toString()
+	 */
+	@Override
+	public String toString() {
+		String id = getNodeID();
+		if (id == null)
+			id = "";
+		return String.format("%s - %s", get64BitAddress(), getNodeID());
 	}
 }

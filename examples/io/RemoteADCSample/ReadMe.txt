@@ -5,6 +5,9 @@
   
   The application configures an IO line of the remote XBee device as ADC. Then, 
   periodically reads its value and prints it in the output console.
+  
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, but it 
+        can be applied to any other local or remote XBee device class.
 
 
   Files

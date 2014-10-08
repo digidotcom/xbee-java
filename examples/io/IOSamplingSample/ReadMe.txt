@@ -10,6 +10,9 @@
   
   Then, the application registers a listener in the local device to receive and 
   handle all the IO samples sent by the remote.
+  
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, but it 
+        can be applied to any other local or remote XBee device class.
 
 
   Files

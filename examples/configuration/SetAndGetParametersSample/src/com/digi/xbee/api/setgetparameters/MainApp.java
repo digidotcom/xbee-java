@@ -11,12 +11,14 @@
  */
 package com.digi.xbee.api.setgetparameters;
 
+import java.util.Arrays;
+
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.utils.ByteUtils;
 
 /**
- * XBee Java Library Get/Set Local DIO sample application.
+ * XBee Java Library Set and Get parameters sample application.
  * 
  * <p>This example sets and gets the value of 4 parameters with different 
  * value types. Then it reads them from the device verifying the read values 
@@ -30,7 +32,7 @@ public class MainApp {
 	/* Constants */
 	
 	// TODO Replace with the serial port where your module is connected to.
-	private static final String PORT = "COM26";
+	private static final String PORT = "COM1";
 	// TODO Replace with the baud rate of your module.
 	private static final int BAUD_RATE = 9600;
 	
@@ -78,15 +80,18 @@ public class MainApp {
 				System.out.println("NI parameter was not set correctly.");
 				myDevice.close();
 				System.exit(1);
-			} else if (ByteUtils.byteArrayToLong(paramValueID) != ByteUtils.byteArrayToLong(PARAM_VALUE_PAN_ID)) {
+			}
+			if (Arrays.equals(paramValueID, PARAM_VALUE_PAN_ID)) {
 				System.out.println("ID parameter was not set correctly.");
 				myDevice.close();
 				System.exit(1);
-			} else if (ByteUtils.byteArrayToInt(paramValueDH) != PARAM_VALUE_DEST_ADDRESS_H) {
+			}
+			if (ByteUtils.byteArrayToInt(paramValueDH) != PARAM_VALUE_DEST_ADDRESS_H) {
 				System.out.println("DH parameter was not set correctly.");
 				myDevice.close();
 				System.exit(1);
-			} else if (ByteUtils.byteArrayToInt(paramValueDL) != PARAM_VALUE_DEST_ADDRESS_L) {
+			}
+			if (ByteUtils.byteArrayToInt(paramValueDL) != PARAM_VALUE_DEST_ADDRESS_L) {
 				System.out.println("DL parameter was not set correctly.");
 				myDevice.close();
 				System.exit(1);

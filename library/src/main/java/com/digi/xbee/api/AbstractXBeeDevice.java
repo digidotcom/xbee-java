@@ -1447,7 +1447,6 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #getParameter(String)
 	 * @see #executeParameter(String)
-	 * @see #sendParameter(String, byte[])
 	 */
 	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
 		if (parameterValue == null)
@@ -1469,7 +1468,6 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #setParameter(String)
 	 * @see #executeParameter(String)
-	 * @see #sendParameter(String, byte[])
 	 */
 	public byte[] getParameter(String parameter) throws TimeoutException, XBeeException {
 		byte[] parameterValue = sendParameter(parameter, null);
@@ -1494,7 +1492,6 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #setParameter(String)
 	 * @see #getParameter(String)
-	 * @see #sendParameter(String, byte[])
 	 */
 	public void executeParameter(String parameter) throws TimeoutException, XBeeException {
 		sendParameter(parameter, null);
@@ -1516,7 +1513,7 @@ public abstract class AbstractXBeeDevice {
 	 * @see #getParameter(String)
 	 * @see #executeParameter(String)
 	 */
-	protected byte[] sendParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
+	private byte[] sendParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
 		if (parameter == null)
 			throw new NullPointerException("Parameter cannot be null.");
 		if (parameter.length() != 2)

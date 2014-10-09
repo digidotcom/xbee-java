@@ -1,4 +1,4 @@
-package com.digi.xbee.api.network;
+package com.digi.xbee.api.listeners;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 

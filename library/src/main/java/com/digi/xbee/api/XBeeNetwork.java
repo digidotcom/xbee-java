@@ -23,11 +23,10 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.listeners.IDiscoveryListener;
+import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.network.DiscoveryOption;
-import com.digi.xbee.api.network.IDiscoveryListener;
-import com.digi.xbee.api.network.NodeDiscovery;
 
 /**
  * An object that represents an XBee Network.
@@ -203,7 +202,7 @@ public class XBeeNetwork {
 	 * @see RemoteXBeeDevice
 	 */
 	public List<RemoteXBeeDevice> discoverDevices() throws XBeeException {
-		return discoverDevices((Set<DiscoveryOption>)null, NodeDiscovery.USE_DEVICE_TIMEOUT);
+		return discoverDevices((Set<DiscoveryOptions>)null, NodeDiscovery.USE_DEVICE_TIMEOUT);
 	}
 	
 	/**
@@ -232,7 +231,7 @@ public class XBeeNetwork {
 	 * @see RemoteXBeeDevice
 	 */
 	public List<RemoteXBeeDevice> discoverDevices(long timeout) throws XBeeException {
-		return discoverDevices((Set<DiscoveryOption>)null, timeout);
+		return discoverDevices((Set<DiscoveryOptions>)null, timeout);
 	}
 	
 	/**
@@ -256,10 +255,10 @@ public class XBeeNetwork {
 	 * @see #discoverDevices()
 	 * @see #discoverDevices(long)
 	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
-	 * @see DiscoveryOption
+	 * @see DiscoveryOptions
 	 * @see RemoteXBeeDevice
 	 */
-	public List<RemoteXBeeDevice> discoverDevices(Set<DiscoveryOption> options, long timeout) throws XBeeException {
+	public List<RemoteXBeeDevice> discoverDevices(Set<DiscoveryOptions> options, long timeout) throws XBeeException {
 		if (timeout == NodeDiscovery.WAIT_FOREVER)
 			throw new IllegalArgumentException("The discovery process cannot block forever.");
 		if (timeout < NodeDiscovery.USE_DEVICE_TIMEOUT)
@@ -364,12 +363,12 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code listener == null}.
 	 * 
 	 * @see IDiscoveryListener
-	 * @see DiscoveryOption
+	 * @see DiscoveryOptions
 	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
 	 * @see NodeDiscovery#WAIT_FOREVER
 	 * @see #stop()
 	 */
-	public void discoverDevices(final IDiscoveryListener listener, Set<DiscoveryOption> options, long timeout) {
+	public void discoverDevices(final IDiscoveryListener listener, Set<DiscoveryOptions> options, long timeout) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		if (timeout < NodeDiscovery.WAIT_FOREVER)

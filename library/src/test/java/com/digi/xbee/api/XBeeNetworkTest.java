@@ -40,7 +40,6 @@ import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
-import com.digi.xbee.api.network.NodeDiscovery;
 
 @PrepareForTest({XBeeDevice.class, NodeDiscovery.class, XBeeNetwork.class})
 @RunWith(PowerMockRunner.class)

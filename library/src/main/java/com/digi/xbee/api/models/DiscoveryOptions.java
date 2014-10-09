@@ -9,13 +9,11 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.network;
+package com.digi.xbee.api.models;
 
 import java.util.Set;
 
-import com.digi.xbee.api.models.XBeeProtocol;
-
-public enum DiscoveryOption {
+public enum DiscoveryOptions {
 
 	/**
 	 * Append device type identifier (DD) to the discovery response.
@@ -58,7 +56,7 @@ public enum DiscoveryOption {
 	
 	private final String description;
 	
-	private DiscoveryOption(int value, String description) {
+	private DiscoveryOptions(int value, String description) {
 		this.value = value;
 		this.description = description;
 	}
@@ -92,14 +90,14 @@ public enum DiscoveryOption {
 	 * @return the value to be configured in the module depending on the given
 	 *         collection of options and the protocol.
 	 */
-	public static int calculateDiscoveryValue (XBeeProtocol protocol, Set<DiscoveryOption> options) {
+	public static int calculateDiscoveryValue (XBeeProtocol protocol, Set<DiscoveryOptions> options) {
 		// Calculate value to be configured.
 		int value = 0;
 		switch (protocol) {
 		case ZIGBEE:
 		case ZNET:
-			for (DiscoveryOption op: options) {
-				if (op == DiscoveryOption.APPEND_RSSI)
+			for (DiscoveryOptions op: options) {
+				if (op == DiscoveryOptions.APPEND_RSSI)
 					continue;
 				value = value + op.getValue();
 			}
@@ -110,13 +108,13 @@ public enum DiscoveryOption {
 			// TODO [XLR_DM] The next version of the XLR will add DigiMesh support.
 			// For the moment only point-to-multipoint is supported in this kind of devices.
 		case XLR_DM:
-			for (DiscoveryOption op: options)
+			for (DiscoveryOptions op: options)
 				value = value + op.getValue();
 			break;
 		case RAW_802_15_4:
 		case UNKNOWN:
 		default:
-			if (options.contains(DiscoveryOption.DISCOVER_MYSELF))
+			if (options.contains(DiscoveryOptions.DISCOVER_MYSELF))
 				value = 1; // This is different for 802.15.4.
 			break;
 		}

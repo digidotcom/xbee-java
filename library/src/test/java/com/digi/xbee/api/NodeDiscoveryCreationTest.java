@@ -9,13 +9,12 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.network;
+package com.digi.xbee.api;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -30,6 +29,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.digi.xbee.api.NodeDiscovery;
 import com.digi.xbee.api.XBeeDevice;
 
 @PrepareForTest({XBeeDevice.class, NodeDiscovery.class})
@@ -76,7 +76,7 @@ public class NodeDiscoveryCreationTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#NodeDiscovery(com.digi.xbee.api.XBeeDevice)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#NodeDiscovery(com.digi.xbee.api.XBeeDevice)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when parsing a 
 	 * {@code null} local deviceMock is passed.</p>
@@ -92,7 +92,7 @@ public class NodeDiscoveryCreationTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#NodeDiscovery(com.digi.xbee.api.XBeeDevice)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#NodeDiscovery(com.digi.xbee.api.XBeeDevice)}.
 	 * 
 	 * <p>Test for the creation of a {@code NodeDiscovery} object.</p>
 	 */

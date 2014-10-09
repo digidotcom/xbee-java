@@ -9,7 +9,7 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.network;
+package com.digi.xbee.api;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -19,17 +19,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digi.xbee.api.RemoteDigiMeshDevice;
-import com.digi.xbee.api.RemoteDigiPointDevice;
-import com.digi.xbee.api.RemoteRaw802Device;
-import com.digi.xbee.api.RemoteXBeeDevice;
-import com.digi.xbee.api.RemoteZigBeeDevice;
-import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.listeners.IDiscoveryListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.models.ATCommandStatus;
+import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -52,7 +47,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>The discovery process updates the network of the local device with the new
  * discovered modules and refresh the already existing references.</p>
  */
-public class NodeDiscovery {
+class NodeDiscovery {
 
 	// Constants.
 	/**
@@ -135,10 +130,10 @@ public class NodeDiscovery {
 	 * @see #USE_DEVICE_TIMEOUT
 	 * @see #discoverDevices()
 	 * @see #discoverDevices(long)
-	 * @see DiscoveryOption
+	 * @see DiscoveryOptions
 	 * @see RemoteXBeeDevice
 	 */
-	public List<RemoteXBeeDevice> discoverDevices(Set<DiscoveryOption> options, long timeout) throws XBeeException {
+	public List<RemoteXBeeDevice> discoverDevices(Set<DiscoveryOptions> options, long timeout) throws XBeeException {
 		if (timeout == WAIT_FOREVER)
 			throw new IllegalArgumentException("The discovery process cannot block forever.");
 		if (timeout < USE_DEVICE_TIMEOUT)
@@ -166,7 +161,7 @@ public class NodeDiscovery {
 	 * <ul>
 	 * <li>When the provided timeout expires.</li>
 	 * <li>If {@code timeout == USE_DEVICE_TIMEOUT}, the time configured in the 
-	 * device will be used ({@code NT}).</p>
+	 * device will be used ({@code NT}).</li>
 	 * <li>If {@code timeout == WAIT_FOREVER} the process will never finish 
 	 * unless the {@link #stop()} method is called.</li>
 	 * </ul>
@@ -186,11 +181,11 @@ public class NodeDiscovery {
 	 * @see #USE_DEVICE_TIMEOUT
 	 * @see #WAIT_FOREVER
 	 * @see IDiscoveryListener
-	 * @see DiscoveryOption
+	 * @see DiscoveryOptions
 	 * @see #stop()
 	 */
 	public void discoverDevices(final IDiscoveryListener listener, 
-			final Set<DiscoveryOption> options, final long timeout) {
+			final Set<DiscoveryOptions> options, final long timeout) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		if (timeout < WAIT_FOREVER)
@@ -378,7 +373,7 @@ public class NodeDiscovery {
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 */
 	private void startDiscoveryProcess(XBeeDevice device, IDiscoveryListener listener, 
-			String id, Set<DiscoveryOption> options, long timeout) throws XBeeException {
+			String id, Set<DiscoveryOptions> options, long timeout) throws XBeeException {
 		// TODO Check if the local device supports ND?
 		
 		// Check if it is open.
@@ -660,7 +655,7 @@ public class NodeDiscovery {
 	 * @return {@code true} if the configuration operation finishes successfully,
 	 *         {@code false} otherwise.
 	 */
-	private boolean configureDiscoveryOptions(XBeeDevice device, Set<DiscoveryOption> options, 
+	private boolean configureDiscoveryOptions(XBeeDevice device, Set<DiscoveryOptions> options, 
 			long timeout, IDiscoveryListener listener) {
 		oldNOValue = null;
 		oldNTValue = null;
@@ -680,7 +675,7 @@ public class NodeDiscovery {
 			if (oldNOValue != null)
 				logger.debug("{}Previous NO: {}.", toString(), HexUtils.byteArrayToHexString(oldNOValue));
 			
-			int value = DiscoveryOption.calculateDiscoveryValue(device.getXBeeProtocol(), options);
+			int value = DiscoveryOptions.calculateDiscoveryValue(device.getXBeeProtocol(), options);
 			optionsValue = ByteUtils.intToByteArray(value);
 		}
 		

@@ -9,7 +9,7 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.network;
+package com.digi.xbee.api;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -39,14 +39,17 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.NodeDiscovery;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.RemoteZigBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.listeners.IDiscoveryListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.models.ATCommandStatus;
+import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -181,7 +184,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when the 
 	 * {@code IDiscoveryListener == null}.</p>
@@ -199,7 +202,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
 	 * pass a negative value for the timeout.</p>
@@ -217,7 +220,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
 	 * the local device connection is not open.</p>
@@ -236,7 +239,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>Test without options and custom timeout.</p>
 	 * 
@@ -247,7 +250,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOption> options = null;
+		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
@@ -296,7 +299,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>Test the configuration and restoration of the timeout.</p>
 	 * 
@@ -307,7 +310,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = 500; // 0.5 seconds
-		Set<DiscoveryOption> options = null;
+		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x20};
 		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
 		
@@ -358,7 +361,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>Test the configuration and restoration of the configuration options.</p>
 	 * 
@@ -369,10 +372,10 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOption> options = EnumSet.of(DiscoveryOption.APPEND_DD, DiscoveryOption.APPEND_RSSI, DiscoveryOption.DISCOVER_MYSELF);
+		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.APPEND_RSSI, DiscoveryOptions.DISCOVER_MYSELF);
 		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
 		byte[] deviceOptionsByteArray = new byte[]{0x00};
-		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOption.calculateDiscoveryValue(protocol, options));
+		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
@@ -423,7 +426,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>Test the configuration and restoration of the configuration options and the timeout.</p>
 	 * 
@@ -434,11 +437,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = 500; // 0.5 seconds
-		Set<DiscoveryOption> options = EnumSet.of(DiscoveryOption.APPEND_DD, DiscoveryOption.APPEND_RSSI, DiscoveryOption.DISCOVER_MYSELF);
+		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.APPEND_RSSI, DiscoveryOptions.DISCOVER_MYSELF);
 		byte[] deviceTimeoutByteArray = new byte[]{0x20};
 		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
 		byte[] deviceOptionsByteArray = new byte[]{0x00};
-		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOption.calculateDiscoveryValue(protocol, options));
+		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutModifiedByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
@@ -491,7 +494,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>No discovery packets sends from the device when discovery is performed.</p>
 	 * 
@@ -501,7 +504,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	public final void testDiscoverDevicesNoDevices() throws Exception {
 		// Setup the resources for the test.
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOption> options = null;
+		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
@@ -550,7 +553,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>One packet received from a ZigBee device.</p>
 	 * 
@@ -561,7 +564,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOption> options = null;
+		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
@@ -629,7 +632,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.network.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>Two packets received from a ZigBee device.</p>
 	 * 
@@ -640,7 +643,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOption> options = null;
+		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		

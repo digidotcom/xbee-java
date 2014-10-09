@@ -86,6 +86,7 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code id == null}.
 	 * @throws XBeeException If there is an error discovering the device.
 	 * 
+	 * @see #getDeviceByID(String)
 	 * @see #discoverDeviceByID(String, long)
 	 * @see #discoverAllDevicesByID(String, long)
 	 * @see RemoteXBeeDevice
@@ -120,6 +121,7 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code id == null}.
 	 * @throws XBeeException If there is an error discovering the device.
 	 * 
+	 * @see #getDeviceByID(String)
 	 * @see #discoverDeviceByID(String)
 	 * @see #discoverAllDevicesByID(String, long)
 	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
@@ -163,6 +165,7 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code id == null}.
 	 * @throws XBeeException If there is an error discovering the devices.
 	 * 
+	 * @see #getAllDevicesByID(String)
 	 * @see #discoverDeviceByID(String)
 	 * @see #discoverDeviceByID(String, long)
 	 * @see RemoteXBeeDevice
@@ -197,6 +200,7 @@ public class XBeeNetwork {
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 * 
+	 * @see #getDevices()
 	 * @see #discoverDevices(long)
 	 * @see #discoverDevices(Set, long)
 	 * @see RemoteXBeeDevice
@@ -225,6 +229,7 @@ public class XBeeNetwork {
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 * 
+	 * @see #getDevices()
 	 * @see #discoverDevices()
 	 * @see #discoverDevices(Set, long)
 	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
@@ -252,6 +257,7 @@ public class XBeeNetwork {
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 * 
+	 * @see #getDevices()
 	 * @see #discoverDevices()
 	 * @see #discoverDevices(long)
 	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
@@ -384,6 +390,110 @@ public class XBeeNetwork {
 		}
 		
 		nodeDiscovery.discoverDevices(listener, options, timeout);
+	}
+	
+	/**
+	 * Returns all remote devices already contained in the network.
+	 * 
+	 * <p>Note that this method <b>does not perform a discovery</b>, only 
+	 * returns the devices that have been previously discovered.</p>
+	 * 
+	 * @return A list with all XBee devices in the network.
+	 * 
+	 * @see #discoverDevices()
+	 * @see RemoteXBeeDevice
+	 */
+	public ArrayList<RemoteXBeeDevice> getDevices() {
+		ArrayList<RemoteXBeeDevice> nodes = new ArrayList<RemoteXBeeDevice>();
+		nodes.addAll(remotesBy64BitAddr.values());
+		nodes.addAll(remotesBy16BitAddr.values());
+		return nodes;
+	}
+	
+	/**
+	 * Returns the first remote device that matches the supplied identifier.
+	 * 
+	 * <p>Note that this method <b>does not perform a discovery</b>, only 
+	 * returns the device that has been previously discovered.</p>
+	 * 
+	 * <p>To look for all the devices with an specific identifier use 
+	 * {@link #getAllDevicesByID(String)}.</p>
+	 * 
+	 * @param id The identifier of the device to be retrieved.
+	 * 
+	 * @return The remote XBee device contained in the network with the given 
+	 *         identifier, {@code null} if the network does not contain any 
+	 *         device with that Node ID.
+	 * 
+	 * @throws NullPointerException If {@code id == null}.
+	 * @throws IllegalArgumentException If {@code id.length() == 0}.
+	 * 
+	 * @see #getAllDevicesByID(String)
+	 * @see #discoverDeviceByID(String)
+	 * @see #discoverDeviceByID(String, long)
+	 * @see RemoteXBeeDevice
+	 */
+	public RemoteXBeeDevice getDeviceByID(String id) {
+		if (id == null)
+			throw new NullPointerException("Device identifier cannot be null.");
+		if (id.length() == 0)
+			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
+		
+		// Look in the 64-bit map.
+		for (RemoteXBeeDevice remote : remotesBy64BitAddr.values()) {
+			if (remote.getNodeID().equals(id))
+				return remote;
+		}
+		// Look in the 16-bit map.
+		for (RemoteXBeeDevice remote : remotesBy16BitAddr.values()) {
+			if (remote.getNodeID().equals(id))
+				return remote;
+		}
+		// The given ID is not in the network.
+		return null;
+	}
+	
+	/**
+	 * Returns all remote devices that match the supplied identifier.
+	 * 
+	 * <p>Note that this method <b>does not perform a  discovery</b>, only 
+	 * returns the devices that have been previously discovered.</p>
+	 * 
+	 * <p>To look for the first device with an specific identifier use 
+	 * {@link #getDeviceByID(String)}.</p>
+	 * 
+	 * @param id The identifier of the devices to be retrieved.
+	 * 
+	 * @return A list of the remote XBee devices contained in the network with 
+	 *         the given identifier.
+	 * 
+	 * @throws NullPointerException If {@code id == null}.
+	 * @throws IllegalArgumentException If {@code id.length() == 0}.
+	 * 
+	 * @see #getDeviceByID(String)
+	 * @see #discoverAllDevicesByID(String, long)
+	 * @see RemoteXBeeDevice
+	 */
+	public ArrayList<RemoteXBeeDevice> getAllDevicesByID(String id) {
+		if (id == null)
+			throw new NullPointerException("Device identifier cannot be null.");
+		if (id.length() == 0)
+			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
+		
+		ArrayList<RemoteXBeeDevice> devices = new ArrayList<RemoteXBeeDevice>();
+		
+		// Look in the 64-bit map.
+		for (RemoteXBeeDevice remote : remotesBy64BitAddr.values()) {
+			if (remote.getNodeID().equals(id))
+				devices.add(remote);
+		}
+		// Look in the 16-bit map.
+		for (RemoteXBeeDevice remote : remotesBy16BitAddr.values()) {
+			if (remote.getNodeID().equals(id))
+				devices.add(remote);
+		}
+		// Return the list.
+		return devices;
 	}
 	
 	/**

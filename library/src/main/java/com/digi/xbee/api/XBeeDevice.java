@@ -1121,6 +1121,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (id.length() == 0 && addr64.length() == 0)
 			return super.toString();
 		
-		return String.format("%s%s - %s ", super.toString(), addr64, id);
+		StringBuilder message = new StringBuilder(super.toString());
+		message.append(addr64);
+		if (id.length() > 0) {
+			message.append(" (");
+			message.append(id);
+			message.append(")");
+		}
+		message.append(" - ");
+		
+		return message.toString();
 	}
 }

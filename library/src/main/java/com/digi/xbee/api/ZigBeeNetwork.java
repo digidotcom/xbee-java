@@ -25,7 +25,7 @@ package com.digi.xbee.api;
 public class ZigBeeNetwork extends XBeeNetwork {
 
 	/**
-	 * Instances a new ZigBee Network object.
+	 * Instantiates a new ZigBee Network object.
 	 * 
 	 * @param device Local ZigBee device to get the network from.
 	 * 

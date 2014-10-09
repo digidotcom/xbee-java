@@ -92,7 +92,7 @@ public class NodeDiscovery {
 	protected Logger logger;
 	
 	/**
-	 * Instances a Node Discovery object.
+	 * Instantiates a Node Discovery object.
 	 * 
 	 * @param xbeeDevice XBee Device to perform the discovery operation.
 	 * 
@@ -144,7 +144,7 @@ public class NodeDiscovery {
 		if (timeout < USE_DEVICE_TIMEOUT)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
-		logger.debug("{} - ND blocking '{}' ms.", toString(), timeout == USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
+		logger.debug("{}ND blocking '{}' ms.", toString(), timeout == USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
 		
 		startDiscoveryProcess(xbeeDevice, null, null, options, timeout);
 		
@@ -157,10 +157,10 @@ public class NodeDiscovery {
 	}
 	
 	/**
-	 * Performs a discovery to search for XBee devices in the same network.</p>
+	 * Performs a discovery to search for XBee devices in the same network.
 	 * 
 	 * <p>The provided listener will be notified every time a new remote device 
-	 * is discovered, when an error occur or when the operation finishes.</p>
+	 * is discovered, when an error occurs, or when the operation finishes.</p>
 	 * 
 	 * <p>The operation finishes:</p>
 	 * <ul>
@@ -204,7 +204,7 @@ public class NodeDiscovery {
 				timeoutString = "configured NT";
 			else if (timeout == NodeDiscovery.WAIT_FOREVER)
 				timeoutString = "forever";
-			logger.debug("{} - ND ('{}' ms).", toString(), timeoutString);
+			logger.debug("{}ND ('{}' ms).", toString(), timeoutString);
 		}
 		
 		Thread discoveryThread = new Thread() {
@@ -261,7 +261,7 @@ public class NodeDiscovery {
 		if (timeout < USE_DEVICE_TIMEOUT)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
-		logger.debug("{} - ND for {} device bloking '{}' ms.", toString(), id, timeout == USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
+		logger.debug("{}ND for {} device bloking '{}' ms.", toString(), id, timeout == USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
 		
 		startDiscoveryProcess(xbeeDevice, null, id, null, timeout);
 		
@@ -309,7 +309,7 @@ public class NodeDiscovery {
 		if (timeout < USE_DEVICE_TIMEOUT)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
-		logger.debug("{} - ND for all {} devices bloking '{}' ms.", toString(), id, timeout == USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
+		logger.debug("{}ND for all {} devices bloking '{}' ms.", toString(), id, timeout == USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
 		
 		startDiscoveryProcess(xbeeDevice, null, null, null, timeout);
 		
@@ -349,9 +349,9 @@ public class NodeDiscovery {
 	}
 	
 	/**
-	 * Retrieves whether discovery process has fully finished or not.
+	 * Retrieves whether or not the discovery process has fully finished.
 	 * 
-	 * @return {@code true} if process has fully finished, {@code false} 
+	 * @return {@code true} if the process has fully finished, {@code false} 
 	 *         otherwise.
 	 */
 	public boolean hasFinished() {
@@ -398,14 +398,14 @@ public class NodeDiscovery {
 				byte[] value = getParameter(device, NT_COMMAND, DEFAULT_TIMEOUT, "network timeout", listener);
 				if (value != null) {
 					timeout = ByteUtils.byteArrayToLong(value) * 100; // The NT timeout is in 100ms
-					logger.debug("{} - Using NT value: {} ms.", toString(), timeout);
+					logger.debug("{}Using NT value: {} ms.", toString(), timeout);
 				}
 			}
 			
 			discoverDevicesAPI(device, listener, id, timeout);
 			
 			// Restore old values.
-			logger.debug("{} - Restoring discovery options.", toString());
+			logger.debug("{}Restoring discovery options.", toString());
 			setDiscoveryOptions(device, oldNOValue, oldNTValue, listener);
 			
 		} finally {
@@ -465,7 +465,7 @@ public class NodeDiscovery {
 			}
 		};
 		
-		logger.debug("{} - Start listening.", toString());
+		logger.debug("{}Start listening.", toString());
 		device.startListeningForPackets(packetReceiveListener);
 		
 		sendNodeDiscoverCommand(device, id);
@@ -482,7 +482,7 @@ public class NodeDiscovery {
 		}
 		
 		device.stopListeningForPackets(packetReceiveListener);
-		logger.debug("{} - Stop listening.", toString());
+		logger.debug("{}Stop listening.", toString());
 	}
 	
 	/**
@@ -495,7 +495,7 @@ public class NodeDiscovery {
 	private byte[] getRemoteDeviceData(XBeeAPIPacket packet) {
 		byte[] data = null;
 		
-		logger.trace("{} - Received packet: {}.", toString(), packet);
+		logger.trace("{}Received packet: {}.", toString(), packet);
 		
 		APIFrameType frameType = packet.getFrameType();
 		switch (frameType) {
@@ -514,7 +514,7 @@ public class NodeDiscovery {
 				return null;
 			}
 			
-			logger.debug("{} - Received self reponse: {}.", toString(), packet);
+			logger.debug("{}Received self reponse: {}.", toString(), packet);
 			
 			data = atResponse.getCommandValue();
 			break;
@@ -533,7 +533,7 @@ public class NodeDiscovery {
 				return null;
 			}
 			
-			logger.debug("{} - Received remote reponse: {}.", toString(), packet);
+			logger.debug("{}Received remote reponse: {}.", toString(), packet);
 			
 			data = remoteAtResponse.getCommandValue();
 			break;
@@ -592,7 +592,7 @@ public class NodeDiscovery {
 			// Read manufacturer ID.
 			manufacturerID = ByteUtils.readBytes(2, inputStream);
 			
-			logger.debug("{} - Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], parent[{}], profile[{}], manufacturer[{}].", 
+			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], parent[{}], profile[{}], manufacturer[{}].", 
 					toString(), localDevice.getXBeeProtocol().getDescription(), addr16, 
 					addr64, id, parentAddress, HexUtils.byteArrayToHexString(profileID), 
 					HexUtils.byteArrayToHexString(manufacturerID));
@@ -604,13 +604,13 @@ public class NodeDiscovery {
 			// Read node identifier.
 			id = ByteUtils.readString(inputStream);
 			
-			logger.debug("{} - Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], rssi[{}].",
+			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], rssi[{}].",
 					toString(), localDevice.getXBeeProtocol().getDescription(), addr16, addr64, id, signalStrength);
 			
 			break;
 		case UNKNOWN:
 		default:
-			logger.debug("{} - Discovered {} device: 16-bit[{}], 64-bit[{}].",
+			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}].",
 					toString(), localDevice.getXBeeProtocol().getDescription(), addr16, addr64);
 			break;
 		}
@@ -644,7 +644,8 @@ public class NodeDiscovery {
 	/**
 	 * Configures the given discovery options and timeout in the device.
 	 * 
-	 * <p>If provided options are {@code null}, the options are not configured.</p>
+	 * <p>If provided options are {@code null}, the options are not configured.
+	 * </p>
 	 * 
 	 * <p>If provided timeout is negative, it is not configured.</p>
 	 * 
@@ -664,7 +665,7 @@ public class NodeDiscovery {
 		oldNOValue = null;
 		oldNTValue = null;
 		
-		logger.debug("{} - Configuring discovery options.", toString());
+		logger.debug("{}Configuring discovery options.", toString());
 		
 		// If options are null, do not configure the radio module.
 		if (options == null && timeout < 0)
@@ -677,7 +678,7 @@ public class NodeDiscovery {
 			oldNOValue = getParameter(device, NO_COMMAND, null, "network options", listener);
 			
 			if (oldNOValue != null)
-				logger.debug("{} - Previous NO: {}.", toString(), HexUtils.byteArrayToHexString(oldNOValue));
+				logger.debug("{}Previous NO: {}.", toString(), HexUtils.byteArrayToHexString(oldNOValue));
 			
 			int value = DiscoveryOption.calculateDiscoveryValue(device.getXBeeProtocol(), options);
 			optionsValue = ByteUtils.intToByteArray(value);
@@ -687,7 +688,7 @@ public class NodeDiscovery {
 			oldNTValue = getParameter(device, NT_COMMAND, null, "network timeout", listener);
 			
 			if (oldNTValue != null)
-				logger.debug("{} - Previous NT: {} ms.", toString(), ByteUtils.byteArrayToInt(oldNTValue)*100);
+				logger.debug("{}Previous NT: {} ms.", toString(), ByteUtils.byteArrayToInt(oldNTValue)*100);
 			
 			timeoutValue = ByteUtils.intToByteArray((int)timeout / 100);
 		}
@@ -723,18 +724,18 @@ public class NodeDiscovery {
 			boolean success = setParameter(device, NO_COMMAND, noValue, "network options", listener);
 			configured = configured & success;
 			if (success)
-				logger.debug("{} - Configured NO to {}.", toString(), HexUtils.byteArrayToHexString(noValue));
+				logger.debug("{}Configured NO to {}.", toString(), HexUtils.byteArrayToHexString(noValue));
 			else
-				logger.error("{} - Could not configure NO to {}.", toString(), HexUtils.byteArrayToHexString(noValue));
+				logger.error("{}Could not configure NO to {}.", toString(), HexUtils.byteArrayToHexString(noValue));
 		}
 		
 		if (ntValue != null) {
 			boolean success = setParameter(device, NT_COMMAND, ntValue, "network timeout", listener);
 			configured = configured & success;
 			if (success)
-				logger.debug("{} - Configured NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
+				logger.debug("{}Configured NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
 			else
-				logger.error("{} - Could not configure NT to {} ms.", toString(), HexUtils.byteArrayToHexString(ntValue));
+				logger.error("{}Could not configure NT to {} ms.", toString(), HexUtils.byteArrayToHexString(ntValue));
 		}
 		
 		return configured;
@@ -847,7 +848,7 @@ public class NodeDiscovery {
 	 * @param error The error to notify.
 	 */
 	private void notifyDiscoveryError(IDiscoveryListener listener, String error) {
-		logger.error("{} - Error discovering devices: {}", toString(), error);
+		logger.error("{}Error discovering devices: {}", toString(), error);
 		
 		if (listener == null)
 			return;
@@ -865,9 +866,9 @@ public class NodeDiscovery {
 	 */
 	private void notifyDiscoveryFinished(IDiscoveryListener listener, String error) {
 		if (error != null && error.length() > 0)
-			logger.error("{} - Finished discovery: {}", toString(), error);
+			logger.error("{}Finished discovery: {}", toString(), error);
 		else
-			logger.debug("{} - Finished discovery", toString());
+			logger.debug("{}Finished discovery.", toString());
 		
 		if (listener == null)
 			return;
@@ -881,6 +882,6 @@ public class NodeDiscovery {
 	 */
 	@Override
 	public String toString() {
-		return String.format("Node Discovery %s", xbeeDevice.toString());
+		return xbeeDevice.toString();
 	}
 }

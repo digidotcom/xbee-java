@@ -25,7 +25,7 @@ package com.digi.xbee.api;
 public class Raw802Network extends XBeeNetwork {
 
 	/**
-	 * Instances a new 802.15.4 Network object.
+	 * Instantiates a new 802.15.4 Network object.
 	 * 
 	 * @param device Local 802.15.4 device to get the network from.
 	 * 

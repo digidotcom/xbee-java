@@ -24,7 +24,7 @@ public enum DiscoveryOption {
 	 * <ul>
 	 *   <li>DigiMesh</li>
 	 *   <li>Point-to-multipoint (Digi Point)</li>
-	 *   <li>ZigBee</li>s
+	 *   <li>ZigBee</li>
 	 * </ul>
 	 */
 	APPEND_DD(0x01, "Append device type identifier (DD)"),
@@ -43,7 +43,7 @@ public enum DiscoveryOption {
 	DISCOVER_MYSELF(0x02, "Local device sends response frame"),
 	
 	/**
-	 * Local device sends response frame when discovery is issued.
+	 * Append RSSI of the last hop to the discovery response.
 	 * 
 	 * <p>Valid for the following protocols:</p>
 	 * <ul>

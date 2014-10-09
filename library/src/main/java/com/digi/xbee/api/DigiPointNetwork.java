@@ -25,7 +25,7 @@ package com.digi.xbee.api;
 public class DigiPointNetwork extends XBeeNetwork {
 
 	/**
-	 * Instances a new DigiPoint Network object.
+	 * Instantiates a new DigiPoint Network object.
 	 * 
 	 * @param device Local DigiPoint device to get the network from.
 	 * 

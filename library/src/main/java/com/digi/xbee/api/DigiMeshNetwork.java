@@ -25,7 +25,7 @@ package com.digi.xbee.api;
 public class DigiMeshNetwork extends XBeeNetwork {
 
 	/**
-	 * Instances a new DigiMesh Network object.
+	 * Instantiates a new DigiMesh Network object.
 	 * 
 	 * @param device Local DigiMesh device to get the network from.
 	 * 

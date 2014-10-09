@@ -603,10 +603,14 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
 	 * @see IIOSampleReceiveListener
 	 * @see #startListeningForIOSamples(IIOSampleReceiveListener)
 	 */
 	protected void stopListeningForIOSamples(IIOSampleReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
 		if (dataReader == null)
 			return;
 		dataReader.removeIOSampleReceiveListener(listener);
@@ -1408,18 +1412,19 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Sets the 64 bit destination extended address.
 	 * 
-	 * <p>{@code 0x000000000000FFFF} is the broadcast address for the PAN.
-	 * {@code 0x0000000000000000} can be used to address the Pan Coordinator.
-	 * </p>
+	 * <p>{@link XBee64BitAddress#BROADCAST_ADDRESS} is the broadcast address 
+	 * for the PAN. {@link XBee64BitAddress#COORDINATOR_ADDRESS} can be used to 
+	 * address the Pan Coordinator.</p>
 	 * 
-	 * @param address Destination address.
+	 * @param xbee64BitAddress Destination address.
 	 * 
+	 * @throws NullPointerException if {@code xbee64BitAddress == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the set 
 	 *                          destination address command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see XBee64BitAddress#COORDINATOR_ADDRESS
-	 * @see XBee64BitAddress#BROADCAST_ADDRESS
+	 * @see XBee64BitAddress
 	 */
 	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
 		if (xbee64BitAddress == null)
@@ -1467,9 +1472,12 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return 64 bit destination address.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get
 	 *                          destination address command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see XBee64BitAddress
 	 */
 	public XBee64BitAddress getDestinationAddress() throws TimeoutException, XBeeException {
 		// Check connection.
@@ -1536,16 +1544,21 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param rate IO sampling rate in milliseconds.
 	 * 
+	 * @throws IllegalArgumentException if {@code rate < 0} or {@code rate >
+	 *                                  0xFFFF}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the set IO
 	 *                          sampling rate command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #getDestinationAddress()
+	 * @see #getIOSamplingRate()
 	 */
 	public void setIOSamplingRate(int rate) throws TimeoutException, XBeeException {
-		if (rate < 0)
-			throw new IllegalArgumentException("Rate must be >= 0.");
+		// Check range.
+		if (rate < 0 || rate > 0xFFFF)
+			throw new IllegalArgumentException("Rate must be between 0 and 0xFFFF.");
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1573,9 +1586,12 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return IO sampling rate in milliseconds.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO
 	 *                          sampling rate command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setIOSamplingRate(int)
 	 */
 	public int getIOSamplingRate() throws TimeoutException, XBeeException {
 		// Check connection.
@@ -1611,12 +1627,15 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param bitfield Byte array that defines which pins should be monitored.
 	 * 
+	 * @throws NullPointerException if {@code bitfield == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the set DIO
 	 *                          change detection command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #getDestinationAddress()
+	 * @see #getDIOChangeDetection()
 	 */
 	public void setDIOChangeDetection(byte[] bitfield) throws TimeoutException, XBeeException {
 		if (bitfield == null)
@@ -1647,9 +1666,12 @@ public abstract class AbstractXBeeDevice {
 	 * @return Bitfield that defines which digital IO pins are monitored
 	 * for change detection.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get DIO
 	 *                          change detection command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDIOChangeDetection(byte[])
 	 */
 	public byte[] getDIOChangeDetection() throws TimeoutException, XBeeException {
 		// Check connection.
@@ -1679,6 +1701,7 @@ public abstract class AbstractXBeeDevice {
 	 * Applies changes to all command registers causing queued command register
 	 * values to be applied.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get Apply
 	 *                          Changes command.
 	 * @throws XBeeException if there is any other XBee related exception.

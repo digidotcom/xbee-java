@@ -490,6 +490,7 @@ public class DataReader extends Thread {
 	 * @param remoteDevice The device that sent the sample.
 	 * 
 	 * @see IOSample
+	 * @see RemoteXBeeDevice
 	 */
 	private void notifyIOSampleReceived(final IOSample ioSample, final RemoteXBeeDevice remoteDevice) {
 		logger.debug(connectionInterface.toString() + "IO sample received.");

@@ -28,6 +28,7 @@ public interface IIOSampleReceiveListener {
 	 * @param remoteDevice The device that sent the sample.
 	 * 
 	 * @see IOSample
+	 * @see RemoteXBeeDevice
 	 */
 	public void ioSampleReceived(IOSample ioSample, RemoteXBeeDevice remoteDevice);
 

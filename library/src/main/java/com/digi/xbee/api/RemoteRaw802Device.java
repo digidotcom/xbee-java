@@ -18,7 +18,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
 public class RemoteRaw802Device extends RemoteXBeeDevice {
 
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code Raw802Device} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -37,7 +37,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code XBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -63,7 +63,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code Raw802Device} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -85,7 +85,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code XBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 

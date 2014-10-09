@@ -63,7 +63,7 @@ public class MainApp {
 		
 		XBeeDevice localDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
-		Timer readADCTimer = new Timer();
+		Timer readDIOTimer = new Timer();
 		
 		try {
 			localDevice.open();
@@ -76,7 +76,7 @@ public class MainApp {
 			// Configure the IOLINE_OUT of the local device as Digital Output Low.
 			localDevice.setIOConfiguration(IOLINE_OUT, IOMode.DIGITAL_OUT_LOW);
 			
-			readADCTimer.schedule(new UpdateOutputTask(localDevice, remoteDevice), 0, READ_TIMEOUT);
+			readDIOTimer.schedule(new UpdateOutputTask(localDevice, remoteDevice), 0, READ_TIMEOUT);
 			
 		} catch (XBeeException e) {
 			e.printStackTrace();
@@ -88,8 +88,8 @@ public class MainApp {
 	/**
 	 * Update output task to be performed every {@value #READ_TIMEOUT} ms.
 	 *
-	 * <p>The task will read the digital input state of {@code IOLINE_IN} 
-	 * and set the {@code IOLINE_OUT} output with the same value.</p>
+	 * <p>The task will read the remote digital input state of {@code IOLINE_IN} 
+	 * and set the local {@code IOLINE_OUT} output with the same value.</p>
 	 * 
 	 * @see TimerTask
 	 */

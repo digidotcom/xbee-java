@@ -76,14 +76,13 @@ public class SendBroadcastSerialDataAsyncTest {
 	}
 	
 	/**
-	 * Verify that we receive a null pointer exception when either the address or the 
-	 * data to be sent is null.
+	 * Verify that we receive a NullPointerException when the data to be sent is null.
 	 * 
 	 * @throws Exception
 	 */
 	@Test(expected=NullPointerException.class)
 	public void testSendBroadcastSerialDataAsyncInvalidParams() throws Exception {
-		// Try to send broadcast serial data with null data
+		// Try to send broadcast serial data with null data.
 		xbeeDevice.sendBroadcastSerialDataAsync(null);	
 	}
 	

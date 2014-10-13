@@ -76,7 +76,7 @@ public class MainApp {
 		}
 		
 		for (RemoteXBeeDevice discoveredDevice:discoveredDevices) 
-			System.out.format(">> Device discovered: %s%n", discoveredDevice.get64BitAddress());
+			System.out.format(">> Device discovered: %s%n", discoveredDevice.toString());
 		
 		System.exit(0);
 	}

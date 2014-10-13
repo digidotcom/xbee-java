@@ -32,7 +32,7 @@ public class MyDiscoveryListener implements IDiscoveryListener {
 	 */
 	@Override
 	public void deviceDiscovered(RemoteXBeeDevice discoveredDevice) {
-		System.out.format(">> Device discovered: %s%n", discoveredDevice.get64BitAddress());
+		System.out.format(">> Device discovered: %s%n", discoveredDevice.toString());
 	}
 	
 	/*

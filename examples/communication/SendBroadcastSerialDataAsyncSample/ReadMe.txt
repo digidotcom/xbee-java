@@ -1,9 +1,10 @@
   Introduction
   ------------
   This is a sample Java application to show how to send data asynchronously from
-  the XBee device to all remote devices on the same network (broadcast) using 
-  the XBee Java Library. Transmitting data asynchronously means the execution 
-  will not be blocked during the transmit request.
+  the local XBee device to all remote devices on the same network (broadcast) 
+  using the XBee Java Library. Transmitting data asynchronously means the 
+  execution will not be blocked during the transmit request, but you will not 
+  be able to know if the data was sent successfully.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
@@ -41,36 +42,31 @@
 
   Running the example
   -------------------
-  First, build the application. To test the functionality you need the second 
-  device to be listening to broadcast data. To do this:
+  First, build the application. Then, you need to setup XCTU to see the data 
+  received by the remote XBee device, in this case it will be broadcast data. 
+  To do this:
   
-    a) Use the 'ReceiveBroadcastSerialDataSample' example included in the 
-       library.
-       Follow the instructions in the 'ReadMe' file to perform the task.
+    1) Launch the XCTU application.
        
-    b) Use the XCTU:
+    2) Add the receiver (local) XBee module to the XCTU, specifying its port 
+       settings.
        
-       1) Launch the XCTU application.
-          
-       2) Add the receiver XBee module to the XCTU, specifying its port 
-          settings.
-          
-       3) Once the module is added, change to the 'Consoles' working mode and 
-          open the serial connection so you can see the data when it is received.
-          
-       4) Launch the sample application, some data is sent to all remote modules
-          and a line with the result of the operation is printed to the standard 
-          output:
-          
-          Sending broadcast data >> 48 65 6C 6C 6F 20 58 42 65 65 73 21 | Hello XBees!... Success
-          
-          Also, in the XCTU console a new RX frame has been received. Select it 
-          and review the details, some of the details will be similar to:
-          
-          - Start delimiter:         7E
-          - Length:                  Depends on the XBee protocol.
-          - Frame type:              Depends on the XBee protocol.
-          - 64-bit source address:   The XBee sender's 64-bit address.
-          - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 73 21
-                                     Hello XBees!
-          
+    3) Once the module is added, change to the 'Consoles' working mode and 
+       open the serial connection so you can see the data when it is received.
+       
+  Finally, launch the sample application, some data is sent to all remote 
+  modules of the network. When that happens, a line with the result of the 
+  operation is printed to the standard output:
+       
+    Sending broadcast data >> 48 65 6C 6C 6F 20 58 42 65 65 73 21 | Hello XBees!... Success
+       
+  Verify that in the XCTU console a new RX frame has been received. Select it 
+  and review the details, some of the details will be similar to:
+       
+    - Start delimiter:         7E
+    - Length:                  Depends on the XBee protocol.
+    - Frame type:              Depends on the XBee protocol.
+    - 64-bit source address:   The XBee sender's 64-bit address.
+    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 73 21
+                               Hello XBees!
+       

@@ -37,7 +37,11 @@
 
   Running the example
   -------------------
-  First, build and launch the application.
-  To test the functionality, check that the message "XBee module reset
-  successfully" is printed in the output console.
-       
+  First, build and launch the application. To test the functionality, check 
+  that the message the following message is printed out in the console of the 
+  launched application:
+    
+    "XBee module reset successfully"
+    
+  That message indicates that the module was reset correctly.
+  

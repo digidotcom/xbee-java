@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.sendbroadcastserialdataasync;
 
 import com.digi.xbee.api.XBeeDevice;
@@ -33,7 +33,6 @@ public class MainApp {
 	// TODO Replace with the baud rate of your sender module.
 	private static final int BAUD_RATE = 9600;
 	
-	// TODO Replace with the data to send.
 	private static final String DATA_TO_SEND = "Hello XBees!";
 	
 	/**

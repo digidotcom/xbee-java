@@ -45,9 +45,11 @@
 
   Running the example
   -------------------
-  First, build and launch the application.
-  To test the functionality, check that the output console states the following 
-  message: "All parameters were set correctly!". That message indicates that 
-  all the parameters could be set and their read values are the same as the 
-  values that were set.
+  First, build and launch the application. To test the functionality, check 
+  that the output console states the following message: 
+  
+    "All parameters were set correctly!".
+    
+  That message indicates that all the parameters could be set and their read 
+  values are the same as the values that were set.
   

@@ -54,13 +54,20 @@
   executed, it will perform a device discovery in the network. To verify the 
   application is working properly, check that the following happens:
   
-    1) The output console states the following message: "Discovering remote 
-       XBee devices..."
-    
+    1) The output console states the following message:
+       
+         "Discovering remote XBee devices..."
+       
     2) For each discovered device the output console should display the 
-       following message: "Device discovered: XXXXXXXXXXXXXXXX", where 
-       XXXXXXXXXXXXXXXX is the MAC address of the remote XBee device.
-    
+       following message: 
+       
+         "Device discovered: XXXXXXXXXXXXXXXX"
+       
+           - Where XXXXXXXXXXXXXXXX is the MAC address of the remote XBee 
+             device.
+       
     3) When the discovery process finishes the following message should be 
-       displayed: "Device discovery finished successfully."
-  
+       displayed:
+       
+         "Device discovery finished successfully."
+       

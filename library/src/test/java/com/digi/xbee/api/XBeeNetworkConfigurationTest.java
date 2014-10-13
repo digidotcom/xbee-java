@@ -13,37 +13,29 @@ package com.digi.xbee.api;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
-@PrepareForTest({XBeeDevice.class, NodeDiscovery.class, XBeeNetwork.class})
 @RunWith(PowerMockRunner.class)
-public class XBeeNetworkTest {
+public class XBeeNetworkConfigurationTest {
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -53,33 +45,10 @@ public class XBeeNetworkTest {
 	
 	private XBeeDevice deviceMock;
 	
-	private NodeDiscovery ndMock;
-	
 	private RemoteXBeeDevice idFoundDevice;
 	
-	public XBeeNetworkTest() {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
-		ndMock = PowerMockito.mock(NodeDiscovery.class);
 		deviceMock = PowerMockito.mock(XBeeDevice.class);
 		IConnectionInterface cInterfaceMock = PowerMockito.mock(IConnectionInterface.class);
 		
@@ -92,18 +61,7 @@ public class XBeeNetworkTest {
 		List<RemoteXBeeDevice> idFoundDevices = new ArrayList<RemoteXBeeDevice>(1);
 		idFoundDevices.add(idFoundDevice);
 		
-		PowerMockito.whenNew(NodeDiscovery.class).withArguments(deviceMock).thenReturn(ndMock);
-		PowerMockito.when(ndMock.discoverDeviceByID(Mockito.anyString(), Mockito.anyLong())).thenReturn(idFoundDevice);
-		PowerMockito.when(ndMock.discoverAllDevicesByID(Mockito.anyString(), Mockito.anyLong())).thenReturn(idFoundDevices);
-		
 		network = PowerMockito.spy(new XBeeNetwork(deviceMock));
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	/**
@@ -121,261 +79,6 @@ public class XBeeNetworkTest {
 		// Call the method under test.
 		new XBeeNetwork(null);
 	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String)}.
-	 * 
-	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
-	 * {@code null} id.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDOnlyIdNull() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
-						
-		// Call the method under test.
-		network.discoverDeviceByID(null);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing an empty id.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDOnlyIdEmpty() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
-						
-		// Call the method under test.
-		network.discoverDeviceByID("");
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String)}.
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDOnlyIdValid() throws XBeeException {
-		// Setup the resources for the test.
-		String id = "id";
-		
-		// Call the method under test.
-		RemoteXBeeDevice found = network.discoverDeviceByID(id);
-		
-		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDeviceByID(id, NodeDiscovery.USE_DEVICE_TIMEOUT);
-		
-		assertThat("Found device must not be null", found, is(not(nullValue())));
-		assertThat("Not expected 64-bit address in found device", found.get64BitAddress(), is(equalTo(idFoundDevice.get64BitAddress())));
-		assertThat("Not expected 16-bit address in found device", found.get16BitAddress(), is(equalTo(idFoundDevice.get16BitAddress())));
-		assertThat("Not expected id in found device", found.getNodeID(), is(equalTo(idFoundDevice.getNodeID())));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String, long)}.
-	 * 
-	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
-	 * {@code null} id.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDIdNull() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
-						
-		// Call the method under test.
-		network.discoverDeviceByID(null, 500);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing an empty id.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDIdEmpty() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
-						
-		// Call the method under test.
-		network.discoverDeviceByID("", 500);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing a wait forever.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDWaitForever() throws XBeeException {
-		// Setup the resources for the test.
-		String id = "id";
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The discovery devices process cannot block forever.")));
-		
-		// Call the method under test.
-		network.discoverDeviceByID(id, NodeDiscovery.WAIT_FOREVER);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing a negative timeout.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDNegativeTimeout() throws XBeeException {
-		// Setup the resources for the test.
-		String id = "id";
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The timeout must be bigger than 0.")));
-		
-		// Call the method under test.
-		network.discoverDeviceByID(id, -5);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByID(String, long)}.
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDeviceByIDValidTimeout() throws XBeeException {
-		// Setup the resources for the test.
-		String id = "id";
-		long timeout = 500;
-		
-		// Call the method under test.
-		RemoteXBeeDevice found = network.discoverDeviceByID(id, timeout);
-		
-		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDeviceByID(id, timeout);
-		
-		assertThat("Found device must not be null", found, is(not(nullValue())));
-		assertThat("Not expected 64-bit address in found device", found.get64BitAddress(), is(equalTo(idFoundDevice.get64BitAddress())));
-		assertThat("Not expected 16-bit address in found device", found.get16BitAddress(), is(equalTo(idFoundDevice.get16BitAddress())));
-		assertThat("Not expected id in found device", found.getNodeID(), is(equalTo(idFoundDevice.getNodeID())));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverAllDevicesByID(String, long)}.
-	 * 
-	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
-	 * {@code null} id.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverAllDevicesByIDNullId() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
-		
-		// Call the method under test.
-		network.discoverAllDevicesByID(null, NodeDiscovery.USE_DEVICE_TIMEOUT);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverAllDevicesByID(String, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing an empty id.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverAllDevicesByIDEmptyId() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
-		
-		// Call the method under test.
-		network.discoverAllDevicesByID("", NodeDiscovery.USE_DEVICE_TIMEOUT);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverAllDevicesByID(String, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing a wait forever.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverAllDevicesByIDWaitForever() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The discovery devices process cannot block forever.")));
-		
-		// Call the method under test.
-		network.discoverAllDevicesByID("id", NodeDiscovery.WAIT_FOREVER);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverAllDevicesByID(String, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * passing a negative timeout.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverAllDevicesByIDNegativeTimeout() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The timeout must be bigger than 0.")));
-		
-		// Call the method under test.
-		network.discoverAllDevicesByID("id", -6);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverAllDevicesByID(String, long)}.
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverAllDevicesByIDValidTimeout() throws XBeeException {
-		// Setup the resources for the test.
-		String id = "id";
-		long timeout = 500;
-		
-		// Call the method under test.
-		List<RemoteXBeeDevice> found = network.discoverAllDevicesByID(id, timeout);
-		
-		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverAllDevicesByID(id, timeout);
-		
-		assertThat("Found device list must not be null", found, is(not(nullValue())));
-		assertThat("Found device list must have one device", found.size(), is(equalTo(1)));
-		
-		RemoteXBeeDevice d = found.get(0);
-		assertThat("Not expected 64-bit address in found device", d.get64BitAddress(), is(equalTo(idFoundDevice.get64BitAddress())));
-		assertThat("Not expected 16-bit address in found device", d.get16BitAddress(), is(equalTo(idFoundDevice.get16BitAddress())));
-		assertThat("Not expected id in found device", d.getNodeID(), is(equalTo(idFoundDevice.getNodeID())));
-	}
-	
-	// TODO test for all discoverDevices methods
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#addRemoteDevice(RemoteXBeeDevice)}.

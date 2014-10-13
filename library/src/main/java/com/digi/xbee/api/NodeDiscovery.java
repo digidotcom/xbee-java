@@ -833,7 +833,11 @@ class NodeDiscovery {
 		RemoteXBeeDevice addedDev = network.addRemoteDevice(device);
 		if (addedDev != null)
 			listener.deviceDiscovered(addedDev);
-		// TODO else: notify error?
+		else {
+			String error = "Error adding device '" + device + "' to the network.";
+			logger.error("{}{}", toString(), device);
+			listener.discoveryError(error);
+		}
 	}
 	
 	/**

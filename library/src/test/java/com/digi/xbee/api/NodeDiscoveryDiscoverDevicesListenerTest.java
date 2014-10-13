@@ -23,10 +23,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertThat;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -77,27 +74,6 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	
 	private List<RemoteATCommandResponsePacket> ndAnswers = new ArrayList<RemoteATCommandResponsePacket>(0);
 	
-	public NodeDiscoveryDiscoverDevicesListenerTest() {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
 	public void setUp() throws Exception {
 		ndAnswers.clear();
@@ -177,13 +153,6 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 
 	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	/**
 	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when the 
@@ -251,7 +220,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
 		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
@@ -309,7 +278,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	public final void testDiscoverDevicesNoOptionsCustomTimeout() throws Exception {
 		// Setup the resources for the test.
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = 500; // 0.5 seconds
+		long timeout = 100; // 0.1 seconds
 		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x20};
 		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
@@ -373,7 +342,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
 		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.APPEND_RSSI, DiscoveryOptions.DISCOVER_MYSELF);
-		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		byte[] deviceOptionsByteArray = new byte[]{0x00};
 		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
@@ -438,7 +407,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = 500; // 0.5 seconds
 		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.APPEND_RSSI, DiscoveryOptions.DISCOVER_MYSELF);
-		byte[] deviceTimeoutByteArray = new byte[]{0x20};
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
 		byte[] deviceOptionsByteArray = new byte[]{0x00};
 		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
@@ -505,7 +474,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		// Setup the resources for the test.
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
 		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
@@ -565,7 +534,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
 		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		RemoteATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
@@ -644,7 +613,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
 		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x0A};
+		byte[] deviceTimeoutByteArray = new byte[]{0x05};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		XBee64BitAddress[] macs = new XBee64BitAddress[]{new XBee64BitAddress("0013A20040A6A0DB"), 

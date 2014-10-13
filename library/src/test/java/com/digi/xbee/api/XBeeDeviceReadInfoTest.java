@@ -41,7 +41,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({XBeeDevice.class, XBeeProtocol.class})
-public class XBeeDeviceInitializationTest {
+public class XBeeDeviceReadInfoTest {
 
 	// Constants.
 	private static final byte[] RESPONSE_SH = new byte[]{0x01, 0x23, 0x45, 0x67};                             // 0x01234567
@@ -119,118 +119,118 @@ public class XBeeDeviceInitializationTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the connection is closed.</p>
+	 * <p>Verify that device info of a local device cannot be read if the connection is closed.</p>
 	 * 
 	 * @throws XBeeException
 	 */
 	@Test(expected=InterfaceNotOpenException.class)
-	public void testInitializeDeviceErrorConnectionClosed() throws XBeeException {
+	public void testReadDeviceInfoErrorConnectionClosed() throws XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the operating mode is not valid.</p>
+	 * <p>Verify that device info of a local device cannot be read if the operating mode is not valid.</p>
 	 * 
 	 * @throws XBeeException
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testInitializeDeviceErrorInvalidOperatingMode() throws XBeeException {
+	public void testReadDeviceInfoErrorInvalidOperatingMode() throws XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the operating mode is UNKNOWN.</p>
+	 * <p>Verify that device info of a local device cannot be read if the operating mode is UNKNOWN.</p>
 	 * 
 	 * @throws XBeeException
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testInitializeDeviceErrorUnknownOperatingMode() throws XBeeException {
+	public void testReadDeviceInfoErrorUnknownOperatingMode() throws XBeeException {
 		// Return UNKKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if there is a timeout reading the 
+	 * <p>Verify that device info of a local device cannot be read if there is a timeout reading the 
 	 * SH parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorSHTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSHTimeout() throws XBeeException, IOException {
 		// Throw a timeout exception when requesting the SH parameter value.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand(atCommandSH);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the answer when requesting the SH 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a local device cannot be read if the answer when requesting the 
+	 * SH parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorSHInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSHInvalidAnswer() throws XBeeException, IOException {
 		// Return a null response when requesting the SH parameter value.
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand(atCommandSH);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the status value when retrieving the 
-	 * SH value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a local device cannot be read if the status value when retrieving 
+	 * the SH value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorSHStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSHStatus() throws XBeeException, IOException {
 		// Return an invalid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseInvalid).when(xbeeDevice).sendATCommand(atCommandSH);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if there is a timeout reading the 
+	 * <p>Verify that device info of a local device cannot be read if there is a timeout reading the 
 	 * SL parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorSLTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSLTimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -238,20 +238,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand(atCommandSL);
 				
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the answer when requesting the SL 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a local device cannot be read if the answer when requesting the 
+	 * SL parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorSLInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSLInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -259,20 +259,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand(atCommandSL);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the status value when retrieving the 
-	 * SL value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a local device cannot be read if the status value when retrieving 
+	 * the SL value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorSLStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSLStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -280,20 +280,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(xbeeDevice).sendATCommand(atCommandSL);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if there is a timeout reading the 
+	 * <p>Verify that device info of a local device cannot be read if there is a timeout reading the 
 	 * NI parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorNITimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorNITimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -304,20 +304,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand(atCommandNI);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the answer when requesting the NI 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a local device cannot be read if the answer when requesting the 
+	 * NI parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorNIInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorNIInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -328,20 +328,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand(atCommandNI);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the status value when retrieving the 
-	 * NI value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a local device cannot be read if the status value when retrieving 
+	 * the NI value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorNIStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorNIStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -352,20 +352,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(xbeeDevice).sendATCommand(atCommandNI);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if there is a timeout reading the 
+	 * <p>Verify that device info of a local device cannot be read if there is a timeout reading the 
 	 * HV parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorHVTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorHVTimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -379,20 +379,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand(atCommandHV);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the answer when requesting the HV 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a local device cannot be read if the answer when requesting the 
+	 * HV parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorHVInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorHVInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -406,20 +406,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand(atCommandHV);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the status value when retrieving the 
-	 * HV value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a local device cannot be read if the status value when retrieving 
+	 * the HV value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorHVStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorHVStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -433,20 +433,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(xbeeDevice).sendATCommand(atCommandHV);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if there is a timeout reading the 
+	 * <p>Verify that device info of a local device cannot be read if there is a timeout reading the 
 	 * VR parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorVRTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorVRTimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -463,20 +463,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the answer when requesting the VR 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a local device cannot be read if the answer when requesting the 
+	 * VR parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorVRInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorVRInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -493,20 +493,20 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device cannot be initialized if the status value when retrieving the 
-	 * VR value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a local device cannot be read if the status value when retrieving 
+	 * the VR value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorVRStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorVRStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -523,19 +523,19 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(xbeeDevice).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that device can be initialized successfully.</p>
+	 * <p>Verify that device info of a local device can be initialized successfully.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException
 	 */
 	@Test
-	public void testInitializeDeviceSuccess() throws XBeeException, IOException {
+	public void testReadDeviceInfoSuccess() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(xbeeDevice).sendATCommand(atCommandSH);
 		
@@ -552,7 +552,7 @@ public class XBeeDeviceInitializationTest {
 		Mockito.doReturn(atCommandResponseVR).when(xbeeDevice).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		xbeeDevice.initializeDevice();
+		xbeeDevice.readDeviceInfo();
 		
 		assertEquals(new XBee64BitAddress("0123456789ABCDEF"), xbeeDevice.get64BitAddress());
 		assertEquals("XBEE", xbeeDevice.getNodeID());

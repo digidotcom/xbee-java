@@ -172,9 +172,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			throw new InvalidOperatingModeException(operatingMode);
 		}
 		
-		// Always initialize the device (obtain its parameters and protocol). It doesn't matter 
-		// if it is local or remote.
-		initializeDevice();
+		// Read the device info (obtain its parameters and protocol).
+		readDeviceInfo();
 	}
 	
 	/**

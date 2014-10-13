@@ -42,7 +42,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({RemoteRaw802Device.class, XBeeProtocol.class, XBee16BitAddress.class})
-public class Remote802DeviceInitialization16BitTest {
+public class Remote802DeviceReadInfo16BitTest {
 
 	// Constants.
 	private static final byte[] RESPONSE_SH = new byte[]{0x01, 0x23, 0x45, 0x67};                             // 0x01234567
@@ -128,120 +128,121 @@ public class Remote802DeviceInitialization16BitTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the connection of the local device is closed.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the connection of the local device 
+	 * is closed.</p>
 	 * 
 	 * @throws XBeeException
 	 */
 	@Test(expected=InterfaceNotOpenException.class)
-	public void testInitializeDeviceErrorConnectionClosed() throws XBeeException {
+	public void testReadDeviceInfoErrorConnectionClosed() throws XBeeException {
 		// When checking if the connection is open, return false.
 		Mockito.when(connectionInterface.isOpen()).thenReturn(false);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the operating mode of the local device 
-	 * is not valid.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the operating mode of the local 
+	 * device is not valid.</p>
 	 * 
 	 * @throws XBeeException
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testInitializeDeviceErrorInvalidOperatingMode() throws XBeeException {
+	public void testReadDeviceInfoErrorInvalidOperatingMode() throws XBeeException {
 		// Return AT operating mode when asked.
 		Mockito.doReturn(OperatingMode.AT).when(localXBeeDevice).getOperatingMode();
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the operating mode of the local device 
-	 * is UNKNOWN.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the operating mode of the 
+	 * local device is UNKNOWN.</p>
 	 * 
 	 * @throws XBeeException
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public void testInitializeDeviceErrorUnknownOperatingMode() throws XBeeException {
+	public void testReadDeviceInfoErrorUnknownOperatingMode() throws XBeeException {
 		// Return UNKKNOWN operating mode when asked.
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(localXBeeDevice).getOperatingMode();
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if there is a timeout reading the 
-	 * SH parameter of the device.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if there is a timeout reading 
+	 * the SH parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorSHTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSHTimeout() throws XBeeException, IOException {
 		// Throw a timeout exception when requesting the SH parameter value.
 		Mockito.doThrow(new TimeoutException()).when(remote802Device).sendATCommand(atCommandSH);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the answer when requesting the SH 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the answer when requesting 
+	 * the SH parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorSHInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSHInvalidAnswer() throws XBeeException, IOException {
 		// Return a null response when requesting the SH parameter value.
 		Mockito.doReturn(null).when(remote802Device).sendATCommand(atCommandSH);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the status value when retrieving the 
-	 * SH value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the status value when 
+	 * retrieving the SH value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorSHStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSHStatus() throws XBeeException, IOException {
 		// Return an invalid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseInvalid).when(remote802Device).sendATCommand(atCommandSH);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if there is a timeout reading the 
-	 * SL parameter of the device.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if there is a timeout 
+	 * reading the SL parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorSLTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSLTimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -249,20 +250,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doThrow(new TimeoutException()).when(remote802Device).sendATCommand(atCommandSL);
 				
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the answer when requesting the SL 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the answer when 
+	 * requesting the SL parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorSLInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSLInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -270,20 +271,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(null).when(remote802Device).sendATCommand(atCommandSL);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the status value when retrieving the 
-	 * SL value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the status value when 
+	 * retrieving the SL value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorSLStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorSLStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -291,20 +292,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(remote802Device).sendATCommand(atCommandSL);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if there is a timeout reading the 
-	 * NI parameter of the device.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if there is a timeout 
+	 * reading the NI parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorNITimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorNITimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -315,20 +316,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doThrow(new TimeoutException()).when(remote802Device).sendATCommand(atCommandNI);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the answer when requesting the NI 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the answer when 
+	 * requesting the NI parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorNIInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorNIInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -339,20 +340,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(null).when(remote802Device).sendATCommand(atCommandNI);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the status value when retrieving the 
-	 * NI value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the status value when 
+	 * retrieving the NI value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorNIStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorNIStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -363,20 +364,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(remote802Device).sendATCommand(atCommandNI);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if there is a timeout reading the 
-	 * HV parameter of the device.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if there is a timeout 
+	 * reading the HV parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorHVTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorHVTimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -390,20 +391,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doThrow(new TimeoutException()).when(remote802Device).sendATCommand(atCommandHV);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the answer when requesting the HV 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the answer when 
+	 * requesting the HV parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorHVInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorHVInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -417,20 +418,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(null).when(remote802Device).sendATCommand(atCommandHV);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the status value when retrieving the 
-	 * HV value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the status value when 
+	 * retrieving the HV value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorHVStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorHVStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -444,20 +445,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(remote802Device).sendATCommand(atCommandHV);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if there is a timeout reading the 
-	 * VR parameter of the device.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if there is a timeout 
+	 * reading the VR parameter of the device.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=TimeoutException.class)
-	public void testInitializeDeviceErrorVRTimeout() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorVRTimeout() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -474,20 +475,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doThrow(new TimeoutException()).when(remote802Device).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the answer when requesting the VR 
-	 * parameter is null.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the answer when 
+	 * requesting the VR parameter is null.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=OperationNotSupportedException.class)
-	public void testInitializeDeviceErrorVRInvalidAnswer() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorVRInvalidAnswer() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -504,20 +505,20 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(null).when(remote802Device).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device cannot be initialized if the status value when retrieving the 
-	 * VR value is INVALID_PARAMETER.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device cannot be read if the status value when 
+	 * retrieving the VR value is INVALID_PARAMETER.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException 
 	 */
 	@Test(expected=ATCommandException.class)
-	public void testInitializeDeviceErrorVRStatus() throws XBeeException, IOException {
+	public void testReadDeviceInfoErrorVRStatus() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -534,19 +535,19 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(atCommandResponseInvalid).when(remote802Device).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#initializeDevice()}.
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
 	 * 
-	 * <p>Verify that remote 802.15.4 device can be initialized successfully.</p>
+	 * <p>Verify that device info of a remote 802.15.4 device can be read successfully.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException
 	 */
 	@Test
-	public void testInitializeDeviceSuccess() throws XBeeException, IOException {
+	public void testReadDeviceInfoSuccess() throws XBeeException, IOException {
 		// Return a valid AT response when requesting the SH parameter value.
 		Mockito.doReturn(atCommandResponseSH).when(remote802Device).sendATCommand(atCommandSH);
 		
@@ -563,7 +564,7 @@ public class Remote802DeviceInitialization16BitTest {
 		Mockito.doReturn(atCommandResponseVR).when(remote802Device).sendATCommand(atCommandVR);
 		
 		// Initialize the device.
-		remote802Device.initializeDevice();
+		remote802Device.readDeviceInfo();
 		
 		assertEquals(new XBee64BitAddress("0123456789ABCDEF"), remote802Device.get64BitAddress());
 		assertEquals("XBEE", remote802Device.getNodeID());

@@ -222,8 +222,7 @@ public abstract class AbstractXBeeDevice {
 	abstract public boolean isRemote();
 	
 	/**
-	 * Initializes the XBee device. Reads some parameters from the device and 
-	 * obtains its protocol.
+	 * Reads some parameters from the device and obtains its protocol.
 	 * 
 	 * @throws InvalidOperatingModeException if the operating mode of the device is not supported.
 	 * @throws TimeoutException if there is a timeout reading the parameters.
@@ -241,7 +240,7 @@ public abstract class AbstractXBeeDevice {
 	 * @see HardwareVersionEnum
 	 * @see XBeeProtocol
 	 */
-	protected void initializeDevice() 
+	protected void readDeviceInfo() 
 			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
 			ATCommandException, XBeeException {
 		ATCommandResponse response = null;

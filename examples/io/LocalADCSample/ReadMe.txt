@@ -12,7 +12,7 @@
 
   Files
   ----------
-    * com.digi.xbee.api.handlelocaladc.MainApp.java:
+    * com.digi.xbee.api.localadc.MainApp.java:
       Main application class. It instantiates an XBee device, establishes a 
       serial connection with it, configures the IO line and reads its analog 
       value.

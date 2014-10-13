@@ -12,7 +12,7 @@
 
   Files
   ----------
-    * com.digi.xbee.api.handleremoteadc.MainApp.java:
+    * com.digi.xbee.api.remoteadc.MainApp.java:
       Main application class. It instantiates a local XBee device and a remote 
       XBee device, establishes a serial connection with the local one, 
       configures the remote IO line and reads its analog value.

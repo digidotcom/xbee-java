@@ -23,7 +23,6 @@
 		<module>library</module>
 		<module>examples/communication/ReceiveSerialDataSample</module>
 		<module>examples/communication/ReceiveSerialDataPollingSample</module>
-		<module>examples/communication/SendBroadcastSerialDataAsyncSample</module>
 		<module>examples/communication/SendBroadcastSerialDataSample</module>
 		<module>examples/communication/SendSerialDataAsyncSample</module>
 		<module>examples/communication/SendSerialDataSample</module>

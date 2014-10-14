@@ -240,7 +240,7 @@ public abstract class AbstractXBeeDevice {
 	 * @see HardwareVersionEnum
 	 * @see XBeeProtocol
 	 */
-	protected void readDeviceInfo() 
+	public void readDeviceInfo() 
 			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
 			ATCommandException, XBeeException {
 		ATCommandResponse response = null;

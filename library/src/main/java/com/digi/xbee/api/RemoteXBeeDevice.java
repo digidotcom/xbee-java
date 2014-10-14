@@ -44,14 +44,6 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#readDeviceInfo()
-	 */
-	public void readDeviceInfo() throws TimeoutException, XBeeException {
-		super.readDeviceInfo();
-	}
-	
-	/*
-	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#isRemote()
 	 */
 	@Override

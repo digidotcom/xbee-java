@@ -24,12 +24,12 @@ public interface IIOSampleReceiveListener {
 	/**
 	 * Called when an IO sample is received through the connection interface.
 	 * 
-	 * @param ioSample The IO sample.
 	 * @param remoteDevice The device that sent the sample.
+	 * @param ioSample The IO sample.
 	 * 
 	 * @see IOSample
 	 * @see RemoteXBeeDevice
 	 */
-	public void ioSampleReceived(IOSample ioSample, RemoteXBeeDevice remoteDevice);
+	public void ioSampleReceived(RemoteXBeeDevice remoteDevice, IOSample ioSample);
 
 }

@@ -11,6 +11,9 @@
 */
 package com.digi.xbee.api.iosampling;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
@@ -41,15 +44,10 @@ public class MainApp {
 	// TODO Replace with the 64-bit address of your remote module.
 	private static final XBee64BitAddress REMOTE_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
 	
-	// TODO Comment this line if your are not using the XBIB-U-DEV.
-	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
-	// TODO Uncomment this line if you are using the XBee Development board.
-//	private static final IOLine IOLINE_IN = IOLine.DIO4_AD4;
+	private static final IOLine DIGITAL_LINE = IOLine.DIO3_AD3;
+	private static final IOLine ANALOG_LINE = IOLine.DIO2_AD2;
 	
-	// TODO Comment this line if you are not using the XBIB-U-DEV.
-	private static final byte[] CHANGE_DETECTION_MASK = new byte[] {0x08};
-	// TODO Uncomment this line if you are using the XBee Development board.
-//	private static final byte[] CHANGE_DETECTION_MASK = new byte[] {0x10};
+	private static final Set<IOLine> MONITORED_LINES = EnumSet.of(DIGITAL_LINE);
 	
 	private static final int IO_SAMPLING_RATE = 5000; // 5 seconds.
 	
@@ -73,11 +71,11 @@ public class MainApp {
 			// Set the local device as destination address of the remote.
 			remoteDevice.setDestinationAddress(localDevice.get64BitAddress());
 			
-			// Set the IOLINE_IN of the remote device as Digital Input.
-			remoteDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
+			remoteDevice.setIOConfiguration(DIGITAL_LINE, IOMode.DIGITAL_IN);
+			remoteDevice.setIOConfiguration(ANALOG_LINE, IOMode.ADC);
 			
-			// Enable DIO change detection over the IOLINE_IN in the remote device.
-			remoteDevice.setDIOChangeDetection(CHANGE_DETECTION_MASK);
+			// Enable DIO change detection in the remote device.
+			remoteDevice.setDIOChangeDetection(MONITORED_LINES);
 			
 			// Enable periodic sampling every IO_SAMPLING_RATE milliseconds in the remote device.
 			remoteDevice.setIOSamplingRate(IO_SAMPLING_RATE);
@@ -85,9 +83,9 @@ public class MainApp {
 			// Register a listener to handle the samples received by the local device.
 			localDevice.startListeningForIOSamples(new IIOSampleReceiveListener() {
 				@Override
-				public void ioSampleReceived(IOSample ioSample, RemoteXBeeDevice remoteDevice) {
+				public void ioSampleReceived(RemoteXBeeDevice remoteDevice, IOSample ioSample) {
 					System.out.println("New sample received from " + remoteDevice.get64BitAddress() +
-							" >> " + IOLINE_IN + ": " + ioSample.getDigitalValue(IOLINE_IN));
+							" - " + ioSample);
 				}
 			});
 			

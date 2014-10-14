@@ -1,7 +1,7 @@
   Introduction
   ------------
   This is a sample Java application that shows how to read XBee analog inputs 
-  of remote devices.
+  of remote XBee devices.
   
   The application configures an IO line of the remote XBee device as ADC. Then, 
   periodically reads its value and prints it in the output console.

@@ -64,7 +64,6 @@ public class MainApp {
 			
 			RemoteXBeeDevice remoteDevice = new RemoteXBeeDevice(localDevice, REMOTE_64_BIT_ADDRESS);
 			
-			// Configure the IOLINE_IN of the remote device as ADC.
 			remoteDevice.setIOConfiguration(IOLINE_IN, IOMode.ADC);
 			
 			readADCTimer.schedule(new ReadADCTask(remoteDevice), 0, READ_TIMEOUT);
@@ -96,7 +95,7 @@ public class MainApp {
 			try {
 				// Read the analog value from the remote input line.
 				int value = remoteDevice.getADCValue(IOLINE_IN);
-				System.out.println("Input line value: " + value);
+				System.out.println(IOLINE_IN + ": " + value);
 			} catch (XBeeException e) {
 				e.printStackTrace();
 			}

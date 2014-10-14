@@ -57,8 +57,7 @@
          
          - XBee Development Board:
              * If you are using the XBee Development Board, update the IOLINE_IN
-               constant accordingly. There are comments in the code indicating
-               which fragment belongs to each board.
+               constant accordingly.
 
          NOTE: It is recommended to verify the capabilities of the pins used 
                in the example in the product manual of your XBee Device to 
@@ -71,10 +70,9 @@
   To test the functionality, follow these steps:
   
     1) Press the button corresponding to the digital input line in the remote
-       XBee device. In the XBIB boards it is the DIO3; in the XBee Development 
-       boards is the DIO4 or User Button.
+       XBee device. In the XBIB boards it is the DIO3.
        
     2) Verify that the status of the LED corresponding to the digital output 
        line in the local XBee device changes. In the XBIB boards it is the 
-       DIO12; in the XBee Development boards is the DIO12 or User0/TCP.
+       DIO12.
        

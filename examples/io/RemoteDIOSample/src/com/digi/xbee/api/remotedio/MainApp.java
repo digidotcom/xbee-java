@@ -44,11 +44,7 @@ public class MainApp {
 	// TODO Replace with the 64-bit address of your remote module.
 	private static final XBee64BitAddress REMOTE_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
 	
-	// TODO Comment this line if your are not using the XBIB-U-DEV.
 	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
-	// TODO Uncomment this line if you are using the XBee Development board.
-//	private static final IOLine IOLINE_IN = IOLine.DIO4_AD4;
-	
 	private static final IOLine IOLINE_OUT = IOLine.DIO12;
 	
 	/**
@@ -70,10 +66,8 @@ public class MainApp {
 			
 			RemoteXBeeDevice remoteDevice = new RemoteXBeeDevice(localDevice, REMOTE_64_BIT_ADDRESS);
 			
-			// Configure the IOLINE_IN of the remote device as Digital Input.
 			remoteDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
 			
-			// Configure the IOLINE_OUT of the local device as Digital Output Low.
 			localDevice.setIOConfiguration(IOLINE_OUT, IOMode.DIGITAL_OUT_LOW);
 			
 			readDIOTimer.schedule(new UpdateOutputTask(localDevice, remoteDevice), 0, READ_TIMEOUT);
@@ -107,7 +101,7 @@ public class MainApp {
 			try {
 				// Read the digital value from the remote input line.
 				IOValue value = remoteDevice.getDIOValue(IOLINE_IN);
-				System.out.println("Input line value: " + value);
+				System.out.println(IOLINE_IN + ": " + value);
 				
 				// Set the previous value to the local output line.
 				localDevice.setDIOValue(IOLINE_OUT, value);

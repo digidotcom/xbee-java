@@ -363,19 +363,19 @@ public class DataReader extends Thread {
 			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
 			remoteXBeeDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
 			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(ioSamplePacket.getIOSample(), remoteXBeeDevice);
+			notifyIOSampleReceived(remoteXBeeDevice, ioSamplePacket.getIOSample());
 			break;
 		case RX_IO_64:
 			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
 			remoteXBeeDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
 			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(rx64IOPacket.getIOSample(), remoteXBeeDevice);
+			notifyIOSampleReceived(remoteXBeeDevice, rx64IOPacket.getIOSample());
 			break;
 		case RX_IO_16:
 			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
 			remoteXBeeDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
 			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(rx16IOPacket.getIOSample(), remoteXBeeDevice);
+			notifyIOSampleReceived(remoteXBeeDevice, rx16IOPacket.getIOSample());
 			break;
 		default:
 			break;
@@ -492,7 +492,7 @@ public class DataReader extends Thread {
 	 * @see IOSample
 	 * @see RemoteXBeeDevice
 	 */
-	private void notifyIOSampleReceived(final IOSample ioSample, final RemoteXBeeDevice remoteDevice) {
+	private void notifyIOSampleReceived(final RemoteXBeeDevice remoteDevice, final IOSample ioSample) {
 		logger.debug(connectionInterface.toString() + "IO sample received.");
 		
 		try {
@@ -510,7 +510,7 @@ public class DataReader extends Thread {
 							// Synchronize the listener so it is not called 
 							// twice. That is, let the listener to finish its job.
 							synchronized (listener) {
-								listener.ioSampleReceived(ioSample, remoteDevice);
+								listener.ioSampleReceived(remoteDevice, ioSample);
 							}
 						}
 					});

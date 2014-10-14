@@ -102,9 +102,9 @@ public class IIOSampleReceiveListener802Test {
 		PowerMockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
-				IOSample ioSample = (IOSample) args[0];
-				RemoteXBeeDevice remoteDevice = (RemoteXBeeDevice) args[1];
-				notifyIOSampleReceivedListeners(ioSample, remoteDevice);
+				RemoteXBeeDevice remoteDevice = (RemoteXBeeDevice) args[0];
+				IOSample ioSample = (IOSample) args[1];
+				notifyIOSampleReceivedListeners(remoteDevice, ioSample);
 				return null;
 			}
 		}).when(dataReader, NOTIFY_IO_SAMPLE_RECEIVED_METHOD, (IOSample) Mockito.any(), (RemoteXBeeDevice) Mockito.any());
@@ -115,7 +115,7 @@ public class IIOSampleReceiveListener802Test {
 	 */
 	@Test
 	public void testIOSampleReceiveEvent() {
-		receiveIOSampleListener.ioSampleReceived(IO_SAMPLE, remote802Device);
+		receiveIOSampleListener.ioSampleReceived(remote802Device, IO_SAMPLE);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
 		assertEquals(remote802Device, receiveIOSampleListener.getRemoteXBeeDevice());
@@ -136,7 +136,7 @@ public class IIOSampleReceiveListener802Test {
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx64ioPacket);
 		
 		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remote802Device);
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, remote802Device, IO_SAMPLE);
 		
 		// As the receiveIOSampleListener was not subscribed in the ioSampleReceiveListeners of the dataReader object, the 
 		// IOSample and the RemoteXBeeDevice of the receiveIOSampleListener should be null.
@@ -162,10 +162,10 @@ public class IIOSampleReceiveListener802Test {
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx16ioPacket);
 		
 		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remote802Device);
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, remote802Device, IO_SAMPLE);
 		
 		// Verify that the listener callback was executed one time.
-		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE, remote802Device);
+		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(remote802Device, IO_SAMPLE);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
 		assertEquals(remote802Device, receiveIOSampleListener.getRemoteXBeeDevice());
@@ -189,10 +189,10 @@ public class IIOSampleReceiveListener802Test {
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rx64ioPacket);
 		
 		// Verify that the notifyIOSampleReceived private method was called with the correct IOSample and RemoteXBeeDevice.
-		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, IO_SAMPLE, remote802Device);
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, remote802Device, IO_SAMPLE);
 		
 		// Verify that the listener callback was executed one time.
-		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(IO_SAMPLE, remote802Device);
+		Mockito.verify(receiveIOSampleListener, Mockito.times(1)).ioSampleReceived(remote802Device, IO_SAMPLE);
 		
 		assertEquals(IO_SAMPLE, receiveIOSampleListener.getIOSample());
 		assertEquals(remote802Device, receiveIOSampleListener.getRemoteXBeeDevice());
@@ -220,7 +220,7 @@ public class IIOSampleReceiveListener802Test {
 		PowerMockito.verifyPrivate(dataReader, Mockito.never()).invoke(NOTIFY_IO_SAMPLE_RECEIVED_METHOD, Mockito.anyObject(), Mockito.anyObject());
 		
 		// Verify that the listener callback is not executed
-		Mockito.verify(receiveIOSampleListener, Mockito.never()).ioSampleReceived((IOSample) Mockito.any(), (RemoteXBeeDevice) Mockito.any());
+		Mockito.verify(receiveIOSampleListener, Mockito.never()).ioSampleReceived((RemoteXBeeDevice) Mockito.any(), (IOSample) Mockito.any());
 		
 		assertNull(receiveIOSampleListener.getIOSample());
 		assertNull(receiveIOSampleListener.getRemoteXBeeDevice());
@@ -233,12 +233,12 @@ public class IIOSampleReceiveListener802Test {
 	 * 
 	 * @param ioSample The IO sample received.
 	 */
-	private void notifyIOSampleReceivedListeners(IOSample ioSample, RemoteXBeeDevice remoteDevice) {
+	private void notifyIOSampleReceivedListeners(RemoteXBeeDevice remoteDevice, IOSample ioSample) {
 		@SuppressWarnings("unchecked")
 		ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = (ArrayList<IIOSampleReceiveListener>) 
 				Whitebox.getInternalState(dataReader, "ioSampleReceiveListeners");
 		for (IIOSampleReceiveListener listener : ioSampleReceiveListeners) {
-			listener.ioSampleReceived(ioSample, remoteDevice);
+			listener.ioSampleReceived(remoteDevice, ioSample);
 		}
 	}
 	
@@ -248,17 +248,17 @@ public class IIOSampleReceiveListener802Test {
 	private class MyReceiveListener implements IIOSampleReceiveListener {
 		
 		// Variables.
-		private IOSample ioSample = null;
 		private RemoteXBeeDevice remoteDevice = null;
+		private IOSample ioSample = null;
 		
 		/*
 		 * (non-Javadoc)
 		 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener#ioSampleReceived(com.digi.xbee.api.io.IOSample)
 		 */
 		@Override
-		public void ioSampleReceived(IOSample ioSample, RemoteXBeeDevice remoteDevice) {
-			this.ioSample = ioSample;
+		public void ioSampleReceived(RemoteXBeeDevice remoteDevice, IOSample ioSample) {
 			this.remoteDevice = remoteDevice;
+			this.ioSample = ioSample;
 			
 		}
 		

@@ -14,6 +14,8 @@ package com.digi.xbee.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1618,31 +1620,43 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the bitfield that configures which digital IO pins should be
-	 * monitored for change detection.
+	 * Sets the digital IO lines to be monitored and sampled when their status
+	 * changes.
 	 * 
 	 * <p>If a change is detected on an enabled digital IO pin, a digital IO
 	 * sample is immediately transmitted to the configured destination address.
 	 * </p>
 	 * 
-	 * @param bitfield Byte array that defines which pins should be monitored.
+	 * <p>A {@code null} set disables this feature.</p>
 	 * 
-	 * @throws NullPointerException if {@code bitfield == null}.
+	 * @param lines Set of IO lines to be monitored, {@code null} to disable 
+	 *              this feature.
+	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the set DIO
 	 *                          change detection command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
+	 * @see #getDIOChangeDetection()
 	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #getDestinationAddress()
-	 * @see #getDIOChangeDetection()
 	 */
-	public void setDIOChangeDetection(byte[] bitfield) throws TimeoutException, XBeeException {
-		if (bitfield == null)
-			throw new NullPointerException("Bitfield cannot be null.");
+	public void setDIOChangeDetection(Set<IOLine> lines) throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
+		
+		byte[] bitfield = new byte[2];
+		
+		if (lines != null) {
+			for (IOLine line : lines) {
+				int i = line.getIndex();
+				if (i < 8)
+					bitfield[1] = (byte) (bitfield[1] | (1 << i));
+				else
+					bitfield[0] = (byte) (bitfield[0] | (1 << i - 8));
+			}
+		}
 		
 		// Create and send the AT Command.
 		ATCommandResponse response = null;
@@ -1660,20 +1674,22 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the bitfield that defines which digital IO pins are monitored
-	 * for change detection.
+	 * Retrieves the set of IO lines that are monitored for change detection.
 	 * 
-	 * @return Bitfield that defines which digital IO pins are monitored
-	 * for change detection.
+	 * <p>A {@code null} set means the DIO change detection feature is disabled.
+	 * </p>
+	 * 
+	 * @return Set of digital IO lines that are monitored for change detection,
+	 *         {@code null} if there are no monitored lines.
 	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get DIO
 	 *                          change detection command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setDIOChangeDetection(byte[])
+	 * @see #setDIOChangeDetection(Set)
 	 */
-	public byte[] getDIOChangeDetection() throws TimeoutException, XBeeException {
+	public Set<IOLine> getDIOChangeDetection() throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -1693,8 +1709,18 @@ public abstract class AbstractXBeeDevice {
 		if (response.getResponse() == null || response.getResponse().length == 0)
 			throw new OperationNotSupportedException("Answer does not contain DIO change detection bitfield.");
 		
-		// Return the IO sampling rate.
-		return response.getResponse();
+		TreeSet<IOLine> lines = new TreeSet<IOLine>();
+		byte[] bitfield = response.getResponse();
+		int mask = (bitfield[0] << 8) + bitfield[1];
+		
+		for (int i = 0; i < 16; i++) {
+			if (ByteUtils.isBitEnabled(mask, i))
+				lines.add(IOLine.getDIO(i));
+		}
+		
+		if (lines.size() > 0)
+			return lines;
+		return null;
 	}
 	
 	/**

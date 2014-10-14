@@ -1,15 +1,17 @@
   Introduction
   ------------
-  This is a sample Java application to show how to configure a remote device
-  to send automatic IO samples.
+  This is a sample Java application that shows how to configure a remote device
+  to send automatic IO samples and how to read them from the local module.
   
-  The application configures an IO line of the remote XBee device as a digital 
-  input (button) and enables periodic sampling and change detection. That is,
-  the device will send a sample every 5 seconds and every time the IO line value 
-  changes.
+  The application configures two IO lines of the remote XBee device: one as 
+  digital input (button) and the other as ADC, and enables periodic sampling 
+  and change detection. That is, the device will send a sample every 5 seconds 
+  containing the values of the two monitored lines and another sample every 
+  time the button is pressed or released, which will only contain the value of 
+  this digital line.
   
   Then, the application registers a listener in the local device to receive and 
-  handle all the IO samples sent by the remote.
+  handle all IO samples sent by the remote XBee module.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) and remote XBee
         device (RemoteXBeeDevice) classes, but it can be applied to any other 
@@ -59,9 +61,7 @@
          
          - XBee Development Board:
              * If you are using the XBee Development Board, update the IOLINE_IN
-               and CHANGE_DETECTION_MASK constants accordingly. There are 
-               comments in the code indicating which fragments belong to each 
-               board.
+               constant accordingly.
 
          NOTE: It is recommended to verify the capabilities of the pins used 
                in the example in the product manual of your XBee Device to 
@@ -74,10 +74,11 @@
   To test the functionality, follow these steps:
   
     1) Verify that the samples are received and printed in the output console
-       every 5 seconds. 
+       every 5 seconds. These samples should contain the values of the two lines 
+       that are monitored.
        
     2) Press the button corresponding to the digital input line in the remote
        XBee device and verify that a new sample is received and printed in the
-       output console. In the XBIB boards it is the DIO3; in the XBee 
-       Development boards is the DIO4 or User Button.
+       output console (in the XBIB boards it is the DIO3). This sample should
+       only contain the value of the digital line.
        

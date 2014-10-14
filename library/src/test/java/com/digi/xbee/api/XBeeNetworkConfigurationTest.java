@@ -626,4 +626,152 @@ public class XBeeNetworkConfigurationTest {
 		
 		assertThat("The network must be empty", network.getNumberOfDevices(), is(equalTo(0)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#removeRemoteDevice(RemoteXBeeDevice)}.
+	 * 
+	 * <p>Remove a remote XBee device that does not exist in the network.</p>
+	 */
+	@Test
+	public final void testRemoveDeviceDontExist() {
+		// Setup the resources for the test.
+		List<RemoteXBeeDevice> list = new ArrayList<RemoteXBeeDevice>(0);
+		for (int i = 0; i < 3; i++)
+			list.add(new RemoteXBeeDevice(deviceMock, 
+					new XBee64BitAddress("0013A20040A9E78"+i), 
+					XBee16BitAddress.UNKNOWN_ADDRESS, "id"+i));
+		
+		network.addRemoteDevices(list);
+		
+		RemoteXBeeDevice deviceDontExist = new RemoteXBeeDevice(deviceMock, new XBee64BitAddress("0123456789ABCDEF"));
+		
+		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
+		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(3)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size())));
+		
+		// Call the method under test.
+		network.removeRemoteDevice(deviceDontExist);
+		
+		// Verify the result.
+		assertThat(add64Map.size(), is(equalTo(3)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#removeRemoteDevice(RemoteXBeeDevice)}.
+	 * 
+	 * <p>Remove a 64-bit only remote XBee device that exists in the network.</p>
+	 */
+	@Test
+	public final void testRemoveDevice64BitExists() {
+		// Setup the resources for the test.
+		List<RemoteXBeeDevice> list = new ArrayList<RemoteXBeeDevice>(0);
+		for (int i = 0; i < 3; i++)
+			list.add(new RemoteXBeeDevice(deviceMock, 
+					new XBee64BitAddress("0013A20040A9E78"+i), 
+					XBee16BitAddress.UNKNOWN_ADDRESS, "id"+i));
+		
+		network.addRemoteDevices(list);
+		
+		RemoteXBeeDevice deviceExists = new RemoteXBeeDevice(deviceMock, new XBee64BitAddress("0013A20040A9E780"));
+		
+		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
+		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(3)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size())));
+		
+		// Call the method under test.
+		network.removeRemoteDevice(deviceExists);
+		
+		// Verify the result.
+		assertThat(add64Map.size(), is(equalTo(2)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size() - 1)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#removeRemoteDevice(RemoteXBeeDevice)}.
+	 * 
+	 * <p>Remove a 16-bit only remote 802.15.4 device that exists in the network. Network has 64-bit + 16-bit devices.</p>
+	 */
+	@Test
+	public final void testRemoveDevice16BitIn64BitExists() {
+		// Setup the resources for the test.
+		List<RemoteXBeeDevice> list = new ArrayList<RemoteXBeeDevice>(0);
+		for (int i = 0; i < 3; i++)
+			list.add(new RemoteXBeeDevice(deviceMock, 
+					new XBee64BitAddress("0013A20040A9E78"+i), 
+					new XBee16BitAddress("012" + i), "id"+i));
+		
+		network.addRemoteDevices(list);
+		
+		RemoteRaw802Device deviceExists = Mockito.mock(RemoteRaw802Device.class);
+		Mockito.when(deviceExists.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
+		Mockito.when(deviceExists.get16BitAddress()).thenReturn(new XBee16BitAddress("0120"));
+		
+		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
+		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(3)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size())));
+		
+		// Call the method under test.
+		network.removeRemoteDevice(deviceExists);
+		
+		// Verify the result.
+		assertThat(add64Map.size(), is(equalTo(2)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size() - 1)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#removeRemoteDevice(RemoteXBeeDevice)}.
+	 * 
+	 * <p>Remove a 16-bit only remote 802.15.4 device that exists in the network. Network has 16-bit only devices.</p>
+	 */
+	@Test
+	public final void testRemoveDevice16BitExists() {
+		// Setup the resources for the test.
+		List<RemoteXBeeDevice> list = new ArrayList<RemoteXBeeDevice>(0);
+		for (int i = 0; i < 3; i++)
+			list.add(new RemoteXBeeDevice(deviceMock, 
+					XBee64BitAddress.UNKNOWN_ADDRESS, 
+					new XBee16BitAddress("012" + i), "id"+i));
+		
+		network.addRemoteDevices(list);
+		
+		RemoteRaw802Device deviceExists = Mockito.mock(RemoteRaw802Device.class);
+		Mockito.when(deviceExists.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
+		Mockito.when(deviceExists.get16BitAddress()).thenReturn(new XBee16BitAddress("0120"));
+		
+		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
+		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(0)));
+		assertThat(add16Map.size(), is(equalTo(3)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size())));
+		
+		// Call the method under test.
+		network.removeRemoteDevice(deviceExists);
+		
+		// Verify the result.
+		assertThat(add64Map.size(), is(equalTo(0)));
+		assertThat(add16Map.size(), is(equalTo(2)));
+		
+		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size() - 1)));
+	}
 }

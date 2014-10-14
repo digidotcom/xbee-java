@@ -731,6 +731,69 @@ public class XBeeNetwork {
 	}
 	
 	/**
+	 * Removes the given remote XBee device from the network. This method will check 
+	 * for a device that matches the 64-bit address of the provided one, if found, that 
+	 * device will be removed from the corresponding list. In case the 64-bit address is 
+	 * null, it will look for the device in the list of 16-bit addresses.
+	 * 
+	 * @param remoteDevice The remote device to be removed from the network.
+	 * 
+	 * @throws NullPointerException If {@code RemoteDevice == null}.
+	 */
+	public void removeRemoteDevice(RemoteXBeeDevice remoteDevice) {
+		if (remoteDevice == null)
+			throw new NullPointerException("Remote device cannot be null.");
+		
+		RemoteXBeeDevice devInNetwork = null;
+		
+		// Look in the 64-bit map.
+		XBee64BitAddress addr64 = remoteDevice.get64BitAddress();
+		if (addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) {
+			devInNetwork = remotesBy64BitAddr.get(addr64);
+			
+			// Remove the device.
+			if (devInNetwork != null) {
+				remotesBy64BitAddr.remove(addr64);
+				return;
+			}
+		}
+		
+		// If not found, look in the 16-bit map.
+		XBee16BitAddress addr16 = get16BitAddress(remoteDevice);
+		if (addr16 != null && !addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)) {
+			
+			// The preference order is: 
+			//    1.- Look in the 64-bit map 
+			//    2.- Then in the 16-bit map.
+			// This should be maintained in the 'getDeviceBy16BitAddress' method.
+			
+			// Look for the 16-bit address in the 64-bit map.
+			Collection<RemoteXBeeDevice> devices = remotesBy64BitAddr.values();
+			for (RemoteXBeeDevice d: devices) {
+				XBee16BitAddress a = get16BitAddress(d);
+				if (a != null && a.equals(addr16)) {
+					remotesBy64BitAddr.remove(d.get64BitAddress());
+					return;
+				}
+			}
+			
+			// If not found, look for the 16-bit address in the 16-bit map. 
+			devInNetwork = remotesBy16BitAddr.get(addr16);
+			
+			// Remove the device.
+			if (devInNetwork != null) {
+				remotesBy16BitAddr.remove(addr16);
+				return;
+			}
+		}
+		
+		// If the device does not contain a valid address log an error.
+		if ((addr64 == null || addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) 
+				&& (addr16 == null || addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)))
+			logger.error("{}Remote device '{}' cannot be removed: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
+	}
+	
+	/**
 	 * Removes all the devices from this network. The network will be empty 
 	 * after this call returns.
 	 */

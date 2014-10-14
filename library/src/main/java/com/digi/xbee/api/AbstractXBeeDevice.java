@@ -1771,13 +1771,20 @@ public abstract class AbstractXBeeDevice {
 		// Try to build an IO Sample from the sample payload.
 		byte[] samplePayload;
 		IOSample ioSample;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
-			samplePayload = receiveRaw802IOPacket();
-			if (samplePayload == null)
-				throw new TimeoutException("Timeout waiting for the IO response packet.");
-			break;
-		default:
+		// If it is a local 802.15.4 device, the response does not contain the
+		// IO sample, so we have to create a packet listener to receive the
+		// sample.
+		if (!isRemote()) {
+			switch (getXBeeProtocol()) {
+			case RAW_802_15_4:
+				samplePayload = receiveRaw802IOPacket();
+				if (samplePayload == null)
+					throw new TimeoutException("Timeout waiting for the IO response packet.");
+				break;
+			default:
+				samplePayload = response.getResponse();
+			}
+		} else {
 			samplePayload = response.getResponse();
 		}
 		

@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -59,6 +62,8 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	private int baudRate;
 	
 	private AndroidUSBPermissionListener permissionListener;
+	
+	private Logger logger;
 
 	/**
 	 * Class constructor. Instances a new Android XBee Interface with the given
@@ -133,6 +138,7 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 		this.permissionListener = permissionListener;
 		this.usbDevice = usbDevice;
 		this.usbManager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
+		this.logger = LoggerFactory.getLogger(AndroidXBeeInterface.class);
 	}
 
 	/**
@@ -337,6 +343,7 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 		for (UsbDevice device:deviceList.values()) {
 			if ((device.getProductId() == PID) && (device.getVendorId() == VID)) {
 				usbDevice = device;
+				logger.info("USB XBee Android device found: " + usbDevice.getDeviceName());
 				break;
 			}
 		}

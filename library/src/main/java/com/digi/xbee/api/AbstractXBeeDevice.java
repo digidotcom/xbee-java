@@ -1258,7 +1258,7 @@ public abstract class AbstractXBeeDevice {
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
-			throw new OperationNotSupportedException("Answer does not conain digital data for " + ioLine.getName() + ".");
+			throw new OperationNotSupportedException("Answer does not contain digital data for " + ioLine.getName() + ".");
 		
 		// Return the digital value. 
 		return ioSample.getDigitalValues().get(ioLine);
@@ -1369,7 +1369,7 @@ public abstract class AbstractXBeeDevice {
 		
 		// Check if the response contains the PWM value.
 		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not conain PWM duty cycle value.");
+			throw new OperationNotSupportedException("Answer does not contain PWM duty cycle value.");
 		
 		// Return the PWM duty cycle value.
 		int readValue = ByteUtils.byteArrayToInt(response.getResponse());

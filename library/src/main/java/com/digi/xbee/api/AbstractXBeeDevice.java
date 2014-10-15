@@ -38,11 +38,11 @@ import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.HardwareVersion;
 import com.digi.xbee.api.models.HardwareVersionEnum;
+import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeProtocol;
-import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.models.XBeeTransmitStatus;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -93,6 +93,7 @@ public abstract class AbstractXBeeDevice {
 	private Object ioLock = new Object();
 	
 	private boolean ioPacketReceived = false;
+	private boolean applyConfigurationChanges = true;
 	
 	private byte[] ioPacketPayload;
 	
@@ -610,7 +611,7 @@ public abstract class AbstractXBeeDevice {
 	 * Sends the given AT command and waits for answer or until the configured 
 	 * receive timeout expires.
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param command AT command to be sent.
@@ -650,10 +651,19 @@ public abstract class AbstractXBeeDevice {
 		case API_ESCAPE:
 			// Create the corresponding AT command packet depending on if the device is local or remote.
 			XBeePacket packet;
-			if (isRemote())
-				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), XBee16BitAddress.UNKNOWN_ADDRESS, XBeeTransmitOptions.NONE, command.getCommand(), command.getParameter());
-			else
+			if (isRemote()) {
+				XBee16BitAddress remote16BitAddress = get16BitAddress();
+				if (remote16BitAddress == null)
+					remote16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
+				int remoteATCommandOptions = RemoteATCommandOptions.OPTION_NONE;
+				if (isApplyConfigurationChangesEnabled())
+					remoteATCommandOptions |= RemoteATCommandOptions.OPTION_APPLY_CHANGES;
+				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), remote16BitAddress, remoteATCommandOptions, command.getCommand(), command.getParameter());
+			} else {
+				// TODO: If the apply configuration changes option is enabled, send an AT command frame. 
+				//       If the apply configuration changes option is disabled, send a queue AT command frame.
 				packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+			}
 			if (command.getParameter() == null)
 				logger.debug(toString() + "Sending AT command '{}'.", command.getCommand());
 			else
@@ -1612,5 +1622,29 @@ public abstract class AbstractXBeeDevice {
 	@Override
 	public String toString() {
 		return connectionInterface.toString();
+	}
+	
+	/**
+	 * Enables or disables the apply configuration changes option.
+	 * 
+	 * <p>Enabling this option means that when any parameter of the XBee device is set, it will 
+	 * be also applied. If this option is disabled you will need to issue the {@code #applyChanges()} 
+	 * method in order to apply the changes in all the parameters that were previously set.</p>
+	 * 
+	 * @see #isApplyConfigurationChangesEnabled()
+	 */
+	public void enableApplyConfigurationChanges(boolean enabled) {
+		applyConfigurationChanges = enabled;
+	}
+	
+	/**
+	 * Retrieves whether or not the apply configuration changes option is enabled.
+	 * 
+	 * @return True if the option is enabled, false otherwise.
+	 * 
+	 * @see #enableApplyConfigurationChanges(boolean)
+	 */
+	public boolean isApplyConfigurationChangesEnabled() {
+		return applyConfigurationChanges;
 	}
 }

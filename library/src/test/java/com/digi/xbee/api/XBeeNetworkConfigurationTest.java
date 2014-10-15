@@ -68,7 +68,7 @@ public class XBeeNetworkConfigurationTest {
 	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#XBeeNetwork(XBeeDevice)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
-	 * {@code null} local device is passed.</p>
+	 * {@code null} local device.</p>
 	 */
 	@Test
 	public final void testCreateXBeeNetworkNullDevice() {
@@ -83,8 +83,8 @@ public class XBeeNetworkConfigurationTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#addRemoteDevice(RemoteXBeeDevice)}.
 	 * 
-	 * <p>A {@code NullPointerException} exception must be thrown when 
-	 * passing a null device.</p>
+	 * <p>A {@code NullPointerException} exception must be thrown when adding
+	 * a null remote device.</p>
 	 */
 	@Test
 	public final void testAddRemoteDeviceNullDevice() {
@@ -402,12 +402,15 @@ public class XBeeNetworkConfigurationTest {
 				XBee16BitAddress.UNKNOWN_ADDRESS, "id0_old"));
 		network.addRemoteDevice(deviceAlreadyInNetwork);
 		
-		// Call the method under test.
-		List<RemoteXBeeDevice> added = network.addRemoteDevices(list);
-		
 		// Verify the result.
 		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
 		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(1)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		// Call the method under test.
+		List<RemoteXBeeDevice> added = network.addRemoteDevices(list);
 		
 		assertThat(add64Map.size(), is(equalTo(3)));
 		assertThat(add16Map.size(), is(equalTo(0)));
@@ -525,12 +528,15 @@ public class XBeeNetworkConfigurationTest {
 				new XBee16BitAddress("1230"), "id0_old"));
 		network.addRemoteDevice(deviceAlreadyInNetwork);
 		
-		// Call the method under test.
-		List<RemoteXBeeDevice> added = network.addRemoteDevices(list);
-		
 		// Verify the result.
 		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
 		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(0)));
+		assertThat(add16Map.size(), is(equalTo(1)));
+		
+		// Call the method under test.
+		List<RemoteXBeeDevice> added = network.addRemoteDevices(list);
 		
 		assertThat(add64Map.size(), is(equalTo(3)));
 		assertThat(add16Map.size(), is(equalTo(0)));
@@ -569,12 +575,15 @@ public class XBeeNetworkConfigurationTest {
 				new XBee16BitAddress("1230"), "id0_old"));
 		network.addRemoteDevice(deviceAlreadyInNetwork);
 		
-		// Call the method under test.
-		List<RemoteXBeeDevice> added = network.addRemoteDevices(list);
-		
 		// Verify the result.
 		Map<XBee64BitAddress, RemoteXBeeDevice> add64Map = Whitebox.<Map<XBee64BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy64BitAddr");
 		Map<XBee16BitAddress, RemoteXBeeDevice> add16Map = Whitebox.<Map<XBee16BitAddress, RemoteXBeeDevice>> getInternalState(network, "remotesBy16BitAddr");
+		
+		assertThat(add64Map.size(), is(equalTo(1)));
+		assertThat(add16Map.size(), is(equalTo(0)));
+		
+		// Call the method under test.
+		List<RemoteXBeeDevice> added = network.addRemoteDevices(list);
 		
 		assertThat(add64Map.size(), is(equalTo(1)));
 		assertThat(add16Map.size(), is(equalTo(2)));

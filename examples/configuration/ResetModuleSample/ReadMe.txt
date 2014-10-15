@@ -38,8 +38,8 @@
   Running the example
   -------------------
   First, build and launch the application. To test the functionality, check 
-  that the message the following message is printed out in the console of the 
-  launched application:
+  that the following message is printed out in the console of the launched 
+  application:
     
     "XBee module reset successfully"
     

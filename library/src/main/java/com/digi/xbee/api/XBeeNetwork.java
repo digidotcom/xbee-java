@@ -116,7 +116,8 @@ public class XBeeNetwork {
 	 *         {@code null} if the timeout expires and the device was not found.
 	 * 
 	 * @throws IllegalArgumentException If {@code id.length() == 0} or
-	 *                                  if {@code timeout < 0}.
+	 *                                  if {@code timeout < 0} or
+	 *                                  if {@code timeout == NodeDiscover.WAIT_FOREVER}.
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws NullPointerException If {@code id == null}.
 	 * @throws XBeeException If there is an error discovering the device.
@@ -286,7 +287,7 @@ public class XBeeNetwork {
 	 * device ({@code NT}) expires.</p>
 	 * 
 	 * <p>The operation can be stopped at any time using the method 
-	 * {@link #stop()}.</p>
+	 * {@link #stopDiscoveryProcess()}.</p>
 	 * 
 	 * <p>The operation will use the network discovery options ({@code NO}) 
 	 * configured in the XBee device.</p>
@@ -315,11 +316,11 @@ public class XBeeNetwork {
 	 * <li>If {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time 
 	 * configured in the device will be used ({@code NT}).</li>
 	 * <li>If {@code timeout == NodeDiscovery.WAIT_FOREVER} the process will 
-	 * never finish unless the {@link #stop()} method is called.</li>
-	 * </ul>
+	 * never finish unless the {@link #stopDiscoveryProcess()} method is called.
+	 * </li></ul>
 	 * 
 	 * <p>The operation can be stopped at any time using the method 
-	 * {@link #stop()}.</p>
+	 * {@link #stopDiscoveryProcess()}.</p>
 	 * 
 	 * <p>The operation will use the network discovery options ({@code NO}) 
 	 * configured in the XBee device.</p>
@@ -353,11 +354,11 @@ public class XBeeNetwork {
 	 * <li>If {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time 
 	 * configured in the device will be used ({@code NT}).</li>
 	 * <li>If {@code timeout == NodeDiscovery.WAIT_FOREVER} the process will 
-	 * never finish unless the {@link #stop()} method is called.</li>
-	 * </ul>
+	 * never finish unless the {@link #stopDiscoveryProcess()} method is called.
+	 * </li></ul>
 	 * 
 	 * <p>The operation can be stopped at any time using the method 
-	 * {@link #stop()}.</p>
+	 * {@link #stopDiscoveryProcess()}.</p>
 	 * 
 	 * @param listener Discovery listener to be notified about process events.
 	 * @param options Collection of discovery options to use for the operation.
@@ -431,6 +432,7 @@ public class XBeeNetwork {
 	 * @see #getAllDevicesByID(String)
 	 * @see #discoverDeviceByID(String)
 	 * @see #discoverDeviceByID(String, long)
+	 * @see #discoverAllDevicesByID(String, long)
 	 * @see RemoteXBeeDevice
 	 */
 	public RemoteXBeeDevice getDeviceByID(String id) {

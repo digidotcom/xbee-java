@@ -499,7 +499,7 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Update the current device reference with the data provided for the given 
+	 * Updates the current device reference with the data provided for the given 
 	 * device.
 	 * 
 	 * <p><b>This is only for internal use.</b></p>

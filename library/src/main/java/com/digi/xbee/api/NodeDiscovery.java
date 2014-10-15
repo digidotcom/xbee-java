@@ -33,7 +33,6 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
-import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -279,6 +278,9 @@ class NodeDiscovery {
 	 * 
 	 * <p>This method blocks until the provided timeout expires.</p>
 	 * 
+	 * <p>If {@code timeout == USE_DEVICE_TIMEOUT}, the time configured in the 
+	 * device will be used ({@code NT}).</p>
+	 * 
 	 * @param id The identifier of the devices to be discovered.
 	 * @param timeout The timeout in milliseconds to wait for the devices to be 
 	 *                discovered.
@@ -339,6 +341,8 @@ class NodeDiscovery {
 	
 	/**
 	 * Stops the discovery process if it is running.
+	 * 
+	 * @see #isRunning()
 	 */
 	public void stop() {
 		running = false;
@@ -524,25 +528,6 @@ class NodeDiscovery {
 			logger.debug("{}Received self reponse: {}.", toString(), packet);
 			
 			data = atResponse.getCommandValue();
-			break;
-		case REMOTE_AT_COMMAND_RESPONSE:
-			RemoteATCommandResponsePacket remoteAtResponse = (RemoteATCommandResponsePacket)packet;
-			// Check the frame ID.
-			if (remoteAtResponse.getFrameID() != frameID)
-				return null;
-			// Check the command.
-			if (!remoteAtResponse.getCommand().equals(ND_COMMAND))
-				return null;
-			// Check if the command end is received: Empty response with OK status.
-			if (remoteAtResponse.getCommandValue() == null 
-					|| remoteAtResponse.getCommandValue().length == 0) {
-				running = remoteAtResponse.getStatus() != ATCommandStatus.OK;
-				return null;
-			}
-			
-			logger.debug("{}Received remote reponse: {}.", toString(), packet);
-			
-			data = remoteAtResponse.getCommandValue();
 			break;
 		default:
 			break;
@@ -742,7 +727,7 @@ class NodeDiscovery {
 			if (success)
 				logger.debug("{}Configured NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
 			else
-				logger.error("{}Could not configure NT to {} ms.", toString(), HexUtils.byteArrayToHexString(ntValue));
+				logger.error("{}Could not configure NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
 		}
 		
 		return configured;

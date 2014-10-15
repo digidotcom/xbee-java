@@ -51,7 +51,7 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
-import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.utils.ByteUtils;
 
 @PrepareForTest({XBeeDevice.class, NodeDiscovery.class})
@@ -72,7 +72,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	
 	private IPacketReceiveListener packetListener;
 	
-	private List<RemoteATCommandResponsePacket> ndAnswers = new ArrayList<RemoteATCommandResponsePacket>(0);
+	private List<ATCommandResponsePacket> ndAnswers = new ArrayList<ATCommandResponsePacket>(0);
 	
 	@Before
 	public void setUp() throws Exception {
@@ -191,7 +191,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(IDiscoveryListener, Set, long)}.
 	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
+	 * <p>An {@code InterfaceNotOpenException} exception must be thrown when 
 	 * the local device connection is not open.</p>
 	 */
 	@Test
@@ -411,7 +411,6 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
 		byte[] deviceOptionsByteArray = new byte[]{0x00};
 		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutModifiedByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
@@ -425,7 +424,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		long endBlock = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < deviceTimeout, is(equalTo(true)));
+		assertThat("The 'discoverDevices' should not block", endBlock - start < timeout, is(equalTo(true)));
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
@@ -433,7 +432,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		}
 		long end = System.currentTimeMillis();
 		
-		assertThat("The 'discoverDevices' process should finish after " + timeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
+		assertThat("The 'discoverDevices' process should finish after " + timeout + " ms", end - start < timeout + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, listener);
@@ -453,7 +452,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, listener, null, deviceTimeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, listener, null, timeout);
 		
 		List<RemoteXBeeDevice> ndInternalDeviceList = Whitebox.<List<RemoteXBeeDevice>> getInternalState(nd, "deviceList");
 		assertThat("Internal Node Discovery list must be empty", ndInternalDeviceList.size(), is(equalTo(0)));
@@ -537,7 +536,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
-		RemoteATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
 				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"),
 				"Ni string", new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49);
 		ndAnswers.add(packet);
@@ -624,14 +623,12 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 				new XBee16BitAddress("0000")};
 		String[] nIds = new String[]{"Ni string 1", "Ni string 2"};
 		
-		RemoteATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
 				addr16[0], macs[0], nIds[0], parentAddr[0], (byte)0x00 /* coordinator */, (byte)0x49);
 		ndAnswers.add(packet);
 		packet = createPacket(1, ATCommandStatus.OK, 
 				addr16[1], macs[1], nIds[1], parentAddr[1], (byte)0x01 /* router */, (byte)0x67);
 		ndAnswers.add(packet);
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
 		
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
@@ -706,7 +703,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	 * @param rssi
 	 * @return
 	 */
-	private RemoteATCommandResponsePacket createPacket(int frameId, ATCommandStatus status, 
+	private ATCommandResponsePacket createPacket(int frameId, ATCommandStatus status, 
 			XBee16BitAddress addr16, XBee64BitAddress addr64, String ni, XBee16BitAddress parentAddr, 
 			byte role, byte rssi) {
 		byte[] value = new byte[2 /* 16-bit addr */ + 8 /* 64-bit addr */ + ni.length() + 1 
@@ -729,7 +726,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		System.arraycopy(dd, 0, value, 19 + ni.length(), 4);
 		value[13 + ni.length()] = rssi;
 		
-		return new RemoteATCommandResponsePacket(frameId, addr64, addr16, "ND", status, value);
+		return new ATCommandResponsePacket(frameId, status, "ND", value);
 	}
 	
 	static class DiscoveryListener implements IDiscoveryListener {

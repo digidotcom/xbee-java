@@ -67,10 +67,10 @@ public class MainApp {
 			
 			discoveredDevices = myXBeeNetwork.discoverDevices();
 			
-			System.out.println(">> Device discovery finished successfully.");
+			System.out.println(">> Discovery process finished successfully.");
 			
 		} catch (XBeeException e) {
-			System.out.println(">> Device discovery finished due to the following error: " + e.getMessage());
+			System.out.println(">> Discovery process finished due to the following error: " + e.getMessage());
 			myDevice.close();
 			System.exit(1);
 		}

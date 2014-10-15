@@ -1,9 +1,9 @@
   Introduction
   ------------
-  This is a sample Java application to show how to obtain the XBee network 
-  object from a local XBee device and discover the remote XBee devices that 
-  form the network. This example uses a blocking discover mechanism. It means 
-  that the application will block until the discovery process finishes. 
+  This is a sample Java application that demonstrates how to obtain the XBee 
+  network object from a local XBee device and discover the remote XBee devices 
+  that compose the network. This example uses a blocking discover mechanism. It 
+  means that the application will block until the discovery process finishes. 
   
   As the discovery mechanism used in this example blocks the application, 
   discovered remote XBee devices will not be printed until the discovery 
@@ -55,7 +55,7 @@
     2) When the discovery process finishes the following message should be 
        displayed:
        
-         "Device discovery finished successfully."
+         "Discovery process finished successfully."
        
     3) For each discovered device the output console should display the 
        following message:

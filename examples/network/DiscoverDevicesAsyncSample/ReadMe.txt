@@ -1,11 +1,11 @@
   Introduction
   ------------
-  This is a sample Java application to show how to obtain the XBee network 
-  object from a local XBee device and discover the remote XBee devices that 
-  form the network. This example uses an asynchronous discover mechanism. It 
-  means that the application will not block during the process. Instead of 
-  that, discovery events will be received by the callbacks provided by the 
-  discovery listener object.
+  This is a sample Java application that demonstrates how to obtain the XBee 
+  network object from a local XBee device and discover the remote XBee devices 
+  that compose the network. This example uses an asynchronous discover 
+  mechanism. It means that the application will not block during the process. 
+  Instead of that, discovery events will be received by the callbacks provided 
+  by the discovery listener object.
   
   As the discovery mechanism used in this example does not block the 
   application, remote XBee devices will be printed out as soon as they are 
@@ -69,5 +69,5 @@
     3) When the discovery process finishes the following message should be 
        displayed:
        
-         "Device discovery finished successfully."
+         "Discovery process finished successfully."
        

@@ -51,9 +51,9 @@ public class MyDiscoveryListener implements IDiscoveryListener {
 	@Override
 	public void discoveryFinished(String error) {
 		if (error == null)
-			System.out.println(">> Device discovery finished successfully.");
+			System.out.println(">> Discovery process finished successfully.");
 		else
-			System.out.println(">> Device discovery finished due to the following error: " + error);
+			System.out.println(">> Discovery process finished due to the following error: " + error);
 		
 		System.exit(0);
 	}

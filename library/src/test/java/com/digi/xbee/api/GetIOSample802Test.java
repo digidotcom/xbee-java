@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.ATCommandException;
@@ -39,7 +38,6 @@ import com.digi.xbee.api.models.OperatingMode;
 public class GetIOSample802Test {
 
 	// Constants.
-	private final static String METHOD_READ_IO_SAMPLE = "readIOSample";
 	private final static String METHOD_RECEIVE_RAW_IO_PACKET = "receiveRaw802IOPacket";
 		
 	// Variables.
@@ -70,7 +68,7 @@ public class GetIOSample802Test {
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -86,7 +84,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(OperatingMode.AT).when(raw802Device).getOperatingMode();
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -102,7 +100,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(raw802Device).getOperatingMode();
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -122,7 +120,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(mockedResponse).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -139,7 +137,7 @@ public class GetIOSample802Test {
 		Mockito.doReturn(null).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -156,7 +154,7 @@ public class GetIOSample802Test {
 		Mockito.doThrow(new TimeoutException()).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -172,6 +170,7 @@ public class GetIOSample802Test {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
+		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{});
 		
 		Mockito.doReturn(mockedResponse).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 				
@@ -179,7 +178,7 @@ public class GetIOSample802Test {
 		PowerMockito.doReturn(null).when(raw802Device, METHOD_RECEIVE_RAW_IO_PACKET);
 		
 		// Get an IOSample from the 802.15.4 device.
-		Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		raw802Device.readIOSample();
 	}
 	
 	/**
@@ -194,6 +193,7 @@ public class GetIOSample802Test {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
+		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{});
 		
 		Mockito.doReturn(mockedResponse).when(raw802Device).sendATCommand((ATCommand)Mockito.any());
 				
@@ -207,7 +207,7 @@ public class GetIOSample802Test {
 		PowerMockito.whenNew(IOSample.class).withAnyArguments().thenReturn(mockedIOSample);
 		
 		// Get an IOSample from the 802.15.4 device.
-		IOSample receivedSample = Whitebox.invokeMethod(raw802Device, METHOD_READ_IO_SAMPLE);
+		IOSample receivedSample = raw802Device.readIOSample();
 		
 		// Verify the sample is the expected one.
 		assertEquals(mockedIOSample, receivedSample);

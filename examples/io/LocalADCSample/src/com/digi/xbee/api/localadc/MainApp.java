@@ -46,9 +46,9 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		System.out.println(" +---------------------------------------------+");
-		System.out.println(" |   XBee Java Library Read Local ADC Sample   |");
-		System.out.println(" +---------------------------------------------+\n");
+		System.out.println(" +-----------------------------------------+");
+		System.out.println(" | XBee Java Library Read Local ADC Sample |");
+		System.out.println(" +-----------------------------------------+\n");
 		
 		final XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
@@ -88,7 +88,7 @@ public class MainApp {
 			try {
 				// Read the analog value from the input line.
 				int value = xbeeDevice.getADCValue(IOLINE_IN);
-				System.out.println("Input line value: " + value);
+				System.out.println(IOLINE_IN + ": " + value);
 				
 			} catch (XBeeException e) {
 				e.printStackTrace();

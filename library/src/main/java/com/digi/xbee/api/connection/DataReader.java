@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.RemoteRaw802Device;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
@@ -333,58 +334,71 @@ public class DataReader extends Thread {
 		if (apiType == null)
 			return;
 		
+		XBeeNetwork network = xbeeDevice.getNetwork();
 		RemoteXBeeDevice remoteDevice = null;
-		RemoteXBeeDevice remoteXBeeDevice = null;
 		byte[] data = null;
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			// TODO: This should be replaced when the Network is implemented.
-			remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
+			remoteDevice = network.getDeviceBy64BitAddress(receivePacket.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
 			data = receivePacket.getRFData();
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			// TODO: This should be replaced when the Network is implemented.
-			remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
+			remoteDevice = network.getDeviceBy64BitAddress(rx64Packet.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
 			data = rx64Packet.getRFData();
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			// TODO: This should be replaced when the Network is implemented.
-			remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
+			remoteDevice = network.getDeviceBy16BitAddress(rx16Packet.get16bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
 			data = rx16Packet.getRFData();
-
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
-			remoteXBeeDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
-			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(remoteXBeeDevice, ioSamplePacket.getIOSample());
+			remoteDevice = network.getDeviceBy64BitAddress(ioSamplePacket.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
+			notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
 			break;
 		case RX_IO_64:
 			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-			remoteXBeeDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
-			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(remoteXBeeDevice, rx64IOPacket.getIOSample());
+			remoteDevice = network.getDeviceBy64BitAddress(rx64IOPacket.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
+			notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
 			break;
 		case RX_IO_16:
 			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-			remoteXBeeDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
-			// Notify that IO sample was received to the corresponding listeners.
-			notifyIOSampleReceived(remoteXBeeDevice, rx16IOPacket.getIOSample());
+			remoteDevice = network.getDeviceBy16BitAddress(rx16IOPacket.get16bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
+			notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
 			break;
 		default:
 			break;
 		}
-		
-		// TODO: The remote XBee device should be retrieved from the XBee Network (contained 
-		// in the xbeeDevice variable). If the network does not contain such remote device, 
-		// then it should be instantiated and added there.
-		
-		if (remoteDevice != null && data != null)
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 	}
 	
 	/**

@@ -24,16 +24,29 @@
   
     * At least two XBee radios in API mode and their corresponding carrier board
       (XBIB or XBee Development Board).
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
   -------------
-    1) Insert the 64-bit address of the remote XBee module in the MainApp class.
-       Find the 64-bit address labeled on the back of the device, which is a 16 
-       character string that follows the format 0013A20040XXXXXX.
-       
-    2) Plug the XBee radios into the XBee adapters and connect them to your
+    1) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
+       
+    2) Configure the remote XBee device with the Node Identifier used by the 
+       example to communicate with it. To do so follow these steps:
+             
+          1) Launch the XCTU application.
+             
+          2) Add the remote XBee module to the XCTU, specifying it's port 
+             settings.
+             
+          3) Once the module is added, open the 'Configuration' working mode, 
+             look for the 'NI' setting and configure it with 'REMOTE' 
+             (without quotes).
+             
+             Notice that by default the 'NI' setting has a blank space 
+             configured, make sure that there is not a blank space before the 
+             'REMOTE' text.
        
     3) Ensure that the modules are in API mode and on the same network.
        For further information on how to perform this task, go to [...]

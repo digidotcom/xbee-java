@@ -39,11 +39,7 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	private static final int READ_TIMEOUT = 250;
 	
-	// TODO Comment this line if your are not using the XBIB-U-DEV.
 	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
-	// TODO Uncomment this line if you are using the XBee Development board.
-	//private static final IOLine IOLINE_IN = IOLine.DIO4_AD4;
-	
 	private static final IOLine IOLINE_OUT = IOLine.DIO12;
 	
 	/**
@@ -52,9 +48,9 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		System.out.println(" +---------------------------------------------+");
-		System.out.println(" | XBee Java Library Get/Set Local DIO Sample  |");
-		System.out.println(" +---------------------------------------------+\n");
+		System.out.println(" +--------------------------------------------+");
+		System.out.println(" | XBee Java Library Get/Set Local DIO Sample |");
+		System.out.println(" +--------------------------------------------+\n");
 		
 		final XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
@@ -96,7 +92,7 @@ public class MainApp {
 			try {
 				// Read the digital value from the input line.
 				IOValue value = xbeeDevice.getDIOValue(IOLINE_IN);
-				System.out.println("Input line value: " + value);
+				System.out.println(IOLINE_IN + ": " + value);
 				
 				// Set the previous value to the output line.
 				xbeeDevice.setDIOValue(IOLINE_OUT, value);

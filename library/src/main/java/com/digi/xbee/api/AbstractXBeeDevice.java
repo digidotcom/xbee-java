@@ -1188,23 +1188,8 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getConfigurationATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the configuration value.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain the configuration value.");
-		
 		// Check if the received configuration mode is valid.
-		int ioModeValue = response.getResponse()[0];
+		int ioModeValue = getParameter(ioLine.getConfigurationATCommand())[0];
 		IOMode dioMode = IOMode.getIOMode(ioModeValue, ioLine);
 		if (dioMode == null)
 			throw new OperationNotSupportedException("Received configuration mode '" + HexUtils.integerToHexString(ioModeValue, 1) + "' is not valid.");
@@ -1391,23 +1376,10 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getPWMDutyCycleATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the PWM value.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain PWM duty cycle value.");
+		byte[] value = getParameter(ioLine.getPWMDutyCycleATCommand());
 		
 		// Return the PWM duty cycle value.
-		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
+		int readValue = ByteUtils.byteArrayToInt(value);
 		return Math.round((readValue * 100.0/1023.0) * 100.0) / 100.0;
 	}
 	
@@ -1471,37 +1443,10 @@ public abstract class AbstractXBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		byte[] address = xbee64BitAddress.getValue();
-		// TODO Replace these two methods with the getParameter method.
-		setDestinationAddressHigh(Arrays.copyOfRange(address, 0, 4));
-		setDestinationAddressLow(Arrays.copyOfRange(address, 4, 8));
+		setParameter("DH", Arrays.copyOfRange(address, 0, 4));
+		setParameter("DL", Arrays.copyOfRange(address, 4, 8));
 		if (isRemote())
 			applyChanges();
-	}
-	
-	private void setDestinationAddressHigh(byte[] address) throws TimeoutException, XBeeException {
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("DH", address));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-	}
-	
-	private void setDestinationAddressLow(byte[] address) throws TimeoutException, XBeeException {
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("DL", address));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
 	}
 	
 	/**
@@ -1521,53 +1466,14 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// TODO Replace these two methods with the setParameter method.
-		byte[] dh = getDestinationAddressHigh();
-		byte[] dl = getDestinationAddressLow();
+		byte[] dh = getParameter("DH");
+		byte[] dl = getParameter("DL");
 		byte[] address = new byte[dh.length + dl.length];
 		
 		System.arraycopy(dh, 0, address, 0, dh.length);
 		System.arraycopy(dl, 0, address, dh.length, dl.length);
 		
 		return new XBee64BitAddress(address);
-	}
-	
-	private byte[] getDestinationAddressHigh() throws TimeoutException, XBeeException {
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("DH"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the DH value.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain DH value.");
-		
-		return response.getResponse();
-	}
-	
-	private byte[] getDestinationAddressLow() throws TimeoutException, XBeeException {
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("DL"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the DL value.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain DL value.");
-		
-		return response.getResponse();
 	}
 	
 	/**
@@ -1635,23 +1541,8 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("IR"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the IO sampling rate.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain IO sampling rate.");
-		
-		// Return the IO sampling rate.
-		return ByteUtils.byteArrayToInt(response.getResponse());
+		byte[] rate = getParameter("IR");
+		return ByteUtils.byteArrayToInt(rate);
 	}
 	
 	/**
@@ -1729,23 +1620,8 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("IC"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the bitfield.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain DIO change detection bitfield.");
-		
+		byte[] bitfield = getParameter("IC");
 		TreeSet<IOLine> lines = new TreeSet<IOLine>();
-		byte[] bitfield = response.getResponse();
 		int mask = (bitfield[0] << 8) + bitfield[1];
 		
 		for (int i = 0; i < 16; i++) {
@@ -1772,16 +1648,7 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("AC"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
+		executeParameter("AC");
 	}
 	
 	/**
@@ -1818,35 +1685,17 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand("IS"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
 		// Try to build an IO Sample from the sample payload.
-		byte[] samplePayload;
+		byte[] samplePayload = getParameter("IS");
 		IOSample ioSample;
+		
 		// If it is a local 802.15.4 device, the response does not contain the
 		// IO sample, so we have to create a packet listener to receive the
 		// sample.
-		if (!isRemote()) {
-			switch (getXBeeProtocol()) {
-			case RAW_802_15_4:
-				samplePayload = receiveRaw802IOPacket();
-				if (samplePayload == null)
-					throw new TimeoutException("Timeout waiting for the IO response packet.");
-				break;
-			default:
-				samplePayload = response.getResponse();
-			}
-		} else {
-			samplePayload = response.getResponse();
+		if (!isRemote() && getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
+			samplePayload = receiveRaw802IOPacket();
+			if (samplePayload == null)
+				throw new TimeoutException("Timeout waiting for the IO response packet.");
 		}
 		
 		try {

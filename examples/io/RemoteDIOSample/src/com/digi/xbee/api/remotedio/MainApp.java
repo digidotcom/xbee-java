@@ -16,11 +16,11 @@ import java.util.TimerTask;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOValue;
-import com.digi.xbee.api.models.XBee64BitAddress;
 
 /**
  * XBee Java Library Get/Set Remote DIO sample application.
@@ -41,8 +41,7 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	private static final int READ_TIMEOUT = 250;
 	
-	// TODO Replace with the 64-bit address of your remote module.
-	private static final XBee64BitAddress REMOTE_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
+	private static final String REMOTE_DEVICE_ID = "REMOTE";
 	
 	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
 	private static final IOLine IOLINE_OUT = IOLine.DIO12;
@@ -53,9 +52,9 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		System.out.println(" +----------------------------------------------+");
-		System.out.println(" | XBee Java Library Get/Set Remote DIO Sample  |");
-		System.out.println(" +----------------------------------------------+\n");
+		System.out.println(" +---------------------------------------------+");
+		System.out.println(" | XBee Java Library Get/Set Remote DIO Sample |");
+		System.out.println(" +---------------------------------------------+\n");
 		
 		XBeeDevice localDevice = new XBeeDevice(PORT, BAUD_RATE);
 		
@@ -64,7 +63,13 @@ public class MainApp {
 		try {
 			localDevice.open();
 			
-			RemoteXBeeDevice remoteDevice = new RemoteXBeeDevice(localDevice, REMOTE_64_BIT_ADDRESS);
+			// Obtain the remote XBee device from the XBee network.
+			XBeeNetwork xbeeNetwork = localDevice.getNetwork();
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDeviceByID(REMOTE_DEVICE_ID);
+			if (remoteDevice == null) {
+				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
+				System.exit(1);
+			}
 			
 			remoteDevice.setIOConfiguration(IOLINE_IN, IOMode.DIGITAL_IN);
 			

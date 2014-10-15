@@ -16,12 +16,12 @@ import java.util.Set;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
-import com.digi.xbee.api.models.XBee64BitAddress;
 
 /**
  * XBee Java Library Handle IO Samples sample application.
@@ -41,8 +41,7 @@ public class MainApp {
 	// TODO Replace with the baud rate of your local module.
 	private static final int BAUD_RATE = 9600;
 	
-	// TODO Replace with the 64-bit address of your remote module.
-	private static final XBee64BitAddress REMOTE_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
+	private static final String REMOTE_DEVICE_ID = "REMOTE";
 	
 	private static final IOLine DIGITAL_LINE = IOLine.DIO3_AD3;
 	private static final IOLine ANALOG_LINE = IOLine.DIO2_AD2;
@@ -66,7 +65,13 @@ public class MainApp {
 		try {
 			localDevice.open();
 			
-			RemoteXBeeDevice remoteDevice = new RemoteXBeeDevice(localDevice, REMOTE_64_BIT_ADDRESS);
+			// Obtain the remote XBee device from the XBee network.
+			XBeeNetwork xbeeNetwork = localDevice.getNetwork();
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDeviceByID(REMOTE_DEVICE_ID);
+			if (remoteDevice == null) {
+				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
+				System.exit(1);
+			}
 			
 			// Set the local device as destination address of the remote.
 			remoteDevice.setDestinationAddress(localDevice.get64BitAddress());

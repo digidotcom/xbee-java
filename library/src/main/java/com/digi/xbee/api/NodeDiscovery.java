@@ -27,6 +27,7 @@ import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
@@ -399,13 +400,24 @@ class NodeDiscovery {
 			
 			discoverDevicesAPI(device, listener, id, timeout);
 			
-			// Restore old values.
-			logger.debug("{}Restoring discovery options.", toString());
-			setDiscoveryOptions(device, oldNOValue, oldNTValue, listener);
+			// It seems that DigiMesh devices are blocked during the NT + 2-3 seconds more.
+			// It means that if we try to restore the discovery options just after the
+			// discovery finishes, we will receive a timeout exception. Sleep 3 seconds to
+			// avoid this issue.
+			if (device.getXBeeProtocol() == XBeeProtocol.DIGI_MESH) {
+				logger.debug("{}Waiting 3 seconds before restoring values (DigiMesh related issue).", toString());
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {}
+			}
 			
 		} finally {
 			finished = true;
 			running = false;
+			
+			// Restore old values.
+			logger.debug("{}Restoring discovery options.", toString());
+			setDiscoveryOptions(device, oldNOValue, oldNTValue, listener);
 			
 			notifyDiscoveryFinished(listener, null);
 		}

@@ -3,11 +3,13 @@ package com.digi.xbee.api.connection.android;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.utils.HexUtils;
 
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
-import android.util.Log;
 
 /**
  * This class acts as a wrapper to write data to the USB Interface in Android and
@@ -22,6 +24,8 @@ public class AndroidUSBOutputStream extends OutputStream {
 	private UsbDeviceConnection usbConnection;
 
 	private UsbEndpoint sendEndPoint;
+	
+	private Logger logger;
 
 	/**
 	 * Class constructor. Instances a new {@code AndroidUSBOutputStream} object with the given
@@ -33,6 +37,7 @@ public class AndroidUSBOutputStream extends OutputStream {
 	public AndroidUSBOutputStream(UsbEndpoint writeEndpoint, UsbDeviceConnection connection) {
 		this.usbConnection = connection;
 		this.sendEndPoint = writeEndpoint;
+		this.logger = LoggerFactory.getLogger(AndroidUSBOutputStream.class);
 	}
 
 	/*
@@ -64,7 +69,7 @@ public class AndroidUSBOutputStream extends OutputStream {
 		Thread sendThread = new Thread() {
 			public void run() {
 				usbConnection.bulkTransfer(sendEndPoint, finalData, finalData.length, WRITE_TIMEOUT);
-				Log.d("XBEE_INTERFACE", "Message sent: " + HexUtils.byteArrayToHexString(finalData));
+				logger.debug("Message sent: " + HexUtils.byteArrayToHexString(finalData));
 			}
 		};
 		sendThread.start();

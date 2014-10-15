@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.digi.xbee.api.utils.HexUtils;
 
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
-import android.util.Log;
 
 /**
  * This class acts as a wrapper to read data from the USB Interface in Android and
@@ -34,6 +36,8 @@ public class AndroidUSBInputStream extends InputStream {
 
 	private AndroidXBeeInterface androidInterface;
 
+	private Logger logger;
+	
 	/**
 	 * Class constructor. Instances a new {@code AndroidUSBInputStream} object with the given
 	 * parameters.
@@ -46,6 +50,7 @@ public class AndroidUSBInputStream extends InputStream {
 		this.usbConnection = connection;
 		this.receiveEndPoint = readEndpoint;
 		this.androidInterface = androidInterface;
+		this.logger = LoggerFactory.getLogger(AndroidUSBInputStream.class);
 	}
 
 	/*
@@ -82,7 +87,7 @@ public class AndroidUSBInputStream extends InputStream {
 			return -1;
 		byte[] readData = new byte[readBytes];
 		System.arraycopy(buffer, offset, readData, 0, readBytes);
-		Log.d("XBEE_INTERFACE", "Received a read request of " + length + " bytes, returning " + readData.length + ": " + HexUtils.byteArrayToHexString(readData));
+		logger.debug("Received a read request of " + length + " bytes, returning " + readData.length + ": " + HexUtils.byteArrayToHexString(readData));
 		return readBytes;
 	}
 
@@ -118,7 +123,7 @@ public class AndroidUSBInputStream extends InputStream {
 					if (receivedBytes > 0) {
 						byte[] data = new byte[receivedBytes];
 						System.arraycopy(buffer, OFFSET, data, 0, receivedBytes);
-						Log.d("XBEE_INTERFACE", "Message received: " + HexUtils.byteArrayToHexString(data));
+						logger.debug("Message received: " + HexUtils.byteArrayToHexString(data));
 						readBuffer.write(buffer, OFFSET, receivedBytes);
 						// Notify interface so that XBee Reader is notified about data available.
 						synchronized (androidInterface) {

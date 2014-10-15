@@ -30,6 +30,7 @@ import org.powermock.reflect.Whitebox;
 import com.digi.xbee.api.RemoteRaw802Device;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.OperatingMode;
@@ -57,6 +58,8 @@ public class ISerialDataReceiveListener802Test {
 	private static final String NOTIFY_SERIAL_DATA_RECEIVED_METHOD = "notifySerialDataReceived";
 	
 	// Variables.
+	private static XBeeDevice xbeeDevice;
+	
 	private MyReceiveListener receiveSerialDataListener;
 	
 	private static RX16Packet rx16Packet;
@@ -94,6 +97,15 @@ public class ISerialDataReceiveListener802Test {
 		// Mock a remote 802.15.4 device with only 16-bit address.
 		remote802XBee16Device = Mockito.mock(RemoteRaw802Device.class);
 		Mockito.when(remote802XBee16Device.get16BitAddress()).thenReturn(XBEE_16BIT_ADDRESS);
+		
+		// Mock the XBee network.
+		XBeeNetwork network = Mockito.mock(XBeeNetwork.class);
+		Mockito.when(network.getDeviceBy64BitAddress(Mockito.any(XBee64BitAddress.class))).thenReturn(remote802XBee64Device);
+		Mockito.when(network.getDeviceBy16BitAddress(Mockito.any(XBee16BitAddress.class))).thenReturn(remote802XBee16Device);
+		
+		// Mock the XBee device.
+		xbeeDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(xbeeDevice.getNetwork()).thenReturn(network);
 	}
 	
 	@Before
@@ -102,7 +114,7 @@ public class ISerialDataReceiveListener802Test {
 		receiveSerialDataListener = PowerMockito.spy(new MyReceiveListener());
 		
 		// Data reader.
-		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, Mockito.mock(XBeeDevice.class)));
+		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, xbeeDevice));
 		// Stub the 'notifySerialDataReceived' method of the dataReader instance so it directly notifies the 
 		// listeners instead of opening a new thread per listener (which is what the real method does). This avoids us 
 		// having to wait for the executor to run the threads.

@@ -29,6 +29,7 @@ import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.OperatingMode;
@@ -53,6 +54,8 @@ public class ISerialDataReceiveListenerXBeeTest {
 	private static final String NOTIFY_SERIAL_DATA_RECEIVED_METHOD = "notifySerialDataReceived";
 	
 	// Variables.
+	private static XBeeDevice xbeeDevice;
+	
 	private MyReceiveListener receiveSerialDataListener;
 	
 	private static ReceivePacket receivePacket;
@@ -63,7 +66,7 @@ public class ISerialDataReceiveListenerXBeeTest {
 	private DataReader dataReader;
 	
 	@BeforeClass
-	public static void setupOnce() {
+	public static void setupOnce() throws Exception {
 		// Mock Receive Packet.
 		receivePacket = Mockito.mock(ReceivePacket.class);
 		Mockito.when(receivePacket.getFrameType()).thenReturn(APIFrameType.RECEIVE_PACKET);
@@ -77,6 +80,14 @@ public class ISerialDataReceiveListenerXBeeTest {
 		// Mock a remote XBee device.
 		remoteXBeeDevice = Mockito.mock(RemoteXBeeDevice.class);
 		Mockito.when(remoteXBeeDevice.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		
+		// Mock the XBee network.
+		XBeeNetwork network = Mockito.mock(XBeeNetwork.class);
+		Mockito.when(network.getDeviceBy64BitAddress(Mockito.any(XBee64BitAddress.class))).thenReturn(remoteXBeeDevice);
+		
+		// Mock the XBee device.
+		xbeeDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(xbeeDevice.getNetwork()).thenReturn(network);
 	}
 	
 	@Before
@@ -85,7 +96,7 @@ public class ISerialDataReceiveListenerXBeeTest {
 		receiveSerialDataListener = PowerMockito.spy(new MyReceiveListener());
 		
 		// Data reader.
-		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, Mockito.mock(XBeeDevice.class)));
+		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, xbeeDevice));
 		// Stub the 'notifySerialDataReceived' method of the dataReader instance so it directly notifies the 
 		// listeners instead of opening a new thread per listener (which is what the real method does). This avoids us 
 		// having to wait for the executor to run the threads.

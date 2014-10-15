@@ -29,6 +29,7 @@ import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.io.IOSample;
@@ -54,6 +55,8 @@ public class IIOSampleReceiveListenerXBeeTest {
 	private static final String NOTIFY_IO_SAMPLE_RECEIVED_METHOD = "notifyIOSampleReceived";
 	
 	// Variables.
+	private static XBeeDevice xbeeDevice;
+	
 	private static RemoteXBeeDevice remoteDevice;
 	
 	private MyReceiveListener receiveIOSampleListener;
@@ -78,6 +81,14 @@ public class IIOSampleReceiveListenerXBeeTest {
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);
+		
+		// Mock the XBee network.
+		XBeeNetwork network = Mockito.mock(XBeeNetwork.class);
+		Mockito.when(network.getDeviceBy64BitAddress(Mockito.any(XBee64BitAddress.class))).thenReturn(remoteDevice);
+		
+		// Mock the XBee device.
+		xbeeDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(xbeeDevice.getNetwork()).thenReturn(network);
 	}
 	
 	@Before
@@ -86,7 +97,7 @@ public class IIOSampleReceiveListenerXBeeTest {
 		receiveIOSampleListener = PowerMockito.spy(new MyReceiveListener());
 		
 		// Data reader.
-		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, Mockito.mock(XBeeDevice.class)));
+		dataReader = PowerMockito.spy(new DataReader(Mockito.mock(IConnectionInterface.class), OperatingMode.UNKNOWN, xbeeDevice));
 		// Stub the 'notifyIOSampleReceived' method of the dataReader instance so it directly notifies the 
 		// listeners instead of opening a new thread per listener (which is what the real method does). This avoids us 
 		// having to wait for the executor to run the threads.

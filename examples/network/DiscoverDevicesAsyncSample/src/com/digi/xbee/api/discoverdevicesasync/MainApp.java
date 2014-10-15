@@ -9,30 +9,30 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.sendbroadcastserialdata;
+package com.digi.xbee.api.discoverdevicesasync;
 
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * XBee Java Library Send Broadcast Data sample application.
+ * XBee Java Library Discover Devices Async. sample application.
  * 
- * <p>This example sends data to all remote devices on the same network.</p>
+ * <p>This example retrieves the XBee network from the local XBee device and 
+ * performs a remote device discovery process using an asynchronously (non 
+ * blocking) mechanism.</p>
  * 
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>
  */
 public class MainApp {
-	
+
 	/* Constants */
 	
-	// TODO Replace with the serial port where your sender module is connected to.
+	// TODO Replace with the serial port where your module is connected to.
 	private static final String PORT = "COM1";
-	// TODO Replace with the baud rate of your sender module.
+	// TODO Replace with the baud rate of your module.
 	private static final int BAUD_RATE = 9600;
-	
-	private static final String DATA_TO_SEND = "Hello XBees!";
 	
 	/**
 	 * Application main method.
@@ -40,30 +40,25 @@ public class MainApp {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		System.out.println(" +------------------------------------------------+");
-		System.out.println(" |  XBee Java Library Send Broadcast Data Sample  |");
-		System.out.println(" +------------------------------------------------+\n");
+		System.out.println(" +--------------------------------------------------+");
+		System.out.println(" | XBee Java Library Discover Devices Async. Sample |");
+		System.out.println(" +--------------------------------------------------+\n");
 		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
-		byte[] dataToSend = DATA_TO_SEND.getBytes();
 		
 		try {
 			myDevice.open();
 			
-			System.out.format("Sending broadcast data >> %s | %s... ",
-					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
-					new String(dataToSend));
+			XBeeNetwork myXBeeNetwork = myDevice.getNetwork();
 			
-			myDevice.sendBroadcastSerialData(dataToSend);
+			myXBeeNetwork.discoverDevices(new MyDiscoveryListener());
 			
-			System.out.println("Success");
+			System.out.println("\n>> Discovering remote XBee devices...");
 			
 		} catch (XBeeException e) {
-			System.out.println("Error");
 			e.printStackTrace();
-			System.exit(1);
-		} finally {
 			myDevice.close();
+			System.exit(1);
 		}
 	}
 }

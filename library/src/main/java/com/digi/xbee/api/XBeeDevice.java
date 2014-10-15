@@ -53,6 +53,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	private static String COMMAND_MODE_OK = "OK\r";
 	
 	// Variables.
+	protected XBeeNetwork network;
+	
 	private Object resetLock = new Object();
 	
 	private boolean modemStatusReceived = false;
@@ -200,7 +202,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #open()
 	 * @see #close()
 	 */
-	public boolean isOpen()  {
+	public boolean isOpen() {
 		if (connectionInterface != null)
 			return connectionInterface.isOpen();
 		return false;
@@ -213,6 +215,23 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	@Override
 	public boolean isRemote() {
 		return false;
+	}
+	
+	/**
+	 * Returns the network associated with the device.
+	 * 
+	 * @return The XBee network of the device.
+	 * 
+	 * @throws InterfaceNotOpenException If the device is not open.
+	 * 
+	 * @see XBeeNetwork
+	 */
+	public XBeeNetwork getNetwork() {
+		if (!isOpen())
+			throw new InterfaceNotOpenException();
+		if (network == null)
+			network = new XBeeNetwork(this);
+		return network;
 	}
 	
 	/*
@@ -688,14 +707,14 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		switch (getXBeeProtocol()) {
 		case ZIGBEE:
 		case DIGI_POINT:
-			if (xbeeDevice.get16BitAddress() != null)
+			if (xbeeDevice.get64BitAddress() != null && xbeeDevice.get16BitAddress() != null)
 				sendSerialData(xbeeDevice.get64BitAddress(), xbeeDevice.get16BitAddress(), data);
 			else
 				sendSerialData(xbeeDevice.get64BitAddress(), data);
 			break;
 		case RAW_802_15_4:
 			if (this instanceof Raw802Device) {
-				if (xbeeDevice.get64BitAddress() != null && xbeeDevice.get64BitAddress() != XBee64BitAddress.UNKNOWN_ADDRESS)
+				if (xbeeDevice.get64BitAddress() != null)
 					((Raw802Device)this).sendSerialData(xbeeDevice.get64BitAddress(), data);
 				else
 					((Raw802Device)this).sendSerialData(xbeeDevice.get16BitAddress(), data);
@@ -1062,5 +1081,31 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		// Create and return the XBee message.
 		return new XBeeMessage(remoteDevice, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#toString()
+	 */
+	@Override
+	public String toString() {
+		String id = getNodeID();
+		if (id == null)
+			id = "";
+		String addr64 = get64BitAddress() == null ? "" : get64BitAddress().toString();
+		
+		if (id.length() == 0 && addr64.length() == 0)
+			return super.toString();
+		
+		StringBuilder message = new StringBuilder(super.toString());
+		message.append(addr64);
+		if (id.length() > 0) {
+			message.append(" (");
+			message.append(id);
+			message.append(")");
+		}
+		message.append(" - ");
+		
+		return message.toString();
 	}
 }

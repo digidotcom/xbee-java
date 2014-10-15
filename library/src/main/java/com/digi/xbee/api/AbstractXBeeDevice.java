@@ -179,24 +179,55 @@ public abstract class AbstractXBeeDevice {
 	 * @param localXBeeDevice The local XBee device that will behave as 
 	 *                        connection interface to communicate with this 
 	 *                        remote XBee device.
-	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee 
-	 *                         device.
+	 * @param addr64 The 64-bit address to identify this XBee device.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
+	 *                              if {@code addr64 == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+		this(localXBeeDevice, addr64, null, null);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param addr64 The 64-bit address to identify this XBee device.
+	 * @param addr16 The 16-bit address to identify this XBee device. It might 
+	 *               be {@code null}.
+	 * @param id The node identifier of this XBee device. It might be 
+	 *           {@code null}.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 *                              if {@code addr64 == null}.
+	 * 
+	 * @see XBee64BitAddress
+	 * @see XBee16BitAddress
+	 */
+	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
+			XBee16BitAddress addr16, String id) {
 		if (localXBeeDevice == null)
 			throw new NullPointerException("Local XBee device cannot be null.");
-		if (xbee64BitAddress == null)
-			throw new NullPointerException("XBee 64 bit address of the remote device cannot be null.");
+		if (addr64 == null)
+			throw new NullPointerException("XBee 64-bit address of the device cannot be null.");
 		if (localXBeeDevice.isRemote())
 			throw new IllegalArgumentException("The given local XBee device is remote.");
 		
 		this.localXBeeDevice = localXBeeDevice;
 		this.connectionInterface = localXBeeDevice.getConnectionInterface();
-		this.xbee64BitAddress = xbee64BitAddress;
+		this.xbee64BitAddress = addr64;
+		this.xbee16BitAddress = addr16;
+		if (addr16 == null)
+			xbee16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
+		this.nodeID = id;
 		this.logger = LoggerFactory.getLogger(this.getClass());
 		logger.debug(toString() + "Using the connection interface {}.", 
 				connectionInterface.getClass().getSimpleName());
@@ -464,6 +495,45 @@ public abstract class AbstractXBeeDevice {
 	 */
 	public HardwareVersion getHardwareVersion() {
 		return hardwareVersion;
+	}
+	
+	/**
+	 * Updates the current device reference with the data provided for the given 
+	 * device.
+	 * 
+	 * <p><b>This is only for internal use.</b></p>
+	 * 
+	 * @param device The XBee Device to get the data from.
+	 */
+	public void updateDeviceDataFrom(AbstractXBeeDevice device) {
+		// TODO Should the devices have the same protocol??
+		// TODO Should be allow to update a local from a remote or viceversa?? Maybe 
+		// this must be in the Local/Remote device class(es) and not here... 
+		
+		this.nodeID = device.getNodeID();
+		
+		// Only update the 64-bit address if the original is null or unknown.
+		XBee64BitAddress addr64 = device.get64BitAddress();
+		if (addr64 != null && addr64 != XBee64BitAddress.UNKNOWN_ADDRESS
+				&& !addr64.equals(xbee64BitAddress) 
+				&& (xbee64BitAddress == null 
+					|| xbee64BitAddress.equals(XBee64BitAddress.UNKNOWN_ADDRESS))) {
+			xbee64BitAddress = addr64;
+		}
+		
+		// TODO Change here the 16-bit address or maybe in ZigBee and 802.15.4?
+		// TODO Should the 16-bit address be always updated? Or following the same rule as the 64-bit address.
+		XBee16BitAddress addr16 = device.get16BitAddress();
+		if (addr16 != null && !addr16.equals(xbee16BitAddress)) {
+			xbee16BitAddress = addr16;
+		}
+		
+		//this.deviceType = device.deviceType; // This is not yet done.
+		
+		// The operating mode: only API/API2. Do we need this for a remote device?
+		// The protocol of the device should be the same.
+		// The hardware version should be the same.
+		// The firmware version can change...
 	}
 	
 	/**

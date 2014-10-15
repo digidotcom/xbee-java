@@ -24,16 +24,17 @@ public class RemoteDigiPointDevice extends RemoteXBeeDevice {
 	 * @param localXBeeDevice The local point-to-multipoint device that will behave as 
 	 *                        connection interface to communicate with this 
 	 *                        remote point-to-multipoint device.
-	 * @param xbee64BitAddress The 64-bit address to identify this remote point-to-multipoint 
-	 *                         device.
+	 * @param addr64 The 64-bit address to identify this remote point-to-multipoint 
+	 *               device.
 	 * 
-	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 *                              if {@code addr64 == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public RemoteDigiPointDevice(DigiPointDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
-		super(localXBeeDevice, xbee64BitAddress);
+	public RemoteDigiPointDevice(DigiPointDevice localXBeeDevice, XBee64BitAddress addr64) {
+		super(localXBeeDevice, addr64);
 	}
 	
 	/**
@@ -44,17 +45,46 @@ public class RemoteDigiPointDevice extends RemoteXBeeDevice {
 	 * @param localXBeeDevice The local XBee device that will behave as 
 	 *                        connection interface to communicate with this 
 	 *                        remote point-to-multipoint device.
-	 * @param xbee64BitAddress The 64-bit address to identify this remote point-to-multipoint 
-	 *                         device.
+	 * @param addr64 The 64-bit address to identify this remote point-to-multipoint 
+	 *               device.
 	 * 
-	 * @throws IllegalArgumentException if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_POINT}.
-	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 
+	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_POINT}.
+	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 *                              if {@code addr64 == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public RemoteDigiPointDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
-		super(localXBeeDevice, xbee64BitAddress);
+	public RemoteDigiPointDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+		super(localXBeeDevice, addr64);
+		
+		// Verify the local device has point-to-multipoint protocol.
+		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_POINT)
+			throw new IllegalArgumentException("The protocol of the local XBee device is not " + XBeeProtocol.DIGI_POINT.getDescription() + ".");
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote point-to-multipoint device.
+	 * @param addr64 The 64-bit address to identify this remote point-to-multipoint 
+	 *               device.
+	 * @param id The node identifier of this remote point-to-multipoint device. 
+	 *           It might be {@code null}.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 
+	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_POINT}.
+	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 *                              if {@code addr64 == null}.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public RemoteDigiPointDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, String id) {
+		super(localXBeeDevice, addr64, null, id);
 		
 		// Verify the local device has point-to-multipoint protocol.
 		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.DIGI_POINT)

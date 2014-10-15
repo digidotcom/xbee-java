@@ -31,8 +31,9 @@
 
   Example setup
   -------------
-    1) Find the 64-bit address labeled on the back of the device, which is a 16 
-       character string that follows the format 0013A20040XXXXXX.
+    1) Find the 64-bit address labeled on the back of your local XBee device, 
+       which is a 16 character string that follows the format 0013A20040XXXXXX. 
+       It will be used later in the example.
        
     2) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
@@ -48,39 +49,39 @@
 
   Running the example
   -------------------
-  First, build and launch the application.
-  To test the functionality send unicast data to the receiver module from other 
-  devices on the network. If you want to send data to this module, follow these 
-  steps:
+  First, build and launch the application. Then, you need to send a data frame 
+  to the receiver (local) module from another device on the network. Follow the 
+  steps below to do so:
   
-    a) Use the 'SendSerialDataSample' or 'SendSerialDataAsyncSample' example 
-       included in the library.
-       Follow the instructions in the 'ReadMe' file to perform the task.
+    1) Launch the XCTU application.
        
-    b) Use the XCTU:
+    2) Add the sender (remote) XBee module to the XCTU, specifying its port 
+       settings.
        
-       1) Launch the XCTU application.
-          
-       2) Add the sender XBee module to the XCTU, specifying its port settings.
-          
-       3) Once the module is added, change to the 'Consoles' working mode and 
-          open the serial connection.
-          
-       4) Create and add a frame using the 'Frames Generator' tool with the 
-          following parameters:
-          
-          - Protocol:                               Select the protocol of your device.
-          - Frame type:                             Select a 64-bit Transmit Request frame.
-          - Frame ID:                               01
-          - 64-bit dest. address:                   Use the 64-bit address you copied before.
-          - 16-bit dest. address (only if present): FF FE
-          - Broadcast radius (only if present):     00
-          - Options:                                00
-          - RF data (ASCII):                        Hello XBee!
-          
-       5) Send this frame and check the launched application output console: 
-          The packet has been received and a line containing the data included 
-          in the 'RF data' field of the sent frame is printed out:
-          
-          From 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
-          
+    3) Once the module is added, change to the 'Consoles' working mode and 
+       open the serial connection.
+       
+    4) Create and add a frame using the 'Frames Generator' tool with the 
+       following parameters:
+       
+       - Protocol:                               Select the protocol of your device.
+       - Frame type:                             Select a 64-bit Transmit Request frame.
+       - Frame ID:                               01
+       - 64-bit dest. address:                   Use the 64-bit address you copied before.
+       - 16-bit dest. address (only if present): FF FE
+       - Broadcast radius (only if present):     00
+       - Options:                                00
+       - RF data (ASCII):                        Hello XBee!
+       
+    5) Send this frame by selecting it and clicking the 'Send selected Frame' 
+       button.
+    
+  When the data frame is sent, verify that a line with the data frame and the 
+  data included in the 'RF data' field is printed out in the console of the 
+  launched application:
+       
+    From 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!
+       
+     - Where 0013A20040XXXXXX is the 64-bit address of the remote XBee device 
+       that sent the data frame.
+       

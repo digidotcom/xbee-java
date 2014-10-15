@@ -1,48 +1,65 @@
   Introduction
   ------------
   This is a sample Java application that shows how to read XBee analog inputs 
-  of the device attached to the serial/USB port of your PC.
+  of remote XBee devices.
   
-  The application configures an IO line of the XBee device as ADC. Then, 
+  The application configures an IO line of the remote XBee device as ADC. Then, 
   periodically reads its value and prints it in the output console.
   
-  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
-        but it can be applied to any other local XBee device class.
+  NOTE: This example uses the generic remote XBee device (RemoteXBeeDevice) 
+        class, but it can be applied to any other remote XBee device class.
 
 
   Files
   ----------
-    * com.digi.xbee.api.localadc.MainApp.java:
-      Main application class. It instantiates an XBee device, establishes a 
-      serial connection with it, configures the IO line and reads its analog 
-      value.
+    * com.digi.xbee.api.remoteadc.MainApp.java:
+      Main application class. It instantiates a local XBee device and a remote 
+      XBee device, establishes a serial connection with the local one, 
+      configures the remote IO line and reads its analog value.
 
 
   Requirements
   ------------
   To run this example you will need:
   
-    * One XBee radio in API mode and its corresponding carrier board (XBIB 
-      or XBee Development Board).
+    * At least two XBee radios in API mode and their corresponding carrier board
+      (XBIB or XBee Development Board).
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
   -------------
-    1) Plug the XBee radio into the XBee adapter and connect it to your
-       computer's USB or serial port.
+    1) Plug the XBee radios into the XBee adapters and connect them to your
+       computer's USB or serial ports.
        
-    2) Ensure that the module is in API mode.
+    2) Configure the remote XBee device with the Node Identifier used by the 
+       example to communicate with it. To do so follow these steps:
+             
+          1) Launch the XCTU application.
+             
+          2) Add the remote XBee module to the XCTU, specifying it's port 
+             settings.
+             
+          3) Once the module is added, open the 'Configuration' working mode, 
+             look for the 'NI' setting and configure it with 'REMOTE' 
+             (without quotes).
+             
+             Notice that by default the 'NI' setting has a blank space 
+             configured, make sure that there is not a blank space before the 
+             'REMOTE' text.
+       
+    3) Ensure that the modules are in API mode and on the same network.
        For further information on how to perform this task, go to [...]
        
-    3) Set the port and baud rate of the XBee radio in the MainApp class.
+    4) Set the port and baud rate of the local XBee radio in the MainApp class.
        If you do not know the serial/USB port where your module is connected to,
        see [...]
        
-    4) The final step is to connect a voltage variable source to the pin 
-       configured as ADC (light sensor, temperature sensor, etc). For testing 
-       purposes we recommend using a potentiometer. Depending on the carrier 
-       board you are using you will need to follow a different set of 
-       instructions to connect it:
+    5) The final step is to connect a voltage variable source to the pin 
+       configured as ADC in the remote XBee device (light sensor, temperature 
+       sensor, etc). For testing purposes we recommend using a potentiometer. 
+       Depending on the carrier board you are using you will need to follow a 
+       different set of instructions to connect it:
          - XBIB-U-DEV board:
              * Isolate the pin configured as ADC so it does not use the 
                functionality provided by the board.

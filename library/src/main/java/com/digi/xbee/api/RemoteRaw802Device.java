@@ -18,7 +18,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
 public class RemoteRaw802Device extends RemoteXBeeDevice {
 
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code Raw802Device} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -35,31 +35,6 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 */
 	public RemoteRaw802Device(Raw802Device localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
-	 * with the given local {@code XBeeDevice} which contains the connection 
-	 * interface to be used.
-	 * 
-	 * @param localXBeeDevice The local XBee device that will behave as 
-	 *                        connection interface to communicate with this 
-	 *                        remote 802.15.4 device.
-	 * @param addr64 The 64-bit address to identify this remote 802.15.4 device.
-	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 
-	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4}.
-	 * @throws NullPointerException If {@code localXBeeDevice == null} or
-	 *                              if {@code addr64 == null}.
-	 * 
-	 * @see XBee64BitAddress
-	 */
-	public RemoteRaw802Device(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
-		super(localXBeeDevice, addr64);
-		
-		// Verify the local device has 802.15.4 protocol.
-		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4)
-			throw new IllegalArgumentException("The protocol of the local XBee device is not " + XBeeProtocol.RAW_802_15_4.getDescription() + ".");
 	}
 	
 	/**
@@ -117,7 +92,6 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	
 	/**
 	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
-	 * with the given local {@code XBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 
 	 * @param localXBeeDevice The local 802.15.4 device that will behave as 

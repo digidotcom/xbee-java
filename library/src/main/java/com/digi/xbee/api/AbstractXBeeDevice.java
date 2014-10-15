@@ -13,6 +13,9 @@ package com.digi.xbee.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,7 @@ import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
+import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
@@ -608,13 +612,57 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sends the given AT command and waits for answer or until the configured 
-	 * receive timeout expires.
+	 * Starts listening for IO samples in the provided IO sample listener.
+	 *  
+	 * <p>The provided listener is added to the list of listeners to be notified
+	 * when new IO samples are received. If the listener has been already 
+	 * included this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new IO samples are received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see IIOSampleReceiveListener
+	 * @see #stopListeningForIOSamples(IIOSampleReceiveListener)
+	 */
+	protected void startListeningForIOSamples(IIOSampleReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.addIOSampleReceiveListener(listener);
+	}
+	
+	/**
+	 * Stops listening for IO samples in the provided IO sample listener.
+	 * 
+	 * <p>The provided listener is removed from the list of IO samples 
+	 * listeners. If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see IIOSampleReceiveListener
+	 * @see #startListeningForIOSamples(IIOSampleReceiveListener)
+	 */
+	protected void stopListeningForIOSamples(IIOSampleReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.removeIOSampleReceiveListener(listener);
+	}
+	
+	/**
+	 * Sends the given AT command with the given options and waits for answer 
+	 * or until the configured receive timeout expires.
 	 * 
 	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param command AT command to be sent.
+	 * @param options Transmit options.
 	 * @return An {@code ATCommandResponse} object containing the response of 
 	 *         the command or {@code null} if there is no response.
 	 *         
@@ -628,10 +676,11 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see ATCommand
 	 * @see ATCommandResponse
+	 * @see XBeeTransmitOptions
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
 	 */
-	protected ATCommandResponse sendATCommand(ATCommand command) 
+	protected ATCommandResponse sendATCommand(ATCommand command, int options) 
 			throws InvalidOperatingModeException, TimeoutException, IOException {
 		// Check if command is null.
 		if (command == null)
@@ -689,6 +738,35 @@ public abstract class AbstractXBeeDevice {
 			}
 		}
 		return response;
+	}
+	
+	/**
+	 * Sends the given AT command and waits for answer or until the configured 
+	 * receive timeout expires.
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * @param command AT command to be sent.
+	 * @return An {@code ATCommandResponse} object containing the response of 
+	 *         the command or {@code null} if there is no response.
+	 *         
+	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
+	 *                                       {@link OperatingMode#API_ESCAPE}.
+	 * @throws TimeoutException if the configured time expires while waiting 
+	 *                          for the command reply.
+	 * @throws IOException if an I/O error occurs while sending the AT command.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code command == null}.
+	 * 
+	 * @see ATCommand
+	 * @see ATCommandResponse
+	 * @see #setReceiveTimeout(int)
+	 * @see #getReceiveTimeout()
+	 */
+	protected ATCommandResponse sendATCommand(ATCommand command) 
+			throws InvalidOperatingModeException, TimeoutException, IOException {
+		return sendATCommand(command, XBeeTransmitOptions.NONE);
 	}
 	
 	/**
@@ -1083,7 +1161,10 @@ public abstract class AbstractXBeeDevice {
 		String atCommand = ioLine.getConfigurationATCommand();
 		ATCommandResponse response = null;
 		try {
-			response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
+			if (isRemote())
+				response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}
@@ -1117,23 +1198,8 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getConfigurationATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the configuration value.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not contain the configuration value.");
-		
 		// Check if the received configuration mode is valid.
-		int ioModeValue = response.getResponse()[0];
+		int ioModeValue = getParameter(ioLine.getConfigurationATCommand())[0];
 		IOMode dioMode = IOMode.getIOMode(ioModeValue, ioLine);
 		if (dioMode == null)
 			throw new OperationNotSupportedException("Received configuration mode '" + HexUtils.integerToHexString(ioModeValue, 1) + "' is not valid.");
@@ -1179,7 +1245,10 @@ public abstract class AbstractXBeeDevice {
 		byte[] valueByte = new byte[]{(byte)ioValue.getID()};
 		ATCommandResponse response = null;
 		try {
-			response = sendATCommand(new ATCommand(atCommand, valueByte));
+			if (isRemote())
+				response = sendATCommand(new ATCommand(atCommand, valueByte), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand(atCommand, valueByte));
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}
@@ -1196,11 +1265,11 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The digital value corresponding to the provided IO line.
 	 * 
+	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO values 
 	 *                          command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
 	 * @see IOLine
 	 * @see IOMode#DIGITAL_IN
@@ -1210,12 +1279,16 @@ public abstract class AbstractXBeeDevice {
 	 * @see #setIOConfiguration(IOLine, IOMode)
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
+		// Check IO line.
+		if (ioLine == null)
+			throw new NullPointerException("IO line cannot be null.");
+		
 		// Obtain an IO Sample from the XBee device.
-		IOSample ioSample = getIOSample(ioLine);
+		IOSample ioSample = readIOSample();
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasDigitalValues() || !ioSample.getDigitalValues().containsKey(ioLine))
-			throw new OperationNotSupportedException("Answer does not conain digital data for " + ioLine.getName() + ".");
+			throw new OperationNotSupportedException("Answer does not contain digital data for " + ioLine.getName() + ".");
 		
 		// Return the digital value. 
 		return ioSample.getDigitalValues().get(ioLine);
@@ -1266,7 +1339,10 @@ public abstract class AbstractXBeeDevice {
 		String atCommand = ioLine.getPWMDutyCycleATCommand();
 		ATCommandResponse response = null;
 		try {
-			response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
+			if (isRemote())
+				response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
 		} catch (IOException e) {
 			throw new XBeeException("Error writing in the communication interface.", e);
 		}
@@ -1310,23 +1386,10 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getPWMDutyCycleATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
-		// Check if the response contains the PWM value.
-		if (response.getResponse() == null || response.getResponse().length == 0)
-			throw new OperationNotSupportedException("Answer does not conain PWM duty cycle value.");
+		byte[] value = getParameter(ioLine.getPWMDutyCycleATCommand());
 		
 		// Return the PWM duty cycle value.
-		int readValue = ByteUtils.byteArrayToInt(response.getResponse());
+		int readValue = ByteUtils.byteArrayToInt(value);
 		return Math.round((readValue * 100.0/1023.0) * 100.0) / 100.0;
 	}
 	
@@ -1355,14 +1418,247 @@ public abstract class AbstractXBeeDevice {
 			throw new NullPointerException("IO line cannot be null.");
 		
 		// Obtain an IO Sample from the XBee device.
-		IOSample ioSample = getIOSample(ioLine);
+		IOSample ioSample = readIOSample();
 		
 		// Check if the IO sample contains the expected IO line and value.
 		if (!ioSample.hasAnalogValues() || !ioSample.getAnalogValues().containsKey(ioLine))
-			throw new OperationNotSupportedException("Answer does not conain analog data for " + ioLine.getName() + ".");
+			throw new OperationNotSupportedException("Answer does not contain analog data for " + ioLine.getName() + ".");
 		
 		// Return the analog value.
 		return ioSample.getAnalogValues().get(ioLine);
+	}
+	
+	/**
+	 * Sets the 64 bit destination extended address.
+	 * 
+	 * <p>{@link XBee64BitAddress#BROADCAST_ADDRESS} is the broadcast address 
+	 * for the PAN. {@link XBee64BitAddress#COORDINATOR_ADDRESS} can be used to 
+	 * address the Pan Coordinator.</p>
+	 * 
+	 * @param xbee64BitAddress Destination address.
+	 * 
+	 * @throws NullPointerException if {@code xbee64BitAddress == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the set 
+	 *                          destination address command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
+		if (xbee64BitAddress == null)
+			throw new NullPointerException("Address cannot be null.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] address = xbee64BitAddress.getValue();
+		setParameter("DH", Arrays.copyOfRange(address, 0, 4));
+		setParameter("DL", Arrays.copyOfRange(address, 4, 8));
+		if (isRemote())
+			applyChanges();
+	}
+	
+	/**
+	 * Retrieves the 64 bit destination extended address.
+	 * 
+	 * @return 64 bit destination address.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the get
+	 *                          destination address command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see XBee64BitAddress
+	 */
+	public XBee64BitAddress getDestinationAddress() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] dh = getParameter("DH");
+		byte[] dl = getParameter("DL");
+		byte[] address = new byte[dh.length + dl.length];
+		
+		System.arraycopy(dh, 0, address, 0, dh.length);
+		System.arraycopy(dl, 0, address, dh.length, dl.length);
+		
+		return new XBee64BitAddress(address);
+	}
+	
+	/**
+	 * Sets the IO sampling rate to enable periodic sampling.
+	 * 
+	 * <p>All enabled digital IO and analog inputs will be sampled and
+	 * transmitted every {@code rate} milliseconds to the configured destination
+	 * address.</p>
+	 * 
+	 * <p>A sample rate of {@code 0} ms. disables this feature.</p>
+	 * 
+	 * @param rate IO sampling rate in milliseconds.
+	 * 
+	 * @throws IllegalArgumentException if {@code rate < 0} or {@code rate >
+	 *                                  0xFFFF}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the set IO
+	 *                          sampling rate command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDestinationAddress(XBee64BitAddress)
+	 * @see #getDestinationAddress()
+	 * @see #getIOSamplingRate()
+	 */
+	public void setIOSamplingRate(int rate) throws TimeoutException, XBeeException {
+		// Check range.
+		if (rate < 0 || rate > 0xFFFF)
+			throw new IllegalArgumentException("Rate must be between 0 and 0xFFFF.");
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			if (isRemote())
+				response = sendATCommand(new ATCommand("IR", ByteUtils.intToByteArray(rate)), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand("IR", ByteUtils.intToByteArray(rate)));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+	}
+	
+	/**
+	 * Retrieves the IO sampling rate.
+	 * 
+	 * <p>A sample rate of {@code 0} means the IO sampling feature is disabled.
+	 * </p>
+	 * 
+	 * @return IO sampling rate in milliseconds.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the get IO
+	 *                          sampling rate command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setIOSamplingRate(int)
+	 */
+	public int getIOSamplingRate() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] rate = getParameter("IR");
+		return ByteUtils.byteArrayToInt(rate);
+	}
+	
+	/**
+	 * Sets the digital IO lines to be monitored and sampled when their status
+	 * changes.
+	 * 
+	 * <p>If a change is detected on an enabled digital IO pin, a digital IO
+	 * sample is immediately transmitted to the configured destination address.
+	 * </p>
+	 * 
+	 * <p>A {@code null} set disables this feature.</p>
+	 * 
+	 * @param lines Set of IO lines to be monitored, {@code null} to disable 
+	 *              this feature.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the set DIO
+	 *                          change detection command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getDIOChangeDetection()
+	 * @see #setDestinationAddress(XBee64BitAddress)
+	 * @see #getDestinationAddress()
+	 */
+	public void setDIOChangeDetection(Set<IOLine> lines) throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] bitfield = new byte[2];
+		
+		if (lines != null) {
+			for (IOLine line : lines) {
+				int i = line.getIndex();
+				if (i < 8)
+					bitfield[1] = (byte) (bitfield[1] | (1 << i));
+				else
+					bitfield[0] = (byte) (bitfield[0] | (1 << i - 8));
+			}
+		}
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			if (isRemote())
+				response = sendATCommand(new ATCommand("IC", bitfield), XBeeTransmitOptions.APPLY_CHANGES);
+			else
+				response = sendATCommand(new ATCommand("IC", bitfield));
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+	}
+	
+	/**
+	 * Retrieves the set of IO lines that are monitored for change detection.
+	 * 
+	 * <p>A {@code null} set means the DIO change detection feature is disabled.
+	 * </p>
+	 * 
+	 * @return Set of digital IO lines that are monitored for change detection,
+	 *         {@code null} if there are no monitored lines.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the get DIO
+	 *                          change detection command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDIOChangeDetection(Set)
+	 */
+	public Set<IOLine> getDIOChangeDetection() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] bitfield = getParameter("IC");
+		TreeSet<IOLine> lines = new TreeSet<IOLine>();
+		int mask = (bitfield[0] << 8) + bitfield[1];
+		
+		for (int i = 0; i < 16; i++) {
+			if (ByteUtils.isBitEnabled(mask, i))
+				lines.add(IOLine.getDIO(i));
+		}
+		
+		if (lines.size() > 0)
+			return lines;
+		return null;
+	}
+	
+	/**
+	 * Applies changes to all command registers causing queued command register
+	 * values to be applied.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout sending the get Apply
+	 *                          Changes command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void applyChanges() throws TimeoutException, XBeeException {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		executeParameter("AC");
 	}
 	
 	/**
@@ -1382,49 +1678,34 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves an IO sample from the XBee device containing the value of the 
-	 * provided IO line.
+	 * Retrieves an IO sample from the XBee device containing the value of all
+	 * enabled digital IO and analog input channels.
 	 * 
-	 * @param ioLine The IO line to obtain its associated IO sample.
-	 * @return An IO sample containing the value of the provided IO line.
+	 * @return An IO sample containing the value of all enabled digital IO and
+	 *         analog input channels.
 	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws TimeoutException if there is a timeout getting the IO sample.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see IOSample
-	 * @see IOLine
 	 */
-	private IOSample getIOSample(IOLine ioLine) throws TimeoutException, XBeeException {
-		if (ioLine == null)
-			throw new NullPointerException("IO line cannot be null.");
+	public IOSample readIOSample() throws TimeoutException, XBeeException {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			response = sendATCommand(new ATCommand(ioLine.getReadIOATCommand()));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
-		
 		// Try to build an IO Sample from the sample payload.
-		byte[] samplePayload;
+		byte[] samplePayload = getParameter("IS");
 		IOSample ioSample;
-		switch (getXBeeProtocol()) {
-		case RAW_802_15_4:
+		
+		// If it is a local 802.15.4 device, the response does not contain the
+		// IO sample, so we have to create a packet listener to receive the
+		// sample.
+		if (!isRemote() && getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
 			samplePayload = receiveRaw802IOPacket();
 			if (samplePayload == null)
 				throw new TimeoutException("Timeout waiting for the IO response packet.");
-			break;
-		default:
-			samplePayload = response.getResponse();
 		}
 		
 		try {

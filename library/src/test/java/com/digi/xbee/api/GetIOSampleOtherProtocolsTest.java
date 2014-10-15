@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.ATCommandException;
@@ -37,9 +36,6 @@ import com.digi.xbee.api.models.OperatingMode;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({XBeeDevice.class})
 public class GetIOSampleOtherProtocolsTest {
-
-	// Constants.
-	private final static String METHOD_GET_IO_SAMPLE = "getIOSample";
 		
 	// Variables.
 	private SerialPortRxTx mockedPort;
@@ -69,7 +65,7 @@ public class GetIOSampleOtherProtocolsTest {
 		Mockito.when(mockedPort.isOpen()).thenReturn(false);
 		
 		// Get an IOSample from the XBee device.
-		Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		xbeeDevice.readIOSample();
 	}
 	
 	/**
@@ -85,7 +81,7 @@ public class GetIOSampleOtherProtocolsTest {
 		Mockito.doReturn(OperatingMode.AT).when(xbeeDevice).getOperatingMode();
 		
 		// Get an IOSample from the XBee device.
-		Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		xbeeDevice.readIOSample();
 	}
 	
 	/**
@@ -101,7 +97,7 @@ public class GetIOSampleOtherProtocolsTest {
 		Mockito.doReturn(OperatingMode.UNKNOWN).when(xbeeDevice).getOperatingMode();
 		
 		// Get an IOSample from the XBee device.
-		Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		xbeeDevice.readIOSample();
 	}
 	
 	/**
@@ -121,7 +117,7 @@ public class GetIOSampleOtherProtocolsTest {
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the XBee device.
-		Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		xbeeDevice.readIOSample();
 	}
 	
 	/**
@@ -138,7 +134,7 @@ public class GetIOSampleOtherProtocolsTest {
 		Mockito.doReturn(null).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the XBee device.
-		Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		xbeeDevice.readIOSample();
 	}
 	
 	/**
@@ -155,7 +151,7 @@ public class GetIOSampleOtherProtocolsTest {
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
 		// Get an IOSample from the XBee device.
-		Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		xbeeDevice.readIOSample();
 	}
 	
 	/**
@@ -170,6 +166,7 @@ public class GetIOSampleOtherProtocolsTest {
 		// Generate an ATCommandResponse with OK status to be returned when sending any AT Command.
 		ATCommandResponse mockedResponse = Mockito.mock(ATCommandResponse.class);
 		Mockito.when(mockedResponse.getResponseStatus()).thenReturn(ATCommandStatus.OK);
+		Mockito.when(mockedResponse.getResponse()).thenReturn(new byte[]{});
 		
 		Mockito.doReturn(mockedResponse).when(xbeeDevice).sendATCommand((ATCommand)Mockito.any());
 		
@@ -180,7 +177,7 @@ public class GetIOSampleOtherProtocolsTest {
 		PowerMockito.whenNew(IOSample.class).withAnyArguments().thenReturn(mockedIOSample);
 		
 		// Get an IOSample from the XBee device.
-		IOSample receivedSample = Whitebox.invokeMethod(xbeeDevice, METHOD_GET_IO_SAMPLE, IOLine.DIO0_AD0);
+		IOSample receivedSample = xbeeDevice.readIOSample();
 		
 		// Verify the sample is the expected one.
 		assertEquals(mockedIOSample, receivedSample);

@@ -23,7 +23,10 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.RemoteRaw802Device;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
+import com.digi.xbee.api.io.IOSample;
+import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
@@ -34,8 +37,11 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
+import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
+import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
+import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -63,6 +69,7 @@ public class DataReader extends Thread {
 	// The packetReceiveListeners requires to be a HashMap with an associated integer. The integer is used to determine 
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
+	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
 	
 	private Logger logger;
 	
@@ -206,6 +213,42 @@ public class DataReader extends Thread {
 		}
 	}
 	
+	/**
+	 * Adds the given IO sample receive listener to the list of listeners to 
+	 * be notified when IO samples are received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new IO samples are received.
+	 * 
+	 * @see IIOSampleReceiveListener
+	 * @see #removeIOSampleReceiveListener(IIOSampleReceiveListener)
+	 */
+	public void addIOSampleReceiveListener(IIOSampleReceiveListener listener) {
+		synchronized (ioSampleReceiveListeners) {
+			if (!ioSampleReceiveListeners.contains(listener))
+				ioSampleReceiveListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given IO sample receive listener from the list of IO sample 
+	 * receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * 
+	 * @param listener IO sample receive listener to remove.
+	 * 
+	 * @see IIOSampleReceiveListener
+	 * @see #addIOSampleReceiveListener(IIOSampleReceiveListener)
+	 */
+	public void removeIOSampleReceiveListener(IIOSampleReceiveListener listener) {
+		synchronized (ioSampleReceiveListeners) {
+			if (ioSampleReceiveListeners.contains(listener))
+				ioSampleReceiveListeners.remove(listener);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -291,39 +334,71 @@ public class DataReader extends Thread {
 		if (apiType == null)
 			return;
 		
+		XBeeNetwork network = xbeeDevice.getNetwork();
 		RemoteXBeeDevice remoteDevice = null;
 		byte[] data = null;
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			// TODO: This should be replaced when the Network is implemented.
-			remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
+			remoteDevice = network.getDeviceBy64BitAddress(receivePacket.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
 			data = receivePacket.getRFData();
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			// TODO: This should be replaced when the Network is implemented.
-			remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
+			remoteDevice = network.getDeviceBy64BitAddress(rx64Packet.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
 			data = rx64Packet.getRFData();
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			// TODO: This should be replaced when the Network is implemented.
-			remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
+			remoteDevice = network.getDeviceBy16BitAddress(rx16Packet.get16bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
 			data = rx16Packet.getRFData();
+			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+			break;
+		case IO_DATA_SAMPLE_RX_INDICATOR:
+			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+			remoteDevice = network.getDeviceBy64BitAddress(ioSamplePacket.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
+			notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
+			break;
+		case RX_IO_64:
+			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+			remoteDevice = network.getDeviceBy64BitAddress(rx64IOPacket.get64bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
+			notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
+			break;
+		case RX_IO_16:
+			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+			remoteDevice = network.getDeviceBy16BitAddress(rx16IOPacket.get16bitSourceAddress());
+			if (remoteDevice == null) {
+				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
+				network.addRemoteDevice(remoteDevice);
+			}
+			notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
 			break;
 		default:
 			break;
 		}
-		
-		// TODO: The remote XBee device should be retrieved from the XBee Network (contained 
-		// in the xbeeDevice variable). If the network does not contain such remote device, 
-		// then it should be instantiated and added there.
-		
-		// Notify that serial data was received to the corresponding listeners.
-		if (remoteDevice != null && data != null)
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 	}
 	
 	/**
@@ -418,6 +493,45 @@ public class DataReader extends Thread {
 				// Remove required listeners.
 				for (IPacketReceiveListener listener:removeListeners)
 					packetReceiveListeners.remove(listener);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed IO sample listeners that an IO sample has been received.
+	 *
+	 * @param ioSample The IO sample.
+	 * @param remoteDevice The device that sent the sample.
+	 * 
+	 * @see IOSample
+	 * @see RemoteXBeeDevice
+	 */
+	private void notifyIOSampleReceived(final RemoteXBeeDevice remoteDevice, final IOSample ioSample) {
+		logger.debug(connectionInterface.toString() + "IO sample received.");
+		
+		try {
+			synchronized (ioSampleReceiveListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						ioSampleReceiveListeners.size()));
+				for (final IIOSampleReceiveListener listener:ioSampleReceiveListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							// Synchronize the listener so it is not called 
+							// twice. That is, let the listener to finish its job.
+							synchronized (listener) {
+								listener.ioSampleReceived(remoteDevice, ioSample);
+							}
+						}
+					});
+				}
+				executor.shutdown();
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

@@ -87,7 +87,7 @@ public class XBeeTransmitOptions {
 	public static final int ENABLE_APS_ENCRYPTION = 0x20;
 	
 	/**
-	 * Use the extended transmission timeout (value: {@value}).
+	 * Uses the extended transmission timeout (value: {@value}).
 	 * 
 	 * <p>Setting the extended timeout bit causes the stack to set the extended 
 	 * transmission timeout for the destination address.</p>

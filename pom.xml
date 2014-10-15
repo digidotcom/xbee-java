@@ -28,8 +28,11 @@
 		<module>examples/communication/SendSerialDataSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>
+		<module>examples/io/IOSamplingSample</module>
 		<module>examples/io/LocalADCSample</module>
 		<module>examples/io/LocalDIOSample</module>
+		<module>examples/io/RemoteADCSample</module>
+		<module>examples/io/RemoteDIOSample</module>
 		<module>examples/network/DiscoverDevicesAsyncSample</module>
 		<module>examples/network/DiscoverDevicesBlockingSample</module>
 	</modules>

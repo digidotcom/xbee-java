@@ -37,7 +37,7 @@ import com.digi.xbee.api.models.ATCommandStatus;
 public class GetADCTest {
 	
 	// Constants.
-	private final static String METHOD_GET_IO_SAMPLE = "getIOSample";
+	private final static String METHOD_READ_IO_SAMPLE = "readIOSample";
 	
 	// Variables.
 	private SerialPortRxTx mockedPort;
@@ -88,8 +88,8 @@ public class GetADCTest {
 		IOSample mockedIOSample = Mockito.mock(IOSample.class);
 		Mockito.when(mockedIOSample.hasAnalogValues()).thenReturn(false);
 		
-		// When the 'getIOSample()' method of the XBeeDevice is called, return the mocked IOSample.
-		PowerMockito.doReturn(mockedIOSample).when(xbeeDevice, METHOD_GET_IO_SAMPLE, (IOLine)Mockito.any());
+		// When the 'readIOSample()' method of the XBeeDevice is called, return the mocked IOSample.
+		PowerMockito.doReturn(mockedIOSample).when(xbeeDevice, METHOD_READ_IO_SAMPLE);
 		
 		// Read the value of the AD0 line.
 		xbeeDevice.getADCValue(IOLine.DIO0_AD0);
@@ -117,8 +117,8 @@ public class GetADCTest {
 		Mockito.when(mockedIOSample.hasAnalogValues()).thenReturn(true);
 		Mockito.when(mockedIOSample.getAnalogValues()).thenReturn(new HashMap<IOLine, Integer>());
 		
-		// When the 'getIOSample()' method of the XBeeDevice is called, return the mocked IOSample.
-		PowerMockito.doReturn(mockedIOSample).when(xbeeDevice, METHOD_GET_IO_SAMPLE, (IOLine)Mockito.any());
+		// When the 'readIOSample()' method of the XBeeDevice is called, return the mocked IOSample.
+		PowerMockito.doReturn(mockedIOSample).when(xbeeDevice, METHOD_READ_IO_SAMPLE);
 		
 		// Read the value of the AD0 line.
 		xbeeDevice.getDIOValue(IOLine.DIO0_AD0);
@@ -149,8 +149,8 @@ public class GetADCTest {
 		Mockito.when(mockedIOSample.hasAnalogValues()).thenReturn(true);
 		Mockito.when(mockedIOSample.getAnalogValues()).thenReturn(analogValues);
 		
-		// When the 'getIOSample()' method of the XBeeDevice is called, return the mocked IOSample.
-		PowerMockito.doReturn(mockedIOSample).when(xbeeDevice, METHOD_GET_IO_SAMPLE, (IOLine)Mockito.any());
+		// When the 'readIOSample()' method of the XBeeDevice is called, return the mocked IOSample.
+		PowerMockito.doReturn(mockedIOSample).when(xbeeDevice, METHOD_READ_IO_SAMPLE);
 		
 		// Read the value of the AD0 line.
 		int analogValue = -1;

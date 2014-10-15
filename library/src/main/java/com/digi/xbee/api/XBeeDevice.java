@@ -23,6 +23,7 @@ import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
@@ -416,6 +417,24 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	@Override
 	public void stopListeningForSerialData(ISerialDataReceiveListener listener) {
 		super.stopListeningForSerialData(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#startListeningForIOSamples(com.digi.xbee.api.listeners.IIOSampleReceiveListener)
+	 */
+	@Override
+	public void startListeningForIOSamples(IIOSampleReceiveListener listener) {
+		super.startListeningForIOSamples(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#stopListeningForIOSamples(com.digi.xbee.api.listeners.IIOSampleReceiveListener)
+	 */
+	@Override
+	public void stopListeningForIOSamples(IIOSampleReceiveListener listener) {
+		super.stopListeningForIOSamples(listener);
 	}
 	
 	/**

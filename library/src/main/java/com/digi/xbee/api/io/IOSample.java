@@ -98,7 +98,7 @@ import com.digi.xbee.api.utils.ByteUtils;
  *      <p>bit 6 = N/A</p>
  *      <p>bit 7 = Supply Voltage Value</p>
  * <br>
- *      <p>Example: mask of {@code 0x83} means AD0, and AD1 enabled.</p>
+ *      <p>Example: mask of {@code 0x03} means AD0, and AD1 enabled.</p>
  *      <p>0 0 0 0 0 0 1 1</p>
  * </BLOCKQUOTE>
  */
@@ -449,5 +449,34 @@ public class IOSample {
 		if (!ByteUtils.isBitEnabled(analogMask, 7))
 			throw new OperationNotSupportedException();
 		return powerSupplyVoltage;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("{");
+		if (hasDigitalValues()) {
+			for (IOLine line : digitalValuesMap.keySet()) {
+				sb.append("[").append(line).append(": ").append(digitalValuesMap.get(line)).append("], ");
+			}
+		}
+		if (hasAnalogValues()) {
+			for (IOLine line : analogValuesMap.keySet()) {
+				sb.append("[").append(line).append(": ").append(analogValuesMap.get(line)).append("], ");
+			}
+		}
+		if (hasPowerSupplyValue()) {
+			try {
+				sb.append("[").append("Power supply voltage: ").append(getPowerSupplyValue()).append("], ");
+			} catch (OperationNotSupportedException e) {}
+		}
+		
+		String s = sb.toString();
+		if (s.endsWith(", "))
+			s = s.substring(0, s.length() - 2);
+		return s + "}";
 	}
 }

@@ -197,16 +197,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				serialPort.notifyOnDataAvailable(false);
 				serialPort.removeEventListener();
 				portIdentifier.removePortOwnershipListener(this);
-				Thread closeThread = new Thread("Closing thread for " + port) {
-					public void run() {
-						synchronized (serialPort) {
-							serialPort.close();
-							serialPort = null;
-							connectionOpen = false;
-						}
-					};
-				};
-				closeThread.start();
+				synchronized (serialPort) {
+					serialPort.close();
+					serialPort = null;
+					connectionOpen = false;
+				}
 			} catch (Exception e) { }
 		}
 	}

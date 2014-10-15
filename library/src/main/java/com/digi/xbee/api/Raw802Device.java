@@ -112,6 +112,20 @@ public class Raw802Device extends XBeeDevice {
 	
 	/*
 	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#getNetwork()
+	 */
+	@Override
+	public XBeeNetwork getNetwork() {
+		if (!isOpen())
+			throw new InterfaceNotOpenException();
+		
+		if (network == null)
+			network = new Raw802Network(this);
+		return network;
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.XBeeDevice#getXBeeProtocol()
 	 */
 	@Override

@@ -217,6 +217,15 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
+	 * Retrieves whether or not the packet is a broadcast packet.
+	 * 
+	 * @return True if the packet is a broadcast packet, false otherwise.
+	 */
+	public boolean isBroadcast() {
+		return false;
+	}
+	
+	/**
 	 * Returns whether the given id is the current frame id.
 	 * 
 	 * @param id the frame id to check.

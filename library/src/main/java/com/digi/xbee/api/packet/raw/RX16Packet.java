@@ -23,6 +23,7 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBeeReceiveOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -164,6 +165,18 @@ public class RX16Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean needsAPIFrameID() {
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#isBroadcast()
+	 */
+	@Override
+	public boolean isBroadcast() {
+		if (ByteUtils.isBitEnabled(getReceiveOptions(), 1)
+				|| ByteUtils.isBitEnabled(getReceiveOptions(), 2))
+			return true;
 		return false;
 	}
 	

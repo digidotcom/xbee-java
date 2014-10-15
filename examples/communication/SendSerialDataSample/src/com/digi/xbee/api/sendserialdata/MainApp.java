@@ -13,15 +13,15 @@ package com.digi.xbee.api.sendserialdata;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
+import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * XBee Java Library Send Data sample application.
  * 
- * <p>This example sends data to a remote device with the provided 64-bit 
- * address.</p>
+ * <p>This example sends data to a remote device whose Node Identifier is 
+ * 'REMOTE'.</p>
  * 
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>
@@ -35,11 +35,8 @@ public class MainApp {
 	// TODO Replace with the baud rate of your sender module.
 	private static final int BAUD_RATE = 9600;
 	
-	// TODO Replace with the 64-bit address of your receiver module.
-	private static final XBee64BitAddress DESTINATION_64_BIT_ADDRESS = new XBee64BitAddress("0013A20040XXXXXX");
-	
-	// TODO Replace with the data to send.
 	private static final String DATA_TO_SEND = "Hello XBee!";
+	private static final String REMOTE_DEVICE_ID = "REMOTE";
 	
 	/**
 	 * Application main method.
@@ -54,15 +51,18 @@ public class MainApp {
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
 		byte[] dataToSend = DATA_TO_SEND.getBytes();
 		
-		// Use an XBee64BitAddress object when using a 64-bit destination address.
-		XBee64BitAddress destinationAddress = DESTINATION_64_BIT_ADDRESS;
-		
-		RemoteXBeeDevice remoteDevice = new RemoteXBeeDevice(myDevice, destinationAddress);
-		
 		try {
 			myDevice.open();
 			
-			System.out.format("Sending data to %s >> %s | %s... ", destinationAddress, 
+			// Obtain the remote XBee device from the XBee network.
+			XBeeNetwork xbeeNetwork = myDevice.getNetwork();
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDeviceByID(REMOTE_DEVICE_ID);
+			if (remoteDevice == null) {
+				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
+				System.exit(1);
+			}
+			
+			System.out.format("Sending data to %s >> %s | %s... ", remoteDevice.get64BitAddress(), 
 					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
 					new String(dataToSend));
 			

@@ -24,7 +24,6 @@ import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
-import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -184,58 +183,59 @@ public abstract class AbstractXBeeDevice {
 	 * @param localXBeeDevice The local XBee device that will behave as 
 	 *                        connection interface to communicate with this 
 	 *                        remote XBee device.
-	 * @param xbee64BitAddress The 64-bit address to identify this remote XBee 
-	 *                         device.
+	 * @param addr64 The 64-bit address to identify this XBee device.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code xbee64BitAddress == null}.
+	 *                              if {@code addr64 == null}.
 	 * 
 	 * @see XBee64BitAddress
 	 */
-	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress xbee64BitAddress) {
+	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+		this(localXBeeDevice, addr64, null, null);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param addr64 The 64-bit address to identify this XBee device.
+	 * @param addr16 The 16-bit address to identify this XBee device. It might 
+	 *               be {@code null}.
+	 * @param id The node identifier of this XBee device. It might be 
+	 *           {@code null}.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 *                              if {@code addr64 == null}.
+	 * 
+	 * @see XBee64BitAddress
+	 * @see XBee16BitAddress
+	 */
+	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
+			XBee16BitAddress addr16, String id) {
 		if (localXBeeDevice == null)
 			throw new NullPointerException("Local XBee device cannot be null.");
-		if (xbee64BitAddress == null)
-			throw new NullPointerException("XBee 64 bit address of the remote device cannot be null.");
+		if (addr64 == null)
+			throw new NullPointerException("XBee 64-bit address of the device cannot be null.");
 		if (localXBeeDevice.isRemote())
 			throw new IllegalArgumentException("The given local XBee device is remote.");
 		
 		this.localXBeeDevice = localXBeeDevice;
 		this.connectionInterface = localXBeeDevice.getConnectionInterface();
-		this.xbee64BitAddress = xbee64BitAddress;
+		this.xbee64BitAddress = addr64;
+		this.xbee16BitAddress = addr16;
+		if (addr16 == null)
+			xbee16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
+		this.nodeID = id;
 		this.logger = LoggerFactory.getLogger(this.getClass());
 		logger.debug(toString() + "Using the connection interface {}.", 
 				connectionInterface.getClass().getSimpleName());
 	}
-	
-	/**
-	 * Opens the connection interface associated with this XBee device.
-	 * 
-	 * @throws XBeeException if there is any problem opening the device.
-	 * @throws InterfaceAlreadyOpenException if the device is already open.
-	 * 
-	 * @see #isOpen()
-	 * @see #close()
-	 */
-	public abstract void open() throws XBeeException;
-	
-	/**
-	 * Closes the connection interface associated with this XBee device.
-	 * 
-	 * @see #isOpen()
-	 * @see #open()
-	 */
-	public abstract void close();
-	
-	/**
-	 * Retrieves whether or not the connection interface associated to the 
-	 * device is open.
-	 * 
-	 * @return {@code true} if the interface is open, {@code false} otherwise.
-	 * 
-	 * @see #open()
-	 * @see #close()
-	 */
-	public abstract boolean isOpen();
 	
 	/**
 	 * Retrieves the connection interface associated to this XBee device.
@@ -257,8 +257,7 @@ public abstract class AbstractXBeeDevice {
 	abstract public boolean isRemote();
 	
 	/**
-	 * Initializes the XBee device. Reads some parameters from the device and 
-	 * obtains its protocol.
+	 * Reads some parameters from the device and obtains its protocol.
 	 * 
 	 * @throws InvalidOperatingModeException if the operating mode of the device is not supported.
 	 * @throws TimeoutException if there is a timeout reading the parameters.
@@ -276,40 +275,37 @@ public abstract class AbstractXBeeDevice {
 	 * @see HardwareVersionEnum
 	 * @see XBeeProtocol
 	 */
-	protected void initializeDevice() 
+	public void readDeviceInfo() 
 			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
 			ATCommandException, XBeeException {
 		ATCommandResponse response = null;
-		// Get the 64-bit address only if the XBee device is a local device. Remote devices already 
-		// have the 64-bit address set.
-		if (!isRemote()) {
-			if (xbee64BitAddress == null) {
-				String addressHigh;
-				String addressLow;
-				try {
-					response = sendATCommand(new ATCommand("SH"));
-				} catch (IOException e) {
-					throw new XBeeException("Error writing in the communication interface.", e);
-				}
-				if (response == null || response.getResponse() == null)
-					throw new OperationNotSupportedException("Couldn't get the SH value.");
-				if (response.getResponseStatus() != ATCommandStatus.OK)
-					throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
-				addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
-				try {
-					response = sendATCommand(new ATCommand("SL"));
-				} catch (IOException e) {
-					throw new XBeeException("Error writing in the communication interface.", e);
-				}
-				if (response == null || response.getResponse() == null)
-					throw new OperationNotSupportedException("Couldn't get the SL value.");
-				if (response.getResponseStatus() != ATCommandStatus.OK)
-					throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
-				addressLow = HexUtils.byteArrayToHexString(response.getResponse());
-				while(addressLow.length() < 8)
-					addressLow = "0" + addressLow;
-				xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
+		// Get the 64-bit address.
+		if (xbee64BitAddress == null || xbee64BitAddress == XBee64BitAddress.UNKNOWN_ADDRESS) {
+			String addressHigh;
+			String addressLow;
+			try {
+				response = sendATCommand(new ATCommand("SH"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
 			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the SH value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
+			addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
+			try {
+				response = sendATCommand(new ATCommand("SL"));
+			} catch (IOException e) {
+				throw new XBeeException("Error writing in the communication interface.", e);
+			}
+			if (response == null || response.getResponse() == null)
+				throw new OperationNotSupportedException("Couldn't get the SL value.");
+			if (response.getResponseStatus() != ATCommandStatus.OK)
+				throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
+			addressLow = HexUtils.byteArrayToHexString(response.getResponse());
+			while(addressLow.length() < 8)
+				addressLow = "0" + addressLow;
+			xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
 		}
 		// Get the Node ID.
 		if (nodeID == null) {
@@ -503,6 +499,45 @@ public abstract class AbstractXBeeDevice {
 	 */
 	public HardwareVersion getHardwareVersion() {
 		return hardwareVersion;
+	}
+	
+	/**
+	 * Updates the current device reference with the data provided for the given 
+	 * device.
+	 * 
+	 * <p><b>This is only for internal use.</b></p>
+	 * 
+	 * @param device The XBee Device to get the data from.
+	 */
+	public void updateDeviceDataFrom(AbstractXBeeDevice device) {
+		// TODO Should the devices have the same protocol??
+		// TODO Should be allow to update a local from a remote or viceversa?? Maybe 
+		// this must be in the Local/Remote device class(es) and not here... 
+		
+		this.nodeID = device.getNodeID();
+		
+		// Only update the 64-bit address if the original is null or unknown.
+		XBee64BitAddress addr64 = device.get64BitAddress();
+		if (addr64 != null && addr64 != XBee64BitAddress.UNKNOWN_ADDRESS
+				&& !addr64.equals(xbee64BitAddress) 
+				&& (xbee64BitAddress == null 
+					|| xbee64BitAddress.equals(XBee64BitAddress.UNKNOWN_ADDRESS))) {
+			xbee64BitAddress = addr64;
+		}
+		
+		// TODO Change here the 16-bit address or maybe in ZigBee and 802.15.4?
+		// TODO Should the 16-bit address be always updated? Or following the same rule as the 64-bit address.
+		XBee16BitAddress addr16 = device.get16BitAddress();
+		if (addr16 != null && !addr16.equals(xbee16BitAddress)) {
+			xbee16BitAddress = addr16;
+		}
+		
+		//this.deviceType = device.deviceType; // This is not yet done.
+		
+		// The operating mode: only API/API2. Do we need this for a remote device?
+		// The protocol of the device should be the same.
+		// The hardware version should be the same.
+		// The firmware version can change...
 	}
 	
 	/**
@@ -1898,6 +1933,109 @@ public abstract class AbstractXBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
 	abstract public void reset() throws TimeoutException, XBeeException;
+	
+	/**
+	 * Sets the given parameter with the provided value in the XBee device.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be set.
+	 * @param parameterValue The value of the parameter to set.
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null} or 
+	 *                              if {@code parameterValue == null}.
+	 * @throws TimeoutException if there is a timeout setting the parameter.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getParameter(String)
+	 * @see #executeParameter(String)
+	 */
+	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
+		if (parameterValue == null)
+			throw new NullPointerException("Value of the parameter cannot be null.");
+		
+		sendParameter(parameter, parameterValue);
+	}
+	
+	/**
+	 * Gets the value of the given parameter from the XBee device.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be get.
+	 * @return A byte array containing the value of the parameter.
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws TimeoutException if there is a timeout getting the parameter value.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setParameter(String)
+	 * @see #executeParameter(String)
+	 */
+	public byte[] getParameter(String parameter) throws TimeoutException, XBeeException {
+		byte[] parameterValue = sendParameter(parameter, null);
+		
+		// Check if the response is null, if so throw an exception (maybe it was a write-only parameter).
+		if (parameterValue == null)
+			throw new OperationNotSupportedException("Couldn't get the '" + parameter + "' value.");
+		return parameterValue;
+	}
+	
+	/**
+	 * Executes the given parameter in the XBee device. This method is intended to be used for 
+	 * those parameters that cannot be read or written, they just execute some action in the 
+	 * XBee module.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be executed.
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws TimeoutException if there is a timeout executing the parameter.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setParameter(String)
+	 * @see #getParameter(String)
+	 */
+	public void executeParameter(String parameter) throws TimeoutException, XBeeException {
+		sendParameter(parameter, null);
+	}
+	
+	/**
+	 * Sends the given AT parameter to the XBee device with an optional argument or value 
+	 * and returns the response (likely the value) of that parameter in a byte array format.
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be executed.
+	 * @param parameterValue The value of the parameter to set (if any).
+	 * 
+	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
+	 * @throws NullPointerException if {@code parameter == null}.
+	 * @throws TimeoutException if there is a timeout executing the parameter.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setParameter(String)
+	 * @see #getParameter(String)
+	 * @see #executeParameter(String)
+	 */
+	private byte[] sendParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
+		if (parameter == null)
+			throw new NullPointerException("Parameter cannot be null.");
+		if (parameter.length() != 2)
+			throw new IllegalArgumentException("Parameter must contain exactly 2 characters.");
+		
+		ATCommand atCommand = new ATCommand(parameter, parameterValue);
+		
+		// Create and send the AT Command.
+		ATCommandResponse response = null;
+		try {
+			response = sendATCommand(atCommand);
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// Check if AT Command response is valid.
+		checkATCommandResponseIsValid(response);
+		
+		// Return the response value.
+		return response.getResponse();
+	}
 	
 	/*
 	 * (non-Javadoc)

@@ -3,11 +3,11 @@
   This is a sample Java application to show how to send data asynchronously from
   the XBee device to another remote device on the same network using the XBee 
   Java Library. Transmitting data asynchronously means the execution will not 
-  be blocked during the transmit request.
+  be blocked during the transmit request, but you will not be able to know if 
+  the data was sent successfully.
   
   The application sends data asynchronously to a remote XBee device on the 
-  network, by using its 64-bit address. Note that the address of the remote 
-  device has to be written in the code before running the application.
+  network with a specific Node Identifier (name).
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
@@ -32,55 +32,62 @@
 
   Example setup
   -------------
-    1) Insert the 64-bit address of the receiver XBee module in the MainApp 
-       class.
-       Find the 64-bit address labeled on the back of the device, which is a 16 
-       character string that follows the format 0013A20040XXXXXX.
-       
-    2) Plug the XBee radios into the XBee adapters and connect them to your
+    1) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
+       
+    2) Configure the remote XBee device with the Node Identifier used by the 
+       example to communicate with it. To do so follow these steps:
+             
+          1) Launch the XCTU application.
+             
+          2) Add the remote XBee module to the XCTU, specifying it's port 
+             settings.
+             
+          3) Once the module is added, open the 'Configuration' working mode, 
+             look for the 'NI' setting and configure it with 'REMOTE' 
+             (without quotes).
+             
+             Notice that by default the 'NI' setting has a blank space 
+             configured, make sure that there is not a blank space before the 
+             'REMOTE' text.
        
     3) Ensure that the modules are in API mode and on the same network.
        For further information on how to perform this task, go to [...]
        
-    4) Set the port and baud rate of the sender XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+    4) Set the port and baud rate of the sender (local) XBee radio in the 
+       MainApp class. If you do not know the serial/USB port where your 
+       module is connected to, see [...]
 
 
   Running the example
   -------------------
-  First, build the application. To test the functionality ensure the device 
-  with the configured address during the setup above to be listening to unicast 
-  data. To do this:
+  First, build the application. Then, you need to setup XCTU to see the data 
+  received by the remote XBee device. Follow these steps to do so:
   
-    a) Use the 'ReceiveSerialDataSample' example included in the library.
-       Follow the instructions in the 'ReadMe' file to perform the task.
+    1) Launch the XCTU application.
        
-    b) Use the XCTU:
+    2) Add the remote XBee module to the XCTU, specifying it's port settings.
        
-       1) Launch the XCTU application.
+    3) Switch to the 'Consoles' working mode and open the serial connection 
+       so you can see the data when it is received.
           
-       2) Add the receiver XBee module to the XCTU, specifying it's port 
-          settings.
-          
-       3) Once the module is added, change to the 'Consoles' working mode and 
-          open the serial connection so you can see the data when it is 
-          received.
-          
-       4) Launch the sample application, some data is sent to the configured 
-          destination address and a line with the result of the operation is 
-          printed to the standard output:
-          
-          Sending data to 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
-          
-          Also, in the XCTU console a new RX frame has been received. Select it 
-          and review the details, some of the details will be similar to:
-          
-          - Start delimiter:         7E
-          - Length:                  Depends on the XBee protocol.
-          - Frame type:              Depends on the XBee protocol.
-          - 64-bit source address:   The XBee sender's 64-bit address.
-          - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 21
-                                     Hello XBee!
-          
+  Finally, launch the sample application, some data is sent to the configured 
+  remote XBee device whose Node Identifier is 'REMOTE'. When that happens, a 
+  line with the result of the operation is printed to the standard output:
+       
+    Sending data to 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
+    
+     - Where 0013A20040XXXXXX is the 64-bit address of the remote XBee device 
+       whose Node Identifier is 'REMOTE'.
+       
+  Verify that in the XCTU console a new RX frame has been received by the 
+  remote XBee device. Select it and review the details, some of the details 
+  will be similar to:
+       
+    - Start delimiter:         7E
+    - Length:                  Depends on the XBee protocol.
+    - Frame type:              Depends on the XBee protocol.
+    - 64-bit source address:   The XBee sender's 64-bit address.
+    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 21
+                               Hello XBee!
+       

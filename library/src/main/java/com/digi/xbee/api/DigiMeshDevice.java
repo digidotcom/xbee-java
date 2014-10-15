@@ -13,6 +13,7 @@ package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
@@ -99,6 +100,19 @@ public class DigiMeshDevice extends XBeeDevice {
 		super.open();
 		if (xbeeProtocol != XBeeProtocol.DIGI_MESH)
 			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#getNetwork()
+	 */
+	@Override
+	public XBeeNetwork getNetwork() {
+		if (!isOpen())
+			throw new InterfaceNotOpenException();
+		if (network == null)
+			network = new DigiMeshNetwork(this);
+		return network;
 	}
 	
 	/*

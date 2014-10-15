@@ -655,14 +655,13 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sends the given AT command with the given options and waits for answer 
-	 * or until the configured receive timeout expires.
+	 * Sends the given AT command and waits for answer or until the configured 
+	 * receive timeout expires.
 	 * 
 	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param command AT command to be sent.
-	 * @param options Transmit options.
 	 * @return An {@code ATCommandResponse} object containing the response of 
 	 *         the command or {@code null} if there is no response.
 	 *         
@@ -676,11 +675,10 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see ATCommand
 	 * @see ATCommandResponse
-	 * @see XBeeTransmitOptions
 	 * @see #setReceiveTimeout(int)
 	 * @see #getReceiveTimeout()
 	 */
-	protected ATCommandResponse sendATCommand(ATCommand command, int options) 
+	protected ATCommandResponse sendATCommand(ATCommand command) 
 			throws InvalidOperatingModeException, TimeoutException, IOException {
 		// Check if command is null.
 		if (command == null)
@@ -738,35 +736,6 @@ public abstract class AbstractXBeeDevice {
 			}
 		}
 		return response;
-	}
-	
-	/**
-	 * Sends the given AT command and waits for answer or until the configured 
-	 * receive timeout expires.
-	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
-	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
-	 * 
-	 * @param command AT command to be sent.
-	 * @return An {@code ATCommandResponse} object containing the response of 
-	 *         the command or {@code null} if there is no response.
-	 *         
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires while waiting 
-	 *                          for the command reply.
-	 * @throws IOException if an I/O error occurs while sending the AT command.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code command == null}.
-	 * 
-	 * @see ATCommand
-	 * @see ATCommandResponse
-	 * @see #setReceiveTimeout(int)
-	 * @see #getReceiveTimeout()
-	 */
-	protected ATCommandResponse sendATCommand(ATCommand command) 
-			throws InvalidOperatingModeException, TimeoutException, IOException {
-		return sendATCommand(command, XBeeTransmitOptions.NONE);
 	}
 	
 	/**
@@ -855,7 +824,7 @@ public abstract class AbstractXBeeDevice {
 	 * Sends the given XBee packet synchronously and blocks until response is 
 	 * received or receive timeout is reached.
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>Use {@link #sendXBeePacketAsync(XBeePacket, boolean)} for non-blocking 
@@ -1157,20 +1126,7 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		String atCommand = ioLine.getConfigurationATCommand();
-		ATCommandResponse response = null;
-		try {
-			if (isRemote())
-				response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}), XBeeTransmitOptions.APPLY_CHANGES);
-			else
-				response = sendATCommand(new ATCommand(atCommand, new byte[]{(byte)ioMode.getID()}));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
+		setParameter(ioLine.getConfigurationATCommand(), new byte[]{(byte)ioMode.getID()});
 	}
 	
 	/**
@@ -1240,21 +1196,7 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		String atCommand = ioLine.getConfigurationATCommand();
-		byte[] valueByte = new byte[]{(byte)ioValue.getID()};
-		ATCommandResponse response = null;
-		try {
-			if (isRemote())
-				response = sendATCommand(new ATCommand(atCommand, valueByte), XBeeTransmitOptions.APPLY_CHANGES);
-			else
-				response = sendATCommand(new ATCommand(atCommand, valueByte));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
+		setParameter(ioLine.getConfigurationATCommand(), new byte[]{(byte)ioValue.getID()});
 	}
 	
 	/**
@@ -1335,20 +1277,7 @@ public abstract class AbstractXBeeDevice {
 		// Convert the value.
 		int finaldutyCycle = (int)(dutyCycle * 1023.0/100.0);
 		
-		// Create and send the AT Command.
-		String atCommand = ioLine.getPWMDutyCycleATCommand();
-		ATCommandResponse response = null;
-		try {
-			if (isRemote())
-				response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)), XBeeTransmitOptions.APPLY_CHANGES);
-			else
-				response = sendATCommand(new ATCommand(atCommand, ByteUtils.intToByteArray(finaldutyCycle)));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
+		setParameter(ioLine.getPWMDutyCycleATCommand(), ByteUtils.intToByteArray(finaldutyCycle));
 	}
 	
 	/**
@@ -1452,11 +1381,18 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
+		boolean applyChanges = isApplyConfigurationChangesEnabled();
+		if (isRemote() && applyChanges)
+			enableApplyConfigurationChanges(false);
+		
 		byte[] address = xbee64BitAddress.getValue();
 		setParameter("DH", Arrays.copyOfRange(address, 0, 4));
 		setParameter("DL", Arrays.copyOfRange(address, 4, 8));
-		if (isRemote())
+		
+		if (isRemote()) {
 			applyChanges();
+			enableApplyConfigurationChanges(applyChanges);
+		}
 	}
 	
 	/**
@@ -1516,19 +1452,7 @@ public abstract class AbstractXBeeDevice {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			if (isRemote())
-				response = sendATCommand(new ATCommand("IR", ByteUtils.intToByteArray(rate)), XBeeTransmitOptions.APPLY_CHANGES);
-			else
-				response = sendATCommand(new ATCommand("IR", ByteUtils.intToByteArray(rate)));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
+		setParameter("IR", ByteUtils.intToByteArray(rate));
 	}
 	
 	/**
@@ -1594,19 +1518,7 @@ public abstract class AbstractXBeeDevice {
 			}
 		}
 		
-		// Create and send the AT Command.
-		ATCommandResponse response = null;
-		try {
-			if (isRemote())
-				response = sendATCommand(new ATCommand("IC", bitfield), XBeeTransmitOptions.APPLY_CHANGES);
-			else
-				response = sendATCommand(new ATCommand("IC", bitfield));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		// Check if AT Command response is valid.
-		checkATCommandResponseIsValid(response);
+		setParameter("IC", bitfield);
 	}
 	
 	/**

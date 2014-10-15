@@ -27,8 +27,10 @@ import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
+import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
+import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeMessage;
@@ -38,6 +40,7 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
+import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
@@ -70,6 +73,7 @@ public class DataReader extends Thread {
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
 	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
+	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<IModemStatusReceiveListener>();
 	
 	private Logger logger;
 	
@@ -249,6 +253,42 @@ public class DataReader extends Thread {
 		}
 	}
 	
+	/**
+	 * Adds the given Modem Status receive listener to the list of listeners to 
+	 * be notified when a modem status event is received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new modem status events are received.
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #removeModemStatusReceiveListener(IModemStatusReceiveListener)
+	 */
+	public void addModemStatusReceiveListener(IModemStatusReceiveListener listener) {
+		synchronized (modemStatusListeners) {
+			if (modemStatusListeners.contains(listener))
+				modemStatusListeners.remove(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given Modem Status receive listener from the list of Modem Status 
+	 * receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * 
+	 * @param listener Modem Status receive listener to remove.
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #addModemStatusReceiveListener(IModemStatusReceiveListener)
+	 */
+	public void removeModemStatusReceiveListener(IModemStatusReceiveListener listener) {
+		synchronized (modemStatusListeners) {
+			if (modemStatusListeners.contains(listener))
+				modemStatusListeners.remove(listener);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -396,6 +436,9 @@ public class DataReader extends Thread {
 			}
 			notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
 			break;
+		case MODEM_STATUS:
+			ModemStatusPacket modemStatusPacket = (ModemStatusPacket)apiPacket;
+			notifyModemStatusReceived(modemStatusPacket.getStatus());
 		default:
 			break;
 		}
@@ -527,6 +570,43 @@ public class DataReader extends Thread {
 							// twice. That is, let the listener to finish its job.
 							synchronized (listener) {
 								listener.ioSampleReceived(remoteDevice, ioSample);
+							}
+						}
+					});
+				}
+				executor.shutdown();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed Modem Status listeners that Modem Status event has been received.
+	 *
+	 * @param modemStatusEvent The Modem Status event.
+	 * 
+	 * @see ModemStatusEvent
+	 */
+	private void notifyModemStatusReceived(final ModemStatusEvent modemStatusEvent) {
+		logger.debug(connectionInterface.toString() + "Modem Status event received.");
+		
+		try {
+			synchronized (modemStatusListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						modemStatusListeners.size()));
+				for (final IModemStatusReceiveListener listener:modemStatusListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							// Synchronize the listener so it is not called 
+							// twice. That is, let the listener to finish its job.
+							synchronized (listener) {
+								listener.modemStatusEventReceived(modemStatusEvent);
 							}
 						}
 					});

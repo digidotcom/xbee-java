@@ -35,6 +35,7 @@ import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
+import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
@@ -652,6 +653,49 @@ public abstract class AbstractXBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeIOSampleReceiveListener(listener);
+	}
+	
+	/**
+	 * Starts listening for Modem Status events in the provided Modem Status listener.
+	 *  
+	 * <p>The provided listener is added to the list of listeners to be notified
+	 * when new Modem Status events are received. If the listener has been already 
+	 * included this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new Modem Status events are received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #stopListeningForModemStatusEvents(IModemStatusReceiveListener)
+	 */
+	protected void startListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.addModemStatusReceiveListener(listener);
+	}
+	
+	/**
+	 * Stops listening for Modem Status events in the provided Modem Status listener.
+	 * 
+	 * <p>The provided listener is removed from the list of Modem Status 
+	 * listeners. If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #startListeningForModemStatusEvents(IModemStatusReceiveListener)
+	 */
+	protected void stopListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.removeModemStatusReceiveListener(listener);
 	}
 	
 	/**

@@ -266,8 +266,8 @@ public class DataReader extends Thread {
 	 */
 	public void addModemStatusReceiveListener(IModemStatusReceiveListener listener) {
 		synchronized (modemStatusListeners) {
-			if (modemStatusListeners.contains(listener))
-				modemStatusListeners.remove(listener);
+			if (!modemStatusListeners.contains(listener))
+				modemStatusListeners.add(listener);
 		}
 	}
 	

@@ -62,6 +62,17 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
+	// Constants.
+	public static final String CONFIGURE_DISCOVERY_TIMEOUT_METHOD = "configureDiscoveryTimeout";
+	public static final String CONFIGURE_DISCOVERY_OPTIONS_METHOD = "configureDiscoveryOptions";
+	public static final String GET_PARAMETER_METHOD = "getParameter";
+	public static final String SET_DISCOVERY_TIMEOUT_METHOD = "setDiscoveryTimeout";
+	public static final String SET_DISCOVERY_OPTIONS_METHOD = "setDiscoveryOptions";
+	public static final String SEND_NODE_DISCOVERY_COMMAND_METHOD = "sendNodeDiscoverCommand";
+	public static final String DISCOVER_DEVICES_API_METHOD = "discoverDevicesAPI";
+	public static final String PARSE_DISCOVERY_API_DATA_METHOD = "parseDiscoveryAPIData";
+	public static final String NOTIFY_DEVICE_DISCOVERED = "notifyDeviceDiscovered";
+		
 	// Variables.
 	private NodeDiscovery nd;
 	
@@ -237,20 +248,19 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("getParameter", deviceMock, "NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", Mockito.eq(deviceMock), Mockito.isNull(byte[].class), 
-				Mockito.isNull(byte[].class), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.eq("NO"), 
-				Mockito.any(byte[].class), Mockito.eq("network options"), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.eq("NT"), 
-				Mockito.any(byte[].class), Mockito.anyString(), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network options", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, Mockito.eq(deviceMock), Mockito.isNull(byte[].class), 
+				Mockito.isNull(IDiscoveryListener.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, Mockito.eq(deviceMock), Mockito.isNull(byte[].class), 
+				Mockito.isNull(IDiscoveryListener.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, deviceTimeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}
@@ -283,22 +293,18 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		assertThat("The 'discoverDevices' should block for " + timeout + " ms", end - start < timeout + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("getParameter", deviceMock, "NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, null, deviceTimeoutModifiedByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, null, deviceTimeoutByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.eq("NO"), 
-				Mockito.any(byte[].class), Mockito.eq("network options"), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NT", 
-				deviceTimeoutModifiedByteArray, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NT", 
-				deviceTimeoutByteArray, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", null, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network options", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutModifiedByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, timeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, timeout);
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}
@@ -334,22 +340,18 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock,"NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, deviceOptionsModifiedByteArray, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, deviceOptionsByteArray, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NO", 
-				deviceOptionsModifiedByteArray, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NO", 
-				deviceOptionsByteArray, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.eq("NT"), 
-				Mockito.any(byte[].class), Mockito.eq("network timeout"), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock,"NO", null, "network options", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsModifiedByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, deviceTimeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}
@@ -385,24 +387,19 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		assertThat("The 'discoverDevices' should block for " + timeout + " ms", end - start < timeout + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, deviceOptionsModifiedByteArray, deviceTimeoutModifiedByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, deviceOptionsByteArray, deviceTimeoutByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NO", 
-				deviceOptionsModifiedByteArray, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NO", 
-				deviceOptionsByteArray, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NT", 
-				deviceTimeoutModifiedByteArray, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setParameter", deviceMock, "NT", 
-				deviceTimeoutByteArray, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", null, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network options", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutModifiedByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsModifiedByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsByteArray, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, timeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, timeout);
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}
@@ -434,19 +431,20 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("getParameter", deviceMock, "NO", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, null, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.anyString(), Mockito.any(byte[].class), Mockito.anyString(), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, deviceTimeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("parseDiscoveryAPIData", Mockito.any(byte[].class), Mockito.eq(deviceMock));
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("notifyDeviceDiscovered", Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}
@@ -499,18 +497,19 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		assertThat("Remote device 16-bit address is not right", ((RemoteZigBeeDevice)remoteDevice).get16BitAddress(), 
 				is(equalTo(new XBee16BitAddress("0000"))));
 		 
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("getParameter", deviceMock, "NO", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, null, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.anyString(), Mockito.any(byte[].class), Mockito.anyString(), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, deviceTimeout);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("parseDiscoveryAPIData", Mockito.any(byte[].class), Mockito.eq(deviceMock));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("notifyDeviceDiscovered", Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
 		
 		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}
@@ -575,18 +574,19 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 				is(equalTo(addr16[i])));
 		}
 		 
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("configureDiscoveryOptions", deviceMock, options, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("getParameter", deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("getParameter", deviceMock, "NO", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("setDiscoveryOptions", deviceMock, null, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke("setParameter", Mockito.eq(deviceMock), Mockito.anyString(), Mockito.any(byte[].class), Mockito.anyString(), Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("sendNodeDiscoverCommand", Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network timeout", null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke("discoverDevicesAPI", deviceMock, null, null, deviceTimeout);
-		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke("parseDiscoveryAPIData", Mockito.any(byte[].class), Mockito.eq(deviceMock));
-		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke("notifyDeviceDiscovered", Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
+		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
+		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
 		
 		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 	}

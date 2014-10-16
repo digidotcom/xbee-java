@@ -389,8 +389,10 @@ class NodeDiscovery {
 		running = true;
 		
 		try {
-			// TODO Continue although the configuration fails?
-			configureDiscoveryOptions(device, options, timeout, listener);
+			// If the given timeout cannot be set, use the device timeout.
+			if (!configureDiscoveryTimeout(device, timeout, listener))
+				timeout = USE_DEVICE_TIMEOUT;
+			configureDiscoveryOptions(device, options, listener);
 			
 			// Read the timeout of the device.
 			if (timeout == USE_DEVICE_TIMEOUT) {
@@ -420,8 +422,9 @@ class NodeDiscovery {
 			running = false;
 			
 			// Restore old values.
-			logger.debug("{}Restoring discovery options.", toString());
-			setDiscoveryOptions(device, oldNOValue, oldNTValue, listener);
+			logger.debug("{}Restoring discovery timeout and options.", toString());
+			setDiscoveryTimeout(device, oldNTValue, listener);
+			setDiscoveryOptions(device, oldNOValue, listener);
 			
 			notifyDiscoveryFinished(listener, null);
 		}
@@ -634,16 +637,11 @@ class NodeDiscovery {
 	}
 	
 	/**
-	 * Configures the given discovery options and timeout in the device.
+	 * Configures the given discovery timeout in the device.
 	 * 
-	 * <p>If provided options are {@code null}, the options are not configured.
-	 * </p>
-	 * 
-	 * <p>If provided timeout is negative, it is not configured.</p>
+	 * <p>If provided timeout is negative, it will not be configured.</p>
 	 * 
 	 * @param device The local device to set the discovery options.
-	 * @param options Collection of discovery options to be configured in the 
-	 *                {@code NO} parameter.
 	 * @param timeout Time to be configured in the {@code NT} parameter of the
 	 *                device.
 	 * @param listener Discovery listeners to be notified about errors in the 
@@ -652,19 +650,54 @@ class NodeDiscovery {
 	 * @return {@code true} if the configuration operation finishes successfully,
 	 *         {@code false} otherwise.
 	 */
-	private boolean configureDiscoveryOptions(XBeeDevice device, Set<DiscoveryOptions> options, 
-			long timeout, IDiscoveryListener listener) {
-		oldNOValue = null;
+	private boolean configureDiscoveryTimeout(XBeeDevice device, long timeout, IDiscoveryListener listener) {
 		oldNTValue = null;
+		
+		logger.debug("{}Configuring discovery timeout.", toString());
+		
+		// If timeout is negative, do not configure the radio module.
+		if (timeout < 0)
+			return true;
+		
+		byte[] timeoutValue = null;
+		
+		if (timeout > USE_DEVICE_TIMEOUT) {
+			oldNTValue = getParameter(device, NT_COMMAND, null, "network timeout", listener);
+			
+			if (oldNTValue != null)
+				logger.debug("{}Previous NT: {} ms.", toString(), ByteUtils.byteArrayToInt(oldNTValue)*100);
+			
+			timeoutValue = ByteUtils.intToByteArray((int)timeout / 100);
+		}
+		
+		return setDiscoveryTimeout(device, timeoutValue, listener);
+	}
+	
+	/**
+	 * Configures the given discovery options in the device.
+	 * 
+	 * <p>If provided options are {@code null}, the options will not be 
+	 * configured.</p>
+	 * 
+	 * @param device The local device to set the discovery options.
+	 * @param options Collection of discovery options to be configured in the 
+	 *                {@code NO} parameter.
+	 * @param listener Discovery listeners to be notified about errors in the 
+	 *                 configuration. It may be {@code null}.
+	 * 
+	 * @return {@code true} if the configuration operation finishes successfully,
+	 *         {@code false} otherwise.
+	 */
+	private boolean configureDiscoveryOptions(XBeeDevice device, Set<DiscoveryOptions> options, IDiscoveryListener listener) {
+		oldNOValue = null;
 		
 		logger.debug("{}Configuring discovery options.", toString());
 		
 		// If options are null, do not configure the radio module.
-		if (options == null && timeout < 0)
+		if (options == null)
 			return true;
 		
 		byte[] optionsValue = null;
-		byte[] timeoutValue = null;
 		
 		if (options != null) {
 			oldNOValue = getParameter(device, NO_COMMAND, null, "network options", listener);
@@ -676,27 +709,16 @@ class NodeDiscovery {
 			optionsValue = ByteUtils.intToByteArray(value);
 		}
 		
-		if (timeout > USE_DEVICE_TIMEOUT) {
-			oldNTValue = getParameter(device, NT_COMMAND, null, "network timeout", listener);
-			
-			if (oldNTValue != null)
-				logger.debug("{}Previous NT: {} ms.", toString(), ByteUtils.byteArrayToInt(oldNTValue)*100);
-			
-			timeoutValue = ByteUtils.intToByteArray((int)timeout / 100);
-		}
-		
-		return setDiscoveryOptions(device, optionsValue, timeoutValue, listener);
+		return setDiscoveryOptions(device, optionsValue, listener);
 	}
 	
 	/**
-	 * Configures the given {@code NO} and {@code NT} values the device.
+	 * Configures the given {@code NT} values in the device.
 	 * 
-	 * <p>If any of the provided values is {@code null}, that value will not 
-	 * be configured in the device.</p>
+	 * <p>If the provided value is {@code null}, it will not be configured in 
+	 * the device.</p>
 	 * 
 	 * @param device The local device to set the provided values.
-	 * @param noValue An hexadecimal string representing the value for the 
-	 *                {@code N0} parameter.
 	 * @param ntValue An hexadecimal string representing the value for the 
 	 *                {@code NT} parameter.
 	 * @param listener Discovery listener to be notified about errors in the 
@@ -705,33 +727,53 @@ class NodeDiscovery {
 	 * @return {@code true} if the configuration operation finishes successfully,
 	 *         {@code false} otherwise.
 	 */
-	private boolean setDiscoveryOptions(XBeeDevice device, byte[] noValue, 
-			byte[] ntValue, IDiscoveryListener listener) {
-		if (noValue == null && ntValue == null)
+	private boolean setDiscoveryTimeout(XBeeDevice device, byte[] ntValue, IDiscoveryListener listener) {
+		if (ntValue == null)
 			return true;
 		
-		boolean configured = true;
-		
-		if (noValue != null) {
-			boolean success = setParameter(device, NO_COMMAND, noValue, "network options", listener);
-			configured = configured & success;
-			if (success)
-				logger.debug("{}Configured NO to {}.", toString(), HexUtils.byteArrayToHexString(noValue));
-			else
-				logger.error("{}Could not configure NO to {}.", toString(), HexUtils.byteArrayToHexString(noValue));
+		try {
+			device.setParameter(NT_COMMAND, ntValue);
+			logger.debug("{}Configured NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
+		} catch (XBeeException e) {
+			notifyDiscoveryError(listener, "Could not configure the discovery timeout to " +  ByteUtils.byteArrayToInt(ntValue)*100 + 
+					" ms. The last established timeout will be used.");
+			return false;
 		}
 		
-		if (ntValue != null) {
-			boolean success = setParameter(device, NT_COMMAND, ntValue, "network timeout", listener);
-			configured = configured & success;
-			if (success)
-				logger.debug("{}Configured NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
-			else
-				logger.error("{}Could not configure NT to {} ms.", toString(), ByteUtils.byteArrayToInt(ntValue)*100);
-		}
-		
-		return configured;
+		return true;
 	}
+	
+	/**
+	 * Configures the given {@code NO} values in the device.
+	 * 
+	 * <p>If the provided value is {@code null}, it will not be configured in 
+	 * the device.</p>
+	 * 
+	 * @param device The local device to set the provided values.
+	 * @param noValue An hexadecimal string representing the value for the 
+	 *                {@code N0} parameter.
+	 * @param listener Discovery listener to be notified about errors in the 
+	 *                 configuration. It may be {@code null}.
+	 * 
+	 * @return {@code true} if the configuration operation finishes successfully,
+	 *         {@code false} otherwise.
+	 */
+	private boolean setDiscoveryOptions(XBeeDevice device, byte[] noValue, IDiscoveryListener listener) {
+		if (noValue == null)
+			return true;
+		
+		try {
+			device.setParameter(NO_COMMAND, noValue);
+			logger.debug("{}Configured NO to {} ms.", toString(), HexUtils.byteArrayToHexString(noValue));
+		} catch (XBeeException e) {
+			notifyDiscoveryError(listener, "Could not configure the discovery options to " +  HexUtils.byteArrayToHexString(noValue) + 
+					". The last established options will be used.");
+			return false;
+		}
+		
+		return true;
+	}
+
 	
 	/**
 	 * Sends the node discover ({@code ND}) command.
@@ -780,35 +822,6 @@ class NodeDiscovery {
 					String.format(error, desc, parameter, defaultValue, e.getMessage()));
 		}
 		return value;
-	}
-	
-	/**
-	 * Configures the value of the provided parameter in the given device.
-	 * 
-	 * <p>This method notifies the provided discovery listener if any error 
-	 * occurs when setting the value.</p>
-	 * 
-	 * @param device The device to set the value to.
-	 * @param parameter The parameter to be set.
-	 * @param value A byte array with the new value of the parameter.
-	 * @param desc The description of the parameter to be set.
-	 * @param listener Discovery listener to be notified if any error occurs. 
-	 *                 It may be {@code null}.
-	 * 
-	 * @return {@code true} if the operation finishes successfully, 
-	 *         {@code false} otherwise.
-	 */
-	private boolean setParameter(XBeeDevice device, String parameter, byte[] value, 
-			String desc, IDiscoveryListener listener) {
-		try {
-			device.setParameter(parameter, value);
-			return true;
-		} catch (XBeeException e) {
-			notifyDiscoveryError(listener, 
-					String.format("Could not set %s (%s) to %s: %s.", desc, parameter, 
-							HexUtils.byteArrayToHexString(value), e.getMessage()));
-			return false;
-		}
 	}
 	
 	/**

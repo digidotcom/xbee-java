@@ -19,7 +19,7 @@ import android.hardware.usb.UsbEndpoint;
 public class AndroidUSBInputStream extends InputStream {
 
 	// Constants.
-	private static final int READ_BUFFER_SIZE = 512;
+	private static final int READ_BUFFER_SIZE = 1024;
 	private static final int OFFSET = 2;
 	private static final int READ_TIMEOUT = 100;
 

@@ -21,6 +21,7 @@
 	
 	<modules>
 		<module>library</module>
+		<module>examples/communication/ReceiveModemStatusSample</module>
 		<module>examples/communication/ReceiveSerialDataSample</module>
 		<module>examples/communication/ReceiveSerialDataPollingSample</module>
 		<module>examples/communication/SendBroadcastSerialDataSample</module>

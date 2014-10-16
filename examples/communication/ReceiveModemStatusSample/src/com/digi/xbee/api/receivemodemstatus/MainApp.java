@@ -47,7 +47,7 @@ public class MainApp {
 		try {
 			myDevice.open();
 			
-			myDevice.startListeningForModemStatusEvents(new MyModemStatusReceiveListener());
+			myDevice.addModemStatusListener(new MyModemStatusReceiveListener());
 			
 			System.out.println("\n>> Waiting for Modem Status events...");
 			

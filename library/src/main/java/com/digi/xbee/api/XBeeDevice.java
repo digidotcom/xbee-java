@@ -440,20 +440,20 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#startListeningForModemStatusEvents(com.digi.xbee.api.listeners.IModemStatusReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addModemStatusListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)
 	 */
 	@Override
-	public void startListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
-		super.startListeningForModemStatusEvents(listener);
+	public void addModemStatusListener(IModemStatusReceiveListener listener) {
+		super.addModemStatusListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#stopListeningForModemStatusEvents(com.digi.xbee.api.listeners.IModemStatusReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeModemStatusListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)
 	 */
 	@Override
-	public void stopListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
-		super.stopListeningForModemStatusEvents(listener);
+	public void removeModemStatusListener(IModemStatusReceiveListener listener) {
+		super.removeModemStatusListener(listener);
 	}
 	
 	/**

@@ -656,20 +656,20 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Starts listening for Modem Status events in the provided Modem Status listener.
-	 *  
-	 * <p>The provided listener is added to the list of listeners to be notified
-	 * when new Modem Status events are received. If the listener has been already 
-	 * included this method does nothing.</p>
+	 * Adds the provided listener is to the list of listeners to be notified
+	 * when new Modem Status events are received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
 	 * 
 	 * @param listener Listener to be notified when new Modem Status events are received.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
 	 * @see IModemStatusReceiveListener
-	 * @see #stopListeningForModemStatusEvents(IModemStatusReceiveListener)
+	 * @see #removeModemStatusListener(IModemStatusReceiveListener)
 	 */
-	protected void startListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
+	protected void addModemStatusListener(IModemStatusReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		if (dataReader == null)
@@ -678,19 +678,18 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Stops listening for Modem Status events in the provided Modem Status listener.
+	 * Removes the provided listener from the list of Modem Status listeners.
 	 * 
-	 * <p>The provided listener is removed from the list of Modem Status 
-	 * listeners. If the listener was not in the list this method does nothing.</p>
+	 * <p>If the listener was not in the list this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
 	 * @see IModemStatusReceiveListener
-	 * @see #startListeningForModemStatusEvents(IModemStatusReceiveListener)
+	 * @see #addModemStatusListener(IModemStatusReceiveListener)
 	 */
-	protected void stopListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
+	protected void removeModemStatusListener(IModemStatusReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		if (dataReader == null)

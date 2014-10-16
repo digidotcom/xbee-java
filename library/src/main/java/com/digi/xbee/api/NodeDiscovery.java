@@ -480,7 +480,7 @@ class NodeDiscovery {
 		};
 		
 		logger.debug("{}Start listening.", toString());
-		device.startListeningForPackets(packetReceiveListener);
+		device.addPacketListener(packetReceiveListener);
 		
 		sendNodeDiscoverCommand(device, id);
 		
@@ -495,7 +495,7 @@ class NodeDiscovery {
 				running = false;
 		}
 		
-		device.stopListeningForPackets(packetReceiveListener);
+		device.removePacketListener(packetReceiveListener);
 		logger.debug("{}Stop listening.", toString());
 	}
 	

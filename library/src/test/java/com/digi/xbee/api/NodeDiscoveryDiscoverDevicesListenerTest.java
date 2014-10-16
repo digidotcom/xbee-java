@@ -125,7 +125,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 				packetListener = ((IPacketReceiveListener) invocation.getArguments()[0]);
 				return null;
 			}
-		}).when(deviceMock).startListeningForPackets(Mockito.any(IPacketReceiveListener.class));
+		}).when(deviceMock).addPacketListener(Mockito.any(IPacketReceiveListener.class));
 		
 		PowerMockito.doAnswer(new Answer<Object>() {
 			@Override
@@ -267,8 +267,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, Mockito.eq(deviceMock), Mockito.isNull(byte[].class), 
 				Mockito.eq(listener));
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, deviceTimeout);
 		
@@ -325,8 +325,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutByteArray, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, timeout);
 		
@@ -386,8 +386,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsModifiedByteArray, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsByteArray, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, deviceTimeout);
 		
@@ -448,8 +448,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsModifiedByteArray, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsByteArray, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, timeout);
 		
@@ -504,8 +504,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, deviceTimeout);
 		
@@ -584,8 +584,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, deviceTimeout);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
@@ -675,8 +675,8 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, listener);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).startListeningForPackets(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).stopListeningForPackets(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listener, null, deviceTimeout);
 		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));

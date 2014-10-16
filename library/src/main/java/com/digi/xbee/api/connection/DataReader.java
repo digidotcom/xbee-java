@@ -28,7 +28,7 @@ import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
-import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
+import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeMessage;
@@ -65,7 +65,7 @@ public class DataReader extends Thread {
 	
 	private volatile OperatingMode mode;
 	
-	private ArrayList<ISerialDataReceiveListener> serialDataReceiveListeners = new ArrayList<ISerialDataReceiveListener>();
+	private ArrayList<IDataReceiveListener> dataReceiveListeners = new ArrayList<IDataReceiveListener>();
 	// The packetReceiveListeners requires to be a HashMap with an associated integer. The integer is used to determine 
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
@@ -119,38 +119,38 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given serial data receive listener to the list of listeners to 
-	 * be notified when serial data is received.
+	 * Adds the given data receive listener to the list of listeners to be 
+	 * notified when data is received.
 	 * 
 	 * <p>If the listener has been already included this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when new serial data is received.
+	 * @param listener Listener to be notified when new data is received.
 	 * 
-	 * @see ISerialDataReceiveListener
-	 * @see #removeSerialDataReceiveListener(ISerialDataReceiveListener)
+	 * @see IDataReceiveListener
+	 * @see #removeDataReceiveListener(IDataReceiveListener)
 	 */
-	public void addSerialDatatReceiveListener(ISerialDataReceiveListener listener) {
-		synchronized (serialDataReceiveListeners) {
-			if (!serialDataReceiveListeners.contains(listener))
-				serialDataReceiveListeners.add(listener);
+	public void addDataReceiveListener(IDataReceiveListener listener) {
+		synchronized (dataReceiveListeners) {
+			if (!dataReceiveListeners.contains(listener))
+				dataReceiveListeners.add(listener);
 		}
 	}
 	
 	/**
-	 * Removes the given serial data receive listener from the list of serial 
-	 * data receive listeners.
+	 * Removes the given data receive listener from the list of data receive 
+	 * listeners.
 	 * 
 	 * <p>If the listener is not included in the list, this method does nothing.</p>
 	 * 
-	 * @param listener Serial data receive listener to remove.
+	 * @param listener Data receive listener to remove.
 	 * 
-	 * @see ISerialDataReceiveListener
-	 * @see #addSerialDatatReceiveListener(ISerialDataReceiveListener)
+	 * @see IDataReceiveListener
+	 * @see #addDataReceiveListener(IDataReceiveListener)
 	 */
-	public void removeSerialDataReceiveListener(ISerialDataReceiveListener listener) {
-		synchronized (serialDataReceiveListeners) {
-			if (serialDataReceiveListeners.contains(listener))
-				serialDataReceiveListeners.remove(listener);
+	public void removeDataReceiveListener(IDataReceiveListener listener) {
+		synchronized (dataReceiveListeners) {
+			if (dataReceiveListeners.contains(listener))
+				dataReceiveListeners.remove(listener);
 		}
 	}
 	
@@ -347,7 +347,7 @@ public class DataReader extends Thread {
 				network.addRemoteDevice(remoteDevice);
 			}
 			data = receivePacket.getRFData();
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+			notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
@@ -357,7 +357,7 @@ public class DataReader extends Thread {
 				network.addRemoteDevice(remoteDevice);
 			}
 			data = rx64Packet.getRFData();
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+			notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
@@ -367,7 +367,7 @@ public class DataReader extends Thread {
 				network.addRemoteDevice(remoteDevice);
 			}
 			data = rx16Packet.getRFData();
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+			notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
@@ -402,28 +402,23 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed serial data receive listeners that serial data has 
-	 * been received.
+	 * Notifies subscribed data receive listeners that data has been received.
 	 *
-	 * @param address The XBee address of the node that sent the data.
-	 * @param data The received data.
-	 * @param isBroadcastData Indicates whether or not the data was sent via 
-	 *                        broadcast to execute the corresponding broadcast 
-	 *                        callback.
+	 * @param xbeeMessage The XBee message.
 	 */
-	private void notifySerialDataReceived(final XBeeMessage xbeeMessage) {
+	private void notifyDataReceived(final XBeeMessage xbeeMessage) {
 		if (xbeeMessage.isBroadcast())
 			logger.info(connectionInterface.toString() + 
-					"Broadcast serial data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
+					"Broadcast data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
 		else
 			logger.info(connectionInterface.toString() + 
-					"Serial data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
+					"Data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
 		
 		try {
-			synchronized (serialDataReceiveListeners) {
+			synchronized (dataReceiveListeners) {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
-						serialDataReceiveListeners.size()));
-				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
+						dataReceiveListeners.size()));
+				for (final IDataReceiveListener listener:dataReceiveListeners) {
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -432,15 +427,9 @@ public class DataReader extends Thread {
 						@Override
 						public void run() {
 							/* Synchronize the listener so it is not called 
-							 twice. That is, let the listener to finish its job.
-							 
-							 By synchronizing the listener also unicast and 
-							 broadcast data reception are synchronized, that is, 
-							 while unicast data is being processed, broadcast 
-							 data is waiting till it finishes, and the other 
-							 way around. */
+							 twice. That is, let the listener to finish its job. */
 							synchronized (listener) {
-								listener.serialDataReceived(xbeeMessage);
+								listener.dataReceived(xbeeMessage);
 							}
 						}
 					});

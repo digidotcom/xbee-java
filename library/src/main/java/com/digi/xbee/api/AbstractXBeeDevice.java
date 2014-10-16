@@ -36,7 +36,7 @@ import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
-import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
+import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
@@ -542,90 +542,88 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Starts listening for packets in the provided packets listener.
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new packets are received. 
 	 * 
-	 * <p>The provided listener is added to the list of listeners to be notified
-	 * when new packets are received. If the listener has been already 
-	 * included, this method does nothing.</p>
+	 * <p>If the listener has been already included, this method does nothing.
+	 * </p>
 	 * 
 	 * @param listener Listener to be notified when new packets are received.
 	 * 
 	 * @see IPacketReceiveListener
-	 * @see #stopListeningForPackets(IPacketReceiveListener)
+	 * @see #removePacketListener(IPacketReceiveListener)
 	 */
-	protected void startListeningForPackets(IPacketReceiveListener listener) {
+	protected void addPacketListener(IPacketReceiveListener listener) {
 		if (dataReader == null)
 			return;
 		dataReader.addPacketReceiveListener(listener);
 	}
 	
 	/**
-	 * Stops listening for packets in the provided packets listener. 
+	 * Removes the provided listener from the list of packets listeners. 
 	 * 
-	 * <p>The provided listener is removed from the list of packets listeners. 
-	 * If the listener was not in the list this method does nothing.</p>
+	 * <p>If the listener was not in the list this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
 	 * @see IPacketReceiveListener
-	 * @see #startListeningForPackets(IPacketReceiveListener)
+	 * @see #addPacketListener(IPacketReceiveListener)
 	 */
-	protected void stopListeningForPackets(IPacketReceiveListener listener) {
+	protected void removePacketListener(IPacketReceiveListener listener) {
 		if (dataReader == null)
 			return;
 		dataReader.removePacketReceiveListener(listener);
 	}
 	
 	/**
-	 * Starts listening for serial data in the provided serial data listener.
-	 *  
-	 * <p>The provided listener is added to the list of listeners to be notified
-	 * when new serial data is received. If the listener has been already 
-	 * included this method does nothing.</p>
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new data is received. 
 	 * 
-	 * @param listener Listener to be notified when new serial data is received.
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
 	 * 
-	 * @see ISerialDataReceiveListener
-	 * @see #stopListeningForSerialData(ISerialDataReceiveListener)
+	 * @param listener Listener to be notified when new data is received.
+	 * 
+	 * @see IDataReceiveListener
+	 * @see #removeDataListener(IDataReceiveListener)
 	 */
-	protected void startListeningForSerialData(ISerialDataReceiveListener listener) {
+	protected void addDataListener(IDataReceiveListener listener) {
 		if (dataReader == null)
 			return;
-		dataReader.addSerialDatatReceiveListener(listener);
+		dataReader.addDataReceiveListener(listener);
 	}
 	
 	/**
-	 * Stops listening for serial data in the provided serial data listener.
+	 * Removes the provided listener from the list of data listeners. 
 	 * 
-	 * <p>The provided listener is removed from the list of serial data 
-	 * listeners. If the listener was not in the list this method does nothing.</p>
+	 * <p>If the listener was not in the list this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
-	 * @see ISerialDataReceiveListener
-	 * @see #startListeningForSerialData(ISerialDataReceiveListener)
+	 * @see IDataReceiveListener
+	 * @see #addDataListener(IDataReceiveListener)
 	 */
-	protected void stopListeningForSerialData(ISerialDataReceiveListener listener) {
+	protected void removeDataListener(IDataReceiveListener listener) {
 		if (dataReader == null)
 			return;
-		dataReader.removeSerialDataReceiveListener(listener);
+		dataReader.removeDataReceiveListener(listener);
 	}
 	
 	/**
-	 * Starts listening for IO samples in the provided IO sample listener.
-	 *  
-	 * <p>The provided listener is added to the list of listeners to be notified
-	 * when new IO samples are received. If the listener has been already 
-	 * included this method does nothing.</p>
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new IO samples are received. 
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
 	 * 
 	 * @param listener Listener to be notified when new IO samples are received.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
 	 * @see IIOSampleReceiveListener
-	 * @see #stopListeningForIOSamples(IIOSampleReceiveListener)
+	 * @see #removeIOSampleListener(IIOSampleReceiveListener)
 	 */
-	protected void startListeningForIOSamples(IIOSampleReceiveListener listener) {
+	protected void addIOSampleListener(IIOSampleReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		if (dataReader == null)
@@ -634,19 +632,18 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Stops listening for IO samples in the provided IO sample listener.
+	 * Removes the provided listener from the list of IO samples listeners. 
 	 * 
-	 * <p>The provided listener is removed from the list of IO samples 
-	 * listeners. If the listener was not in the list this method does nothing.</p>
+	 * <p>If the listener was not in the list this method does nothing.</p>
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
 	 * @see IIOSampleReceiveListener
-	 * @see #startListeningForIOSamples(IIOSampleReceiveListener)
+	 * @see #addIOSampleListener(IIOSampleReceiveListener)
 	 */
-	protected void stopListeningForIOSamples(IIOSampleReceiveListener listener) {
+	protected void removeIOSampleListener(IIOSampleReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		if (dataReader == null)
@@ -888,7 +885,7 @@ public abstract class AbstractXBeeDevice {
 			IPacketReceiveListener packetReceiveListener = createPacketReceivedListener(packet, responseList);
 			
 			// Add the packet listener to the data reader.
-			startListeningForPackets(packetReceiveListener);
+			addPacketListener(packetReceiveListener);
 			
 			// Write the packet data.
 			writePacket(packet);
@@ -906,7 +903,7 @@ public abstract class AbstractXBeeDevice {
 				return responseList.get(0);
 			} finally {
 				// Always remove the packet listener from the list.
-				stopListeningForPackets(packetReceiveListener);
+				removePacketListener(packetReceiveListener);
 			}
 		}
 	}
@@ -1638,13 +1635,13 @@ public abstract class AbstractXBeeDevice {
 	private byte[] receiveRaw802IOPacket() {
 		ioPacketReceived = false;
 		ioPacketPayload = null;
-		startListeningForPackets(IOPacketReceiveListener);
+		addPacketListener(IOPacketReceiveListener);
 		synchronized (ioLock) {
 			try {
 				ioLock.wait(receiveTimeout);
 			} catch (InterruptedException e) { }
 		}
-		stopListeningForPackets(IOPacketReceiveListener);
+		removePacketListener(IOPacketReceiveListener);
 		if (ioPacketReceived)
 			return ioPacketPayload;
 		return null;

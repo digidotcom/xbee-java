@@ -21,11 +21,11 @@
 	
 	<modules>
 		<module>library</module>
-		<module>examples/communication/ReceiveSerialDataSample</module>
-		<module>examples/communication/ReceiveSerialDataPollingSample</module>
-		<module>examples/communication/SendBroadcastSerialDataSample</module>
-		<module>examples/communication/SendSerialDataAsyncSample</module>
-		<module>examples/communication/SendSerialDataSample</module>
+		<module>examples/communication/ReceiveDataSample</module>
+		<module>examples/communication/ReceiveDataPollingSample</module>
+		<module>examples/communication/SendBroadcastDataSample</module>
+		<module>examples/communication/SendDataAsyncSample</module>
+		<module>examples/communication/SendDataSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>
 		<module>examples/io/IOSamplingSample</module>

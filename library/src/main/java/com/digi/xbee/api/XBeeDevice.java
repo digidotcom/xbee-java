@@ -25,7 +25,7 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
-import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
+import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.OperatingMode;
@@ -385,56 +385,56 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#startListeningForPackets(com.digi.xbee.api.listeners.IPacketReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addPacketListener(com.digi.xbee.api.listeners.IPacketReceiveListener)
 	 */
 	@Override
-	public void startListeningForPackets(IPacketReceiveListener listener) {
-		super.startListeningForPackets(listener);
+	public void addPacketListener(IPacketReceiveListener listener) {
+		super.addPacketListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#stopListeningForPackets(com.digi.xbee.api.listeners.IPacketReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removePacketListener(com.digi.xbee.api.listeners.IPacketReceiveListener)
 	 */
 	@Override
-	public void stopListeningForPackets(IPacketReceiveListener listener) {
-		super.stopListeningForPackets(listener);
+	public void removePacketListener(IPacketReceiveListener listener) {
+		super.removePacketListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#startListeningForSerialData(com.digi.xbee.api.listeners.ISerialDataReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addDataListener(com.digi.xbee.api.listeners.IDataReceiveListener)
 	 */
 	@Override
-	public void startListeningForSerialData(ISerialDataReceiveListener listener) {
-		super.startListeningForSerialData(listener);
+	public void addDataListener(IDataReceiveListener listener) {
+		super.addDataListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#stopListeningForSerialData(com.digi.xbee.api.listeners.ISerialDataReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeDataListener(com.digi.xbee.api.listeners.IDataReceiveListener)
 	 */
 	@Override
-	public void stopListeningForSerialData(ISerialDataReceiveListener listener) {
-		super.stopListeningForSerialData(listener);
+	public void removeDataListener(IDataReceiveListener listener) {
+		super.removeDataListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#startListeningForIOSamples(com.digi.xbee.api.listeners.IIOSampleReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)
 	 */
 	@Override
-	public void startListeningForIOSamples(IIOSampleReceiveListener listener) {
-		super.startListeningForIOSamples(listener);
+	public void addIOSampleListener(IIOSampleReceiveListener listener) {
+		super.addIOSampleListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#stopListeningForIOSamples(com.digi.xbee.api.listeners.IIOSampleReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)
 	 */
 	@Override
-	public void stopListeningForIOSamples(IIOSampleReceiveListener listener) {
-		super.stopListeningForIOSamples(listener);
+	public void removeIOSampleListener(IIOSampleReceiveListener listener) {
+		super.removeIOSampleListener(listener);
 	}
 	
 	/**
@@ -453,13 +453,13 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                              if {@code data == null}.
 	 * 
 	 * @see XBee64BitAddress
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(AbstractXBeeDevice, byte[])
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendData(AbstractXBeeDevice, byte[])
 	 */
-	protected void sendSerialDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
+	protected void sendDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address == null)
 			throw new NullPointerException("Address cannot be null");
@@ -473,7 +473,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket;
 		switch (getXBeeProtocol()) {
@@ -500,7 +500,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                     {@code XBee16BitAddress.UNKNOWN_ADDRESS} must be used.
 	 * @param data Byte array containing data to be sent.
 	 * 
-	 * @throws XBeeException if a remote device is trying to send serial data or 
+	 * @throws XBeeException if a remote device is trying to send data or 
 	 *                       if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code address64Bit == null} or 
@@ -511,15 +511,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see XBee16BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendSerialData(AbstractXBeeDevice, byte[])
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendData(XBee64BitAddress, XBee16BitAddress, byte[])
+	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
 	 */
-	protected void sendSerialDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws XBeeException {
+	protected void sendDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address64Bit == null)
 			throw new NullPointerException("64-bit address cannot be null");
@@ -535,7 +535,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending serial data asynchronously to {}[{}] >> {}.", 
+		logger.debug(toString() + "Sending data asynchronously to {}[{}] >> {}.", 
 				address64Bit, address16bit, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
@@ -556,16 +556,16 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code xbeeDevice == null} or 
 	 *                              if {@code data == null}.
 	 *                              
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendData(AbstractXBeeDevice, byte[])
 	 */
-	public void sendSerialDataAsync(RemoteXBeeDevice xbeeDevice, byte[] data) throws XBeeException {
+	public void sendDataAsync(RemoteXBeeDevice xbeeDevice, byte[] data) throws XBeeException {
 		if (xbeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null");
-		sendSerialDataAsync(xbeeDevice.get64BitAddress(), data);
+		sendDataAsync(xbeeDevice.get64BitAddress(), data);
 	}
 	
 	/**
@@ -579,12 +579,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendSerialData(XBee64BitAddress, byte[])}.</p>
+	 * {@link #sendData(XBee64BitAddress, byte[])}.</p>
 	 * 
 	 * @param address The 64-bit address of the XBee that will receive the data.
 	 * @param data Byte array containing data to be sent.
 	 * 
-	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code address == null} or 
@@ -593,13 +593,13 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see XBee64BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(AbstractXBeeDevice, byte[])
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
 	 */
-	protected void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
+	protected void sendData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address == null)
 			throw new NullPointerException("Address cannot be null");
@@ -613,7 +613,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket;
 		switch (getXBeeProtocol()) {
@@ -637,7 +637,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendSerialData(XBee16BitAddress, byte[])}.</p>
+	 * {@link #sendData(XBee16BitAddress, byte[])}.</p>
 	 * 
 	 * @param address64Bit The 64-bit address of the XBee that will receive the 
 	 *                     data.
@@ -646,8 +646,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                     {@code XBee16BitAddress.UNKNOWN_ADDRESS} must be used.
 	 * @param data Byte array containing data to be sent.
 	 * 
-	 * @throws TimeoutException if there is a timeout sending the serial data.
-	 * @throws XBeeException if a remote device is trying to send serial data or 
+	 * @throws TimeoutException if there is a timeout sending the data.
+	 * @throws XBeeException if a remote device is trying to send data or 
 	 *                       if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code address64Bit == null} or 
@@ -658,15 +658,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see XBee16BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialData(AbstractXBeeDevice, byte[])
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
 	 */
-	protected void sendSerialData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
+	protected void sendData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address64Bit == null)
 			throw new NullPointerException("64-bit address cannot be null");
@@ -682,7 +682,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending serial data to {}[{}] >> {}.", 
+		logger.debug(toString() + "Sending data to {}[{}] >> {}.", 
 				address64Bit, address16bit, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
@@ -700,12 +700,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendSerialDataAsync(AbstractXBeeDevice, byte[])}.</p>
+	 * {@link #sendDataAsync(AbstractXBeeDevice, byte[])}.</p>
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.
 	 * 
-	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code xbeeDevice == null} or 
@@ -713,13 +713,13 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendSerialData(XBee64BitAddress, byte[])
-	 * @see #sendSerialData(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendSerialDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendSerialDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
 	 */
-	public void sendSerialData(RemoteXBeeDevice xbeeDevice, byte[] data) throws TimeoutException, XBeeException {
+	public void sendData(RemoteXBeeDevice xbeeDevice, byte[] data) throws TimeoutException, XBeeException {
 		if (xbeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null");
 		
@@ -727,22 +727,22 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		case ZIGBEE:
 		case DIGI_POINT:
 			if (xbeeDevice.get64BitAddress() != null && xbeeDevice.get16BitAddress() != null)
-				sendSerialData(xbeeDevice.get64BitAddress(), xbeeDevice.get16BitAddress(), data);
+				sendData(xbeeDevice.get64BitAddress(), xbeeDevice.get16BitAddress(), data);
 			else
-				sendSerialData(xbeeDevice.get64BitAddress(), data);
+				sendData(xbeeDevice.get64BitAddress(), data);
 			break;
 		case RAW_802_15_4:
 			if (this instanceof Raw802Device) {
 				if (xbeeDevice.get64BitAddress() != null)
-					((Raw802Device)this).sendSerialData(xbeeDevice.get64BitAddress(), data);
+					((Raw802Device)this).sendData(xbeeDevice.get64BitAddress(), data);
 				else
-					((Raw802Device)this).sendSerialData(xbeeDevice.get16BitAddress(), data);
+					((Raw802Device)this).sendData(xbeeDevice.get16BitAddress(), data);
 			} else
-				sendSerialData(xbeeDevice.get64BitAddress(), data);
+				sendData(xbeeDevice.get64BitAddress(), data);
 			break;
 		case DIGI_MESH:
 		default:
-			sendSerialData(xbeeDevice.get64BitAddress(), data);
+			sendData(xbeeDevice.get64BitAddress(), data);
 		}
 	}
 	
@@ -759,14 +759,14 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code data == null}.
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout sending the serial data.
+	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
 	 */
-	public void sendBroadcastSerialData(byte[] data) throws TimeoutException, XBeeException {
-		sendSerialData(XBee64BitAddress.BROADCAST_ADDRESS, data);
+	public void sendBroadcastData(byte[] data) throws TimeoutException, XBeeException {
+		sendData(XBee64BitAddress.BROADCAST_ADDRESS, data);
 	}
 	
 	/**
@@ -860,13 +860,13 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 */
 	private boolean waitForModemStatusPacket() {
 		modemStatusReceived = false;
-		startListeningForPackets(modemStatusListener);
+		addPacketListener(modemStatusListener);
 		synchronized (resetLock) {
 			try {
 				resetLock.wait(TIMEOUT_RESET);
 			} catch (InterruptedException e) { }
 		}
-		stopListeningForPackets(modemStatusListener);
+		removePacketListener(modemStatusListener);
 		return modemStatusReceived;
 	}
 	

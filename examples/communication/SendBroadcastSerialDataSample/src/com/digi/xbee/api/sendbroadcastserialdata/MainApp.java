@@ -13,7 +13,6 @@ package com.digi.xbee.api.sendbroadcastserialdata;
 
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * XBee Java Library Send Broadcast Data sample application.
@@ -50,9 +49,7 @@ public class MainApp {
 		try {
 			myDevice.open();
 			
-			System.out.format("Sending broadcast data >> %s | %s... ",
-					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
-					new String(dataToSend));
+			System.out.format("Sending broadcast data: '%s'", new String(dataToSend));
 			
 			myDevice.sendBroadcastSerialData(dataToSend);
 			

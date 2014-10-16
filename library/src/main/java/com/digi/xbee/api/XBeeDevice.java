@@ -473,7 +473,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.info(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending serial data asynchronously to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket;
 		switch (getXBeeProtocol()) {
@@ -535,7 +535,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.info(toString() + "Sending serial data asynchronously to {}[{}] >> {}.", 
+		logger.debug(toString() + "Sending serial data asynchronously to {}[{}] >> {}.", 
 				address64Bit, address16bit, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);
@@ -613,7 +613,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.info(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending serial data to {} >> {}.", address, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket;
 		switch (getXBeeProtocol()) {
@@ -682,7 +682,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
 		
-		logger.info(toString() + "Sending serial data to {}[{}] >> {}.", 
+		logger.debug(toString() + "Sending serial data to {}[{}] >> {}.", 
 				address64Bit, address16bit, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TransmitPacket(getNextFrameID(), address64Bit, address16bit, 0, XBeeTransmitOptions.NONE, data);

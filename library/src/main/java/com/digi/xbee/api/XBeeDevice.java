@@ -443,7 +443,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#startListeningForModemStatusEvents(com.digi.xbee.api.listeners.IModemStatusReceiveListener)
 	 */
 	@Override
-	protected void startListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
+	public void startListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
 		super.startListeningForModemStatusEvents(listener);
 	}
 	
@@ -452,7 +452,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#stopListeningForModemStatusEvents(com.digi.xbee.api.listeners.IModemStatusReceiveListener)
 	 */
 	@Override
-	protected void stopListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
+	public void stopListeningForModemStatusEvents(IModemStatusReceiveListener listener) {
 		super.stopListeningForModemStatusEvents(listener);
 	}
 	

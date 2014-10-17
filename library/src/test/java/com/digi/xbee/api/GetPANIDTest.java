@@ -1,3 +1,14 @@
+/**
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api;
 
 import static org.junit.Assert.*;
@@ -46,7 +57,7 @@ public class GetPANIDTest {
 	@Test(expected=InterfaceNotOpenException.class)
 	public void testGetPANIDErrorConnectionClosed() throws XBeeException {
 		// Throw an interface not open exception when trying to get any parameter.
-		Mockito.doThrow(new InterfaceNotOpenException()).when(xbeeDevice).setParameter(Mockito.anyString(), Mockito.any(byte[].class));
+		Mockito.doThrow(new InterfaceNotOpenException()).when(xbeeDevice).getParameter(Mockito.anyString());
 		
 		// Get the PAN ID.
 		xbeeDevice.getPANID();
@@ -116,7 +127,7 @@ public class GetPANIDTest {
 	 */
 	@Test
 	public void testGetPANIDSuccess() throws XBeeException, IOException {
-		// Do nothing when  when trying to get the ID parameter.
+		// Return a valid ID value when getting the ID parameter.
 		Mockito.doReturn(RESPONSE_ID).when(xbeeDevice).getParameter(PARAMETER_ID);
 		
 		// Get the PAN ID.
@@ -179,7 +190,7 @@ public class GetPANIDTest {
 		// Return that the device protocol is ZigBee when asked.
 		Mockito.doReturn(XBeeProtocol.ZIGBEE).when(xbeeDevice).getXBeeProtocol();
 		
-		// Do nothing when  when trying to get the OP parameter.
+		// Return a valid OP value when getting the OP parameter.
 		Mockito.doReturn(RESPONSE_OP).when(xbeeDevice).getParameter(PARAMETER_OP);
 		
 		// Get the PAN ID.

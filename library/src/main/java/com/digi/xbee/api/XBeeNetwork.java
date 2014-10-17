@@ -637,80 +637,79 @@ public class XBeeNetwork {
 		logger.debug("{}Adding device '{}' to network.", toString(), remoteDevice.toString());
 		
 		RemoteXBeeDevice devInNetwork = null;
-		
-		// Look in the 64-bit map.
 		XBee64BitAddress addr64 = remoteDevice.get64BitAddress();
+		XBee16BitAddress addr16 = get16BitAddress(remoteDevice);
+		
+		// Check if the device has 64-bit address.
 		if (addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) {
+			// The device has 64-bit address, so look in the 64-bit map.
 			devInNetwork = remotesBy64BitAddr.get(addr64);
-			
-			// Update the reference.
 			if (devInNetwork != null) {
+				// The device exists in the 64-bit map, so update the reference and return it.
 				logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
 				devInNetwork.updateDeviceDataFrom(remoteDevice);
 				return devInNetwork;
+			} else {
+				// The device does not exist in the 64-bit map, so check its 16-bit address.
+				if (addr16 != null && !addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)) {
+					// The device has 16-bit address, so look in the 16-bit map.
+					devInNetwork = remotesBy16BitAddr.get(addr16);
+					if (devInNetwork != null) {
+						// The device exists in the 16-bit map, so remove it and add it to the 64-bit map.
+						logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+						devInNetwork = remotesBy16BitAddr.remove(addr16);
+						devInNetwork.updateDeviceDataFrom(remoteDevice);
+						remotesBy64BitAddr.put(addr64, devInNetwork);
+						return devInNetwork;
+					} else {
+						// The device does not exist in the 16-bit map, so add it to the 64-bit map.
+						remotesBy64BitAddr.put(addr64, remoteDevice);
+						return remoteDevice;
+					}
+				} else {
+					// The device has not 16-bit address, so add it to the 64-bit map.
+					remotesBy64BitAddr.put(addr64, remoteDevice);
+					return remoteDevice;
+				}
 			}
 		}
 		
-		// If not found, look in the 16-bit map.
-		XBee16BitAddress addr16 = get16BitAddress(remoteDevice);
+		// If the device has not 64-bit address, check if it has 16-bit address.
 		if (addr16 != null && !addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)) {
-			
-			// The preference order is: 
-			//    1.- Look in the 64-bit map 
-			//    2.- Then in the 16-bit map.
-			// This should be maintained in the 'getDeviceBy16BitAddress' method.
-			
-			// Look for the 16-bit address in the 64-bit map.
+			// The device has 16-bit address, so look in the 64-bit map.
 			Collection<RemoteXBeeDevice> devices = remotesBy64BitAddr.values();
-			for (RemoteXBeeDevice d: devices) {
+			for (RemoteXBeeDevice d : devices) {
 				XBee16BitAddress a = get16BitAddress(d);
 				if (a != null && a.equals(addr16)) {
 					devInNetwork = d;
 					break;
 				}
 			}
-			
-			// If not found, look for the 16-bit address in the 16-bit map. 
-			if (devInNetwork == null) {
-				devInNetwork = remotesBy16BitAddr.get(addr16);
-				
-				// If the device to be added has a 64-bit address, remove it
-				// from the 16-bit map and add it to the 64-bit map.
-				if (devInNetwork != null 
-						&& addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) {
-					devInNetwork = remotesBy16BitAddr.remove(addr16);
-					
-					RemoteXBeeDevice devIn64bitMap = remotesBy64BitAddr.get(addr64);
-					if (devIn64bitMap != null)
-						devInNetwork = devIn64bitMap;
-					else
-						remotesBy64BitAddr.put(addr64, devInNetwork);
-				}
-			}
-			
-			// If found, update the reference.
+			// Check if the device exists in the 64-bit map.
 			if (devInNetwork != null) {
+				// The device exists in the 64-bit map, so update the reference and return it.
 				logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
-				
 				devInNetwork.updateDeviceDataFrom(remoteDevice);
 				return devInNetwork;
+			} else {
+				// The device does not exist in the 64-bit map, so look in the 16-bit map.
+				devInNetwork = remotesBy16BitAddr.get(addr16);
+				if (devInNetwork != null) {
+					// The device exists in the 16-bit map, so update the reference and return it.
+					logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+					devInNetwork.updateDeviceDataFrom(remoteDevice);
+					return devInNetwork;
+				} else {
+					// The device does not exist in the 16-bit map, so add it.
+					remotesBy16BitAddr.put(addr16, remoteDevice);
+					return remoteDevice;
+				}
 			}
 		}
 		
-		// If the device does not contain a valid address return null.
-		if ((addr64 == null || addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) 
-				&& (addr16 == null || addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS))) {
-			logger.error("{}Remote device '{}' cannot be added: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
-			return null;
-		}
-		
-		// Add it to the right map.
-		if (addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS))
-			remotesBy64BitAddr.put(addr64, remoteDevice);
-		else
-			remotesBy16BitAddr.put(addr16, remoteDevice);
-		
-		return remoteDevice;
+		// If the device does not contain a valid address, return null.
+		logger.error("{}Remote device '{}' cannot be added: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
+		return null;
 	}
 	
 	/**

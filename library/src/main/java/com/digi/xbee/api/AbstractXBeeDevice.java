@@ -1821,4 +1821,21 @@ public abstract class AbstractXBeeDevice {
 		
 		this.xbee16BitAddress = xbee16BitAddress;
 	}
+	
+	/**
+	 * Retrieves the operating PAN ID of the XBee device.
+	 * 
+	 * @return The operating PAN ID of the XBee device.
+	 * 
+	 * @throws TimeoutException if there is a timeout getting the PAN ID.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public byte[] getPANID() throws TimeoutException, XBeeException {
+		switch (getXBeeProtocol()) {
+		case ZIGBEE:
+			return getParameter("OP");
+		default:
+			return getParameter("ID");
+		}
+	}
 }

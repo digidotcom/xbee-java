@@ -1800,4 +1800,25 @@ public abstract class AbstractXBeeDevice {
 	public boolean isApplyConfigurationChangesEnabled() {
 		return applyConfigurationChanges;
 	}
+	
+	/**
+	 * Configures the 16-bit address (network address) of the XBee device with the provided one.
+	 * 
+	 * @param xbee16BitAddress The new 16-bit address.
+	 * 
+	 * @throws NullPointerException if {@code xbee16BitAddress == null}.
+	 * @throws TimeoutException if there is a timeout setting the address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see XBee16BitAddress
+	 * @see #get16BitAddress()
+	 */
+	protected void set16BitAddress(XBee16BitAddress xbee16BitAddress) throws TimeoutException, XBeeException {
+		if (xbee16BitAddress == null)
+			throw new NullPointerException("16-bit address canot be null.");
+		
+		setParameter("MY", xbee16BitAddress.getValue());
+		
+		this.xbee16BitAddress = xbee16BitAddress;
+	}
 }

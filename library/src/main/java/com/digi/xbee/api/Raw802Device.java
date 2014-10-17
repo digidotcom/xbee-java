@@ -243,4 +243,13 @@ public class Raw802Device extends XBeeDevice {
 		XBeePacket xbeePacket = new TX16Packet(getNextFrameID(), address, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#set16BitAddress(com.digi.xbee.api.models.XBee16BitAddress)
+	 */
+	@Override
+	public void set16BitAddress(XBee16BitAddress xbee16BitAddress) throws TimeoutException, XBeeException {
+		super.set16BitAddress(xbee16BitAddress);
+	}
 }

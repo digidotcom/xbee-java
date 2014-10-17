@@ -42,6 +42,7 @@ import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.HardwareVersion;
 import com.digi.xbee.api.models.HardwareVersionEnum;
+import com.digi.xbee.api.models.PowerLevel;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -1837,5 +1838,20 @@ public abstract class AbstractXBeeDevice {
 		default:
 			return getParameter("ID");
 		}
+	}
+	
+	/**
+	 * Retrieves the output power level of the XBee device.
+	 * 
+	 * @return The output power level of the XBee device.
+	 * 
+	 * @throws TimeoutException if there is a timeout getting the power level.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see PowerLevel
+	 */
+	public PowerLevel getPowerLevel() throws TimeoutException, XBeeException {
+		byte[] powerLevelValue = getParameter("PL");
+		return PowerLevel.get(ByteUtils.byteArrayToInt(powerLevelValue));
 	}
 }

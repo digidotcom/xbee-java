@@ -10,6 +10,8 @@ public class CircularByteBuffer {
 
 	private int readIndex;
 	private int writeIndex;
+	
+	private boolean empty = true;
 
 	/**
 	 * Creates a circular buffer with the indicated capacity in bytes.
@@ -46,6 +48,12 @@ public class CircularByteBuffer {
 		if (numBytes < 1)
 			throw new IllegalArgumentException("Number of bytes to write must be greater than 0.");
 		
+		// Check if there are enough bytes to write.
+		int availableBytes = data.length - offset;
+		if (numBytes > availableBytes)
+			numBytes = availableBytes;
+		
+		// Check where we should start writing.
 		if (numBytes < buffer.length - getWriteIndex()) {
 			System.arraycopy(data, offset, buffer, getWriteIndex(), numBytes);
 			writeIndex = getWriteIndex() + numBytes;
@@ -56,6 +64,12 @@ public class CircularByteBuffer {
 			if (getReadIndex() < getWriteIndex())
 				readIndex = getWriteIndex();
 		}
+		
+		// Check if we were able to write all the bytes.
+		if (numBytes > getCapacity())
+			numBytes = getCapacity();
+		
+		empty = false;
 		return numBytes;
 	}
 
@@ -79,6 +93,14 @@ public class CircularByteBuffer {
 		if (numBytes < 1)
 			throw new IllegalArgumentException("Number of bytes to read must be greater than 0.");
 		
+		// If we are empty, return 0.
+		if (empty)
+			return 0;
+		
+		// If we try to place bytes in an index bigger than buffer index, return 0 read bytes.
+		if (offset >= data.length)
+			return 0;
+		
 		if (data.length - offset < numBytes)
 			return read(data, offset, data.length - offset);
 		if (availableToRead() < numBytes)
@@ -91,6 +113,11 @@ public class CircularByteBuffer {
 			System.arraycopy(buffer, 0, data, offset + buffer.length - getReadIndex(), numBytes - (buffer.length - getReadIndex()));
 			readIndex = numBytes-(buffer.length - getReadIndex());
 		}
+		
+		// If we have read all bytes, set the buffer as empty.
+		if (readIndex == writeIndex)
+			empty = true;
+		
 		return numBytes;
 	}
 
@@ -106,12 +133,21 @@ public class CircularByteBuffer {
 		if (numBytes < 1)
 			throw new IllegalArgumentException("Number of bytes to skip must be greater than 0.");
 		
+		// If we are empty, return 0.
+		if (empty)
+			return 0;
+		
 		if (availableToRead() < numBytes)
 			return skip(availableToRead());
 		if (numBytes < buffer.length - getReadIndex())
 			readIndex = getReadIndex() + numBytes;
 		else
 			readIndex = numBytes - (buffer.length - getReadIndex());
+		
+		// If we have skipped all bytes, set the buffer as empty.
+		if (readIndex == writeIndex)
+			empty = true;
+		
 		return numBytes;
 	}
 
@@ -121,7 +157,9 @@ public class CircularByteBuffer {
 	 * @return The number of bytes in the buffer available for reading.
 	 */
 	public int availableToRead() {
-		if (getReadIndex() <= getWriteIndex())
+		if (empty)
+			return 0;
+		if (getReadIndex() < getWriteIndex())
 			return (getWriteIndex() - getReadIndex());
 		else
 			return (buffer.length - getReadIndex() + getWriteIndex());
@@ -143,5 +181,23 @@ public class CircularByteBuffer {
 	 */
 	private int getWriteIndex() {
 		return writeIndex;
+	}
+	
+	/**
+	 * Retrieves the circular byte buffer capacity.
+	 * 
+	 * @return The circular byte buffer capacity.
+	 */
+	public int getCapacity() {
+		return buffer.length;
+	}
+	
+	/**
+	 * Clears the circular buffer.
+	 */
+	public void clearBuffer() {
+		empty = true;
+		readIndex = 0;
+		writeIndex = 0;
 	}
 }

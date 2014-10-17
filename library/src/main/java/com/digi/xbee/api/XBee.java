@@ -76,7 +76,7 @@ public class XBee {
 	 */
 	private static boolean isAndroid() {
 		String property = System.getProperty("java.runtime.name");
-		if (property.equalsIgnoreCase("Android Runtime"))
+		if (property != null && property.equalsIgnoreCase("Android Runtime"))
 			return true;
 		return false;
 	}

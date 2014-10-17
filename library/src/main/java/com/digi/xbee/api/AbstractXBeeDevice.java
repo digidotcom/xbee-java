@@ -79,8 +79,8 @@ public abstract class AbstractXBeeDevice {
 	
 	protected OperatingMode operatingMode = OperatingMode.UNKNOWN;
 	
-	protected XBee16BitAddress xbee16BitAddress;
-	protected XBee64BitAddress xbee64BitAddress;
+	protected XBee16BitAddress xbee16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
+	protected XBee64BitAddress xbee64BitAddress = XBee64BitAddress.UNKNOWN_ADDRESS;
 	
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
@@ -260,95 +260,58 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Reads some parameters from the device and obtains its protocol.
 	 * 
-	 * @throws InvalidOperatingModeException if the operating mode of the device is not supported.
-	 * @throws TimeoutException if there is a timeout reading the parameters.
-	 * @throws OperationNotSupportedException if any of the operations performed in the method is not supported.
-	 * @throws ATCommandException if there is any problem sending the AT commands.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout reading the parameters.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #xbee64BitAddress
-	 * @see #nodeID
-	 * @see #hardwareVersion
-	 * @see #firmwareVersion
-	 * @see #xbeeProtocol
-	 * @see HardwareVersion
-	 * @see HardwareVersionEnum
-	 * @see XBeeProtocol
+	 * @see #get64BitAddress()
+	 * @see #get16BitAddress()
+	 * @see #getNodeID()
+	 * @see #setNodeID(String)
+	 * @see #getHardwareVersion()
+	 * @see #getFirmwareVersion()
+	 * @see #getXBeeProtocol()
 	 */
-	public void readDeviceInfo() 
-			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
-			ATCommandException, XBeeException {
-		ATCommandResponse response = null;
+	public void readDeviceInfo() throws TimeoutException, XBeeException {
+		byte[] response = null;
 		// Get the 64-bit address.
 		if (xbee64BitAddress == null || xbee64BitAddress == XBee64BitAddress.UNKNOWN_ADDRESS) {
 			String addressHigh;
 			String addressLow;
-			try {
-				response = sendATCommand(new ATCommand("SH"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the SH value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
-			addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
-			try {
-				response = sendATCommand(new ATCommand("SL"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the SL value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
-			addressLow = HexUtils.byteArrayToHexString(response.getResponse());
+			
+			response = getParameter("SH");
+			addressHigh = HexUtils.byteArrayToHexString(response);
+			
+			response = getParameter("SL");
+			addressLow = HexUtils.byteArrayToHexString(response);
+			
 			while(addressLow.length() < 8)
 				addressLow = "0" + addressLow;
+			
 			xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
 		}
 		// Get the Node ID.
-		if (nodeID == null) {
-			try {
-				response = sendATCommand(new ATCommand("NI"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the NI value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
-			nodeID = new String(response.getResponse());
-		}
+		response = getParameter("NI");
+		nodeID = new String(response);
+		
 		// Get the hardware version.
 		if (hardwareVersion == null) {
-			try {
-				response = sendATCommand(new ATCommand("HV"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the HV value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the HV value.", response.getResponseStatus());
-			hardwareVersion = HardwareVersion.get(response.getResponse()[0]);
+			response = getParameter("HV");
+			hardwareVersion = HardwareVersion.get(response[0]);
 		}
 		// Get the firmware version.
-		if (firmwareVersion == null) {
-			try {
-				response = sendATCommand(new ATCommand("VR"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the VR value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the VR value.", response.getResponseStatus());
-			firmwareVersion = HexUtils.byteArrayToHexString(response.getResponse());
-		}
+		response = getParameter("VR");
+		firmwareVersion = HexUtils.byteArrayToHexString(response);
+		
 		// Obtain the device protocol.
 		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
+		
+		// Get the 16-bit address. This must be done after obtaining the protocol because 
+		// DigiMesh protocol does not have 16-bit addresses.
+		if (getXBeeProtocol() != XBeeProtocol.DIGI_MESH) {
+			response = getParameter("MY");
+			xbee16BitAddress = new XBee16BitAddress(response);
+		}
 	}
 	
 	/**

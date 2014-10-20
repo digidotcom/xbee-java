@@ -40,6 +40,7 @@ import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.HardwareVersion;
 import com.digi.xbee.api.models.HardwareVersionEnum;
 import com.digi.xbee.api.models.PowerLevel;
@@ -1853,5 +1854,20 @@ public abstract class AbstractXBeeDevice {
 	public PowerLevel getPowerLevel() throws TimeoutException, XBeeException {
 		byte[] powerLevelValue = getParameter("PL");
 		return PowerLevel.get(ByteUtils.byteArrayToInt(powerLevelValue));
+	}
+	
+	/**
+	 * Retrieves the current association indication status of the XBee device.
+	 * 
+	 * @return The association indication status of the XBee device.
+	 * 
+	 * @throws TimeoutException if there is a timeout getting the association indication status.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see AssociationIndicationStatus
+	 */
+	protected AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+		byte[] associationIndicationValue = getParameter("AI");
+		return AssociationIndicationStatus.get(ByteUtils.byteArrayToInt(associationIndicationValue));
 	}
 }

@@ -33,10 +33,10 @@ public class PowerLevelTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.PowerLevel#getValue()}.
 	 * 
-	 * <p>Verify that the ID of each PowerLevel entry is valid.</p>
+	 * <p>Verify that the ID of each {@code PowerLevel} entry is valid.</p>
 	 */
 	@Test
-	public void testHardwareVersionEnumValues() {
+	public void testPowerLevelEnumValues() {
 		for (PowerLevel powerLevel:powerLevelValues)
 			assertTrue(powerLevel.getValue() >= 0);
 	}
@@ -44,10 +44,10 @@ public class PowerLevelTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.PowerLevel#name()}.
 	 * 
-	 * <p>Verify that the name of each PowerLevel entry is valid.</p>
+	 * <p>Verify that the name of each {@code PowerLevel} entry is valid.</p>
 	 */
 	@Test
-	public void testHardwareVersionEnumNames() {
+	public void testPowerLevelEnumNames() {
 		for (PowerLevel powerLevel:powerLevelValues) {
 			assertNotNull(powerLevel.name());
 			assertTrue(powerLevel.name().length() > 0);
@@ -57,10 +57,10 @@ public class PowerLevelTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.PowerLevel#getDescription()}.
 	 * 
-	 * <p>Verify that the description of each PowerLevel entry is valid.</p>
+	 * <p>Verify that the description of each {@code PowerLevel} entry is valid.</p>
 	 */
 	@Test
-	public void testHardwareVersionEnumDescriptions() {
+	public void testPowerLevelEnumDescriptions() {
 		for (PowerLevel powerLevel:powerLevelValues) {
 			assertNotNull(powerLevel.getDescription());
 			assertTrue(powerLevel.getDescription().length() > 0);
@@ -70,10 +70,11 @@ public class PowerLevelTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.PowerLevel#get(int)}.
 	 * 
-	 * <p>Verify that each PowerLevel entry can be retrieved statically using its value.</p>
+	 * <p>Verify that each {@code PowerLevel} entry can be retrieved statically using its 
+	 * value.</p>
 	 */
 	@Test
-	public void testXBeeProtocolStaticAccess() {
+	public void testPowerLevelStaticAccess() {
 		for (PowerLevel powerLevel:powerLevelValues)
 			assertEquals(powerLevel, PowerLevel.get(powerLevel.getValue()));
 	}
@@ -81,21 +82,22 @@ public class PowerLevelTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.PowerLevel#get(int)}.
 	 * 
-	 * <p>Verify that when trying to get an invalid power level entry, UNKNOWN power level is retrieved.</p>
+	 * <p>Verify that when trying to get an invalid {@code PowerLevel} entry, 
+	 * UNKNOWN power level is retrieved.</p>
 	 */
 	@Test
-	public void testXBeeProtocolStaticInvalidAccess() {
+	public void testPowerLevelStaticInvalidAccess() {
 		assertEquals(PowerLevel.LEVEL_UNKNOWN, PowerLevel.get(10));
 	}
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.PowerLevel#toString()}.
 	 * 
-	 * <p>Verify that the {@code toString()} method of a PowerLevel entry returns its 
-	 * description correctly.</p>
+	 * <p>Verify that the {@code toString()} method of a {@code PowerLevel} entry returns 
+	 * its description correctly.</p>
 	 */
 	@Test
-	public void testXBeeProtocolToString() {
+	public void testPowerLevelToString() {
 		for (PowerLevel powerLevel:powerLevelValues)
 			assertEquals(HexUtils.byteToHexString((byte)powerLevel.getValue()) + ": " + powerLevel.getDescription(), powerLevel.toString());
 	}

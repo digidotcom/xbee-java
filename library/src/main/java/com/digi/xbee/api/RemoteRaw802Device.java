@@ -13,6 +13,7 @@ package com.digi.xbee.api;
 
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -145,5 +146,14 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	@Override
 	public void set16BitAddress(XBee16BitAddress xbee16BitAddress) throws TimeoutException, XBeeException {
 		super.set16BitAddress(xbee16BitAddress);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#getAssociationIndicationStatus()
+	 */
+	@Override
+	protected AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+		return super.getAssociationIndicationStatus();
 	}
 }

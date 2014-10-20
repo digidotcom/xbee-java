@@ -1857,6 +1857,24 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
+	 * Sets the output power level of the XBee device.
+	 * 
+	 * @param powerLevel The new output power level to be set in the XBee device.
+	 * 
+	 * @throws NullPointerException if {@code powerLevel == null}.
+	 * @throws TimeoutException if there is a timeout setting the power level.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see PowerLevel
+	 */
+	public void setPowerLevel(PowerLevel powerLevel) throws TimeoutException, XBeeException {
+		if (powerLevel == null)
+			throw new NullPointerException("Power level cannot be null.");
+		
+		setParameter("PL", ByteUtils.intToByteArray(powerLevel.getValue()));
+	}
+	
+	/**
 	 * Retrieves the current association indication status of the XBee device.
 	 * 
 	 * @return The association indication status of the XBee device.

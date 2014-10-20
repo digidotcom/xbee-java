@@ -369,43 +369,8 @@ public abstract class AbstractXBeeDevice {
 	 * @return The node identifier of the device.
 	 * 
 	 * @see #setNodeID(String)
-	 * @see #getNodeID(boolean)
 	 */
 	public String getNodeID() {
-		return nodeID;
-	}
-	
-	/**
-	 * Retrieves the node identifier of the XBee device. This method allows for refreshing 
-	 * the value reading it again from the device or retrieving the cached value.
-	 * 
-	 * @param refresh Indicates whether or not the value of the node ID should be refreshed 
-	 *                (read again from the device)
-	 * @return The node identifier of the device.
-	 * 
-	 * @throws TimeoutException if there is a timeout reading the node ID value.
-	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * 
-	 * @see #setNodeID(String)
-	 * @see #getNodeID()
-	 */
-	public String getNodeID(boolean refresh) throws TimeoutException, XBeeException {
-		if (!refresh)
-			return nodeID;
-		ATCommandResponse response;
-		try {
-			response = sendATCommand(new ATCommand("NI"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		if (response == null || response.getResponse() == null)
-			throw new OperationNotSupportedException("Couldn't get the NI value.");
-		if (response.getResponseStatus() != ATCommandStatus.OK)
-			throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
-		
-		nodeID = new String(response.getResponse());
 		return nodeID;
 	}
 	
@@ -414,34 +379,21 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param nodeID The new node id of the device.
 	 * 
-	 * @throws TimeoutException if there is a timeout setting the node ID value.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws IllegalArgumentException if {@code nodeID.length > 20}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code nodeID == null}.
-	 * @throws IllegalArgumentException if {@code nodeID.length > 20}.
+	 * @throws TimeoutException if there is a timeout setting the node ID value.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getNodeID()
-	 * @see #getNodeID(boolean)
 	 */
 	public void setNodeID(String nodeID) throws TimeoutException, XBeeException {
 		if (nodeID == null)
 			throw new NullPointerException("Node ID cannot be null.");
 		if (nodeID.length() > 20)
 			throw new IllegalArgumentException("Node ID length must be less than 21.");
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		
-		ATCommandResponse response;
-		try {
-			response = sendATCommand(new ATCommand("NI", nodeID));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		if (response == null)
-			throw new OperationNotSupportedException("Couldn't set the NI value.");
-		if (response.getResponseStatus() != ATCommandStatus.OK)
-			throw new ATCommandException("Couldn't set the NI value.", response.getResponseStatus());
+		setParameter("NI", nodeID.getBytes());
 		
 		this.nodeID = nodeID;
 	}

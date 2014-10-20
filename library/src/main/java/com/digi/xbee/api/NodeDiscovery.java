@@ -406,14 +406,21 @@ class NodeDiscovery {
 			
 			discoverDevicesAPI(device, listener, id, timeout);
 			
-			// It seems that DigiMesh devices are blocked during the NT + 2-3 seconds more.
-			// It means that if we try to restore the discovery options just after the
-			// discovery finishes, we will receive a timeout exception. Sleep 3 seconds to
-			// avoid this issue.
-			if (device.getXBeeProtocol() == XBeeProtocol.DIGI_MESH) {
-				logger.debug("{}Waiting 3 seconds before restoring values (DigiMesh related issue).", toString());
+			// In DigiMesh/DigiPoint and 802.15.4 the network discovery timeout 
+			// is NT + the network propagation time. It means that if we try to 
+			// restore the discovery options just after NT ms, we will receive a
+			// timeout exception. Sleep 3 seconds in DigiMesh/DigiPoint and 1 
+			// second in 802.15.4 to avoid this issue.
+			if (device.getXBeeProtocol() == XBeeProtocol.DIGI_MESH || 
+					device.getXBeeProtocol() == XBeeProtocol.DIGI_POINT) {
+				logger.debug("{}Waiting 3 seconds before restoring values (network propagation time).", toString());
 				try {
 					Thread.sleep(3000);
+				} catch (InterruptedException e) {}
+			} else if (device.getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
+				logger.debug("{}Waiting 1 second before restoring values (network propagation time).", toString());
+				try {
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {}
 			}
 			

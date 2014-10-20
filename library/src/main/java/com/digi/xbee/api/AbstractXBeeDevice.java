@@ -1291,20 +1291,20 @@ public abstract class AbstractXBeeDevice {
 	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
 		if (xbee64BitAddress == null)
 			throw new NullPointerException("Address cannot be null.");
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		
+		// This method needs to apply changes after modifying the destination 
+		// address, but only if the destination address could be set successfully.
 		boolean applyChanges = isApplyConfigurationChangesEnabled();
-		if (isRemote() && applyChanges)
+		if (applyChanges)
 			enableApplyConfigurationChanges(false);
 		
 		byte[] address = xbee64BitAddress.getValue();
-		setParameter("DH", Arrays.copyOfRange(address, 0, 4));
-		setParameter("DL", Arrays.copyOfRange(address, 4, 8));
-		
-		if (isRemote()) {
+		try {
+			setParameter("DH", Arrays.copyOfRange(address, 0, 4));
+			setParameter("DL", Arrays.copyOfRange(address, 4, 8));
 			applyChanges();
+		} finally {
+			// Always restore the old value of the AC.
 			enableApplyConfigurationChanges(applyChanges);
 		}
 	}
@@ -1322,10 +1322,6 @@ public abstract class AbstractXBeeDevice {
 	 * @see XBee64BitAddress
 	 */
 	public XBee64BitAddress getDestinationAddress() throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
 		byte[] dh = getParameter("DH");
 		byte[] dl = getParameter("DL");
 		byte[] address = new byte[dh.length + dl.length];

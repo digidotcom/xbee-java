@@ -91,7 +91,7 @@ public class GetPANIDTest {
 	 */
 	@Test(expected=TimeoutException.class)
 	public void testGetPANIDErrorTimeout() throws XBeeException, IOException {
-		// Throw a timeout exception when  when trying to get the ID parameter.
+		// Throw a timeout exception when trying to get the ID parameter.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).getParameter(PARAMETER_ID);
 		
 		// Get the PAN ID.
@@ -110,7 +110,7 @@ public class GetPANIDTest {
 	 */
 	@Test(expected=ATCommandException.class)
 	public void testGetPANIDErrorInvalidAnswer() throws XBeeException, IOException {
-		// Throw an AT command exception when  when trying to get the ID parameter.
+		// Throw an AT command exception when trying to get the ID parameter.
 		Mockito.doThrow(new ATCommandException(null)).when(xbeeDevice).getParameter(PARAMETER_ID);
 		
 		// Get the PAN ID.
@@ -148,7 +148,7 @@ public class GetPANIDTest {
 		// Return that the device protocol is ZigBee when asked.
 		Mockito.doReturn(XBeeProtocol.ZIGBEE).when(xbeeDevice).getXBeeProtocol();
 		
-		// Throw a timeout exception when  when trying to get the OP parameter.
+		// Throw a timeout exception when trying to get the OP parameter.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).getParameter(PARAMETER_OP);
 		
 		// Get the PAN ID.
@@ -170,7 +170,7 @@ public class GetPANIDTest {
 		// Return that the device protocol is ZigBee when asked.
 		Mockito.doReturn(XBeeProtocol.ZIGBEE).when(xbeeDevice).getXBeeProtocol();
 		
-		// Throw an AT command exception when  when trying to get the OP parameter.
+		// Throw an AT command exception when trying to get the OP parameter.
 		Mockito.doThrow(new ATCommandException(null)).when(xbeeDevice).getParameter(PARAMETER_OP);
 		
 		// Get the PAN ID.

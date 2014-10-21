@@ -51,7 +51,7 @@ public class SetPowerLevelTest {
 	 * @throws XBeeException
 	 */
 	@Test(expected=NullPointerException.class)
-	public void testSetPowerLevelErrorNullAddress() throws XBeeException {
+	public void testSetPowerLevelErrorNullPowerLevel() throws XBeeException {
 		// Set the power level.
 		xbeeDevice.setPowerLevel(null);
 	}
@@ -101,7 +101,7 @@ public class SetPowerLevelTest {
 	 */
 	@Test(expected=TimeoutException.class)
 	public void testSetPowerLevelErrorTimeout() throws XBeeException, IOException {
-		// Throw a timeout exception when  when trying to set the PL parameter.
+		// Throw a timeout exception when trying to set the PL parameter.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
 		
 		// Set the power level.
@@ -120,7 +120,7 @@ public class SetPowerLevelTest {
 	 */
 	@Test(expected=ATCommandException.class)
 	public void testSetPowerLevelErrorInvalidAnswer() throws XBeeException, IOException {
-		// Throw an AT command exception when  when trying to set the PL parameter.
+		// Throw an AT command exception when trying to set the PL parameter.
 		Mockito.doThrow(new ATCommandException(null)).when(xbeeDevice).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
 		
 		// Set the power level.
@@ -137,7 +137,7 @@ public class SetPowerLevelTest {
 	 */
 	@Test
 	public void testSetPowerLevelSuccess() throws XBeeException, IOException {
-		// Do nothing when  when trying to set the PL parameter.
+		// Do nothing when trying to set the PL parameter.
 		Mockito.doNothing().when(xbeeDevice).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
 		
 		// Set the power level.

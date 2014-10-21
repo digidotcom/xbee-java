@@ -36,18 +36,18 @@ public class Set16BitAddressTest {
 	private static final XBee16BitAddress ADDRESS = new XBee16BitAddress(new byte[]{0x01, 0x23}); // 0x0123
 	
 	// Variables.
-	private Raw802Device local802Device;
+	private XBeeDevice xbeeDevice;
 	
 	@Before
 	public void setup() throws Exception {
-		// Instantiate a local Raw802Device object (only 802.15.4 devices allow for setting the 16-bit address).
-		local802Device = PowerMockito.spy(new Raw802Device(Mockito.mock(SerialPortRxTx.class)));
+		// Instantiate a local XBee device object.
+		xbeeDevice = PowerMockito.spy(new XBeeDevice(Mockito.mock(SerialPortRxTx.class)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.Raw802Device#set16BitAddress(XBee16BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#set16BitAddress(XBee16BitAddress)}.
 	 * 
-	 * <p>Verify that the 16-bit address of a 802.15.4 device cannot be set if the 16-bit address 
+	 * <p>Verify that the 16-bit address of an XBee device cannot be set if the 16-bit address 
 	 * is null.</p>
 	 * 
 	 * @throws XBeeException
@@ -55,13 +55,13 @@ public class Set16BitAddressTest {
 	@Test(expected=NullPointerException.class)
 	public void testSetAddressErrorNullAddress() throws XBeeException {
 		// Set the address.
-		local802Device.set16BitAddress(null);
+		xbeeDevice.set16BitAddress(null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.Raw802Device#set16BitAddress(XBee16BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#set16BitAddress(XBee16BitAddress)}.
 	 * 
-	 * <p>Verify that the 16-bit address of a 802.15.4 device cannot be set if the connection of the 
+	 * <p>Verify that the 16-bit address of an XBee device cannot be set if the connection of the 
 	 * device is closed.</p>
 	 * 
 	 * @throws XBeeException
@@ -69,16 +69,16 @@ public class Set16BitAddressTest {
 	@Test(expected=InterfaceNotOpenException.class)
 	public void testSetAddressErrorConnectionClosed() throws XBeeException {
 		// Throw an interface not open exception when trying to set any parameter.
-		Mockito.doThrow(new InterfaceNotOpenException()).when(local802Device).setParameter(Mockito.anyString(), Mockito.any(byte[].class));
+		Mockito.doThrow(new InterfaceNotOpenException()).when(xbeeDevice).setParameter(Mockito.anyString(), Mockito.any(byte[].class));
 		
 		// Set the address.
-		local802Device.set16BitAddress(ADDRESS);
+		xbeeDevice.set16BitAddress(ADDRESS);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.Raw802Device#set16BitAddress(XBee16BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#set16BitAddress(XBee16BitAddress)}.
 	 * 
-	 * <p>Verify that the 16-bit address of a 802.15.4 device cannot be set if the operating mode of the 
+	 * <p>Verify that the 16-bit address of an XBee device cannot be set if the operating mode of the 
 	 * device is not valid.</p>
 	 * 
 	 * @throws XBeeException
@@ -86,16 +86,16 @@ public class Set16BitAddressTest {
 	@Test(expected=InvalidOperatingModeException.class)
 	public void testSetAddressErrorInvalidOperatingMode() throws XBeeException {
 		// Throw an invalid operating mode exception when trying to set any parameter.
-		Mockito.doThrow(new InvalidOperatingModeException()).when(local802Device).setParameter(Mockito.anyString(), Mockito.any(byte[].class));
+		Mockito.doThrow(new InvalidOperatingModeException()).when(xbeeDevice).setParameter(Mockito.anyString(), Mockito.any(byte[].class));
 		
 		// Set the address.
-		local802Device.set16BitAddress(ADDRESS);
+		xbeeDevice.set16BitAddress(ADDRESS);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.Raw802Device#set16BitAddress(XBee16BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#set16BitAddress(XBee16BitAddress)}.
 	 * 
-	 * <p>Verify that the 16-bit address of a 802.15.4 device cannot be set if there is a timeout setting 
+	 * <p>Verify that the 16-bit address of an XBee device cannot be set if there is a timeout setting 
 	 * the 16-bit address of the device.</p>
 	 * 
 	 * @throws XBeeException
@@ -103,17 +103,17 @@ public class Set16BitAddressTest {
 	 */
 	@Test(expected=TimeoutException.class)
 	public void testSetAddressErrorTimeout() throws XBeeException, IOException {
-		// Throw a timeout exception when  when trying to set the MY parameter.
-		Mockito.doThrow(new TimeoutException()).when(local802Device).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
+		// Throw a timeout exception when trying to set the MY parameter.
+		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
 		
 		// Set the address.
-		local802Device.set16BitAddress(ADDRESS);
+		xbeeDevice.set16BitAddress(ADDRESS);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.Raw802Device#set16BitAddress(XBee16BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#set16BitAddress(XBee16BitAddress)}.
 	 * 
-	 * <p>Verify that the 16-bit address of a 802.15.4 device cannot be set if the answer when setting 
+	 * <p>Verify that the 16-bit address of an XBee device cannot be set if the answer when setting 
 	 * the address is null or the response status is not OK. It is, there is an AT command exception 
 	 * setting the parameter.</p>
 	 * 
@@ -122,29 +122,29 @@ public class Set16BitAddressTest {
 	 */
 	@Test(expected=ATCommandException.class)
 	public void testSetAddressErrorInvalidAnswer() throws XBeeException, IOException {
-		// Throw an AT command exception when  when trying to set the MY parameter.
-		Mockito.doThrow(new ATCommandException(null)).when(local802Device).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
+		// Throw an AT command exception when trying to set the MY parameter.
+		Mockito.doThrow(new ATCommandException(null)).when(xbeeDevice).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
 		
 		// Set the address.
-		local802Device.set16BitAddress(ADDRESS);
+		xbeeDevice.set16BitAddress(ADDRESS);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.Raw802Device#set16BitAddress(XBee16BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#set16BitAddress(XBee16BitAddress)}.
 	 * 
-	 * <p>Verify that the 16-bit address of a 802.15.4 device can be set successfully.</p>
+	 * <p>Verify that the 16-bit address of an XBee device can be set successfully.</p>
 	 * 
 	 * @throws XBeeException
 	 * @throws IOException
 	 */
 	@Test
 	public void testSetAddressSuccess() throws XBeeException, IOException {
-		// Do nothing when  when trying to set the MY parameter.
-		Mockito.doNothing().when(local802Device).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
+		// Do nothing when trying to set the MY parameter.
+		Mockito.doNothing().when(xbeeDevice).setParameter(Mockito.eq(PARAMETER_MY), Mockito.any(byte[].class));
 		
 		// Set the address.
-		local802Device.set16BitAddress(ADDRESS);
+		xbeeDevice.set16BitAddress(ADDRESS);
 		
-		assertEquals(ADDRESS, local802Device.get16BitAddress());
+		assertEquals(ADDRESS, xbeeDevice.get16BitAddress());
 	}
 }

@@ -90,7 +90,7 @@ public class GetAssociationIndicationStatusTest {
 	 */
 	@Test(expected=TimeoutException.class)
 	public void testGetAssociationIndicationStatusErrorTimeout() throws XBeeException, IOException {
-		// Throw a timeout exception when  when trying to get the AI parameter.
+		// Throw a timeout exception when trying to get the AI parameter.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).getParameter(PARAMETER_AI);
 		
 		// Get the Association Indication status.
@@ -109,7 +109,7 @@ public class GetAssociationIndicationStatusTest {
 	 */
 	@Test(expected=ATCommandException.class)
 	public void testGetAssociationIndicationStatusErrorInvalidAnswer() throws XBeeException, IOException {
-		// Throw an AT command exception when  when trying to get the AI parameter.
+		// Throw an AT command exception when trying to get the AI parameter.
 		Mockito.doThrow(new ATCommandException(null)).when(xbeeDevice).getParameter(PARAMETER_AI);
 		
 		// Get the Association Indication status.

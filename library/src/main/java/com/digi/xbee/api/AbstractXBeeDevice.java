@@ -1752,6 +1752,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param xbee16BitAddress The new 16-bit address.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code xbee16BitAddress == null}.
 	 * @throws TimeoutException if there is a timeout setting the address.
 	 * @throws XBeeException if there is any other XBee related exception.
@@ -1773,6 +1774,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The operating PAN ID of the XBee device.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout getting the PAN ID.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
@@ -1790,6 +1792,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The output power level of the XBee device.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout getting the power level.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
@@ -1805,6 +1808,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param powerLevel The new output power level to be set in the XBee device.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code powerLevel == null}.
 	 * @throws TimeoutException if there is a timeout setting the power level.
 	 * @throws XBeeException if there is any other XBee related exception.
@@ -1823,6 +1827,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The association indication status of the XBee device.
 	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout getting the association indication status.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 

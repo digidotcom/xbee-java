@@ -90,7 +90,7 @@ public class GetPowerLevelTest {
 	 */
 	@Test(expected=TimeoutException.class)
 	public void testGetPowerLevelErrorTimeout() throws XBeeException, IOException {
-		// Throw a timeout exception when  when trying to get the PL parameter.
+		// Throw a timeout exception when trying to get the PL parameter.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).getParameter(PARAMETER_PL);
 		
 		// Get the power level.
@@ -109,7 +109,7 @@ public class GetPowerLevelTest {
 	 */
 	@Test(expected=ATCommandException.class)
 	public void testGetPowerLevelErrorInvalidAnswer() throws XBeeException, IOException {
-		// Throw an AT command exception when  when trying to get the PL parameter.
+		// Throw an AT command exception when trying to get the PL parameter.
 		Mockito.doThrow(new ATCommandException(null)).when(xbeeDevice).getParameter(PARAMETER_PL);
 		
 		// Get the power level.

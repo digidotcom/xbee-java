@@ -259,7 +259,7 @@ public class Raw802Device extends XBeeDevice {
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#getAssociationIndicationStatus()
 	 */
 	@Override
-	protected AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+	public AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
 		return super.getAssociationIndicationStatus();
 	}
 }

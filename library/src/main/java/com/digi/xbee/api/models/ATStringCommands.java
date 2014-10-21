@@ -13,6 +13,9 @@ package com.digi.xbee.api.models;
 
 import java.util.HashMap;
 
+/**
+ * Enumerates several AT commands used to parse AT command packets.
+ */
 public enum ATStringCommands {
 	
 	NI("NI"),

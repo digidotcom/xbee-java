@@ -44,6 +44,14 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class represents a local XBee device.
+ * 
+ * @see DigiMeshDevice
+ * @see DigiPointDevice
+ * @see Raw802Device
+ * @see ZigBeeDevice
+ */
 public class XBeeDevice extends AbstractXBeeDevice {
 
 	// Constants.

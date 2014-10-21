@@ -20,6 +20,14 @@ import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+/**
+ * This class represents a local DigiMesh device.
+ * 
+ * @see XBeeDevice
+ * @see DigiPointDevice
+ * @see Raw802Device
+ * @see ZigBeeDevice
+ */
 public class DigiMeshDevice extends XBeeDevice {
 
 	/**

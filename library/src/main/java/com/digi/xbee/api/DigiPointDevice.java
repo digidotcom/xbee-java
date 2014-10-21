@@ -21,6 +21,14 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+/**
+ * This class represents a local DigiPoint device.
+ * 
+ * @see XBeeDevice
+ * @see DigiMeshDevice
+ * @see Raw802Device
+ * @see ZigBeeDevice
+ */
 public class DigiPointDevice extends XBeeDevice {
 
 	/**

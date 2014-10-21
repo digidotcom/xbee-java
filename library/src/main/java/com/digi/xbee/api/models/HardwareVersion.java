@@ -11,6 +11,9 @@
  */
 package com.digi.xbee.api.models;
 
+/**
+ * This class represents an XBee hardware version number.
+ */
 public class HardwareVersion {
 	
 	// Constants.

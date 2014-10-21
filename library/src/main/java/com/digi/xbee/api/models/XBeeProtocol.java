@@ -14,7 +14,7 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumeration class listing the available XBee protocols.
+ * Enumerates the available XBee protocols.
  */
 public enum XBeeProtocol {
 	

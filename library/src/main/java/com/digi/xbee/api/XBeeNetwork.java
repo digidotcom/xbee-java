@@ -29,7 +29,7 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 
 /**
- * An object that represents an XBee Network.
+ * This class represents an XBee Network.
  *  
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>

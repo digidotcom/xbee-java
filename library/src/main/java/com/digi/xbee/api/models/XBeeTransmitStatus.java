@@ -13,6 +13,9 @@ package com.digi.xbee.api.models;
 
 import java.util.HashMap;
 
+/**
+ * Enumerates the different transmit status.
+ */
 public enum XBeeTransmitStatus {
 
 	// Enumeration types

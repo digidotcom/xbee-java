@@ -12,15 +12,15 @@
 package com.digi.xbee.api;
 
 /**
- * An object that represents a 802.15.4 Network.
+ * This class represents an 802.15.4 Network.
  *  
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>
  * 
  * @see XBeeNetwork
- * @see ZigBeeNetwork
  * @see DigiMeshNetwork
  * @see DigiPointNetwork
+ * @see ZigBeeNetwork
  */
 public class Raw802Network extends XBeeNetwork {
 

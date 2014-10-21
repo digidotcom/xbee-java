@@ -26,6 +26,14 @@ import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class represents a local 802.15.4 device.
+ * 
+ * @see XBeeDevice
+ * @see DigiMeshDevice
+ * @see DigiPointDevice
+ * @see ZigBeeDevice
+ */
 public class Raw802Device extends XBeeDevice {
 
 	/**

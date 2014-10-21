@@ -12,7 +12,7 @@
 package com.digi.xbee.api.connection.serial;
 
 /**
- * This is a helper class used to store port information.
+ * Helper class used to store port information.
  */
 public class SerialPortInfo {
 	

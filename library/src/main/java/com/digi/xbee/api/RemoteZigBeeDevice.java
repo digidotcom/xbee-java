@@ -15,6 +15,14 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+/**
+ * This class represents a remote ZigBee device.
+ * 
+ * @see RemoteXBeeDevice
+ * @see RemoteDigiMeshDevice
+ * @see RemoteDigiPointDevice
+ * @see RemoteRaw802Device
+ */
 public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 
 	/**

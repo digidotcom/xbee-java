@@ -63,6 +63,12 @@ import com.digi.xbee.api.packet.raw.TXStatusPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * This class provides common functionality for all XBee devices.
+ * 
+ * @see XBeeDevice
+ * @see RemoteXBeeDevice
+ */
 public abstract class AbstractXBeeDevice {
 	
 	// Constants.

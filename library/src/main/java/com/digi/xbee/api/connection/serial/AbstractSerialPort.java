@@ -20,6 +20,9 @@ import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 
+/**
+ * Abstract class that provides common functionality to work with serial ports.
+ */
 public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	// Constants

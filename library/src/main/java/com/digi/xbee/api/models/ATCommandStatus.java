@@ -14,7 +14,7 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * This class lists all the possible states of an AT Command after executing it.
+ * Enumerates all the possible states of an AT Command after executing it.
  */
 public enum ATCommandStatus {
 

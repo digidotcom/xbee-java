@@ -36,6 +36,10 @@ import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
 import com.digi.xbee.api.exceptions.PermissionDeniedException;
 
+/**
+ * This class represents a serial port and uses the RxTx library to communicate
+ * with it.
+ */
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
 	// Variables

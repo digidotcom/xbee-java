@@ -55,7 +55,7 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 	 * @param addr64 The 64-bit address to identify this remote XBee device.
 	 * @param addr16 The 16-bit address to identify this remote XBee device. It 
 	 *               might be {@code null}.
-	 * @param id The node identifier of this remote XBee device. It might be 
+	 * @param ni The node identifier of this remote XBee device. It might be 
 	 *           {@code null}.
 	 * 
 	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.

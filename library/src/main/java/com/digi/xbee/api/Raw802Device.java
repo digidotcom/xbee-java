@@ -158,11 +158,11 @@ public class Raw802Device extends XBeeDevice {
 	 * @throws XBeeException if there is any XBee related exception.
 	 * 
 	 * @see XBee16BitAddress
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
 	 * @see #sendDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 * @see #sendData(XBee16BitAddress, byte[])
 	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
 	 */
 	public void sendDataAsync(XBee16BitAddress address, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -218,11 +218,11 @@ public class Raw802Device extends XBeeDevice {
 	 * @see XBee16BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
+	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
-	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
 	 * @see #sendDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
 	 */
 	public void sendData(XBee16BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.

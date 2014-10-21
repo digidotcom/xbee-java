@@ -85,7 +85,7 @@ public class DataReader extends Thread {
 	 * 
 	 * @param connectionInterface Connection interface to read from.
 	 * @param mode XBee operating mode.
-	 * @param XBeeDevice Reference to the XBee device containing this DataReader object.
+	 * @param xbeeDevice Reference to the XBee device containing this DataReader object.
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null} or
 	 *                                 {@code mode == null}.

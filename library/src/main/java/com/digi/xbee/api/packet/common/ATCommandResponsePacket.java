@@ -35,11 +35,11 @@ import com.digi.xbee.api.models.ATStringCommands;
  * 
  * <p>This packet is received in response of an {@code ATCommandPacket}.</p>
  * 
- * <p>Response also includes an {@code ATComandStatus} object with the status 
+ * <p>Response also includes an {@code ATCommandStatus} object with the status 
  * of the AT command.</p>
  * 
  * @see ATCommandPacket
- * @see ATComandStatus 
+ * @see ATCommandStatus
  * @see XBeeAPIPacket
  */
 public class ATCommandResponsePacket extends XBeeAPIPacket {

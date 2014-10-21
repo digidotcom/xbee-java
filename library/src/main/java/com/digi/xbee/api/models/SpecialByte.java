@@ -16,7 +16,8 @@ import java.util.HashMap;
 /**
  * This class enumerates all the special bytes of the XBee protocol
  * that must be escaped when working on API 2 mode.
- * See {@link com.digi.xbee.OperatingMode.XBeeMode}.
+ * 
+ * @see OperatingMode
  */
 public enum SpecialByte {
 

@@ -453,11 +453,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                              if {@code data == null}.
 	 * 
 	 * @see XBee64BitAddress
-	 * @see #sendDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
-	 * @see #sendData(XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
+	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendData(XBee64BitAddress, XBee16BitAddress, byte[])
 	 */
 	protected void sendDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -511,13 +511,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see XBee16BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(XBee16BitAddress, byte[])
-	 * @see #sendData(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
 	 * @see #sendDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendData(RemoteXBeeDevice, byte[])
+	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendData(XBee64BitAddress, XBee16BitAddress, byte[])
 	 */
 	protected void sendDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -556,11 +554,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code xbeeDevice == null} or 
 	 *                              if {@code data == null}.
 	 *                              
-	 * @see #sendDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(XBee16BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 */
 	public void sendDataAsync(RemoteXBeeDevice xbeeDevice, byte[] data) throws XBeeException {
 		if (xbeeDevice == null)
@@ -593,11 +587,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see XBee64BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendData(XBee16BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendData(RemoteXBeeDevice, byte[])
+	 * @see #sendData(XBee64BitAddress, XBee16BitAddress, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
 	 * @see #sendDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
 	 */
 	protected void sendData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -637,7 +631,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendData(XBee16BitAddress, byte[])}.</p>
+	 * {@link #sendDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])}.</p>
 	 * 
 	 * @param address64Bit The 64-bit address of the XBee that will receive the 
 	 *                     data.
@@ -658,13 +652,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see XBee16BitAddress
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
+	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(XBee16BitAddress, byte[])
-	 * @see #sendData(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
 	 * @see #sendDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendDataAsync(XBee16BitAddress, byte[])
 	 * @see #sendDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
 	 */
 	protected void sendData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -700,7 +692,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendDataAsync(AbstractXBeeDevice, byte[])}.</p>
+	 * {@link #sendDataAsync(RemoteXBeeDevice, byte[])}.</p>
 	 * 
 	 * @param xbeeDevice The XBee device of the network that will receive the data.
 	 * @param data Byte array containing data to be sent.
@@ -713,11 +705,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendData(XBee64BitAddress, byte[])
-	 * @see #sendData(XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendDataAsync(XBee16BitAddress, byte[])
-	 * @see #sendDataAsync(AbstractXBeeDevice, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
 	 */
 	public void sendData(RemoteXBeeDevice xbeeDevice, byte[] data) throws TimeoutException, XBeeException {
 		if (xbeeDevice == null)

@@ -134,8 +134,8 @@ public class XBeePacketParser {
 	 * Parses the bytes from the given input stream depending on the provided 
 	 * operating mode and returns the API packet.
 	 * 
-	 * <p>The operating mode must be {@see OperatingMode.API} or 
-	 * {@see OperatingMode.API_ESCAPE}.</p>
+	 * <p>The operating mode must be {@link OperatingMode#API} or 
+	 * {@link OperatingMode#API_ESCAPE}.</p>
 	 * 
 	 * @param inputStream Input stream to read bytes from.
 	 * @param mode XBee device operating mode.
@@ -197,8 +197,8 @@ public class XBeePacketParser {
 	 * Parses the bytes from the given array depending on the provided operating
 	 * mode and returns the API packet.
 	 * 
-	 * <p>The operating mode must be {@see OperatingMode.API} or 
-	 * {@see OperatingMode.API_ESCAPE}.</p>
+	 * <p>The operating mode must be {@link OperatingMode#API} or 
+	 * {@link OperatingMode#API_ESCAPE}.</p>
 	 * 
 	 * @param packetByteArray Byte array with the complete frame, starting from 
 	 *                        the header and ending in the checksum.

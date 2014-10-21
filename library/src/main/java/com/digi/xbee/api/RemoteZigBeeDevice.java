@@ -73,7 +73,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 * @param addr64 The 64-bit address to identify this remote ZigBee device.
 	 * @param addr16 The 16-bit address to identify this remote ZigBee device. 
 	 *               It might be {@code null}.
-	 * @param id The node identifier of this remote ZigBee device. It might be 
+	 * @param ni The node identifier of this remote ZigBee device. It might be 
 	 *           {@code null}.
 	 * 
 	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 

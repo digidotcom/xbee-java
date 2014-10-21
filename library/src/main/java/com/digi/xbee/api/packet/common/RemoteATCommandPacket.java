@@ -130,7 +130,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * @param frameID The Frame ID.
 	 * @param destAddress64 64-bit address of the destination device.
 	 * @param destAddress16 16-bit address of the destination device.
-	 * @param options Bitfield of supported transmission options.
+	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param command AT command.
 	 * @param parameter AT command parameter as String.
 	 * 
@@ -179,7 +179,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * @param destAddress16 16-bit address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param command AT command.
-	 * @param commandParameter AT command parameter.
+	 * @param parameter AT command parameter.
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or

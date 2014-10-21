@@ -52,7 +52,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * ({@link com.digi.xbee.api.models.XBee16BitAddress#UNKNOWN_ADDRESS}).</p> 
  * 
  * <p>The Transmit Status frame 
- * ({@value com.digi.xbee.api.packet.APIFrameType#TRANSMIT_REQUEST}) will 
+ * ({@link com.digi.xbee.api.packet.APIFrameType#TRANSMIT_REQUEST}) will 
  * indicate the discovered 16-bit address, if successful (see 
  * {@link com.digi.xbee.api.packet.common.TransmitStatusPacket}).</p>
  * 

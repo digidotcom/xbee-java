@@ -392,7 +392,6 @@ public abstract class AbstractXBeeDevice {
 	 * @return The XBee device protocol.
 	 * 
 	 * @see XBeeProtocol
-	 * @see #setXBeeProtocol(XBeeProtocol)
 	 */
 	public XBeeProtocol getXBeeProtocol() {
 		return xbeeProtocol;
@@ -672,8 +671,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see ATCommand
 	 * @see ATCommandResponse
-	 * @see #setReceiveTimeout(int)
-	 * @see #getReceiveTimeout()
+	 * @see XBeeDevice#setReceiveTimeout(int)
+	 * @see XBeeDevice#getReceiveTimeout()
 	 */
 	protected ATCommandResponse sendATCommand(ATCommand command) 
 			throws InvalidOperatingModeException, TimeoutException, IOException {
@@ -750,11 +749,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code packet == null}.
 	 * 
 	 * @see XBeePacket
-	 * @see #sendXBeePacketAsync(XBeePacket)
 	 * @see #sendXBeePacket(XBeePacket)
-	 * @see #sendXBeePacket(XBeePacket, boolean)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
-	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener, boolean)
+	 * @see #sendXBeePacketAsync(XBeePacket)
 	 */
 	protected void sendXBeePacketAsync(XBeePacket packet) 
 			throws InvalidOperatingModeException, IOException {
@@ -778,10 +775,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see XBeePacket
 	 * @see IPacketReceiveListener
 	 * @see #sendXBeePacket(XBeePacket)
-	 * @see #sendXBeePacket(XBeePacket, boolean)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
 	 * @see #sendXBeePacketAsync(XBeePacket)
-	 * @see #sendXBeePacketAsync(XBeePacket, boolean)
 	 */
 	protected void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
 			throws InvalidOperatingModeException, IOException {
@@ -841,11 +836,9 @@ public abstract class AbstractXBeeDevice {
 	 * @see XBeePacket
 	 * @see #sendXBeePacket(XBeePacket)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
-	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener, boolean)
 	 * @see #sendXBeePacketAsync(XBeePacket)
-	 * @see #sendXBeePacketAsync(XBeePacket, boolean)
-	 * @see #setReceiveTimeout(int)
-	 * @see #getReceiveTimeout()
+	 * @see XBeeDevice#setReceiveTimeout(int)
+	 * @see XBeeDevice#getReceiveTimeout()
 	 */
 	protected XBeePacket sendXBeePacket(final XBeePacket packet) 
 			throws InvalidOperatingModeException, TimeoutException, IOException {
@@ -1100,7 +1093,7 @@ public abstract class AbstractXBeeDevice {
 	 * Sets the configuration of the given IO line.
 	 * 
 	 * @param ioLine The IO line to configure.
-	 * @param mode The IO mode to set to the IO line.
+	 * @param ioMode The IO mode to set to the IO line.
 	 * 
 	 * @throws TimeoutException if there is a timeout sending the set 
 	 *                          configuration command.
@@ -1165,7 +1158,7 @@ public abstract class AbstractXBeeDevice {
 	 * Sets the digital value (high or low) to the provided IO line.
 	 * 
 	 * @param ioLine The IO line to set its value.
-	 * @param value The IOValue to set to the IO line ({@code HIGH} or 
+	 * @param ioValue The IOValue to set to the IO line ({@code HIGH} or 
 	 *              {@code LOW}).
 	 * 
 	 * @throws TimeoutException if there is a timeout sending the set DIO 
@@ -1240,7 +1233,7 @@ public abstract class AbstractXBeeDevice {
 	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
 	 * 
 	 * @param ioLine The IO line to set its duty cycle value.
-	 * @param value The duty cycle of the PWM.
+	 * @param dutyCycle The duty cycle of the PWM.
 	 * 
 	 * @throws TimeoutException if there is a timeout sending the set PWM duty 
 	 *                          cycle command.
@@ -1735,7 +1728,7 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout getting the parameter value.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setParameter(String)
+	 * @see #setParameter(String, byte[])
 	 * @see #executeParameter(String)
 	 */
 	public byte[] getParameter(String parameter) throws TimeoutException, XBeeException {
@@ -1759,7 +1752,7 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout executing the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setParameter(String)
+	 * @see #setParameter(String, byte[])
 	 * @see #getParameter(String)
 	 */
 	public void executeParameter(String parameter) throws TimeoutException, XBeeException {
@@ -1778,7 +1771,7 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout executing the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setParameter(String)
+	 * @see #setParameter(String, byte[])
 	 * @see #getParameter(String)
 	 * @see #executeParameter(String)
 	 */

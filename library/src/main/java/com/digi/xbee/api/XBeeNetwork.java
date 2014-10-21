@@ -317,7 +317,7 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code listener == null}.
 	 * 
 	 * @see IDiscoveryListener
-	 * @see #stop()
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void discoverDevices(IDiscoveryListener listener) {
 		discoverDevices(listener, null, DISCOVERY_TIMEOUT_DEVICE);
@@ -355,7 +355,7 @@ public class XBeeNetwork {
 	 * @see IDiscoveryListener
 	 * @see #DISCOVERY_TIMEOUT_DEVICE
 	 * @see #DISCOVERY_TIMEOUT_WAIT_FOREVER
-	 * @see #stop()
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void discoverDevices(IDiscoveryListener listener, long timeout) {
 		discoverDevices(listener, null, timeout);
@@ -392,7 +392,7 @@ public class XBeeNetwork {
 	 * @see DiscoveryOptions
 	 * @see #DISCOVERY_TIMEOUT_DEVICE
 	 * @see #DISCOVERY_TIMEOUT_WAIT_FOREVER
-	 * @see #stop()
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void discoverDevices(final IDiscoveryListener listener, Set<DiscoveryOptions> options, long timeout) {
 		if (listener == null)

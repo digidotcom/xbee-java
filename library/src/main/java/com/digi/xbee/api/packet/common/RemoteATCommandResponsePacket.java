@@ -39,11 +39,11 @@ import com.digi.xbee.api.utils.HexUtils;
  * 
  * <p>This packet is received in response of a {@code RemoteATCommandPacket}.</p>
  * 
- * <p>Response also includes an {@code ATComandStatus} object with the status 
+ * <p>Response also includes an {@code ATCommandStatus} object with the status 
  * of the AT command.</p>
  * 
  * @see RemoteATCommandPacket
- * @see ATComandStatus
+ * @see ATCommandStatus
  * @see XBeeAPIPacket
  */
 public class RemoteATCommandResponsePacket extends XBeeAPIPacket {

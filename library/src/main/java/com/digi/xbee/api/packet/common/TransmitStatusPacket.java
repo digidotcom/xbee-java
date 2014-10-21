@@ -36,7 +36,6 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>This packet is the response to standard and explicit transmit requests.</p>
  * 
  * @see TransmitPacket
- * @see ExplicitAddressingZigBeePacket
  */
 public class TransmitStatusPacket extends XBeeAPIPacket {
 	

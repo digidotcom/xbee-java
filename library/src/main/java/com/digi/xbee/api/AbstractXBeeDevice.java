@@ -1849,4 +1849,16 @@ public abstract class AbstractXBeeDevice {
 	protected void forceDisassociate() throws TimeoutException, XBeeException {
 		executeParameter("DA");
 	}
+	
+	/**
+	 * Writes parameter values to non-volatile memory of the XBee device so that parameter 
+	 * modifications persist through subsequent resets.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout executing the write changes command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void writeChanges() throws TimeoutException, XBeeException {
+		executeParameter("WR");
+	}
 }

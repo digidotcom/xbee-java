@@ -149,7 +149,16 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#getAssociationIndicationStatus()
 	 */
 	@Override
-	protected AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+	public AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
 		return super.getAssociationIndicationStatus();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#forceDisassociate()
+	 */
+	@Override
+	public void forceDisassociate() throws TimeoutException, XBeeException {
+		super.forceDisassociate();
 	}
 }

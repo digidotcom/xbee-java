@@ -1836,4 +1836,17 @@ public abstract class AbstractXBeeDevice {
 		byte[] associationIndicationValue = getParameter("AI");
 		return AssociationIndicationStatus.get(ByteUtils.byteArrayToInt(associationIndicationValue));
 	}
+	
+	/**
+	 * Forces the XBee device to disassociate from the network and reattempt to associate.
+	 * 
+	 * <p>Only valid for End Devices.</p>
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout executing the disassociation command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	protected void forceDisassociate() throws TimeoutException, XBeeException {
+		executeParameter("DA");
+	}
 }

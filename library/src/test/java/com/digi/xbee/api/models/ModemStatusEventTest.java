@@ -36,7 +36,7 @@ public class ModemStatusEventTest {
 	 * <p>Verify that the ID of each ModemStatusEvent entry is valid.</p>
 	 */
 	@Test
-	public void testHardwareVersionEnumValues() {
+	public void testModemStatusEventValues() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
 			assertTrue(modemStatusEvent.getId() >= 0);
 	}
@@ -47,7 +47,7 @@ public class ModemStatusEventTest {
 	 * <p>Verify that the name of each ModemStatusEvent entry is valid.</p>
 	 */
 	@Test
-	public void testHardwareVersionEnumNames() {
+	public void testModemStatusEventNames() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues) {
 			assertNotNull(modemStatusEvent.name());
 			assertTrue(modemStatusEvent.name().length() > 0);
@@ -60,7 +60,7 @@ public class ModemStatusEventTest {
 	 * <p>Verify that the description of each ModemStatusEvent entry is valid.</p>
 	 */
 	@Test
-	public void testHardwareVersionEnumDescriptions() {
+	public void testModemStatusEventDescriptions() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues) {
 			assertNotNull(modemStatusEvent.getDescription());
 			assertTrue(modemStatusEvent.getDescription().length() > 0);
@@ -74,7 +74,7 @@ public class ModemStatusEventTest {
 	 * <p>Verify that each ModemStatusEvent entry can be retrieved statically using its ID.</p>
 	 */
 	@Test
-	public void testXBeeProtocolStaticAccess() {
+	public void testModemStatusEventStaticAccess() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
 			assertEquals(modemStatusEvent, ModemStatusEvent.get(modemStatusEvent.getId()));
 	}
@@ -86,7 +86,7 @@ public class ModemStatusEventTest {
 	 * description correctly.</p>
 	 */
 	@Test
-	public void testXBeeProtocolToString() {
+	public void testModemStatusEventToString() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
 			assertEquals(HexUtils.byteToHexString((byte)modemStatusEvent.getId()) + ": " + modemStatusEvent.getDescription(), modemStatusEvent.toString());
 	}

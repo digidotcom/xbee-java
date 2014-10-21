@@ -104,7 +104,7 @@ public class ModemStatusPacketTest {
 	 * Test method for {@link com.digi.xbee.api.packet.common.ModemStatusPacket#createPacket(byte[])}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * parsing a byte array shorter than the needed one is provided.</p>
+	 * parsing a byte array shorter than the needed one.</p>
 	 */
 	@Test
 	public final void testCreatePacketPayloadShorterThanNeeded() {
@@ -126,7 +126,7 @@ public class ModemStatusPacketTest {
 	 * Test method for {@link com.digi.xbee.api.packet.common.ModemStatusPacket#createPacket(byte[])}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when parsing a byte 
-	 * array with an invalid the Frame type.</p>
+	 * array with an invalid Frame type.</p>
 	 */
 	@Test
 	public final void testCreatePacketPayloadInvalidFrameType() {
@@ -182,7 +182,7 @@ public class ModemStatusPacketTest {
 		exception.expect(NullPointerException.class);
 		exception.expectMessage(is(equalTo("Modem Status event cannot be null.")));
 		
-		// Call the method under test that should throw n NullPointerException.
+		// Call the method under test that should throw a NullPointerException.
 		new ModemStatusPacket(modemStatusEvent);
 	}
 	

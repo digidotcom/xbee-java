@@ -1,6 +1,6 @@
   Introduction
   ------------
-  This is a sample Java application to show how Modem Status packets (events 
+  This is a sample Java application that shows how Modem Status packets (events 
   related to the device and the network) are handled using the API.
   
   The application prints the Modem Status events to the standard output when 

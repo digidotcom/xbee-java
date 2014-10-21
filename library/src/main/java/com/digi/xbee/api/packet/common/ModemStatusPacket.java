@@ -90,6 +90,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
 	 */
+	@Override
 	public byte[] getAPIPacketSpecificData() {
 		byte[] data = new byte[1];
 		data[0] = (byte)(modemStatusEvent.getId() & 0xFF);
@@ -100,6 +101,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
 	 */
+	@Override
 	public boolean needsAPIFrameID() {
 		return false;
 	}
@@ -117,6 +119,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
+	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(modemStatusEvent.getId(), 1)) + " (" + modemStatusEvent.getDescription() + ")");

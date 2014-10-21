@@ -1476,10 +1476,6 @@ public abstract class AbstractXBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
 	public void applyChanges() throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
 		executeParameter("AC");
 	}
 	

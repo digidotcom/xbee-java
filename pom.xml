@@ -26,6 +26,7 @@
 		<module>examples/communication/SendBroadcastDataSample</module>
 		<module>examples/communication/SendDataAsyncSample</module>
 		<module>examples/communication/SendDataSample</module>
+		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>
 		<module>examples/io/IOSamplingSample</module>

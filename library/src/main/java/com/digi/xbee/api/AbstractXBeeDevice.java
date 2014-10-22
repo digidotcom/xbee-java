@@ -1788,6 +1788,29 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
+	 * Sets the PAN ID of the XBee device.
+	 * 
+	 * @param panID The new PAN ID of the XBee device.
+	 * 
+	 * @throws IllegalArgumentException if {@code panID.length == 0} or 
+	 *                                  if {@code panID.length > 8}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code panID == null}.
+	 * @throws TimeoutException if there is a timeout getting the PAN ID.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void setPANID(byte[] panID) throws TimeoutException, XBeeException {
+		if (panID == null)
+			throw new NullPointerException("PAN ID cannot be null.");
+		if (panID.length == 0)
+			throw new IllegalArgumentException("Length of the PAN ID cannot be 0.");
+		if (panID.length > 8)
+			throw new IllegalArgumentException("Length of the PAN ID cannot be longer than 8 bytes.");
+		
+		setParameter("ID", panID);
+	}
+	
+	/**
 	 * Retrieves the output power level of the XBee device.
 	 * 
 	 * @return The output power level of the XBee device.

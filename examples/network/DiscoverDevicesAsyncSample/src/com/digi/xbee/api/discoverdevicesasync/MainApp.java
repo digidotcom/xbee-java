@@ -51,7 +51,11 @@ public class MainApp {
 			
 			XBeeNetwork myXBeeNetwork = myDevice.getNetwork();
 			
-			myXBeeNetwork.discoverDevices(new MyDiscoveryListener());
+			myXBeeNetwork.addDiscoveryListener(new MyDiscoveryListener());
+			
+			myXBeeNetwork.setDiscoveryTimeout(15000);
+			
+			myXBeeNetwork.startDiscoveryProcess();
 			
 			System.out.println("\n>> Discovering remote XBee devices...");
 			

@@ -79,7 +79,7 @@ public class XBeeNetworkGetTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByNodeID(String)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
 	 * {@code null} id.</p>
@@ -91,11 +91,11 @@ public class XBeeNetworkGetTest {
 		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
 		
 		// Call the method under test.
-		network.getDeviceByID(null);
+		network.getDeviceByNodeID(null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByNodeID(String)}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
 	 * passing an empty id.</p>
@@ -107,24 +107,24 @@ public class XBeeNetworkGetTest {
 		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
 		
 		// Call the method under test.
-		network.getDeviceByID("");
+		network.getDeviceByNodeID("");
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByNodeID(String)}.
 	 * 
 	 * <p>Verify that we get a null object if the network is empty.</p>
 	 */
 	@Test
 	public void testGetDeviceByIDEmptyNetwork() {
 		// Call the method under test.
-		RemoteXBeeDevice found = network.getDeviceByID(NODE_ID);
+		RemoteXBeeDevice found = network.getDeviceByNodeID(NODE_ID);
 		
 		assertNull(found);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByNodeID(String)}.
 	 * 
 	 * <p>Verify that we get a null object if the network does not contain
 	 * any device with provided node identifier.</p>
@@ -135,13 +135,13 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice3);
 		
 		// Call the method under test.
-		RemoteXBeeDevice found = network.getDeviceByID(NODE_ID);
+		RemoteXBeeDevice found = network.getDeviceByNodeID(NODE_ID);
 		
 		assertNull(found);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByNodeID(String)}.
 	 * 
 	 * <p>Verify that if the network contains a remote device with the provided 
 	 * node identifier, it is returned successfully.</p>
@@ -153,13 +153,13 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice3);
 		
 		// Call the method under test.
-		RemoteXBeeDevice found = network.getDeviceByID(NODE_ID);
+		RemoteXBeeDevice found = network.getDeviceByNodeID(NODE_ID);
 		
 		assertEquals(remoteDevice1, found);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDeviceByNodeID(String)}.
 	 * 
 	 * <p>Verify that if the network contains a remote device with the provided 
 	 * node identifier, it is returned successfully.</p>
@@ -171,13 +171,13 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice3);
 		
 		// Call the method under test.
-		RemoteXBeeDevice found = network.getDeviceByID(NODE_ID);
+		RemoteXBeeDevice found = network.getDeviceByNodeID(NODE_ID);
 		
 		assertEquals(remoteDevice2, found);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getAllDevicesByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevicesByNodeID(String)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
 	 * {@code null} id.</p>
@@ -189,11 +189,11 @@ public class XBeeNetworkGetTest {
 		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
 		
 		// Call the method under test.
-		network.getAllDevicesByID(null);
+		network.getDevicesByNodeID(null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getAllDevicesByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevicesByNodeID(String)}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
 	 * passing an empty id.</p>
@@ -205,11 +205,11 @@ public class XBeeNetworkGetTest {
 		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
 		
 		// Call the method under test.
-		network.getAllDevicesByID("");
+		network.getDevicesByNodeID("");
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getAllDevicesByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevicesByNodeID(String)}.
 	 * 
 	 * <p>Verify that we obtain an empty RemoteXBeeDevice list if the network
 	 * is empty.</p>
@@ -217,13 +217,13 @@ public class XBeeNetworkGetTest {
 	@Test
 	public void testGetAllDevicesByIDEmptyNetwork() {
 		// Call the method under test.
-		List<RemoteXBeeDevice> remotes = network.getAllDevicesByID(NODE_ID);
+		List<RemoteXBeeDevice> remotes = network.getDevicesByNodeID(NODE_ID);
 		
 		assertEquals(remotes.size(), 0);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getAllDevicesByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevicesByNodeID(String)}.
 	 * 
 	 * <p>Verify that we obtain an empty RemoteXBeeDevice list if the network
 	 * does not contain any device with the provided node identifier.</p>
@@ -234,13 +234,13 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice3);
 		
 		// Call the method under test.
-		List<RemoteXBeeDevice> remotes = network.getAllDevicesByID(NODE_ID);
+		List<RemoteXBeeDevice> remotes = network.getDevicesByNodeID(NODE_ID);
 		
 		assertEquals(remotes.size(), 0);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getAllDevicesByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevicesByNodeID(String)}.
 	 * 
 	 * <p>Verify that if the network contains a remote device with the provided 
 	 * node identifier, it is returned successfully.</p>
@@ -252,14 +252,14 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice3);
 		
 		// Call the method under test.
-		List<RemoteXBeeDevice> remotes = network.getAllDevicesByID(NODE_ID);
+		List<RemoteXBeeDevice> remotes = network.getDevicesByNodeID(NODE_ID);
 		
 		assertEquals(remotes.size(), 1);
 		assertEquals(remotes.get(0), remoteDevice1);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getAllDevicesByID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevicesByNodeID(String)}.
 	 * 
 	 * <p>Verify that if the network contains several remote devices with the 
 	 * provided node identifier, they are returned successfully.</p>
@@ -272,7 +272,7 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice3);
 		
 		// Call the method under test.
-		List<RemoteXBeeDevice> remotes = network.getAllDevicesByID(NODE_ID);
+		List<RemoteXBeeDevice> remotes = network.getDevicesByNodeID(NODE_ID);
 		
 		assertEquals(remotes.size(), 2);
 		assertEquals(remotes.get(0), remoteDevice1);

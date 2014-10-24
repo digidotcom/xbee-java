@@ -2,6 +2,8 @@ package com.digi.xbee.api;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +38,8 @@ public class IDiscoveryListenerTest {
 	// Variables.	
 	private static RemoteXBeeDevice remoteDevice;
 	
+	private ArrayList<IDiscoveryListener> listeners = new ArrayList<IDiscoveryListener>();
+	
 	private MyDiscoverListener discoverListener;
 	
 	private NodeDiscovery nodeDiscovery;
@@ -51,6 +55,7 @@ public class IDiscoveryListenerTest {
 	public void setup() throws Exception {
 		// Discover listener.
 		discoverListener = PowerMockito.spy(new MyDiscoverListener());
+		listeners.add(discoverListener);
 		
 		// Node discovery.
 		nodeDiscovery = PowerMockito.spy(new NodeDiscovery(Mockito.mock(XBeeDevice.class)));
@@ -64,7 +69,7 @@ public class IDiscoveryListenerTest {
 				discoverListener.deviceDiscovered(remote);
 				return null;
 			}
-		}).when(nodeDiscovery, NOTIFY_DEVICE_DISCOVERED, (MyDiscoverListener) Mockito.any(), (RemoteXBeeDevice) Mockito.any());
+		}).when(nodeDiscovery, NOTIFY_DEVICE_DISCOVERED, Mockito.any(ArrayList.class), (RemoteXBeeDevice) Mockito.any());
 		
 		// Stub the 'notifyDiscoveryError' method of the nodeDiscovery instance.
 		PowerMockito.doAnswer(new Answer<Object>() {
@@ -75,7 +80,7 @@ public class IDiscoveryListenerTest {
 				discoverListener.discoveryError(error);
 				return null;
 			}
-		}).when(nodeDiscovery, NOTIFY_DISCOVERY_ERROR, (MyDiscoverListener) Mockito.any(), Mockito.anyString());
+		}).when(nodeDiscovery, NOTIFY_DISCOVERY_ERROR, Mockito.any(ArrayList.class), Mockito.anyString());
 		
 		// Stub the 'notifyDiscoveryFinished' method of the nodeDiscovery instance.
 		PowerMockito.doAnswer(new Answer<Object>() {
@@ -86,7 +91,7 @@ public class IDiscoveryListenerTest {
 				discoverListener.discoveryFinished(error);
 				return null;
 			}
-		}).when(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, (MyDiscoverListener) Mockito.any(), Mockito.anyString());
+		}).when(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, Mockito.any(ArrayList.class), Mockito.anyString());
 	}
 
 	/**
@@ -151,7 +156,7 @@ public class IDiscoveryListenerTest {
 	@Test
 	public void testDeviceDiscovered() throws Exception {
 		// Fire the private notifyDeviceDiscovered method of the nodeDiscovery.
-		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DEVICE_DISCOVERED, discoverListener, remoteDevice);
+		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DEVICE_DISCOVERED, listeners, remoteDevice);
 		
 		// Verify that the listener callback was executed one time.
 		Mockito.verify(discoverListener, Mockito.times(1)).deviceDiscovered(remoteDevice);
@@ -169,7 +174,7 @@ public class IDiscoveryListenerTest {
 	@Test
 	public void testDiscoveryError() throws Exception {
 		// Fire the private notifyDiscoveryError method of the nodeDiscovery.
-		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DISCOVERY_ERROR, discoverListener, ERROR);
+		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DISCOVERY_ERROR, listeners, ERROR);
 		
 		// Verify that the listener callback was executed one time.
 		Mockito.verify(discoverListener, Mockito.times(1)).discoveryError(ERROR);
@@ -187,7 +192,7 @@ public class IDiscoveryListenerTest {
 	@Test
 	public void testDiscoveryFinished() throws Exception {
 		// Fire the private notifyDiscoveryFinished method of the nodeDiscovery.
-		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, discoverListener, null);
+		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, listeners, null);
 		
 		// Verify that the listener callback was executed one time.
 		Mockito.verify(discoverListener, Mockito.times(1)).discoveryFinished(null);
@@ -205,7 +210,7 @@ public class IDiscoveryListenerTest {
 	@Test
 	public void testDiscoveryFinishedWithError() throws Exception {
 		// Fire the private notifyDiscoveryFinished method of the nodeDiscovery.
-		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, discoverListener, ERROR);
+		Whitebox.invokeMethod(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, listeners, ERROR);
 		
 		// Verify that the listener callback was executed one time.
 		Mockito.verify(discoverListener, Mockito.times(1)).discoveryFinished(ERROR);

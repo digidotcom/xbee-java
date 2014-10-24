@@ -16,8 +16,10 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,9 +32,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
+import com.digi.xbee.api.utils.ByteUtils;
 
 @RunWith(PowerMockRunner.class)
 public class XBeeNetworkConfigurationTest {
@@ -782,5 +786,72 @@ public class XBeeNetworkConfigurationTest {
 		assertThat(add16Map.size(), is(equalTo(2)));
 		
 		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size() - 1)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#setDiscoveryTimeout(long)}.
+	 * 
+	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
+	 * passing a negative timeout.</p>
+	 */
+	@Test
+	public final void testSetDiscoveryTimeoutNegativeTimeout() throws Exception {
+		// Setup the resources for the test.
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Timeout must be bigger than 0.")));
+		
+		// Call the method under test.
+		network.setDiscoveryTimeout(-1);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#setDiscoveryTimeout(long)}.
+	 */
+	@Test
+	public final void testSetDiscoveryTimeout() throws Exception {
+		// Setup the resources for the test.
+		long timeout = 5000;
+		byte[] timeoutByteArray = ByteUtils.longToByteArray(timeout / 100);
+		
+		// Call the method under test.
+		network.setDiscoveryTimeout(timeout);
+		
+		// Verify the result.
+		Mockito.verify(deviceMock, Mockito.times(1)).setParameter("NT", timeoutByteArray);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#setDiscoveryOptions(java.util.Set)}.
+	 * 
+	 * <p>A {@code NullPointerException} exception must be thrown when passing 
+	 * a {@null} options set.</p>
+	 */
+	@Test
+	public final void testSetDiscoveryOptionsNullOptions() throws Exception {
+		// Setup the resources for the test.
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("Options cannot be null.")));
+		
+		// Call the method under test.
+		network.setDiscoveryOptions(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#setDiscoveryOptions(java.util.Set)}.
+	 */
+	@Test
+	public final void testSetDiscoveryOptions() throws Exception {
+		// Setup the resources for the test.
+		Mockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+		
+		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.DISCOVER_MYSELF);
+		int optionsInt = DiscoveryOptions.calculateDiscoveryValue(deviceMock.getXBeeProtocol(), options);
+		byte[] optionsByteArray = ByteUtils.intToByteArray(optionsInt);
+		
+		// Call the method under test.
+		network.setDiscoveryOptions(options);
+		
+		// Verify the result.
+		Mockito.verify(deviceMock, Mockito.times(1)).setParameter("NO", optionsByteArray);
 	}
 }

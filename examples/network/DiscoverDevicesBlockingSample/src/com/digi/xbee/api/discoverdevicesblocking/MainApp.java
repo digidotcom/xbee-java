@@ -63,6 +63,8 @@ public class MainApp {
 		}
 		
 		try {
+			myXBeeNetwork.setDiscoveryTimeout(15000);
+			
 			System.out.println("\n>> Discovering remote XBee devices...");
 			
 			discoveredDevices = myXBeeNetwork.discoverDevices();

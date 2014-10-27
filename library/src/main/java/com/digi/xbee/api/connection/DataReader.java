@@ -341,7 +341,7 @@ public class DataReader extends Thread {
 		switch(apiType) {
 		case RECEIVE_PACKET:
 			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(receivePacket.get64bitSourceAddress());
+			remoteDevice = network.getDevice(receivePacket.get64bitSourceAddress());
 			if (remoteDevice == null) {
 				remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
 				network.addRemoteDevice(remoteDevice);
@@ -351,7 +351,7 @@ public class DataReader extends Thread {
 			break;
 		case RX_64:
 			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(rx64Packet.get64bitSourceAddress());
+			remoteDevice = network.getDevice(rx64Packet.get64bitSourceAddress());
 			if (remoteDevice == null) {
 				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
 				network.addRemoteDevice(remoteDevice);
@@ -361,7 +361,7 @@ public class DataReader extends Thread {
 			break;
 		case RX_16:
 			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			remoteDevice = network.getDeviceBy16BitAddress(rx16Packet.get16bitSourceAddress());
+			remoteDevice = network.getDevice(rx16Packet.get16bitSourceAddress());
 			if (remoteDevice == null) {
 				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
 				network.addRemoteDevice(remoteDevice);
@@ -371,7 +371,7 @@ public class DataReader extends Thread {
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(ioSamplePacket.get64bitSourceAddress());
+			remoteDevice = network.getDevice(ioSamplePacket.get64bitSourceAddress());
 			if (remoteDevice == null) {
 				remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
 				network.addRemoteDevice(remoteDevice);
@@ -380,7 +380,7 @@ public class DataReader extends Thread {
 			break;
 		case RX_IO_64:
 			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(rx64IOPacket.get64bitSourceAddress());
+			remoteDevice = network.getDevice(rx64IOPacket.get64bitSourceAddress());
 			if (remoteDevice == null) {
 				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
 				network.addRemoteDevice(remoteDevice);
@@ -389,7 +389,7 @@ public class DataReader extends Thread {
 			break;
 		case RX_IO_16:
 			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-			remoteDevice = network.getDeviceBy16BitAddress(rx16IOPacket.get16bitSourceAddress());
+			remoteDevice = network.getDevice(rx16IOPacket.get16bitSourceAddress());
 			if (remoteDevice == null) {
 				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
 				network.addRemoteDevice(remoteDevice);

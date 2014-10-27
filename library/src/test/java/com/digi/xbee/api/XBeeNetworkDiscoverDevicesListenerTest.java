@@ -146,9 +146,24 @@ public class XBeeNetworkDiscoverDevicesListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#startDiscoveryProcess()}.
+	 * 
+	 * <p>An {@code IllegalStateException} exception must be thrown when trying
+	 * to start a discovery process when it is already running.</p>
+	 */
+	@Test(expected=IllegalStateException.class)
+	public void testStartDiscoveryProcessAlreadyRunning() {
+		// Setup the resources for the test.
+		Mockito.when(ndMock.isRunning()).thenReturn(true);
+		
+		// Call the method under test.
+		network.startDiscoveryProcess();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#startDiscoveryProcess()}.
 	 */
 	@Test
-	public void testStartDiscoveryProcessWithListener() {
+	public void testStartDiscoveryProcess() {
 		// Setup the resources for the test.
 		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
 		ArrayList<IDiscoveryListener> listeners = new ArrayList<IDiscoveryListener>();

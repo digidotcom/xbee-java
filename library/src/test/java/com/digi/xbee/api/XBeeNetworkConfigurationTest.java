@@ -124,7 +124,7 @@ public class XBeeNetworkConfigurationTest {
 		RemoteXBeeDevice addedDevice = network.addRemoteDevice(device);
 		
 		// Verify the result.
-		RemoteXBeeDevice devInNetwork = network.getDeviceBy64BitAddress(addr64);
+		RemoteXBeeDevice devInNetwork = network.getDevice(addr64);
 		
 		assertThat("There must be 1 device in the network", network.getNumberOfDevices(), is(equalTo(1)));
 		assertThat("The added and returned references must be the same", addedDevice == device, is(equalTo(true)));
@@ -163,7 +163,7 @@ public class XBeeNetworkConfigurationTest {
 		RemoteXBeeDevice addedDevice = network.addRemoteDevice(deviceToAdd);
 		
 		// Verify the result.
-		RemoteXBeeDevice devInNetwork = network.getDeviceBy64BitAddress(addr64);
+		RemoteXBeeDevice devInNetwork = network.getDevice(addr64);
 		
 		assertThat("There must be 1 device in the network", network.getNumberOfDevices(), is(equalTo(1)));
 		
@@ -205,7 +205,7 @@ public class XBeeNetworkConfigurationTest {
 		RemoteXBeeDevice addedDevice = network.addRemoteDevice(device);
 		
 		// Verify the result.
-		RemoteXBeeDevice devInNetwork = network.getDeviceBy16BitAddress(addr16);
+		RemoteXBeeDevice devInNetwork = network.getDevice(addr16);
 		
 		assertThat("There must be 1 device in the network", network.getNumberOfDevices(), is(equalTo(1)));
 		
@@ -245,7 +245,7 @@ public class XBeeNetworkConfigurationTest {
 		RemoteXBeeDevice addedDevice = network.addRemoteDevice(deviceToAdd);
 		
 		// Verify the result.
-		RemoteXBeeDevice devInNetwork = network.getDeviceBy16BitAddress(addr16);
+		RemoteXBeeDevice devInNetwork = network.getDevice(addr16);
 		
 		assertThat("There must be 1 device in the network", network.getNumberOfDevices(), is(equalTo(1)));
 		
@@ -292,7 +292,7 @@ public class XBeeNetworkConfigurationTest {
 		RemoteXBeeDevice addedDevice = network.addRemoteDevice(deviceToAdd);
 		
 		// Verify the result.
-		RemoteXBeeDevice devInNetwork = network.getDeviceBy16BitAddress(addr16);
+		RemoteXBeeDevice devInNetwork = network.getDevice(addr16);
 		
 		assertThat("There must be 1 device in the network", network.getNumberOfDevices(), is(equalTo(1)));
 		

@@ -46,9 +46,11 @@ import com.digi.xbee.api.utils.HexUtils;
  * discovered modules and refresh the already existing references.</p>
  */
 class NodeDiscovery {
-
+	
 	// Constants.
 	private static final String ND_COMMAND = "ND";
+	
+	private static final long DEFAULT_TIMEOUT = 20000; // 20 seconds.
 	
 	// Variables.
 	private static int globalFrameID = 1;
@@ -88,31 +90,6 @@ class NodeDiscovery {
 	}
 	
 	/**
-	 * Discovers and reports all XBee devices found.
-	 * 
-	 * <p>This method blocks until the configured timeout expires.</p>
-	 * 
-	 * @return A list with the discovered XBee devices.
-	 * 
-	 * @throws InterfaceNotOpenException If the device is not open.
-	 * @throws XBeeException If there is an error sending the discovery command.
-	 * 
-	 * @see RemoteXBeeDevice
-	 */
-	public List<RemoteXBeeDevice> discoverDevices() throws XBeeException {
-		logger.debug("{}ND for all devices.", toString());
-		
-		performNodeDiscovery(xbeeDevice, null, null);
-		
-		if (deviceList == null || deviceList.size() == 0)
-			return new ArrayList<RemoteXBeeDevice>(0);
-		
-		XBeeNetwork network = xbeeDevice.getNetwork();
-		
-		return network.addRemoteDevices(deviceList);
-	}
-	
-	/**
 	 * Discovers and reports the first remote XBee device that matches the 
 	 * supplied identifier.
 	 * 
@@ -124,20 +101,13 @@ class NodeDiscovery {
 	 * @return The discovered remote XBee device with the given identifier, 
 	 *         {@code null} if the timeout expires and the device was not found.
 	 * 
-	 * @throws NullPointerException If {@code id == null}.
-	 * @throws IllegalArgumentException If {@code id.length() == 0}.
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 */
-	public RemoteXBeeDevice discoverDeviceByNodeID(String id) throws XBeeException {
-		if (id == null)
-			throw new NullPointerException("Device identifier cannot be null.");
-		if (id.length() == 0)
-			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
-		
+	public RemoteXBeeDevice discoverDevice(String id) throws XBeeException {
 		logger.debug("{}ND for {} device.", toString(), id);
 		
-		performNodeDiscovery(xbeeDevice, null, id);
+		performNodeDiscovery(null, id);
 		
 		XBeeNetwork network = xbeeDevice.getNetwork();
 		RemoteXBeeDevice rDevice = null;
@@ -153,29 +123,23 @@ class NodeDiscovery {
 	
 	/**
 	 * Discovers and reports all remote XBee devices that match the supplied 
-	 * identifier.
+	 * identifiers.
 	 * 
 	 * <p>This method blocks until the configured timeout expires.</p>
 	 * 
-	 * @param id The identifier of the devices to be discovered.
+	 * @param ids List which contains the identifiers of the devices to be 
+	 *            discovered.
 	 * 
-	 * @return A list of the discover remote XBee devices with the given 
-	 *         identifier.
+	 * @return A list of the discovered remote XBee devices with the given 
+	 *         identifiers.
 	 * 
-	 * @throws NullPointerException If {@code id == null}.
-	 * @throws IllegalArgumentException If {@code id.length() == 0}.
 	 * @throws InterfaceNotOpenException If the device is not open.
-	 * @throws XBeeException If there is an error sending the discovery command.
+	 * @throws XBeeException If there is an error discovering the devices.
 	 */
-	public List<RemoteXBeeDevice> discoverDevicesByNodeID(String id) throws XBeeException {
-		if (id == null)
-			throw new NullPointerException("Device identifier cannot be null.");
-		if (id.length() == 0)
-			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
+	public List<RemoteXBeeDevice> discoverDevices(List<String> ids) throws XBeeException {
+		logger.debug("{}ND for all {} devices.", toString(), ids.toString());
 		
-		logger.debug("{}ND for all {} devices.", toString(), id);
-		
-		performNodeDiscovery(xbeeDevice, null, null);
+		performNodeDiscovery(null, null);
 		
 		List<RemoteXBeeDevice> foundDevices = new ArrayList<RemoteXBeeDevice>(0);
 		if (deviceList == null)
@@ -185,10 +149,14 @@ class NodeDiscovery {
 		
 		for (RemoteXBeeDevice d: deviceList) {
 			String nID = d.getNodeID();
-			if (nID != null && nID.equals(id)) {
-				RemoteXBeeDevice rDevice = network.addRemoteDevice(d);
-				if (rDevice != null)
-					foundDevices.add(rDevice);
+			if (nID != null) {
+				for (String id : ids) {
+					if (nID.equals(id)) {
+						RemoteXBeeDevice rDevice = network.addRemoteDevice(d);
+						if (rDevice != null && !foundDevices.contains(rDevice))
+							foundDevices.add(rDevice);
+					}
+				}
 			}
 		}
 		
@@ -215,7 +183,7 @@ class NodeDiscovery {
 			@Override
 			public void run() {
 				try {
-					performNodeDiscovery(xbeeDevice, listeners, null);
+					performNodeDiscovery(listeners, null);
 				} catch (XBeeException e) {
 					// Notify the listeners about the error and finish.
 					notifyDiscoveryFinished(listeners, e.getMessage());
@@ -249,7 +217,6 @@ class NodeDiscovery {
 	 * 
 	 * <p>This method blocks until the configured timeout expires.</p>
 	 * 
-	 * @param device XBee Device to perform the discovery operation.
 	 * @param listeners Discovery listeners to be notified about process events.
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
@@ -257,39 +224,19 @@ class NodeDiscovery {
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 */
-	private void performNodeDiscovery(XBeeDevice device, ArrayList<IDiscoveryListener> listeners, String id) 
-			throws XBeeException {
+	private void performNodeDiscovery(ArrayList<IDiscoveryListener> listeners, String id) throws XBeeException {
 		// Check if it is open.
-		if (!device.isOpen())
+		if (!xbeeDevice.isOpen())
 			throw new InterfaceNotOpenException();
 		
 		running = true;
 		discovering = true;
 		
 		try {
-			long timeout = ByteUtils.byteArrayToLong(device.getParameter("NT")) * 100;
-			
-			discoverDevicesAPI(device, listeners, id, timeout);
-			
-			// In DigiMesh/DigiPoint and 802.15.4 the network discovery timeout 
-			// is NT + the network propagation time. It means that if the user 
-			// sends an AT command just after NT ms, s/he will receive a timeout
-			// exception. Sleep 3 seconds in DigiMesh/DigiPoint and 1 second in 
-			// 802.15.4 to avoid this issue.
-			if (device.getXBeeProtocol() == XBeeProtocol.DIGI_MESH || 
-					device.getXBeeProtocol() == XBeeProtocol.DIGI_POINT) {
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {}
-			} else if (device.getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {}
-			}
+			discoverDevicesAPI(listeners, id);
 			
 			// Notify that the discovery finished without errors.
 			notifyDiscoveryFinished(listeners, null);
-			
 		} finally {
 			running = false;
 			discovering = false;
@@ -299,18 +246,14 @@ class NodeDiscovery {
 	/**
 	 * Performs the device discovery in API1 or API2 (API Escaped) mode.
 	 * 
-	 * @param device XBee Device to perform the discovery operation.
 	 * @param listener Discovery listener to be notified about process events. 
 	 *                 It may be {@code null}.
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
-	 * @param timeout Time to wait for the discovery process to complete in 
-	 *                milliseconds.
 	 * 
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 */
-	private void discoverDevicesAPI(final XBeeDevice device, final ArrayList<IDiscoveryListener> listeners, 
-			final String id, long timeout) throws XBeeException {
+	private void discoverDevicesAPI(final ArrayList<IDiscoveryListener> listeners, final String id) throws XBeeException {
 		if (deviceList == null)
 			deviceList = new ArrayList<RemoteXBeeDevice>();
 		deviceList.clear();
@@ -328,17 +271,18 @@ class NodeDiscovery {
 				
 				byte[] commandValue = getRemoteDeviceData((XBeeAPIPacket)receivedPacket);
 				
-				rdevice = parseDiscoveryAPIData(commandValue, device);
+				rdevice = parseDiscoveryAPIData(commandValue, xbeeDevice);
 				
 				// If a device with a specific id is being search and it is 
 				// already found, return it.
 				if (id != null) {
-					if (rdevice != null 
-							&& id.equals(rdevice.getNodeID())) {
-						discovering = false;
+					if (rdevice != null && id.equals(rdevice.getNodeID())) {
 						synchronized (deviceList) {
 							deviceList.add(rdevice);
 						}
+						// If the local device is 802.15.4 wait until the 'end' command is received.
+						if (xbeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4)
+							discovering = false;
 					}
 				} else if (rdevice != null)
 					notifyDeviceDiscovered(listeners, rdevice);
@@ -346,25 +290,66 @@ class NodeDiscovery {
 		};
 		
 		logger.debug("{}Start listening.", toString());
-		device.addPacketListener(packetReceiveListener);
+		xbeeDevice.addPacketListener(packetReceiveListener);
 		
 		try {
-			sendNodeDiscoverCommand(device, id);
+			long deadLine = calculateDeadline();
 			
-			// Wait for scan timeout.
-			long deadLine = System.currentTimeMillis() + timeout;
-			while (discovering) {
-				if (System.currentTimeMillis() < deadLine)
+			sendNodeDiscoverCommand(id);
+			
+			if (xbeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4) {
+				// Wait for scan timeout.
+				while (discovering) {
+					if (System.currentTimeMillis() < deadLine)
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) { }
+					else
+						discovering = false;
+				}
+			} else {
+				// Wait until the 'end' command is received.
+				while (discovering) {
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) { }
-				else
-					discovering = false;
+				}
 			}
 		} finally {
-			device.removePacketListener(packetReceiveListener);
+			xbeeDevice.removePacketListener(packetReceiveListener);
 			logger.debug("{}Stop listening.", toString());
 		}
+	}
+	
+	/**
+	 * Calculates the maximum response time, in milliseconds, for network
+	 * discovery responses.
+	 * 
+	 * @return Maximum network discovery time.
+	 */
+	private long calculateDeadline() {
+		long timeout = DEFAULT_TIMEOUT;
+		
+		// Read the device timeout (NT).
+		try {
+			timeout = ByteUtils.byteArrayToLong(xbeeDevice.getParameter("NT")) * 100;
+		} catch (Exception e) {
+			logger.error("{}{}", toString(), "Could not read the discovery timeout from the device (NT). "
+					+ "The default timeout (" + DEFAULT_TIMEOUT + " ms.) will be used.");
+		}
+		
+		long deadline = System.currentTimeMillis() + timeout;
+		
+		// In DigiMesh/DigiPoint the network discovery timeout is NT + the 
+		// network propagation time. It means that if the user sends an AT 
+		// command just after NT ms, s/he will receive a timeout exception. 
+		// Add 3 seconds to avoid this issue.
+		if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH || 
+				xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_POINT) {
+			deadline += 3000;
+		}
+		
+		return deadline;
 	}
 	
 	/**
@@ -389,7 +374,7 @@ class NodeDiscovery {
 			// Check the command.
 			if (!atResponse.getCommand().equals(ND_COMMAND))
 				return null;
-			// Check if the command end is received: Empty response with OK status.
+			// Check if the 'end' command is received (empty response with OK status).
 			if (atResponse.getCommandValue() == null 
 					|| atResponse.getCommandValue().length == 0) {
 					discovering = atResponse.getStatus() != ATCommandStatus.OK;
@@ -507,17 +492,16 @@ class NodeDiscovery {
 	/**
 	 * Sends the node discover ({@code ND}) command.
 	 * 
-	 * @param device The local device to send the ({@code ND}) command.
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
 	 * 
 	 * @throws XBeeException If there is an error writing in the communication interface.
 	 */
-	private void sendNodeDiscoverCommand(XBeeDevice device, String id) throws XBeeException {
+	private void sendNodeDiscoverCommand(String id) throws XBeeException {
 		if (id == null)
-			device.sendPacketAsync(new ATCommandPacket(frameID, ND_COMMAND, ""));
+			xbeeDevice.sendPacketAsync(new ATCommandPacket(frameID, ND_COMMAND, ""));
 		else
-			device.sendPacketAsync(new ATCommandPacket(frameID, ND_COMMAND, id));
+			xbeeDevice.sendPacketAsync(new ATCommandPacket(frameID, ND_COMMAND, id));
 	}
 	
 	/**

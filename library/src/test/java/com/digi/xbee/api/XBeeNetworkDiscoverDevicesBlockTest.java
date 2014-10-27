@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -38,9 +36,6 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 @PrepareForTest({XBeeNetwork.class})
 @RunWith(PowerMockRunner.class)
 public class XBeeNetworkDiscoverDevicesBlockTest {
-
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
 	
 	// Variables.
 	private XBeeNetwork network;
@@ -67,64 +62,55 @@ public class XBeeNetworkDiscoverDevicesBlockTest {
 		idFoundDevices.add(idFoundDevice);
 		
 		PowerMockito.whenNew(NodeDiscovery.class).withArguments(deviceMock).thenReturn(ndMock);
-		PowerMockito.when(ndMock.discoverDeviceByNodeID(Mockito.anyString())).thenReturn(idFoundDevice);
-		PowerMockito.when(ndMock.discoverDevicesByNodeID(Mockito.anyString())).thenReturn(idFoundDevices);
-		PowerMockito.when(ndMock.discoverDevices()).thenReturn(idFoundDevices);
+		PowerMockito.when(ndMock.discoverDevice(Mockito.anyString())).thenReturn(idFoundDevice);
+		PowerMockito.when(ndMock.discoverDevices(Mockito.anyListOf(String.class))).thenReturn(idFoundDevices);
 		
 		network = PowerMockito.spy(new XBeeNetwork(deviceMock));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByNodeID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevice(String)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
 	 * {@code null} id.</p>
 	 * 
 	 * @throws XBeeException 
 	 */
-	@Test
-	public final void testDiscoverDeviceByNodeIDNullId() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
-						
+	@Test(expected=NullPointerException.class)
+	public final void testDiscoverDeviceNullId() throws XBeeException {
 		// Call the method under test.
-		network.discoverDeviceByNodeID(null);
+		network.discoverDevice(null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByNodeID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevice(String)}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
 	 * passing an empty id.</p>
 	 * 
 	 * @throws XBeeException 
 	 */
-	@Test
-	public final void testDiscoverDeviceByNodeIDEmptyId() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
-						
+	@Test(expected=IllegalArgumentException.class)
+	public final void testDiscoverDeviceEmptyId() throws XBeeException {
 		// Call the method under test.
-		network.discoverDeviceByNodeID("");
+		network.discoverDevice("");
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDeviceByNodeID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevice(String)}.
 	 * 
 	 * @throws XBeeException 
 	 */
 	@Test
-	public final void testDiscoverDeviceByID() throws XBeeException {
+	public final void testDiscoverDevice() throws XBeeException {
 		// Setup the resources for the test.
 		String id = "id";
 		
 		// Call the method under test.
-		RemoteXBeeDevice found = network.discoverDeviceByNodeID(id);
+		RemoteXBeeDevice found = network.discoverDevice(id);
 		
 		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDeviceByNodeID(id);
+		Mockito.verify(ndMock, Mockito.times(1)).discoverDevice(id);
 		
 		assertThat("Found device must not be null", found, is(not(nullValue())));
 		assertThat("Not expected 64-bit address in found device", found.get64BitAddress(), is(equalTo(idFoundDevice.get64BitAddress())));
@@ -133,78 +119,52 @@ public class XBeeNetworkDiscoverDevicesBlockTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevicesByNodeID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(List)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
 	 * {@code null} id.</p>
 	 * 
 	 * @throws XBeeException 
 	 */
-	@Test
-	public final void testDiscoverDevicesByNodeIDNullId() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be null.")));
-		
+	@Test(expected=NullPointerException.class)
+	public final void testDiscoverDevicesNullList() throws XBeeException {
 		// Call the method under test.
-		network.discoverDevicesByNodeID(null);
+		network.discoverDevices(null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevicesByNodeID(String)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(List)}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
 	 * passing an empty id.</p>
 	 * 
 	 * @throws XBeeException 
 	 */
-	@Test
-	public final void testDiscoverDevicesByNodeIDEmptyId() throws XBeeException {
+	@Test(expected=IllegalArgumentException.class)
+	public final void testDiscoverDevicesEmptyList() throws XBeeException {
 		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Device identifier cannot be an empty string.")));
+		List<String> list = new ArrayList<String>();
 		
 		// Call the method under test.
-		network.discoverDevicesByNodeID("");
+		network.discoverDevices(list);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevicesByNodeID(String)}.
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDevicesByNodeID() throws XBeeException {
-		// Setup the resources for the test.
-		String id = "id";
-		
-		// Call the method under test.
-		List<RemoteXBeeDevice> found = network.discoverDevicesByNodeID(id);
-		
-		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDevicesByNodeID(id);
-		
-		assertThat("Found device list must not be null", found, is(not(nullValue())));
-		assertThat("Found device list must have one device", found.size(), is(equalTo(1)));
-		
-		RemoteXBeeDevice d = found.get(0);
-		assertThat("Not expected 64-bit address in found device", d.get64BitAddress(), is(equalTo(idFoundDevice.get64BitAddress())));
-		assertThat("Not expected 16-bit address in found device", d.get16BitAddress(), is(equalTo(idFoundDevice.get16BitAddress())));
-		assertThat("Not expected id in found device", d.getNodeID(), is(equalTo(idFoundDevice.getNodeID())));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(List)}.
 	 * 
 	 * @throws XBeeException 
 	 */
 	@Test
 	public final void testDiscoverDevices() throws XBeeException {
+		// Setup the resources for the test.
+		List<String> list = new ArrayList<String>();
+		list.add("id");
+		
 		// Call the method under test.
-		List<RemoteXBeeDevice> found = network.discoverDevices();
+		List<RemoteXBeeDevice> found = network.discoverDevices(list);
 		
 		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDevices();
+		Mockito.verify(ndMock, Mockito.times(1)).discoverDevices(list);
 		
 		assertThat("Found device list must not be null", found, is(not(nullValue())));
 		assertThat("Found device list must have one device", found.size(), is(equalTo(1)));

@@ -63,7 +63,7 @@ public class MainApp {
 			
 			// Obtain the remote XBee device from the XBee network.
 			XBeeNetwork xbeeNetwork = localDevice.getNetwork();
-			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDeviceByNodeID(REMOTE_DEVICE_ID);
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDevice(REMOTE_DEVICE_ID);
 			if (remoteDevice == null) {
 				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
 				System.exit(1);

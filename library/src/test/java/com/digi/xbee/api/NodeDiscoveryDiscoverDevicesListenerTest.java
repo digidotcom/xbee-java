@@ -238,43 +238,6 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
 	 * 
-	 * <p>The discovery process must finish with error if the NT value cannot
-	 * be read from the module.</p>
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public final void testDiscoverDevicesNTError() throws Exception {
-		// Setup the resources for the test.
-		DiscoveryListener listener = new DiscoveryListener();
-		listeners.add(listener);
-		
-		String error = "error";
-		Mockito.doThrow(new XBeeException(error)).when(deviceMock).getParameter("NT");
-		
-		// Call the method under test.
-		long start = System.currentTimeMillis();
-		nd.startDiscoveryProcess(listeners);
-		long endBlock = System.currentTimeMillis();
-		
-		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < TIMEOUT, is(equalTo(true)));
-		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
-		
-		while(!listener.isFinished()) {
-			Thread.sleep(100);
-		}
-		long end = System.currentTimeMillis();
-		
-		// Verify the result.
-		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
-		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
-		assertThat("The discovery process should finish with the '" + error + "' error", listener.getFinishError(), is(equalTo(error)));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
-	 * 
 	 * <p>The {@code discoveryError} method of the listener must be called when
 	 * a discovered device cannot be added to the network.</p>
 	 * 
@@ -348,11 +311,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listeners, null, TIMEOUT);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, listeners, null);
 		
 		List<RemoteXBeeDevice> ndInternalDeviceList = Whitebox.<List<RemoteXBeeDevice>> getInternalState(nd, DEVICE_LIST);
 		assertThat("Internal Node Discovery list must be empty", ndInternalDeviceList.size(), is(equalTo(0)));
@@ -411,11 +374,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("Remote device 16-bit address is not right", ((RemoteZigBeeDevice)remoteDevice).get16BitAddress(), 
 				is(equalTo(new XBee16BitAddress("0000"))));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listeners, null, TIMEOUT);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, listeners, null);
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.eq(listeners), Mockito.any(RemoteXBeeDevice.class));
 		
@@ -490,11 +453,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 				is(equalTo(addr16[i])));
 		}
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, listeners, null, TIMEOUT);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, listeners, null);
 		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
 		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.eq(listeners), Mockito.any(RemoteXBeeDevice.class));
 		

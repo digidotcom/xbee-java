@@ -228,7 +228,7 @@ class NodeDiscovery {
 	}
 	
 	/**
-	 * Retrieves whether or not the discovery process is running.
+	 * Retrieves whether the discovery process is running.
 	 * 
 	 * @return {@code true} if the discovery process is running, {@code false} 
 	 *         otherwise.

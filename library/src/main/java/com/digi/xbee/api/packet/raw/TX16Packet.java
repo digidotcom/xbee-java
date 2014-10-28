@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -104,7 +105,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress16 16-bit address of the destination device.
-	 * @param transmitOptions Bitfield of supported transmission options. See {@link com.digi.xbee.api.models.api.XBeeTransmitOptions}.
+	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param rfData RF Data that is sent to the destination device.
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
@@ -196,7 +197,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	/**
 	 * Sets the RF data to send.
 	 * 
-	 * @param data RF Data to send.
+	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
 		this.rfData = rfData;

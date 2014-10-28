@@ -96,7 +96,7 @@ public class IPacketReceiveListenerTest {
 	
 	@Before
 	public void setup() throws Exception {
-		// Serial data receive listener.
+		// Data receive listener.
 		receivePacketListener = PowerMockito.spy(new MyReceiveListener());
 		
 		// Data reader.
@@ -120,7 +120,7 @@ public class IPacketReceiveListenerTest {
 	 * <p>Verify that the callback of the IPacketReceiveListener interface is executed correctly.</p>
 	 */
 	@Test
-	public void testUnicastSerialDataReceiveEvent() {
+	public void testUnicastDataReceiveEvent() {
 		// The callback should work for any kind of packet.
 		for (XBeePacket packet:xbeePackets) {
 			receivePacketListener.packetReceived(packet);
@@ -147,7 +147,7 @@ public class IPacketReceiveListenerTest {
 			PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_PACKET_RECEIVED_METHOD, packet);
 			
 			// As the receivePacketListener was not subscribed in the packetReceiveListeners of the dataReader object, the 
-			// packet of the receiveSerialDataListener should be null.
+			// packet of the receiveDataListener should be null.
 			assertNull(receivePacketListener.getPacket());
 		}
 	}

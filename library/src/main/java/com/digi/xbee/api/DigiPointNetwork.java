@@ -12,15 +12,15 @@
 package com.digi.xbee.api;
 
 /**
- * An object that represents a DigiPoint Network.
+ * This class represents a DigiPoint Network.
  *  
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>
  * 
  * @see XBeeNetwork
- * @see ZigBeeNetwork
  * @see DigiMeshNetwork
  * @see Raw802Network
+ * @see ZigBeeNetwork
  */
 public class DigiPointNetwork extends XBeeNetwork {
 

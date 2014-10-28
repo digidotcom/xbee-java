@@ -13,6 +13,9 @@ package com.digi.xbee.api.models;
 
 import java.util.Set;
 
+/**
+ * Enumerates the different options used in the discovery process.
+ */
 public enum DiscoveryOptions {
 
 	/**

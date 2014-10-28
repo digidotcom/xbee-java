@@ -14,6 +14,10 @@ package com.digi.xbee.api.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+/**
+ * Utility class containing methods to work with bytes and byte arrays and 
+ * several data type conversions.
+ */
 public class ByteUtils {
 
 	/**

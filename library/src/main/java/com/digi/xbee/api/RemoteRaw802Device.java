@@ -11,10 +11,21 @@
  */
 package com.digi.xbee.api;
 
+import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+/**
+ * This class represents a remote 802.15.4 device.
+ * 
+ * @see RemoteXBeeDevice
+ * @see RemoteDigiMeshDevice
+ * @see RemoteDigiPointDevice
+ * @see RemoteZigBeeDevice
+ */
 public class RemoteRaw802Device extends RemoteXBeeDevice {
 
 	/**
@@ -134,5 +145,23 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	@Override
 	public XBeeProtocol getXBeeProtocol() {
 		return XBeeProtocol.RAW_802_15_4;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#set16BitAddress(com.digi.xbee.api.models.XBee16BitAddress)
+	 */
+	@Override
+	public void set16BitAddress(XBee16BitAddress xbee16BitAddress) throws TimeoutException, XBeeException {
+		super.set16BitAddress(xbee16BitAddress);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#getAssociationIndicationStatus()
+	 */
+	@Override
+	public AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+		return super.getAssociationIndicationStatus();
 	}
 }

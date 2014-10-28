@@ -15,6 +15,9 @@ import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 
+/**
+ * Helper class used to create a serial port connection interface.
+ */
 public class XBee {
 	
 	/**

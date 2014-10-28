@@ -11,10 +11,21 @@
  */
 package com.digi.xbee.api;
 
+import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+/**
+ * This class represents a remote ZigBee device.
+ * 
+ * @see RemoteXBeeDevice
+ * @see RemoteDigiMeshDevice
+ * @see RemoteDigiPointDevice
+ * @see RemoteRaw802Device
+ */
 public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 
 	/**
@@ -73,7 +84,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 * @param addr64 The 64-bit address to identify this remote ZigBee device.
 	 * @param addr16 The 16-bit address to identify this remote ZigBee device. 
 	 *               It might be {@code null}.
-	 * @param id The node identifier of this remote ZigBee device. It might be 
+	 * @param ni The node identifier of this remote ZigBee device. It might be 
 	 *           {@code null}.
 	 * 
 	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 
@@ -100,5 +111,23 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	@Override
 	public XBeeProtocol getXBeeProtocol() {
 		return XBeeProtocol.ZIGBEE;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#getAssociationIndicationStatus()
+	 */
+	@Override
+	public AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+		return super.getAssociationIndicationStatus();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#forceDisassociate()
+	 */
+	@Override
+	public void forceDisassociate() throws TimeoutException, XBeeException {
+		super.forceDisassociate();
 	}
 }

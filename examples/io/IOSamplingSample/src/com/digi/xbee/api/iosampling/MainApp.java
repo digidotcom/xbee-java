@@ -86,7 +86,7 @@ public class MainApp {
 			remoteDevice.setIOSamplingRate(IO_SAMPLING_RATE);
 			
 			// Register a listener to handle the samples received by the local device.
-			localDevice.startListeningForIOSamples(new IIOSampleReceiveListener() {
+			localDevice.addIOSampleListener(new IIOSampleReceiveListener() {
 				@Override
 				public void ioSampleReceived(RemoteXBeeDevice remoteDevice, IOSample ioSample) {
 					System.out.println("New sample received from " + remoteDevice.get64BitAddress() +

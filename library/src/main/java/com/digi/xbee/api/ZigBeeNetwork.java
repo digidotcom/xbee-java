@@ -12,7 +12,7 @@
 package com.digi.xbee.api;
 
 /**
- * An object that represents a ZigBee Network.
+ * This class represents a ZigBee Network.
  *  
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>

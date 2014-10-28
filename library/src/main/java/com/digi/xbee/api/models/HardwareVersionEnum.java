@@ -15,6 +15,9 @@ import java.util.HashMap;
 
 import com.digi.xbee.api.utils.HexUtils;
 
+/**
+ * Enumerates the different hardware versions of the XBee devices.
+ */
 public enum HardwareVersionEnum {
 
 	// Enumeration entries

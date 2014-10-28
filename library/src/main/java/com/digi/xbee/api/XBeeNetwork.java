@@ -29,12 +29,31 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 
 /**
- * An object that represents an XBee Network.
+ * This class represents an XBee Network.
  *  
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>
  */
 public class XBeeNetwork {
+	
+	// Constants.
+	
+	/**
+	 * Default timeout to finish the discovery process: {@value} ms.
+	 */
+	public final static long DISCOVERY_TIMEOUT_DEFAULT = NodeDiscovery.DEFAULT_TIMEOUT;
+	
+	/**
+	 * Use device configured discovery timeout ({@code NT}).
+	 */
+	public final static long DISCOVERY_TIMEOUT_DEVICE = NodeDiscovery.USE_DEVICE_TIMEOUT;
+	
+	/**
+	 * Discovery timeout to wait until the process finishes.
+	 */
+	public final static long DISCOVERY_TIMEOUT_WAIT_FOREVER = NodeDiscovery.WAIT_FOREVER;
+	
+	// Variables.
 
 	private XBeeDevice localDevice;
 	
@@ -92,7 +111,7 @@ public class XBeeNetwork {
 	 * @see RemoteXBeeDevice
 	 */
 	public RemoteXBeeDevice discoverDeviceByID(String id) throws XBeeException {
-		return discoverDeviceByID(id, NodeDiscovery.USE_DEVICE_TIMEOUT);
+		return discoverDeviceByID(id, DISCOVERY_TIMEOUT_DEVICE);
 	}
 	
 	/**
@@ -102,7 +121,7 @@ public class XBeeNetwork {
 	 * <p>This method blocks until the device is discovered or the provided 
 	 * timeout expires.</p>
 	 * 
-	 * <p>If {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time 
+	 * <p>If {@code timeout == DISCOVERY_TIMEOUT_DEVICE}, the time 
 	 * configured in the device will be used ({@code NT}).</p>
 	 * 
 	 * <p>To look for all the devices with an specific identifier use 
@@ -117,7 +136,7 @@ public class XBeeNetwork {
 	 * 
 	 * @throws IllegalArgumentException If {@code id.length() == 0} or
 	 *                                  if {@code timeout < 0} or
-	 *                                  if {@code timeout == NodeDiscover.WAIT_FOREVER}.
+	 *                                  if {@code timeout == DISCOVERY_TIMEOUOT_WAIT_FOREVER}.
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws NullPointerException If {@code id == null}.
 	 * @throws XBeeException If there is an error discovering the device.
@@ -125,7 +144,7 @@ public class XBeeNetwork {
 	 * @see #getDeviceByID(String)
 	 * @see #discoverDeviceByID(String)
 	 * @see #discoverAllDevicesByID(String, long)
-	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
+	 * @see #DISCOVERY_TIMEOUT_DEVICE
 	 * @see RemoteXBeeDevice
 	 */
 	public RemoteXBeeDevice discoverDeviceByID(String id, long timeout) throws XBeeException {
@@ -133,13 +152,13 @@ public class XBeeNetwork {
 			throw new NullPointerException("Device identifier cannot be null.");
 		if (id.length() == 0)
 			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
-		if (timeout == NodeDiscovery.WAIT_FOREVER)
+		if (timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER)
 			throw new IllegalArgumentException("The discovery devices process cannot block forever.");
-		if (timeout < NodeDiscovery.USE_DEVICE_TIMEOUT)
+		if (timeout < DISCOVERY_TIMEOUT_DEVICE)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
 		logger.debug("{}Discovering '{}' device ('{}' ms).", toString(), id, 
-				timeout == NodeDiscovery.USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
+				timeout == DISCOVERY_TIMEOUT_DEVICE ? "configured NT" : timeout);
 		
 		return nodeDiscovery.discoverDeviceByID(id, timeout);
 	}
@@ -160,7 +179,7 @@ public class XBeeNetwork {
 	 *         identifier.
 	 * 
 	 * @throws IllegalArgumentException If {@code id.length() == 0} or
-	 *                                  if {@code timeout == NodeDiscovery.WAIT_FOREVER} or
+	 *                                  if {@code timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER} or
 	 *                                  if {@code timeout < 0}.
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws NullPointerException If {@code id == null}.
@@ -176,13 +195,13 @@ public class XBeeNetwork {
 			throw new NullPointerException("Device identifier cannot be null.");
 		if (id.length() == 0)
 			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
-		if (timeout == NodeDiscovery.WAIT_FOREVER)
+		if (timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER)
 			throw new IllegalArgumentException("The discovery devices process cannot block forever.");
 		if (timeout < 0)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
 		logger.debug("{}Discovering all '{}' devices ('{}' ms).", toString(), id, 
-				timeout == NodeDiscovery.USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
+				timeout == DISCOVERY_TIMEOUT_DEVICE ? "configured NT" : timeout);
 		
 		return nodeDiscovery.discoverAllDevicesByID(id, timeout);
 	}
@@ -207,14 +226,14 @@ public class XBeeNetwork {
 	 * @see RemoteXBeeDevice
 	 */
 	public List<RemoteXBeeDevice> discoverDevices() throws XBeeException {
-		return discoverDevices((Set<DiscoveryOptions>)null, NodeDiscovery.USE_DEVICE_TIMEOUT);
+		return discoverDevices((Set<DiscoveryOptions>)null, DISCOVERY_TIMEOUT_DEVICE);
 	}
 	
 	/**
 	 * Discovers and reports all XBee devices found.
 	 * 
 	 * <p>This method blocks until the provided timeout expires. If 
-	 * {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time configured 
+	 * {@code timeout == DISCOVERY_TIMEOUT_DEVICE}, the time configured 
 	 * in the device will be used ({@code NT})</p>
 	 * 
 	 * <p>The operation will use the network discovery options ({@code NO}) 
@@ -225,7 +244,7 @@ public class XBeeNetwork {
 	 * 
 	 * @return A list with the discovered XBee device.
 	 * 
-	 * @throws IllegalArgumentException If {@code timeout == NodeDiscovery.WAIT_FOREVER} or
+	 * @throws IllegalArgumentException If {@code timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER} or
 	 *                                  if {@code timeout < 0}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
@@ -233,7 +252,7 @@ public class XBeeNetwork {
 	 * @see #getDevices()
 	 * @see #discoverDevices()
 	 * @see #discoverDevices(Set, long)
-	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
+	 * @see #DISCOVERY_TIMEOUT_DEVICE
 	 * @see RemoteXBeeDevice
 	 */
 	public List<RemoteXBeeDevice> discoverDevices(long timeout) throws XBeeException {
@@ -244,7 +263,7 @@ public class XBeeNetwork {
 	 * Discovers and reports all XBee devices found.
 	 * 
 	 * <p>This method blocks until the provided timeout expires. If 
-	 * {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time configured 
+	 * {@code timeout == DISCOVERY_TIMEOUT_DEVICE}, the time configured 
 	 * in the device will be used ({@code NT}).</p>
 	 * 
 	 * @param options Collection of discovery options to use for the operation.
@@ -253,7 +272,7 @@ public class XBeeNetwork {
 	 * 
 	 * @return A list with the discovered XBee devices.
 	 * 
-	 * @throws IllegalArgumentException If {@code timeout == NodeDiscovery.WAIT_FOREVER} or
+	 * @throws IllegalArgumentException If {@code timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER} or
 	 *                                  if {@code timeout < 0}.
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
@@ -261,18 +280,18 @@ public class XBeeNetwork {
 	 * @see #getDevices()
 	 * @see #discoverDevices()
 	 * @see #discoverDevices(long)
-	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
+	 * @see #DISCOVERY_TIMEOUT_DEVICE
 	 * @see DiscoveryOptions
 	 * @see RemoteXBeeDevice
 	 */
 	public List<RemoteXBeeDevice> discoverDevices(Set<DiscoveryOptions> options, long timeout) throws XBeeException {
-		if (timeout == NodeDiscovery.WAIT_FOREVER)
+		if (timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER)
 			throw new IllegalArgumentException("The discovery process cannot block forever.");
-		if (timeout < NodeDiscovery.USE_DEVICE_TIMEOUT)
+		if (timeout < DISCOVERY_TIMEOUT_DEVICE)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
 		logger.debug("{}Discovering devices from network (blocking for '{}' ms).", toString(), 
-				timeout == NodeDiscovery.USE_DEVICE_TIMEOUT ? "configured NT" : timeout);
+				timeout == DISCOVERY_TIMEOUT_DEVICE ? "configured NT" : timeout);
 		
 		return nodeDiscovery.discoverDevices(options, timeout);
 	}
@@ -298,10 +317,10 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code listener == null}.
 	 * 
 	 * @see IDiscoveryListener
-	 * @see #stop()
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void discoverDevices(IDiscoveryListener listener) {
-		discoverDevices(listener, null, NodeDiscovery.USE_DEVICE_TIMEOUT);
+		discoverDevices(listener, null, DISCOVERY_TIMEOUT_DEVICE);
 	}
 	
 	/**
@@ -313,9 +332,9 @@ public class XBeeNetwork {
 	 * <p>The operation finishes:</p>
 	 * <ul>
 	 * <li>When the provided timeout expires.</li>
-	 * <li>If {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time 
+	 * <li>If {@code timeout == DISCOVERY_TIMEOUT_DEVICE}, the time 
 	 * configured in the device will be used ({@code NT}).</li>
-	 * <li>If {@code timeout == NodeDiscovery.WAIT_FOREVER} the process will 
+	 * <li>If {@code timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER} the process will 
 	 * never finish unless the {@link #stopDiscoveryProcess()} method is called.
 	 * </li></ul>
 	 * 
@@ -334,9 +353,9 @@ public class XBeeNetwork {
 	 * @throws NullPointerException If {@code listener == null}.
 	 * 
 	 * @see IDiscoveryListener
-	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
-	 * @see NodeDiscovery#WAIT_FOREVER
-	 * @see #stop()
+	 * @see #DISCOVERY_TIMEOUT_DEVICE
+	 * @see #DISCOVERY_TIMEOUT_WAIT_FOREVER
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void discoverDevices(IDiscoveryListener listener, long timeout) {
 		discoverDevices(listener, null, timeout);
@@ -351,9 +370,9 @@ public class XBeeNetwork {
 	 * <p>The operation finishes:</p>
 	 * <ul>
 	 * <li>When the provided timeout expires.</li>
-	 * <li>If {@code timeout == NodeDiscovery.USE_DEVICE_TIMEOUT}, the time 
+	 * <li>If {@code timeout == DISCOVERY_TIMEOUT_DEVICE}, the time 
 	 * configured in the device will be used ({@code NT}).</li>
-	 * <li>If {@code timeout == NodeDiscovery.WAIT_FOREVER} the process will 
+	 * <li>If {@code timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER} the process will 
 	 * never finish unless the {@link #stopDiscoveryProcess()} method is called.
 	 * </li></ul>
 	 * 
@@ -371,21 +390,21 @@ public class XBeeNetwork {
 	 * 
 	 * @see IDiscoveryListener
 	 * @see DiscoveryOptions
-	 * @see NodeDiscovery#USE_DEVICE_TIMEOUT
-	 * @see NodeDiscovery#WAIT_FOREVER
-	 * @see #stop()
+	 * @see #DISCOVERY_TIMEOUT_DEVICE
+	 * @see #DISCOVERY_TIMEOUT_WAIT_FOREVER
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void discoverDevices(final IDiscoveryListener listener, Set<DiscoveryOptions> options, long timeout) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
-		if (timeout < NodeDiscovery.WAIT_FOREVER)
+		if (timeout < DISCOVERY_TIMEOUT_WAIT_FOREVER)
 			throw new IllegalArgumentException("The timeout must be bigger than 0.");
 		
 		if (logger.isDebugEnabled()) {
 			String timeoutString = timeout + "";
-			if (timeout == NodeDiscovery.USE_DEVICE_TIMEOUT)
+			if (timeout == DISCOVERY_TIMEOUT_DEVICE)
 				timeoutString = "configured NT";
-			else if (timeout == NodeDiscovery.WAIT_FOREVER)
+			else if (timeout == DISCOVERY_TIMEOUT_WAIT_FOREVER)
 				timeoutString = "forever";
 			logger.debug("{}Discovering devices from network ('{}' ms).", toString(), timeoutString);
 		}
@@ -618,80 +637,79 @@ public class XBeeNetwork {
 		logger.debug("{}Adding device '{}' to network.", toString(), remoteDevice.toString());
 		
 		RemoteXBeeDevice devInNetwork = null;
-		
-		// Look in the 64-bit map.
 		XBee64BitAddress addr64 = remoteDevice.get64BitAddress();
+		XBee16BitAddress addr16 = get16BitAddress(remoteDevice);
+		
+		// Check if the device has 64-bit address.
 		if (addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) {
+			// The device has 64-bit address, so look in the 64-bit map.
 			devInNetwork = remotesBy64BitAddr.get(addr64);
-			
-			// Update the reference.
 			if (devInNetwork != null) {
+				// The device exists in the 64-bit map, so update the reference and return it.
 				logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
 				devInNetwork.updateDeviceDataFrom(remoteDevice);
 				return devInNetwork;
+			} else {
+				// The device does not exist in the 64-bit map, so check its 16-bit address.
+				if (addr16 != null && !addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)) {
+					// The device has 16-bit address, so look in the 16-bit map.
+					devInNetwork = remotesBy16BitAddr.get(addr16);
+					if (devInNetwork != null) {
+						// The device exists in the 16-bit map, so remove it and add it to the 64-bit map.
+						logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+						devInNetwork = remotesBy16BitAddr.remove(addr16);
+						devInNetwork.updateDeviceDataFrom(remoteDevice);
+						remotesBy64BitAddr.put(addr64, devInNetwork);
+						return devInNetwork;
+					} else {
+						// The device does not exist in the 16-bit map, so add it to the 64-bit map.
+						remotesBy64BitAddr.put(addr64, remoteDevice);
+						return remoteDevice;
+					}
+				} else {
+					// The device has not 16-bit address, so add it to the 64-bit map.
+					remotesBy64BitAddr.put(addr64, remoteDevice);
+					return remoteDevice;
+				}
 			}
 		}
 		
-		// If not found, look in the 16-bit map.
-		XBee16BitAddress addr16 = get16BitAddress(remoteDevice);
+		// If the device has not 64-bit address, check if it has 16-bit address.
 		if (addr16 != null && !addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)) {
-			
-			// The preference order is: 
-			//    1.- Look in the 64-bit map 
-			//    2.- Then in the 16-bit map.
-			// This should be maintained in the 'getDeviceBy16BitAddress' method.
-			
-			// Look for the 16-bit address in the 64-bit map.
+			// The device has 16-bit address, so look in the 64-bit map.
 			Collection<RemoteXBeeDevice> devices = remotesBy64BitAddr.values();
-			for (RemoteXBeeDevice d: devices) {
+			for (RemoteXBeeDevice d : devices) {
 				XBee16BitAddress a = get16BitAddress(d);
 				if (a != null && a.equals(addr16)) {
 					devInNetwork = d;
 					break;
 				}
 			}
-			
-			// If not found, look for the 16-bit address in the 16-bit map. 
-			if (devInNetwork == null) {
-				devInNetwork = remotesBy16BitAddr.get(addr16);
-				
-				// If the device to be added has a 64-bit address, remove it
-				// from the 16-bit map and add it to the 64-bit map.
-				if (devInNetwork != null 
-						&& addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) {
-					devInNetwork = remotesBy16BitAddr.remove(addr16);
-					
-					RemoteXBeeDevice devIn64bitMap = remotesBy64BitAddr.get(addr64);
-					if (devIn64bitMap != null)
-						devInNetwork = devIn64bitMap;
-					else
-						remotesBy64BitAddr.put(addr64, devInNetwork);
-				}
-			}
-			
-			// If found, update the reference.
+			// Check if the device exists in the 64-bit map.
 			if (devInNetwork != null) {
+				// The device exists in the 64-bit map, so update the reference and return it.
 				logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
-				
 				devInNetwork.updateDeviceDataFrom(remoteDevice);
 				return devInNetwork;
+			} else {
+				// The device does not exist in the 64-bit map, so look in the 16-bit map.
+				devInNetwork = remotesBy16BitAddr.get(addr16);
+				if (devInNetwork != null) {
+					// The device exists in the 16-bit map, so update the reference and return it.
+					logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+					devInNetwork.updateDeviceDataFrom(remoteDevice);
+					return devInNetwork;
+				} else {
+					// The device does not exist in the 16-bit map, so add it.
+					remotesBy16BitAddr.put(addr16, remoteDevice);
+					return remoteDevice;
+				}
 			}
 		}
 		
-		// If the device does not contain a valid address return null.
-		if ((addr64 == null || addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) 
-				&& (addr16 == null || addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS))) {
-			logger.error("{}Remote device '{}' cannot be added: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
-			return null;
-		}
-		
-		// Add it to the right map.
-		if (addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS))
-			remotesBy64BitAddr.put(addr64, remoteDevice);
-		else
-			remotesBy16BitAddr.put(addr16, remoteDevice);
-		
-		return remoteDevice;
+		// If the device does not contain a valid address, return null.
+		logger.error("{}Remote device '{}' cannot be added: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
+		return null;
 	}
 	
 	/**

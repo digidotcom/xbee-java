@@ -14,7 +14,7 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * This class lists all the possible states of the discovery.
+ * Enumerates all the possible states of the discovery.
  */
 public enum XBeeDiscoveryStatus {
 

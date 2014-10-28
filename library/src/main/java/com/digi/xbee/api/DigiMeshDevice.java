@@ -20,6 +20,14 @@ import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+/**
+ * This class represents a local DigiMesh device.
+ * 
+ * @see XBeeDevice
+ * @see DigiPointDevice
+ * @see Raw802Device
+ * @see ZigBeeDevice
+ */
 public class DigiMeshDevice extends XBeeDevice {
 
 	/**
@@ -126,19 +134,19 @@ public class DigiMeshDevice extends XBeeDevice {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.XBeeDevice#sendSerialDataAsync(com.digi.xbee.api.models.XBee64BitAddress, byte[])
+	 * @see com.digi.xbee.api.XBeeDevice#sendDataAsync(com.digi.xbee.api.models.XBee64BitAddress, byte[])
 	 */
 	@Override
-	public void sendSerialDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
-		super.sendSerialDataAsync(address, data);
+	public void sendDataAsync(XBee64BitAddress address, byte[] data) throws XBeeException {
+		super.sendDataAsync(address, data);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.XBeeDevice#sendSerialData(com.digi.xbee.api.models.XBee64BitAddress, byte[])
+	 * @see com.digi.xbee.api.XBeeDevice#sendData(com.digi.xbee.api.models.XBee64BitAddress, byte[])
 	 */
 	@Override
-	public void sendSerialData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
-		super.sendSerialData(address, data);
+	public void sendData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
+		super.sendData(address, data);
 	}
 }

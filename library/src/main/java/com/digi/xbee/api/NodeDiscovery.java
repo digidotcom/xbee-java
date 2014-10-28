@@ -94,7 +94,7 @@ class NodeDiscovery {
 	 * supplied identifier.
 	 * 
 	 * <p>This method blocks until the device is discovered or the configured 
-	 * timeout expires.</p>
+	 * timeout in the device (NT) expires.</p>
 	 * 
 	 * @param id The identifier of the device to be discovered.
 	 * 
@@ -103,9 +103,18 @@ class NodeDiscovery {
 	 * 
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
+	 * 
+	 * @see #discoverDevices(List)
 	 */
 	public RemoteXBeeDevice discoverDevice(String id) throws XBeeException {
-		logger.debug("{}ND for {} device.", toString(), id);
+		// Check if the connection is open.
+		if (!xbeeDevice.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		logger.debug("{}ND for {} device.", xbeeDevice.toString(), id);
+		
+		running = true;
+		discovering = true;
 		
 		performNodeDiscovery(null, id);
 		
@@ -125,7 +134,8 @@ class NodeDiscovery {
 	 * Discovers and reports all remote XBee devices that match the supplied 
 	 * identifiers.
 	 * 
-	 * <p>This method blocks until the configured timeout expires.</p>
+	 * <p>This method blocks until the configured timeout in the device (NT) 
+	 * expires.</p>
 	 * 
 	 * @param ids List which contains the identifiers of the devices to be 
 	 *            discovered.
@@ -135,9 +145,18 @@ class NodeDiscovery {
 	 * 
 	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error discovering the devices.
+	 * 
+	 * @see #discoverDevice(String)
 	 */
 	public List<RemoteXBeeDevice> discoverDevices(List<String> ids) throws XBeeException {
-		logger.debug("{}ND for all {} devices.", toString(), ids.toString());
+		// Check if the connection is open.
+		if (!xbeeDevice.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		logger.debug("{}ND for all {} devices.", xbeeDevice.toString(), ids.toString());
+		
+		running = true;
+		discovering = true;
 		
 		performNodeDiscovery(null, null);
 		
@@ -149,13 +168,13 @@ class NodeDiscovery {
 		
 		for (RemoteXBeeDevice d: deviceList) {
 			String nID = d.getNodeID();
-			if (nID != null) {
-				for (String id : ids) {
-					if (nID.equals(id)) {
-						RemoteXBeeDevice rDevice = network.addRemoteDevice(d);
-						if (rDevice != null && !foundDevices.contains(rDevice))
-							foundDevices.add(rDevice);
-					}
+			if (nID == null)
+				continue;
+			for (String id : ids) {
+				if (nID.equals(id)) {
+					RemoteXBeeDevice rDevice = network.addRemoteDevice(d);
+					if (rDevice != null && !foundDevices.contains(rDevice))
+						foundDevices.add(rDevice);
 				}
 			}
 		}
@@ -168,16 +187,21 @@ class NodeDiscovery {
 	 * 
 	 * @param listeners Discovery listeners to be notified about process events.
 	 * 
-	 * @throws NullPointerException If {@code listeners == null}.
 	 * @throws InterfaceNotOpenException If the device is not open.
+	 * @throws NullPointerException If {@code listeners == null}.
+	 * 
+	 * @see #stopDiscoveryProcess()
+	 * @see #isRunning()
 	 */
-	public void startDiscoveryProcess(final ArrayList<IDiscoveryListener> listeners) {
-		if (listeners == null)
-			throw new NullPointerException("Listeners list cannot be null.");
+	public void startDiscoveryProcess(final List<IDiscoveryListener> listeners) {
+		// Check if the connection is open.
 		if (!xbeeDevice.isOpen())
 			throw new InterfaceNotOpenException();
+		if (listeners == null)
+			throw new NullPointerException("Listeners list cannot be null.");
 		
 		running = true;
+		discovering = true;
 		
 		Thread discoveryThread = new Thread() {
 			@Override
@@ -196,6 +220,7 @@ class NodeDiscovery {
 	/**
 	 * Stops the discovery process if it is running.
 	 * 
+	 * @see #startDiscoveryProcess(ArrayList)
 	 * @see #isRunning()
 	 */
 	public void stopDiscoveryProcess() {
@@ -207,6 +232,9 @@ class NodeDiscovery {
 	 * 
 	 * @return {@code true} if the discovery process is running, {@code false} 
 	 *         otherwise.
+	 * 
+	 * @see #startDiscoveryProcess(List)
+	 * @see #stopDiscoveryProcess()
 	 */
 	public boolean isRunning() {
 		return running;
@@ -221,17 +249,9 @@ class NodeDiscovery {
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
 	 * 
-	 * @throws InterfaceNotOpenException If the device is not open.
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 */
-	private void performNodeDiscovery(ArrayList<IDiscoveryListener> listeners, String id) throws XBeeException {
-		// Check if it is open.
-		if (!xbeeDevice.isOpen())
-			throw new InterfaceNotOpenException();
-		
-		running = true;
-		discovering = true;
-		
+	private void performNodeDiscovery(List<IDiscoveryListener> listeners, String id) throws XBeeException {
 		try {
 			discoverDevicesAPI(listeners, id);
 			
@@ -246,14 +266,13 @@ class NodeDiscovery {
 	/**
 	 * Performs the device discovery in API1 or API2 (API Escaped) mode.
 	 * 
-	 * @param listener Discovery listener to be notified about process events. 
-	 *                 It may be {@code null}.
+	 * @param listeners Discovery listeners to be notified about process events.
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
 	 * 
 	 * @throws XBeeException If there is an error sending the discovery command.
 	 */
-	private void discoverDevicesAPI(final ArrayList<IDiscoveryListener> listeners, final String id) throws XBeeException {
+	private void discoverDevicesAPI(final List<IDiscoveryListener> listeners, final String id) throws XBeeException {
 		if (deviceList == null)
 			deviceList = new ArrayList<RemoteXBeeDevice>();
 		deviceList.clear();
@@ -289,11 +308,11 @@ class NodeDiscovery {
 			}
 		};
 		
-		logger.debug("{}Start listening.", toString());
+		logger.debug("{}Start listening.", xbeeDevice.toString());
 		xbeeDevice.addPacketListener(packetReceiveListener);
 		
 		try {
-			long deadLine = calculateDeadline();
+			long deadLine = calculateDeadline(listeners);
 			
 			sendNodeDiscoverCommand(id);
 			
@@ -317,7 +336,7 @@ class NodeDiscovery {
 			}
 		} finally {
 			xbeeDevice.removePacketListener(packetReceiveListener);
-			logger.debug("{}Stop listening.", toString());
+			logger.debug("{}Stop listening.", xbeeDevice.toString());
 		}
 	}
 	
@@ -325,17 +344,20 @@ class NodeDiscovery {
 	 * Calculates the maximum response time, in milliseconds, for network
 	 * discovery responses.
 	 * 
+	 * @param listeners Discovery listeners to be notified about process events.
+	 * 
 	 * @return Maximum network discovery time.
 	 */
-	private long calculateDeadline() {
+	private long calculateDeadline(List<IDiscoveryListener> listeners) {
 		long timeout = DEFAULT_TIMEOUT;
 		
 		// Read the device timeout (NT).
 		try {
 			timeout = ByteUtils.byteArrayToLong(xbeeDevice.getParameter("NT")) * 100;
-		} catch (Exception e) {
-			logger.error("{}{}", toString(), "Could not read the discovery timeout from the device (NT). "
-					+ "The default timeout (" + DEFAULT_TIMEOUT + " ms.) will be used.");
+		} catch (XBeeException e) {
+			String error = "Could not read the discovery timeout from the device (NT). "
+					+ "The default timeout (" + DEFAULT_TIMEOUT + " ms.) will be used.";
+			notifyDiscoveryError(listeners, error);
 		}
 		
 		long deadline = System.currentTimeMillis() + timeout;
@@ -362,7 +384,7 @@ class NodeDiscovery {
 	private byte[] getRemoteDeviceData(XBeeAPIPacket packet) {
 		byte[] data = null;
 		
-		logger.trace("{}Received packet: {}.", toString(), packet);
+		logger.trace("{}Received packet: {}.", xbeeDevice.toString(), packet);
 		
 		APIFrameType frameType = packet.getFrameType();
 		switch (frameType) {
@@ -375,13 +397,12 @@ class NodeDiscovery {
 			if (!atResponse.getCommand().equals(ND_COMMAND))
 				return null;
 			// Check if the 'end' command is received (empty response with OK status).
-			if (atResponse.getCommandValue() == null 
-					|| atResponse.getCommandValue().length == 0) {
-					discovering = atResponse.getStatus() != ATCommandStatus.OK;
+			if (atResponse.getCommandValue() == null || atResponse.getCommandValue().length == 0) {
+				discovering = atResponse.getStatus() != ATCommandStatus.OK;
 				return null;
 			}
 			
-			logger.debug("{}Received self reponse: {}.", toString(), packet);
+			logger.debug("{}Received self response: {}.", xbeeDevice.toString(), packet);
 			
 			data = atResponse.getCommandValue();
 			break;
@@ -402,6 +423,9 @@ class NodeDiscovery {
 	 * @return Discovered XBee device.
 	 */
 	private RemoteXBeeDevice parseDiscoveryAPIData(byte[] data, XBeeDevice localDevice) {
+		if (data == null)
+			return null;
+		
 		RemoteXBeeDevice device = null;
 		XBee16BitAddress addr16 = null;
 		XBee64BitAddress addr64 = null;
@@ -441,7 +465,7 @@ class NodeDiscovery {
 			manufacturerID = ByteUtils.readBytes(2, inputStream);
 			
 			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], parent[{}], profile[{}], manufacturer[{}].", 
-					toString(), localDevice.getXBeeProtocol().getDescription(), addr16, 
+					xbeeDevice.toString(), localDevice.getXBeeProtocol().getDescription(), addr16, 
 					addr64, id, parentAddress, HexUtils.byteArrayToHexString(profileID), 
 					HexUtils.byteArrayToHexString(manufacturerID));
 			
@@ -453,13 +477,13 @@ class NodeDiscovery {
 			id = ByteUtils.readString(inputStream);
 			
 			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], rssi[{}].",
-					toString(), localDevice.getXBeeProtocol().getDescription(), addr16, addr64, id, signalStrength);
+					xbeeDevice.toString(), localDevice.getXBeeProtocol().getDescription(), addr16, addr64, id, signalStrength);
 			
 			break;
 		case UNKNOWN:
 		default:
 			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}].",
-					toString(), localDevice.getXBeeProtocol().getDescription(), addr16, addr64);
+					xbeeDevice.toString(), localDevice.getXBeeProtocol().getDescription(), addr16, addr64);
 			break;
 		}
 		
@@ -505,12 +529,12 @@ class NodeDiscovery {
 	}
 	
 	/**
-	 * Notifies the given discovery listener that a device was discovered.
+	 * Notifies the given discovery listeners that a device was discovered.
 	 * 
-	 * @param listener The discovery listener to be notified.
+	 * @param listeners The discovery listeners to be notified.
 	 * @param device The remote device discovered.
 	 */
-	private void notifyDeviceDiscovered(ArrayList<IDiscoveryListener> listeners, RemoteXBeeDevice device) {
+	private void notifyDeviceDiscovered(List<IDiscoveryListener> listeners, RemoteXBeeDevice device) {
 		if (listeners == null) {
 			synchronized (deviceList) {
 				deviceList.add(device);
@@ -531,13 +555,13 @@ class NodeDiscovery {
 	}
 	
 	/**
-	 * Notifies the given discovery listener about the provided error.
+	 * Notifies the given discovery listeners about the provided error.
 	 * 
-	 * @param listener The discovery listener to be notified.
+	 * @param listeners The discovery listeners to be notified.
 	 * @param error The error to notify.
 	 */
-	private void notifyDiscoveryError(ArrayList<IDiscoveryListener> listeners, String error) {
-		logger.error("{}Error discovering devices: {}", toString(), error);
+	private void notifyDiscoveryError(List<IDiscoveryListener> listeners, String error) {
+		logger.error("{}Error discovering devices: {}", xbeeDevice.toString(), error);
 		
 		if (listeners == null)
 			return;
@@ -547,18 +571,18 @@ class NodeDiscovery {
 	}
 	
 	/**
-	 * Notifies the given discovery listener that a the discovery process has 
+	 * Notifies the given discovery listeners that the discovery process has 
 	 * finished.
 	 * 
-	 * @param listener The discovery listener to be notified.
+	 * @param listeners The discovery listeners to be notified.
 	 * @param error The error message, or {@code null} if the process finished 
 	 *              successfully.
 	 */
-	private void notifyDiscoveryFinished(ArrayList<IDiscoveryListener> listeners, String error) {
+	private void notifyDiscoveryFinished(List<IDiscoveryListener> listeners, String error) {
 		if (error != null && error.length() > 0)
-			logger.error("{}Finished discovery: {}", toString(), error);
+			logger.error("{}Finished discovery: {}", xbeeDevice.toString(), error);
 		else
-			logger.debug("{}Finished discovery.", toString());
+			logger.debug("{}Finished discovery.", xbeeDevice.toString());
 		
 		if (listeners == null)
 			return;
@@ -573,6 +597,7 @@ class NodeDiscovery {
 	 */
 	@Override
 	public String toString() {
-		return xbeeDevice.toString();
+		return getClass().getName() + " [" + xbeeDevice.toString() + "] @" + 
+				Integer.toHexString(hashCode());
 	}
 }

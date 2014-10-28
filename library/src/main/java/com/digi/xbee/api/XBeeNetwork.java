@@ -77,16 +77,20 @@ public class XBeeNetwork {
 	 * supplied identifier.
 	 * 
 	 * <p>This method blocks until the device is discovered or the configured 
-	 * timeout expires.</p>
+	 * timeout expires. To configure the discovery timeout, use the method
+	 * {@link #setDiscoveryTimeout(long)}.</p>
+	 * 
+	 * <p>To configure the discovery options, use the 
+	 * {@link #setDiscoveryOptions(Set)} method.</p> 
 	 * 
 	 * @param id The identifier of the device to be discovered.
 	 * 
 	 * @return The discovered remote XBee device with the given identifier, 
 	 *         {@code null} if the timeout expires and the device was not found.
 	 * 
-	 * @throws NullPointerException If {@code id == null}.
 	 * @throws IllegalArgumentException If {@code id.length() == 0}.
 	 * @throws InterfaceNotOpenException If the device is not open.
+	 * @throws NullPointerException If {@code id == null}.
 	 * @throws XBeeException If there is an error discovering the device.
 	 * 
 	 * @see #getDevice(String)
@@ -99,7 +103,7 @@ public class XBeeNetwork {
 		if (id.length() == 0)
 			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
 		
-		logger.debug("{}Discovering '{}' device.", toString(), id);
+		logger.debug("{}Discovering '{}' device.", localDevice.toString(), id);
 		
 		return nodeDiscovery.discoverDevice(id);
 	}
@@ -108,7 +112,12 @@ public class XBeeNetwork {
 	 * Discovers and reports all remote XBee devices that match the supplied 
 	 * identifiers.
 	 * 
-	 * <p>This method blocks until the configured timeout expires.</p>
+	 * <p>This method blocks until the configured timeout expires. To configure 
+	 * the discovery timeout, use the method {@link #setDiscoveryTimeout(long)}.
+	 * </p>
+	 * 
+	 * <p>To configure the discovery options, use the 
+	 * {@link #setDiscoveryOptions(Set)} method.</p> 
 	 * 
 	 * @param ids List which contains the identifiers of the devices to be 
 	 *            discovered.
@@ -116,12 +125,11 @@ public class XBeeNetwork {
 	 * @return A list of the discovered remote XBee devices with the given 
 	 *         identifiers.
 	 * 
-	 * @throws NullPointerException If {@code ids == null}.
 	 * @throws IllegalArgumentException If {@code ids.size() == 0}.
 	 * @throws InterfaceNotOpenException If the device is not open.
+	 * @throws NullPointerException If {@code ids == null}.
 	 * @throws XBeeException If there is an error discovering the devices.
 	 * 
-	 * @see #getDevices(String)
 	 * @see #discoverDevice(String)
 	 * @see RemoteXBeeDevice
 	 */
@@ -131,7 +139,7 @@ public class XBeeNetwork {
 		if (ids.size() == 0)
 			throw new IllegalArgumentException("List of device identifiers cannot be empty.");
 		
-		logger.debug("{}Discovering all '{}' devices.", toString(), ids.toString());
+		logger.debug("{}Discovering all '{}' devices.", localDevice.toString(), ids.toString());
 		
 		return nodeDiscovery.discoverDevices(ids);
 	}
@@ -188,8 +196,19 @@ public class XBeeNetwork {
 	/**
 	 * Starts the discovery process with the configured timeout and options.
 	 * 
-	 * @throws InterfaceNotOpenException If the device is not open.
+	 * <p>To be notified every time an XBee device is discovered, add a
+	 * {@code IDiscoveryListener} using the 
+	 * {@link #addDiscoveryListener(IDiscoveryListener)} method before starting
+	 * the discovery process.</p>
+	 * 
+	 * <p>To configure the discovery timeout, use the 
+	 * {@link #setDiscoveryTimeout(long)} method.</p>
+	 * 
+	 * <p>To configure the discovery options, use the 
+	 * {@link #setDiscoveryOptions(Set)} method.</p> 
+	 * 
 	 * @throws IllegalStateException If the discovery process is already running.
+	 * @throws InterfaceNotOpenException If the device is not open.
 	 * 
 	 * @see #stopDiscoveryProcess()
 	 * @see #addDiscoveryListener(IDiscoveryListener)
@@ -222,13 +241,17 @@ public class XBeeNetwork {
 	 * 
 	 * @return {@code true} if the discovery process is running, {@code false} 
 	 *         otherwise.
+	 * 
+	 * @see #startDiscoveryProcess()
+	 * @see #stopDiscoveryProcess()
 	 */
 	public boolean isDiscoveryRunning() {
 		return nodeDiscovery.isRunning();
 	}
 	
 	/**
-	 * Configures the discovery timeout (NT parameter) with the given value.
+	 * Configures the discovery timeout ({@code NT} parameter) with the given 
+	 * value.
 	 * 
 	 * @param timeout New discovery timeout in milliseconds.
 	 * 
@@ -246,7 +269,8 @@ public class XBeeNetwork {
 	}
 	
 	/**
-	 * Configures the discovery options (NO parameter) with the given value.
+	 * Configures the discovery options ({@code NO} parameter) with the given 
+	 * value.
 	 * 
 	 * @param options New discovery options.
 	 * 
@@ -275,8 +299,8 @@ public class XBeeNetwork {
 	 * @see #getDevices(String)
 	 * @see RemoteXBeeDevice
 	 */
-	public ArrayList<RemoteXBeeDevice> getDevices() {
-		ArrayList<RemoteXBeeDevice> nodes = new ArrayList<RemoteXBeeDevice>();
+	public List<RemoteXBeeDevice> getDevices() {
+		List<RemoteXBeeDevice> nodes = new ArrayList<RemoteXBeeDevice>();
 		nodes.addAll(remotesBy64BitAddr.values());
 		nodes.addAll(remotesBy16BitAddr.values());
 		return nodes;
@@ -293,19 +317,19 @@ public class XBeeNetwork {
 	 * @return A list of the remote XBee devices contained in the network with 
 	 *         the given identifier.
 	 * 
-	 * @throws NullPointerException If {@code id == null}.
 	 * @throws IllegalArgumentException If {@code id.length() == 0}.
+	 * @throws NullPointerException If {@code id == null}.
 	 * 
 	 * @see #getDevice(String)
 	 * @see RemoteXBeeDevice
 	 */
-	public ArrayList<RemoteXBeeDevice> getDevices(String id) {
+	public List<RemoteXBeeDevice> getDevices(String id) {
 		if (id == null)
 			throw new NullPointerException("Device identifier cannot be null.");
 		if (id.length() == 0)
 			throw new IllegalArgumentException("Device identifier cannot be an empty string.");
 		
-		ArrayList<RemoteXBeeDevice> devices = new ArrayList<RemoteXBeeDevice>();
+		List<RemoteXBeeDevice> devices = new ArrayList<RemoteXBeeDevice>();
 		
 		// Look in the 64-bit map.
 		for (RemoteXBeeDevice remote : remotesBy64BitAddr.values()) {
@@ -333,8 +357,8 @@ public class XBeeNetwork {
 	 *         identifier, {@code null} if the network does not contain any 
 	 *         device with that Node ID.
 	 * 
-	 * @throws NullPointerException If {@code id == null}.
 	 * @throws IllegalArgumentException If {@code id.length() == 0}.
+	 * @throws NullPointerException If {@code id == null}.
 	 * 
 	 * @see #getDevices(String)
 	 * @see #discoverDevice(String)
@@ -381,7 +405,7 @@ public class XBeeNetwork {
 		if (address.equals(XBee64BitAddress.UNKNOWN_ADDRESS))
 			throw new NullPointerException("64-bit address cannot be unknown.");
 		
-		logger.debug("{}Getting device '{}' from network.", toString(), address);
+		logger.debug("{}Getting device '{}' from network.", localDevice.toString(), address);
 		
 		return remotesBy64BitAddr.get(address);
 	}
@@ -407,7 +431,7 @@ public class XBeeNetwork {
 		if (address.equals(XBee16BitAddress.UNKNOWN_ADDRESS))
 			throw new NullPointerException("16-bit address cannot be unknown.");
 		
-		logger.debug("{}Getting device '{}' from network.", toString(), address);
+		logger.debug("{}Getting device '{}' from network.", localDevice.toString(), address);
 		
 		// The preference order is: 
 		//    1.- Look in the 64-bit map 
@@ -458,7 +482,7 @@ public class XBeeNetwork {
 		if (remoteDevice == null)
 			throw new NullPointerException("Remote device cannot be null.");
 		
-		logger.debug("{}Adding device '{}' to network.", toString(), remoteDevice.toString());
+		logger.debug("{}Adding device '{}' to network.", localDevice.toString(), remoteDevice.toString());
 		
 		RemoteXBeeDevice devInNetwork = null;
 		XBee64BitAddress addr64 = remoteDevice.get64BitAddress();
@@ -470,7 +494,7 @@ public class XBeeNetwork {
 			devInNetwork = remotesBy64BitAddr.get(addr64);
 			if (devInNetwork != null) {
 				// The device exists in the 64-bit map, so update the reference and return it.
-				logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+				logger.debug("{}Existing device '{}' in network.", localDevice.toString(), devInNetwork.toString());
 				devInNetwork.updateDeviceDataFrom(remoteDevice);
 				return devInNetwork;
 			} else {
@@ -480,7 +504,7 @@ public class XBeeNetwork {
 					devInNetwork = remotesBy16BitAddr.get(addr16);
 					if (devInNetwork != null) {
 						// The device exists in the 16-bit map, so remove it and add it to the 64-bit map.
-						logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+						logger.debug("{}Existing device '{}' in network.", localDevice.toString(), devInNetwork.toString());
 						devInNetwork = remotesBy16BitAddr.remove(addr16);
 						devInNetwork.updateDeviceDataFrom(remoteDevice);
 						remotesBy64BitAddr.put(addr64, devInNetwork);
@@ -512,7 +536,7 @@ public class XBeeNetwork {
 			// Check if the device exists in the 64-bit map.
 			if (devInNetwork != null) {
 				// The device exists in the 64-bit map, so update the reference and return it.
-				logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+				logger.debug("{}Existing device '{}' in network.", localDevice.toString(), devInNetwork.toString());
 				devInNetwork.updateDeviceDataFrom(remoteDevice);
 				return devInNetwork;
 			} else {
@@ -520,7 +544,7 @@ public class XBeeNetwork {
 				devInNetwork = remotesBy16BitAddr.get(addr16);
 				if (devInNetwork != null) {
 					// The device exists in the 16-bit map, so update the reference and return it.
-					logger.debug("{}Existing device '{}' in network.", toString(), devInNetwork.toString());
+					logger.debug("{}Existing device '{}' in network.", localDevice.toString(), devInNetwork.toString());
 					devInNetwork.updateDeviceDataFrom(remoteDevice);
 					return devInNetwork;
 				} else {
@@ -532,7 +556,8 @@ public class XBeeNetwork {
 		}
 		
 		// If the device does not contain a valid address, return null.
-		logger.error("{}Remote device '{}' cannot be added: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
+		logger.error("{}Remote device '{}' cannot be added: 64-bit and 16-bit addresses must be specified.", 
+				localDevice.toString(), remoteDevice.toString());
 		return null;
 	}
 	
@@ -565,7 +590,7 @@ public class XBeeNetwork {
 		if (list.size() == 0)
 			return addedList;
 		
-		logger.debug("{}Adding '{}' devices to network.", toString(), list.size());
+		logger.debug("{}Adding '{}' devices to network.", localDevice.toString(), list.size());
 		
 		for (int i = 0; i < list.size(); i++) {
 			RemoteXBeeDevice d = addRemoteDevice(list.get(i));
@@ -577,10 +602,12 @@ public class XBeeNetwork {
 	}
 	
 	/**
-	 * Removes the given remote XBee device from the network. This method will check 
-	 * for a device that matches the 64-bit address of the provided one, if found, that 
-	 * device will be removed from the corresponding list. In case the 64-bit address is 
-	 * null, it will look for the device in the list of 16-bit addresses.
+	 * Removes the given remote XBee device from the network.
+	 * 
+	 * <p>This method will check for a device that matches the 64-bit address 
+	 * of the provided one, if found, that device will be removed from the 
+	 * corresponding list. In case the 64-bit address is null, it will look for 
+	 * the device in the list of 16-bit addresses.</p>
 	 * 
 	 * @param remoteDevice The remote device to be removed from the network.
 	 * 
@@ -636,15 +663,17 @@ public class XBeeNetwork {
 		// If the device does not contain a valid address log an error.
 		if ((addr64 == null || addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) 
 				&& (addr16 == null || addr16.equals(XBee16BitAddress.UNKNOWN_ADDRESS)))
-			logger.error("{}Remote device '{}' cannot be removed: 64-bit and 16-bit addresses must be specified.", toString(), remoteDevice.toString());
+			logger.error("{}Remote device '{}' cannot be removed: 64-bit and 16-bit addresses must be specified.", 
+					localDevice.toString(), remoteDevice.toString());
 	}
 	
 	/**
-	 * Removes all the devices from this network. The network will be empty 
-	 * after this call returns.
+	 * Removes all the devices from this network. 
+	 * 
+	 * <p>The network will be empty after this call returns.</p>
 	 */
 	public void clear() {
-		logger.debug("{}Clearing network.", toString());
+		logger.debug("{}Clearing network.", localDevice.toString());
 		remotesBy64BitAddr.clear();
 		remotesBy64BitAddr.clear();
 	}
@@ -694,6 +723,7 @@ public class XBeeNetwork {
 	 */
 	@Override
 	public String toString(){
-		return localDevice.toString();
+		return getClass().getName() + " [" + localDevice.toString() + "] @" + 
+				Integer.toHexString(hashCode());
 	}
 }

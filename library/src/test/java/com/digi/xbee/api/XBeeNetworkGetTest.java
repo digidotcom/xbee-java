@@ -15,7 +15,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -326,12 +328,19 @@ public class XBeeNetworkGetTest {
 		network.addRemoteDevice(remoteDevice2);
 		network.addRemoteDevice(remoteDevice3);
 		
+		Set<RemoteXBeeDevice> addedRemotes = new HashSet<RemoteXBeeDevice>();
+		addedRemotes.add(remoteDevice1);
+		addedRemotes.add(remoteDevice2);
+		addedRemotes.add(remoteDevice3);
+		
 		// Call the method under test.
 		List<RemoteXBeeDevice> remotes = network.getDevices();
 		
 		assertEquals(remotes.size(), 3);
-		assertEquals(remotes.get(0), remoteDevice3);
-		assertEquals(remotes.get(1), remoteDevice1);
-		assertEquals(remotes.get(2), remoteDevice2);
+		
+		Set<RemoteXBeeDevice> obtainedRemotes = new HashSet<RemoteXBeeDevice>();
+		obtainedRemotes.addAll(remotes);
+		
+		assertEquals(obtainedRemotes, addedRemotes);
 	}
 }

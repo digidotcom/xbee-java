@@ -3,6 +3,7 @@ package com.digi.xbee.api;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -69,7 +70,7 @@ public class IDiscoveryListenerTest {
 				discoverListener.deviceDiscovered(remote);
 				return null;
 			}
-		}).when(nodeDiscovery, NOTIFY_DEVICE_DISCOVERED, Mockito.any(ArrayList.class), (RemoteXBeeDevice) Mockito.any());
+		}).when(nodeDiscovery, NOTIFY_DEVICE_DISCOVERED, Mockito.any(List.class), (RemoteXBeeDevice) Mockito.any());
 		
 		// Stub the 'notifyDiscoveryError' method of the nodeDiscovery instance.
 		PowerMockito.doAnswer(new Answer<Object>() {
@@ -80,7 +81,7 @@ public class IDiscoveryListenerTest {
 				discoverListener.discoveryError(error);
 				return null;
 			}
-		}).when(nodeDiscovery, NOTIFY_DISCOVERY_ERROR, Mockito.any(ArrayList.class), Mockito.anyString());
+		}).when(nodeDiscovery, NOTIFY_DISCOVERY_ERROR, Mockito.any(List.class), Mockito.anyString());
 		
 		// Stub the 'notifyDiscoveryFinished' method of the nodeDiscovery instance.
 		PowerMockito.doAnswer(new Answer<Object>() {
@@ -91,7 +92,7 @@ public class IDiscoveryListenerTest {
 				discoverListener.discoveryFinished(error);
 				return null;
 			}
-		}).when(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, Mockito.any(ArrayList.class), Mockito.anyString());
+		}).when(nodeDiscovery, NOTIFY_DISCOVERY_FINISHED, Mockito.any(List.class), Mockito.anyString());
 	}
 
 	/**

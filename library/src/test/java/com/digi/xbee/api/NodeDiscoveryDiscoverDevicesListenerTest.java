@@ -225,7 +225,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
-			Thread.sleep(100);
+			Thread.sleep(50);
 		}
 		long end = System.currentTimeMillis();
 		
@@ -269,7 +269,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
-			Thread.sleep(100);
+			Thread.sleep(50);
 		}
 		long end = System.currentTimeMillis();
 		
@@ -304,7 +304,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
-			Thread.sleep(100);
+			Thread.sleep(50);
 		}
 		long end = System.currentTimeMillis();
 		
@@ -355,7 +355,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
-			Thread.sleep(100);
+			Thread.sleep(50);
 		}
 		long end = System.currentTimeMillis();
 		
@@ -430,7 +430,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
-			Thread.sleep(100);
+			Thread.sleep(50);
 		}
 		long end = System.currentTimeMillis();
 		

@@ -11,6 +11,9 @@
  */
 package com.digi.xbee.api;
 
+import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -108,5 +111,23 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	@Override
 	public XBeeProtocol getXBeeProtocol() {
 		return XBeeProtocol.ZIGBEE;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#getAssociationIndicationStatus()
+	 */
+	@Override
+	public AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+		return super.getAssociationIndicationStatus();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#forceDisassociate()
+	 */
+	@Override
+	public void forceDisassociate() throws TimeoutException, XBeeException {
+		super.forceDisassociate();
 	}
 }

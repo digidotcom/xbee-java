@@ -40,8 +40,10 @@ import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.HardwareVersion;
 import com.digi.xbee.api.models.HardwareVersionEnum;
+import com.digi.xbee.api.models.PowerLevel;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -85,8 +87,8 @@ public abstract class AbstractXBeeDevice {
 	
 	protected OperatingMode operatingMode = OperatingMode.UNKNOWN;
 	
-	protected XBee16BitAddress xbee16BitAddress;
-	protected XBee64BitAddress xbee64BitAddress;
+	protected XBee16BitAddress xbee16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
+	protected XBee64BitAddress xbee64BitAddress = XBee64BitAddress.UNKNOWN_ADDRESS;
 	
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
@@ -266,95 +268,58 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Reads some parameters from the device and obtains its protocol.
 	 * 
-	 * @throws InvalidOperatingModeException if the operating mode of the device is not supported.
-	 * @throws TimeoutException if there is a timeout reading the parameters.
-	 * @throws OperationNotSupportedException if any of the operations performed in the method is not supported.
-	 * @throws ATCommandException if there is any problem sending the AT commands.
-	 * @throws XBeeException if there is any other XBee related exception.
 	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout reading the parameters.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #xbee64BitAddress
-	 * @see #nodeID
-	 * @see #hardwareVersion
-	 * @see #firmwareVersion
-	 * @see #xbeeProtocol
-	 * @see HardwareVersion
-	 * @see HardwareVersionEnum
-	 * @see XBeeProtocol
+	 * @see #get64BitAddress()
+	 * @see #get16BitAddress()
+	 * @see #getNodeID()
+	 * @see #setNodeID(String)
+	 * @see #getHardwareVersion()
+	 * @see #getFirmwareVersion()
+	 * @see #getXBeeProtocol()
 	 */
-	public void readDeviceInfo() 
-			throws InvalidOperatingModeException, TimeoutException, OperationNotSupportedException, 
-			ATCommandException, XBeeException {
-		ATCommandResponse response = null;
+	public void readDeviceInfo() throws TimeoutException, XBeeException {
+		byte[] response = null;
 		// Get the 64-bit address.
 		if (xbee64BitAddress == null || xbee64BitAddress == XBee64BitAddress.UNKNOWN_ADDRESS) {
 			String addressHigh;
 			String addressLow;
-			try {
-				response = sendATCommand(new ATCommand("SH"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the SH value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the SH value.", response.getResponseStatus());
-			addressHigh = HexUtils.byteArrayToHexString(response.getResponse());
-			try {
-				response = sendATCommand(new ATCommand("SL"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the SL value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the SL value.", response.getResponseStatus());
-			addressLow = HexUtils.byteArrayToHexString(response.getResponse());
+			
+			response = getParameter("SH");
+			addressHigh = HexUtils.byteArrayToHexString(response);
+			
+			response = getParameter("SL");
+			addressLow = HexUtils.byteArrayToHexString(response);
+			
 			while(addressLow.length() < 8)
 				addressLow = "0" + addressLow;
+			
 			xbee64BitAddress = new XBee64BitAddress(addressHigh + addressLow);
 		}
 		// Get the Node ID.
-		if (nodeID == null) {
-			try {
-				response = sendATCommand(new ATCommand("NI"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the NI value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
-			nodeID = new String(response.getResponse());
-		}
+		response = getParameter("NI");
+		nodeID = new String(response);
+		
 		// Get the hardware version.
 		if (hardwareVersion == null) {
-			try {
-				response = sendATCommand(new ATCommand("HV"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the HV value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the HV value.", response.getResponseStatus());
-			hardwareVersion = HardwareVersion.get(response.getResponse()[0]);
+			response = getParameter("HV");
+			hardwareVersion = HardwareVersion.get(response[0]);
 		}
 		// Get the firmware version.
-		if (firmwareVersion == null) {
-			try {
-				response = sendATCommand(new ATCommand("VR"));
-			} catch (IOException e) {
-				throw new XBeeException("Error writing in the communication interface.", e);
-			}
-			if (response == null || response.getResponse() == null)
-				throw new OperationNotSupportedException("Couldn't get the VR value.");
-			if (response.getResponseStatus() != ATCommandStatus.OK)
-				throw new ATCommandException("Couldn't get the VR value.", response.getResponseStatus());
-			firmwareVersion = HexUtils.byteArrayToHexString(response.getResponse());
-		}
+		response = getParameter("VR");
+		firmwareVersion = HexUtils.byteArrayToHexString(response);
+		
 		// Obtain the device protocol.
 		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
+		
+		// Get the 16-bit address. This must be done after obtaining the protocol because 
+		// DigiMesh protocol does not have 16-bit addresses.
+		if (getXBeeProtocol() != XBeeProtocol.DIGI_MESH) {
+			response = getParameter("MY");
+			xbee16BitAddress = new XBee16BitAddress(response);
+		}
 	}
 	
 	/**
@@ -409,43 +374,8 @@ public abstract class AbstractXBeeDevice {
 	 * @return The node identifier of the device.
 	 * 
 	 * @see #setNodeID(String)
-	 * @see #getNodeID(boolean)
 	 */
 	public String getNodeID() {
-		return nodeID;
-	}
-	
-	/**
-	 * Retrieves the node identifier of the XBee device. This method allows for refreshing 
-	 * the value reading it again from the device or retrieving the cached value.
-	 * 
-	 * @param refresh Indicates whether or not the value of the node ID should be refreshed 
-	 *                (read again from the device)
-	 * @return The node identifier of the device.
-	 * 
-	 * @throws TimeoutException if there is a timeout reading the node ID value.
-	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * 
-	 * @see #setNodeID(String)
-	 * @see #getNodeID()
-	 */
-	public String getNodeID(boolean refresh) throws TimeoutException, XBeeException {
-		if (!refresh)
-			return nodeID;
-		ATCommandResponse response;
-		try {
-			response = sendATCommand(new ATCommand("NI"));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		if (response == null || response.getResponse() == null)
-			throw new OperationNotSupportedException("Couldn't get the NI value.");
-		if (response.getResponseStatus() != ATCommandStatus.OK)
-			throw new ATCommandException("Couldn't get the NI value.", response.getResponseStatus());
-		
-		nodeID = new String(response.getResponse());
 		return nodeID;
 	}
 	
@@ -454,34 +384,21 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param nodeID The new node id of the device.
 	 * 
-	 * @throws TimeoutException if there is a timeout setting the node ID value.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws IllegalArgumentException if {@code nodeID.length > 20}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code nodeID == null}.
-	 * @throws IllegalArgumentException if {@code nodeID.length > 20}.
+	 * @throws TimeoutException if there is a timeout setting the node ID value.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getNodeID()
-	 * @see #getNodeID(boolean)
 	 */
 	public void setNodeID(String nodeID) throws TimeoutException, XBeeException {
 		if (nodeID == null)
 			throw new NullPointerException("Node ID cannot be null.");
 		if (nodeID.length() > 20)
 			throw new IllegalArgumentException("Node ID length must be less than 21.");
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		
-		ATCommandResponse response;
-		try {
-			response = sendATCommand(new ATCommand("NI", nodeID));
-		} catch (IOException e) {
-			throw new XBeeException("Error writing in the communication interface.", e);
-		}
-		
-		if (response == null)
-			throw new OperationNotSupportedException("Couldn't set the NI value.");
-		if (response.getResponseStatus() != ATCommandStatus.OK)
-			throw new ATCommandException("Couldn't set the NI value.", response.getResponseStatus());
+		setParameter("NI", nodeID.getBytes());
 		
 		this.nodeID = nodeID;
 	}
@@ -1373,20 +1290,20 @@ public abstract class AbstractXBeeDevice {
 	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
 		if (xbee64BitAddress == null)
 			throw new NullPointerException("Address cannot be null.");
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		
+		// This method needs to apply changes after modifying the destination 
+		// address, but only if the destination address could be set successfully.
 		boolean applyChanges = isApplyConfigurationChangesEnabled();
-		if (isRemote() && applyChanges)
+		if (applyChanges)
 			enableApplyConfigurationChanges(false);
 		
 		byte[] address = xbee64BitAddress.getValue();
-		setParameter("DH", Arrays.copyOfRange(address, 0, 4));
-		setParameter("DL", Arrays.copyOfRange(address, 4, 8));
-		
-		if (isRemote()) {
+		try {
+			setParameter("DH", Arrays.copyOfRange(address, 0, 4));
+			setParameter("DL", Arrays.copyOfRange(address, 4, 8));
 			applyChanges();
+		} finally {
+			// Always restore the old value of the AC.
 			enableApplyConfigurationChanges(applyChanges);
 		}
 	}
@@ -1404,10 +1321,6 @@ public abstract class AbstractXBeeDevice {
 	 * @see XBee64BitAddress
 	 */
 	public XBee64BitAddress getDestinationAddress() throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
 		byte[] dh = getParameter("DH");
 		byte[] dl = getParameter("DL");
 		byte[] address = new byte[dh.length + dl.length];
@@ -1562,10 +1475,6 @@ public abstract class AbstractXBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
 	public void applyChanges() throws TimeoutException, XBeeException {
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
-		
 		executeParameter("AC");
 	}
 	
@@ -1835,5 +1744,144 @@ public abstract class AbstractXBeeDevice {
 	 */
 	public boolean isApplyConfigurationChangesEnabled() {
 		return applyConfigurationChanges;
+	}
+	
+	/**
+	 * Configures the 16-bit address (network address) of the XBee device with the provided one.
+	 * 
+	 * @param xbee16BitAddress The new 16-bit address.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code xbee16BitAddress == null}.
+	 * @throws TimeoutException if there is a timeout setting the address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see XBee16BitAddress
+	 * @see #get16BitAddress()
+	 */
+	protected void set16BitAddress(XBee16BitAddress xbee16BitAddress) throws TimeoutException, XBeeException {
+		if (xbee16BitAddress == null)
+			throw new NullPointerException("16-bit address canot be null.");
+		
+		setParameter("MY", xbee16BitAddress.getValue());
+		
+		this.xbee16BitAddress = xbee16BitAddress;
+	}
+	
+	/**
+	 * Retrieves the operating PAN ID of the XBee device.
+	 * 
+	 * @return The operating PAN ID of the XBee device.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout getting the PAN ID.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public byte[] getPANID() throws TimeoutException, XBeeException {
+		switch (getXBeeProtocol()) {
+		case ZIGBEE:
+			return getParameter("OP");
+		default:
+			return getParameter("ID");
+		}
+	}
+	
+	/**
+	 * Sets the PAN ID of the XBee device.
+	 * 
+	 * @param panID The new PAN ID of the XBee device.
+	 * 
+	 * @throws IllegalArgumentException if {@code panID.length == 0} or 
+	 *                                  if {@code panID.length > 8}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code panID == null}.
+	 * @throws TimeoutException if there is a timeout setting the PAN ID.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void setPANID(byte[] panID) throws TimeoutException, XBeeException {
+		if (panID == null)
+			throw new NullPointerException("PAN ID cannot be null.");
+		if (panID.length == 0)
+			throw new IllegalArgumentException("Length of the PAN ID cannot be 0.");
+		if (panID.length > 8)
+			throw new IllegalArgumentException("Length of the PAN ID cannot be longer than 8 bytes.");
+		
+		setParameter("ID", panID);
+	}
+	
+	/**
+	 * Retrieves the output power level of the XBee device.
+	 * 
+	 * @return The output power level of the XBee device.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout getting the power level.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see PowerLevel
+	 */
+	public PowerLevel getPowerLevel() throws TimeoutException, XBeeException {
+		byte[] powerLevelValue = getParameter("PL");
+		return PowerLevel.get(ByteUtils.byteArrayToInt(powerLevelValue));
+	}
+	
+	/**
+	 * Sets the output power level of the XBee device.
+	 * 
+	 * @param powerLevel The new output power level to be set in the XBee device.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code powerLevel == null}.
+	 * @throws TimeoutException if there is a timeout setting the power level.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see PowerLevel
+	 */
+	public void setPowerLevel(PowerLevel powerLevel) throws TimeoutException, XBeeException {
+		if (powerLevel == null)
+			throw new NullPointerException("Power level cannot be null.");
+		
+		setParameter("PL", ByteUtils.intToByteArray(powerLevel.getValue()));
+	}
+	
+	/**
+	 * Retrieves the current association indication status of the XBee device.
+	 * 
+	 * @return The association indication status of the XBee device.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout getting the association indication status.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see AssociationIndicationStatus
+	 */
+	protected AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
+		byte[] associationIndicationValue = getParameter("AI");
+		return AssociationIndicationStatus.get(ByteUtils.byteArrayToInt(associationIndicationValue));
+	}
+	
+	/**
+	 * Forces the XBee device to disassociate from the network and reattempt to associate.
+	 * 
+	 * <p>Only valid for End Devices.</p>
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout executing the disassociation command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	protected void forceDisassociate() throws TimeoutException, XBeeException {
+		executeParameter("DA");
+	}
+	
+	/**
+	 * Writes parameter values to non-volatile memory of the XBee device so that parameter 
+	 * modifications persist through subsequent resets.
+	 * 
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws TimeoutException if there is a timeout executing the write changes command.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 */
+	public void writeChanges() throws TimeoutException, XBeeException {
+		executeParameter("WR");
 	}
 }

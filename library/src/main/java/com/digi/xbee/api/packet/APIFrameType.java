@@ -34,6 +34,7 @@ public enum APIFrameType {
 	RX_IO_16 (0x83, "IO Data Sample RX 16-bit Address Indicator"),
 	AT_COMMAND_RESPONSE (0x88, "AT Command Response"),
 	TX_STATUS (0x89, "TX (Transmit) Status"),
+	MODEM_STATUS (0x8A, "Modem Status"),
 	TRANSMIT_STATUS (0x8B, "Transmit Status"),
 	RECEIVE_PACKET (0x90, "Receive Packet"),
 	IO_DATA_SAMPLE_RX_INDICATOR (0x92, "IO Data Sample RX Indicator"),

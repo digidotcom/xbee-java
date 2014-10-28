@@ -35,6 +35,7 @@ import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
+import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
@@ -571,6 +572,48 @@ public abstract class AbstractXBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeIOSampleReceiveListener(listener);
+	}
+	
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new Modem Status events are received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Listener to be notified when new Modem Status events are received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #removeModemStatusListener(IModemStatusReceiveListener)
+	 */
+	protected void addModemStatusListener(IModemStatusReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.addModemStatusReceiveListener(listener);
+	}
+	
+	/**
+	 * Removes the provided listener from the list of Modem Status listeners.
+	 * 
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #addModemStatusListener(IModemStatusReceiveListener)
+	 */
+	protected void removeModemStatusListener(IModemStatusReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.removeModemStatusReceiveListener(listener);
 	}
 	
 	/**

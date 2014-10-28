@@ -1796,7 +1796,7 @@ public abstract class AbstractXBeeDevice {
 	 *                                  if {@code panID.length > 8}.
 	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code panID == null}.
-	 * @throws TimeoutException if there is a timeout getting the PAN ID.
+	 * @throws TimeoutException if there is a timeout setting the PAN ID.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
 	public void setPANID(byte[] panID) throws TimeoutException, XBeeException {

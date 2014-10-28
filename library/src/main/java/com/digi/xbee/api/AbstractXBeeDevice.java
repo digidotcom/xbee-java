@@ -656,7 +656,7 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Adds the provided listener is to the list of listeners to be notified
+	 * Adds the provided listener to the list of listeners to be notified
 	 * when new Modem Status events are received.
 	 * 
 	 * <p>If the listener has been already included this method does nothing.

@@ -45,7 +45,7 @@ public class XBeeNetwork {
 	private Map<XBee64BitAddress, RemoteXBeeDevice> remotesBy64BitAddr;
 	private Map<XBee16BitAddress, RemoteXBeeDevice> remotesBy16BitAddr;
 	
-	private ArrayList<IDiscoveryListener> discoveryListeners = new ArrayList<IDiscoveryListener>();
+	private List<IDiscoveryListener> discoveryListeners = new ArrayList<IDiscoveryListener>();
 	
 	private NodeDiscovery nodeDiscovery;
 	

@@ -28,7 +28,7 @@ import com.digi.xbee.api.exceptions.PermissionDeniedException;
  * 
  * <p>As an important point, the class implementing this interface must call 
  * {@code this.notify()} whenever new data is available to read. Not doing this 
- * will make the {@code DataReader} class to wait forever for new data.<p>
+ * will make the {@code DataReader} class to wait forever for new data.</p>
  */
 public interface IConnectionInterface {
 
@@ -78,7 +78,7 @@ public interface IConnectionInterface {
 	 * 
 	 * @param data The data to be written in the connection interface.
 	 * 
-	 * @throws IOException if there is any problem writing in the output stream;
+	 * @throws IOException if there is any problem writing in the output stream.
 	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public void writeData(byte[] data) throws IOException;
@@ -90,7 +90,7 @@ public interface IConnectionInterface {
 	 * @param offset The start offset in the data.
 	 * @param length The number of bytes to write.
 	 * 
-	 * @throws IOException if there is any problem writing in the output stream;
+	 * @throws IOException if there is any problem writing in the output stream.
 	 * @throws IllegalArgumentException if {@code offset < 0} or
 	 *                                  if {@code length < 1} or
 	 *                                  if {@code offset >= data.length} or
@@ -104,9 +104,10 @@ public interface IConnectionInterface {
 	 * byte array. Returns the number of read bytes.
 	 * 
 	 * @param data The byte array to store the read data.
+	 * 
 	 * @return The number of bytes read.
 	 * 
-	 * @throws IOException if there is any problem reading from the input stream;
+	 * @throws IOException if there is any problem reading from the input stream.
 	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public int readData(byte[] data) throws IOException;
@@ -118,9 +119,10 @@ public interface IConnectionInterface {
 	 * @param data The byte array to store the read data.
 	 * @param offset The start offset in data array at which the data is written.
 	 * @param length Maximum number of bytes to read.
+	 * 
 	 * @return The number of bytes read.
 	 * 
-	 * @throws IOException if there is any problem reading from the input stream;
+	 * @throws IOException if there is any problem reading from the input stream.
 	 * @throws IllegalArgumentException if {@code offset < 0} or
 	 *                                  if {@code length < 1} or
 	 *                                  if {@code offset >= data.length} or

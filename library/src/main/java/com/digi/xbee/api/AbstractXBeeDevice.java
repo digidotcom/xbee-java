@@ -405,7 +405,8 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the firmware version (hexadecimal string value) of the XBee device.
+	 * Retrieves the firmware version (hexadecimal string value) of the XBee 
+	 * device.
 	 * 
 	 * @return The firmware version of the XBee device.
 	 */
@@ -581,7 +582,8 @@ public abstract class AbstractXBeeDevice {
 	 * <p>If the listener has been already included this method does nothing.
 	 * </p>
 	 * 
-	 * @param listener Listener to be notified when new Modem Status events are received.
+	 * @param listener Listener to be notified when new Modem Status events are 
+	 *                 received.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
@@ -785,7 +787,7 @@ public abstract class AbstractXBeeDevice {
 	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
-	 * <p>Use {@link #sendXBeePacketAsync(XBeePacket, boolean)} for non-blocking 
+	 * <p>Use {@link #sendXBeePacketAsync(XBeePacket)} for non-blocking 
 	 * operations.</p>
 	 * 
 	 * @param packet XBee packet to be sent.
@@ -1599,11 +1601,11 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Custom listener for 802.15.4 IO packets. It will try to receive an 802.15.4 IO 
-	 * sample packet.
+	 * Custom listener for 802.15.4 IO packets. It will try to receive an 
+	 * 802.15.4 IO sample packet.
 	 * 
-	 * <p>When an IO sample packet is received, it saves its payload and notifies 
-	 * the object that was waiting for the reception.</p>
+	 * <p>When an IO sample packet is received, it saves its payload and 
+	 * notifies the object that was waiting for the reception.</p>
 	 */
 	private IPacketReceiveListener IOPacketReceiveListener = new IPacketReceiveListener() {
 		/*
@@ -1679,6 +1681,7 @@ public abstract class AbstractXBeeDevice {
 	 * Gets the value of the given parameter from the XBee device.
 	 * 
 	 * @param parameter The AT command corresponding to the parameter to be get.
+	 * 
 	 * @return A byte array containing the value of the parameter.
 	 * 
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
@@ -1699,11 +1702,13 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Executes the given parameter in the XBee device. This method is intended to be used for 
-	 * those parameters that cannot be read or written, they just execute some action in the 
-	 * XBee module.
+	 * Executes the given parameter in the XBee device.
 	 * 
-	 * @param parameter The AT command corresponding to the parameter to be executed.
+	 * <p>This method is intended to be used for those parameters that cannot 
+	 * be read or written, they just execute some action in the XBee module.</p>
+	 * 
+	 * @param parameter The AT command corresponding to the parameter to be 
+	 *                  executed.
 	 * 
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
@@ -1718,11 +1723,15 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sends the given AT parameter to the XBee device with an optional argument or value 
-	 * and returns the response (likely the value) of that parameter in a byte array format.
+	 * Sends the given AT parameter to the XBee device with an optional argument 
+	 * or value and returns the response (likely the value) of that parameter 
+	 * in a byte array format.
 	 * 
-	 * @param parameter The AT command corresponding to the parameter to be executed.
+	 * @param parameter The AT command corresponding to the parameter to be 
+	 *                  executed.
 	 * @param parameterValue The value of the parameter to set (if any).
+	 * 
+	 * @return A byte array containing the value of the parameter.
 	 * 
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
@@ -1768,9 +1777,15 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Enables or disables the apply configuration changes option.
 	 * 
-	 * <p>Enabling this option means that when any parameter of the XBee device is set, it will 
-	 * be also applied. If this option is disabled you will need to issue the {@code #applyChanges()} 
-	 * method in order to apply the changes in all the parameters that were previously set.</p>
+	 * <p>Enabling this option means that when any parameter of the XBee device 
+	 * is set, it will be also applied.</p>
+	 * 
+	 * <p>If this option is disabled you will need to issue the 
+	 * {@code #applyChanges()} method in order to apply the changes in all the 
+	 * parameters that were previously set.</p>
+	 * 
+	 * @param enabled {@code true} to apply configuration changes when an XBee 
+	 *                parameter is set, {@code false} otherwise.
 	 * 
 	 * @see #isApplyConfigurationChangesEnabled()
 	 */
@@ -1893,7 +1908,8 @@ public abstract class AbstractXBeeDevice {
 	 * @return The association indication status of the XBee device.
 	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout getting the association indication status.
+	 * @throws TimeoutException if there is a timeout getting the association 
+	 *                          indication status.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see AssociationIndicationStatus
@@ -1904,12 +1920,14 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Forces the XBee device to disassociate from the network and reattempt to associate.
+	 * Forces the XBee device to disassociate from the network and re-attempt 
+	 * to associate.
 	 * 
 	 * <p>Only valid for End Devices.</p>
 	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout executing the disassociation command.
+	 * @throws TimeoutException if there is a timeout executing the 
+	 *         disassociation command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
 	protected void forceDisassociate() throws TimeoutException, XBeeException {
@@ -1917,11 +1935,12 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Writes parameter values to non-volatile memory of the XBee device so that parameter 
-	 * modifications persist through subsequent resets.
+	 * Writes parameter values to non-volatile memory of the XBee device so that
+	 * parameter modifications persist through subsequent resets.
 	 * 
 	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws TimeoutException if there is a timeout executing the write changes command.
+	 * @throws TimeoutException if there is a timeout executing the write 
+	 *                          changes command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 */
 	public void writeChanges() throws TimeoutException, XBeeException {

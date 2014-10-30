@@ -279,8 +279,9 @@ public class XBeeNetworkGetTest {
 		List<RemoteXBeeDevice> remotes = network.getDevices(NODE_ID);
 		
 		assertEquals(remotes.size(), 2);
-		assertEquals(remotes.get(0), remoteDevice1);
-		assertEquals(remotes.get(1), remoteDevice2);
+		assertThat(remotes.contains(remoteDevice1), is(equalTo(true)));
+		assertThat(remotes.contains(remoteDevice2), is(equalTo(true)));
+		assertThat(remotes.contains(remoteDevice3), is(equalTo(false)));
 	}
 	
 	/**

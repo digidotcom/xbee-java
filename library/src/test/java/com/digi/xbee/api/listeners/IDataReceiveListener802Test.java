@@ -72,7 +72,7 @@ public class IDataReceiveListener802Test {
 	private DataReader dataReader;
 	
 	@BeforeClass
-	public static void setupOnce() {
+	public static void setupOnce() throws Exception {
 		// Mock Rx16 Packet.
 		rx16Packet = Mockito.mock(RX16Packet.class);
 		Mockito.when(rx16Packet.getFrameType()).thenReturn(APIFrameType.RX_16);

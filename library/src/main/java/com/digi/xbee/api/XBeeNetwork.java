@@ -22,12 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDiscoveryListener;
 import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.utils.ByteUtils;
 
 /**
@@ -424,8 +426,11 @@ public class XBeeNetwork {
 	 * 
 	 * @throws IllegalArgumentException If {@code address.equals(XBee16BitAddress.UNKNOWN_ADDRESS)}.
 	 * @throws NullPointerException If {@code address == null}.
+	 * @throws OperationNotSupportedException If the protocol of the local XBee device is DigiMesh.
 	 */
-	public RemoteXBeeDevice getDevice(XBee16BitAddress address) {
+	public RemoteXBeeDevice getDevice(XBee16BitAddress address) throws OperationNotSupportedException {
+		if (localDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH)
+			throw new OperationNotSupportedException("DigiMesh protocol does not support 16-bit addressing.");
 		if (address == null)
 			throw new NullPointerException("16-bit address cannot be null.");
 		if (address.equals(XBee16BitAddress.UNKNOWN_ADDRESS))

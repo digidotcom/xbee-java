@@ -189,7 +189,7 @@ public class XBeeNetworkConfigurationTest {
 	 * <p>Add a only 16-bit device to an empty network.</p>
 	 */
 	@Test
-	public final void testAddRemoteDevice16BitDeviceNotInNetwork() {
+	public final void testAddRemoteDevice16BitDeviceNotInNetwork() throws Exception {
 		// Setup the resources for the test.
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		XBee16BitAddress addr16 = new XBee16BitAddress("1256");
@@ -224,7 +224,7 @@ public class XBeeNetworkConfigurationTest {
 	 * <p>Add a only 16-bit device to a network that already contains it.</p>
 	 */
 	@Test
-	public final void testAddRemoteDevice16BitDeviceAlreadyInNetwork() {
+	public final void testAddRemoteDevice16BitDeviceAlreadyInNetwork() throws Exception {
 		// Setup the resources for the test.
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		XBee16BitAddress addr16 = new XBee16BitAddress("1256");
@@ -270,7 +270,7 @@ public class XBeeNetworkConfigurationTest {
 	 * <p>Add a only 16-bit device to a network that already contains it.</p> 
 	 */
 	@Test
-	public final void testAddRemoteDevice16BitDeviceAlreadyInNetworkWithValid64BitAddr() {
+	public final void testAddRemoteDevice16BitDeviceAlreadyInNetworkWithValid64BitAddr() throws Exception {
 		// Setup the resources for the test.
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		XBee16BitAddress addr16 = new XBee16BitAddress("1256");

@@ -49,7 +49,7 @@ public class MainApp {
 		try {
 			myDevice.open();
 			
-			System.out.format("Sending broadcast data: '%s'", new String(dataToSend));
+			System.out.format("Sending broadcast data: '%s'...%n", new String(dataToSend));
 			
 			myDevice.sendBroadcastData(dataToSend);
 			

@@ -100,6 +100,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		PowerMockito.when(cInterfaceMock.toString()).thenReturn("Mocked IConnectionInterface for NodeDiscovery test.");
 		PowerMockito.when(deviceMock.getNetwork()).thenReturn(networkMock);
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(DEVICE_TIMEOUT);
+		PowerMockito.doThrow(new XBeeException()).when(deviceMock).getParameter("N?");
 		
 		PowerMockito.when(networkMock.addRemoteDevice(Mockito.any(RemoteXBeeDevice.class))).thenAnswer(
 			new Answer<RemoteXBeeDevice>() {

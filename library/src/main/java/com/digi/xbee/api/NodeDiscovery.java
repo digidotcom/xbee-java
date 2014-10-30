@@ -50,7 +50,7 @@ class NodeDiscovery {
 	// Constants.
 	private static final String ND_COMMAND = "ND";
 	
-	private static final long DEFAULT_TIMEOUT = 20000; // 20 seconds.
+	public static final long DEFAULT_TIMEOUT = 20000; // 20 seconds.
 	
 	// Variables.
 	private static int globalFrameID = 1;
@@ -312,7 +312,12 @@ class NodeDiscovery {
 		xbeeDevice.addPacketListener(packetReceiveListener);
 		
 		try {
-			long deadLine = calculateDeadline(listeners);
+			long deadLine = System.currentTimeMillis();
+			
+			// In 802.15.4 devices, the discovery finishes when the 'end' command 
+			// is received, so it's not necessary to calculate the timeout.
+			if (xbeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4)
+				deadLine += calculateTimeout(listeners);
 			
 			sendNodeDiscoverCommand(id);
 			
@@ -346,9 +351,9 @@ class NodeDiscovery {
 	 * 
 	 * @param listeners Discovery listeners to be notified about process events.
 	 * 
-	 * @return Maximum network discovery time.
+	 * @return Maximum network discovery timeout.
 	 */
-	private long calculateDeadline(List<IDiscoveryListener> listeners) {
+	private long calculateTimeout(List<IDiscoveryListener> listeners) {
 		long timeout = -1;
 		
 		// Read the maximum discovery timeout (N?).
@@ -391,7 +396,7 @@ class NodeDiscovery {
 			}
 		}
 		
-		return System.currentTimeMillis() + timeout;
+		return timeout;
 	}
 	
 	/**

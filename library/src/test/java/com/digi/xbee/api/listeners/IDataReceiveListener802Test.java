@@ -72,7 +72,7 @@ public class IDataReceiveListener802Test {
 	private DataReader dataReader;
 	
 	@BeforeClass
-	public static void setupOnce() {
+	public static void setupOnce() throws Exception {
 		// Mock Rx16 Packet.
 		rx16Packet = Mockito.mock(RX16Packet.class);
 		Mockito.when(rx16Packet.getFrameType()).thenReturn(APIFrameType.RX_16);
@@ -100,8 +100,8 @@ public class IDataReceiveListener802Test {
 		
 		// Mock the XBee network.
 		XBeeNetwork network = Mockito.mock(XBeeNetwork.class);
-		Mockito.when(network.getDeviceBy64BitAddress(Mockito.any(XBee64BitAddress.class))).thenReturn(remote802XBee64Device);
-		Mockito.when(network.getDeviceBy16BitAddress(Mockito.any(XBee16BitAddress.class))).thenReturn(remote802XBee16Device);
+		Mockito.when(network.getDevice(Mockito.any(XBee64BitAddress.class))).thenReturn(remote802XBee64Device);
+		Mockito.when(network.getDevice(Mockito.any(XBee16BitAddress.class))).thenReturn(remote802XBee16Device);
 		
 		// Mock the XBee device.
 		xbeeDevice = Mockito.mock(XBeeDevice.class);

@@ -35,8 +35,7 @@
 		<module>examples/io/LocalDIOSample</module>
 		<module>examples/io/RemoteADCSample</module>
 		<module>examples/io/RemoteDIOSample</module>
-		<module>examples/network/DiscoverDevicesAsyncSample</module>
-		<module>examples/network/DiscoverDevicesBlockingSample</module>
+		<module>examples/network/DiscoverDevicesSample</module>
 	</modules>
 	
 	<!-- Properties -->

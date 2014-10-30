@@ -14,19 +14,14 @@ package com.digi.xbee.api;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -38,16 +33,13 @@ import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.NodeDiscovery;
 import com.digi.xbee.api.RemoteXBeeDevice;
-import com.digi.xbee.api.RemoteZigBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.listeners.IDiscoveryListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.models.ATCommandStatus;
-import com.digi.xbee.api.models.DiscoveryOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -59,15 +51,7 @@ import com.digi.xbee.api.utils.ByteUtils;
 @RunWith(PowerMockRunner.class)
 public class NodeDiscoveryDiscoverDevicesBlockTest {
 	
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
-	
 	// Constants.
-	public static final String CONFIGURE_DISCOVERY_TIMEOUT_METHOD = "configureDiscoveryTimeout";
-	public static final String CONFIGURE_DISCOVERY_OPTIONS_METHOD = "configureDiscoveryOptions";
-	public static final String GET_PARAMETER_METHOD = "getParameter";
-	public static final String SET_DISCOVERY_TIMEOUT_METHOD = "setDiscoveryTimeout";
-	public static final String SET_DISCOVERY_OPTIONS_METHOD = "setDiscoveryOptions";
 	public static final String SEND_NODE_DISCOVERY_COMMAND_METHOD = "sendNodeDiscoverCommand";
 	public static final String DISCOVER_DEVICES_API_METHOD = "discoverDevicesAPI";
 	public static final String PARSE_DISCOVERY_API_DATA_METHOD = "parseDiscoveryAPIData";
@@ -99,6 +83,7 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		PowerMockito.when(deviceMock.getConnectionInterface()).thenReturn(cInterfaceMock);
 		PowerMockito.when(cInterfaceMock.toString()).thenReturn("Mocked IConnectionInterface for NodeDiscovery test.");
 		PowerMockito.when(deviceMock.getNetwork()).thenReturn(networkMock);
+		PowerMockito.doThrow(new XBeeException()).when(deviceMock).getParameter("N?");
 		
 		PowerMockito.when(networkMock.addRemoteDevice(Mockito.any(RemoteXBeeDevice.class))).thenAnswer(
 			new Answer<RemoteXBeeDevice>() {
@@ -163,372 +148,214 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		nd = PowerMockito.spy(new NodeDiscovery(deviceMock));
 		Whitebox.setInternalState(nd, "frameID", 1);
 	}
-
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * {@code NodeDiscovery.WAIT_FOREVER} is passed as timeout.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDevicesWaitForever() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The discovery process cannot block forever.")));
-		
-		// Call the method under test.
-		nd.discoverDevices(null, NodeDiscovery.WAIT_FOREVER);
-	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * pass a negative value for the timeout.</p>
-	 * 
-	 * @throws XBeeException 
-	 */
-	@Test
-	public final void testDiscoverDevicesNegativeTimeout() throws XBeeException {
-		// Setup the resources for the test.
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The timeout must be bigger than 0.")));
-		
-		// Call the method under test.
-		nd.discoverDevices(null, -3);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevice(String)}.
 	 * 
 	 * <p>An {@code InterfaceNotOpenException} exception must be thrown when 
 	 * the local device connection is not open.</p>
 	 * 
 	 * @throws XBeeException 
 	 */
-	@Test
-	public final void testDiscoverDevicesDeviceNotOpened() throws XBeeException {
+	@Test(expected=InterfaceNotOpenException.class)
+	public void testDiscoverDeviceDeviceNotOpen() throws XBeeException {
 		// Setup the resources for the test.
 		PowerMockito.when(deviceMock.isOpen()).thenReturn(false);
 		
-		exception.expect(InterfaceNotOpenException.class);
-		exception.expectMessage(is(equalTo("The connection interface is not open.")));
-		
 		// Call the method under test.
-		nd.discoverDevices(null, NodeDiscovery.USE_DEVICE_TIMEOUT);
+		nd.discoverDevice("id");
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>Test without options and custom timeout.</p>
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevice(String)}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testDiscoverDevicesNoOptionsNoCustomTimeout() throws Exception {
+	public void testDiscoverDeviceNoDevice() throws Exception {
 		// Setup the resources for the test.
-		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
+		String id = "id";
 		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		
-		// Call the method under test.
-		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
-		long end = System.currentTimeMillis();
-		
-		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
-		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, Mockito.eq(deviceMock), Mockito.isNull(byte[].class), 
-				Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, Mockito.eq(deviceMock), Mockito.isNull(byte[].class), 
-				Mockito.isNull(IDiscoveryListener.class));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
-		
-		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>Test the configuration and restoration of the timeout.</p>
-	 * 
-	 * @throws Exception 
-	 */
-	@Test
-	public final void testDiscoverDevicesNoOptionsCustomTimeout() throws Exception {
-		// Setup the resources for the test.
-		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = 500; // 0.5 seconds
-		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		
-		// Call the method under test.
-		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
-		long end = System.currentTimeMillis();
-		
-		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + timeout + " ms", end - start < timeout + 150 /* buffer */, is(equalTo(true)));
-		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutModifiedByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, timeout);
-		
-		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>Test the configuration and restoration of the configuration options.</p>
-	 * 
-	 * @throws Exception 
-	 */
-	@Test
-	public final void testDiscoverDevicesAllOptions() throws Exception {
-		// Setup the resources for the test.
-		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.APPEND_RSSI, DiscoveryOptions.DISCOVER_MYSELF);
-		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		byte[] deviceOptionsByteArray = new byte[]{0x00};
-		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		PowerMockito.when(deviceMock.getParameter("NO")).thenReturn(deviceOptionsByteArray);
-				
-		// Call the method under test.
-		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
-		long end = System.currentTimeMillis();
-		
-		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
-		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock,"NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsModifiedByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
-		
-		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>Test the configuration and restoration of the configuration options and the timeout.</p>
-	 * 
-	 * @throws Exception 
-	 */
-	@Test
-	public final void testDiscoverDevicesAllOptionsAndCustomTimeout() throws Exception {
-		// Setup the resources for the test.
-		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = 500; // 0.5 seconds
-		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.APPEND_RSSI, DiscoveryOptions.DISCOVER_MYSELF);
-		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		byte[] deviceTimeoutModifiedByteArray = ByteUtils.intToByteArray((int)timeout / 100);
-		byte[] deviceOptionsByteArray = new byte[]{0x00};
-		byte[] deviceOptionsModifiedByteArray = ByteUtils.intToByteArray(DiscoveryOptions.calculateDiscoveryValue(protocol, options));
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		PowerMockito.when(deviceMock.getParameter("NO")).thenReturn(deviceOptionsByteArray);
-
-		// Call the method under test.
-		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
-		long end = System.currentTimeMillis();
-
-		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + timeout + " ms", end - start < timeout + 150 /* buffer */, is(equalTo(true)));
-		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network options", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutModifiedByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, deviceTimeoutByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsModifiedByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, deviceOptionsByteArray, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
-		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
-		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
-		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, timeout);
-		
-		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>No discovery packets sends from the device when discovery is performed.</p>
-	 * 
-	 * @throws Exception 
-	 */
-	@Test
-	public final void testDiscoverDevicesNoDevices() throws Exception {
-		// Setup the resources for the test.
-		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOptions> options = null;
 		byte[] deviceTimeoutByteArray = new byte[]{0x01};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		PowerMockito.when(deviceMock.getParameter("NO")).thenReturn(new byte[]{0x00});
 		
 		// Call the method under test.
 		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
+		RemoteXBeeDevice remote = nd.discoverDevice(id);
 		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 150 /* buffer */, is(equalTo(true)));
-		assertThat("The discovered devices list should be empty", list.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The 'discoverDevice' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered device should be null", remote, is(equalTo(null)));
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
-		
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, id);
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
-	 * 
-	 * <p>One packet received from a ZigBee device.</p>
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevice(String)}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testDiscoverDevicesOneZigBeeDevice() throws Exception {
+	public void testDiscoverDevice() throws Exception {
 		// Setup the resources for the test.
-		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOptions> options = null;
-		byte[] deviceTimeoutByteArray = new byte[]{0x01};
+		String id = "id";
+		
+		byte[] deviceTimeoutByteArray = new byte[]{0x50};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
-				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"),
-				"Ni string", new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49);
+				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"), 
+				id, new XBee16BitAddress("FFFE"), (byte)0x00, (byte)0x49);
 		ndAnswers.add(packet);
 		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		PowerMockito.when(deviceMock.getParameter("NO")).thenReturn(new byte[]{0x00});
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Call the method under test.
 		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
+		RemoteXBeeDevice remote = nd.discoverDevice(id);
 		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 100, is(equalTo(true)));
-		assertThat("The discovered devices list must have one device", list.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The 'discoverDevice' should not be blocked for " + deviceTimeout + " ms", end - start < deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered device should not be null", remote, is(not(equalTo(null))));
+		assertThat("The Node ID of the discovered device should be '" + id + "'", remote.getNodeID(), is(equalTo(id)));
 		
-		RemoteXBeeDevice remoteDevice = list.get(0);
-		
-		assertThat("Discovered device must not be null", remoteDevice, is(not(nullValue())));
-		assertThat("Remote device protocol must be " + protocol.getDescription(), remoteDevice.getXBeeProtocol(), is(equalTo(protocol)));
-		assertThat(remoteDevice instanceof RemoteZigBeeDevice, is(equalTo(true)));
-		
-		assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo("Ni string")));
-		assertThat("Remote device 64-bit address is not right", remoteDevice.get64BitAddress(), 
-					is(equalTo(new XBee64BitAddress("0013A20040A6A0DB"))));
-		assertThat("Remote device 16-bit address is not right", ((RemoteZigBeeDevice)remoteDevice).get16BitAddress(), 
-				is(equalTo(new XBee16BitAddress("0000"))));
-		 
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, id);
 		
-		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(java.util.Set, long)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(List)}.
 	 * 
-	 * <p>Two packets received from a ZigBee device.</p>
+	 * <p>An {@code InterfaceNotOpenException} exception must be thrown when 
+	 * the local device connection is not open.</p>
+	 * 
+	 * @throws XBeeException 
+	 */
+	@Test(expected=InterfaceNotOpenException.class)
+	public void testDiscoverDevicesDeviceNotOpen() throws XBeeException {
+		// Setup the resources for the test.
+		PowerMockito.when(deviceMock.isOpen()).thenReturn(false);
+		
+		List<String> list = new ArrayList<String>();
+		list.add("id");
+		
+		// Call the method under test.
+		nd.discoverDevices(list);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(List)}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testDiscoverDevicesTwoZigBeeDevice() throws Exception {
+	public void testDiscoverDevicesNoDevices() throws Exception {
 		// Setup the resources for the test.
-		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
-		long timeout = NodeDiscovery.USE_DEVICE_TIMEOUT;
-		Set<DiscoveryOptions> options = null;
+		List<String> list = new ArrayList<String>();
+		list.add("id");
+		
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
+		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
+		
+		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
+		
+		// Call the method under test.
+		long start = System.currentTimeMillis();
+		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
+		long end = System.currentTimeMillis();
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered devices list should be empty", remotes.size(), is(equalTo(0)));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, null);
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(List)}.
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testDiscoverDevicesOneNodeId() throws Exception {
+		// Setup the resources for the test.
+		String id = "id";
+		List<String> list = new ArrayList<String>();
+		list.add(id);
+		
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
+		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
+		
+		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+		
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"), 
+				id, new XBee16BitAddress("FFFE"), (byte)0x00, (byte)0x49);
+		ndAnswers.add(packet);
+		
+		// Call the method under test.
+		long start = System.currentTimeMillis();
+		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
+		long end = System.currentTimeMillis();
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The Node ID of the discovered device should be '" + id + "'", remotes.get(0).getNodeID(), is(equalTo(id)));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, null);
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(list.size())).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(List)}.
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testDiscoverDevicesOneNodeIdTwoDevices() throws Exception {
+		// Setup the resources for the test.
+		String id = "id";
+		List<String> list = new ArrayList<String>();
+		list.add(id);
+		
 		byte[] deviceTimeoutByteArray = new byte[]{0x05};
 		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
+		
+		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		XBee64BitAddress[] macs = new XBee64BitAddress[]{new XBee64BitAddress("0013A20040A6A0DB"), 
 				new XBee64BitAddress("0013A20040AD1585")};
@@ -536,59 +363,127 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 				new XBee16BitAddress("7971")};
 		XBee16BitAddress[] parentAddr = new XBee16BitAddress[]{new XBee16BitAddress("FFFE"), 
 				new XBee16BitAddress("0000")};
-		String[] nIds = new String[]{"Ni string 1", "Ni string 2"};
 		
 		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
-				addr16[0], macs[0], nIds[0], parentAddr[0], (byte)0x00 /* coordinator */, (byte)0x49);
+				addr16[0], macs[0], id, parentAddr[0], (byte)0x00, (byte)0x49);
 		ndAnswers.add(packet);
 		packet = createPacket(1, ATCommandStatus.OK, 
-				addr16[1], macs[1], nIds[1], parentAddr[1], (byte)0x01 /* router */, (byte)0x67);
+				addr16[1], macs[1], id, parentAddr[1], (byte)0x01, (byte)0x67);
 		ndAnswers.add(packet);
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		
-		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
-		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
-		PowerMockito.when(deviceMock.getParameter("NO")).thenReturn(new byte[]{0x00});
 		
 		// Call the method under test.
 		long start = System.currentTimeMillis();
-		List<RemoteXBeeDevice> list = nd.discoverDevices(options, timeout);
+		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
 		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start < deviceTimeout + 100, is(equalTo(true)));
-		assertThat("The discovered devices list must have two devices", list.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
 		
-		for (int i = 0; i < list.size(); i++) {
-			RemoteXBeeDevice remoteDevice = list.get(i);
-			
-			assertThat("Discovered device must not be null", remoteDevice, is(not(nullValue())));
-			assertThat("Remote device protocol must be " + protocol.getDescription(), remoteDevice.getXBeeProtocol(), is(equalTo(protocol)));
-			assertThat(remoteDevice instanceof RemoteZigBeeDevice, is(equalTo(true)));
-			
-			assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo(nIds[i])));
-			assertThat("Remote device 64-bit address is not right", remoteDevice.get64BitAddress(), 
-					is(equalTo(macs[i])));
-			assertThat("Remote device 16-bit address is not right", ((RemoteZigBeeDevice)remoteDevice).get16BitAddress(), 
-				is(equalTo(addr16[i])));
-		}
-		 
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_TIMEOUT_METHOD, deviceMock, timeout, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(CONFIGURE_DISCOVERY_OPTIONS_METHOD, deviceMock, options, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(GET_PARAMETER_METHOD, deviceMock, "NT", NodeDiscovery.DEFAULT_TIMEOUT, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.never()).invoke(GET_PARAMETER_METHOD, deviceMock, "NO", null, "network timeout", null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_TIMEOUT_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SET_DISCOVERY_OPTIONS_METHOD, deviceMock, null, null);
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.eq(deviceMock), Mockito.anyString());
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
 		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
 		
-		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, deviceMock, null, null, deviceTimeout);
-		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
-		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.any(IDiscoveryListener.class), Mockito.any(RemoteXBeeDevice.class));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, null);
 		
-		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(2)).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(List)}.
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testDiscoverDevicesTwoNodeIds() throws Exception {
+		// Setup the resources for the test.
+		String[] nIds = new String[]{"id", "id2"};
+		List<String> list = new ArrayList<String>();
+		list.add(nIds[0]);
+		list.add(nIds[1]);
+		
+		byte[] deviceTimeoutByteArray = new byte[]{0x05};
+		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
+		
+		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+		
+		XBee64BitAddress[] macs = new XBee64BitAddress[]{new XBee64BitAddress("0013A20040A6A0DB"), 
+				new XBee64BitAddress("0013A20040AD1585")};
+		XBee16BitAddress[] addr16 = new XBee16BitAddress[]{new XBee16BitAddress("0000"), 
+				new XBee16BitAddress("7971")};
+		XBee16BitAddress[] parentAddr = new XBee16BitAddress[]{new XBee16BitAddress("FFFE"), 
+				new XBee16BitAddress("0000")};
+		
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+				addr16[0], macs[0], nIds[0], parentAddr[0], (byte)0x00, (byte)0x49);
+		ndAnswers.add(packet);
+		packet = createPacket(1, ATCommandStatus.OK, 
+				addr16[1], macs[1], nIds[1], parentAddr[1], (byte)0x01, (byte)0x67);
+		ndAnswers.add(packet);
+		
+		// Call the method under test.
+		long start = System.currentTimeMillis();
+		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
+		long end = System.currentTimeMillis();
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, null);
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(list.size())).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#discoverDevices(List)}.
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testDiscoverDevicesDuplicatedNodeIds() throws Exception {
+		// Setup the resources for the test.
+		String id = "id";
+		List<String> list = new ArrayList<String>();
+		list.add(id);
+		list.add(id);
+		
+		byte[] deviceTimeoutByteArray = new byte[]{0x01};
+		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
+		
+		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+		
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"), 
+				id, new XBee16BitAddress("FFFE"), (byte)0x00, (byte)0x49);
+		ndAnswers.add(packet);
+		
+		// Call the method under test.
+		long start = System.currentTimeMillis();
+		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
+		long end = System.currentTimeMillis();
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
+		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The Node ID of the discovered device should be '" + id + "'", remotes.get(0).getNodeID(), is(equalTo(id)));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, null, null);
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(list.size())).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
 	}
 	
 	/**

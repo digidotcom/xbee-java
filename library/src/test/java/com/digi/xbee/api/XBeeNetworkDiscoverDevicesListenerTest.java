@@ -11,11 +11,10 @@
  */
 package com.digi.xbee.api;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,11 +25,10 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDiscoveryListener;
-import com.digi.xbee.api.models.DiscoveryOptions;
 
 @PrepareForTest({XBeeNetwork.class})
 @RunWith(PowerMockRunner.class)
@@ -62,110 +60,148 @@ public class XBeeNetworkDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(IDiscoveryListener)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#addDiscoveryListener(IDiscoveryListener)}.
 	 * 
-	 * <p>A {@code NullPointerException} exception must be thrown when 
-	 * passing a null listener.</p>
-	 * 
-	 * @throws XBeeException 
+	 * <p>A {@code NullPointerException} exception must be thrown when passing 
+	 * a null listener.</p>
 	 */
-	@Test
-	public final void testDiscoverDevicesNullListener() throws XBeeException {
+	@Test(expected=NullPointerException.class)
+	public void testAddNullDiscoveryListener() {
 		// Setup the resources for the test.
 		IDiscoveryListener listener = null;
 		
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Listener cannot be null.")));
-		
 		// Call the method under test.
-		network.discoverDevices(listener);
+		network.addDiscoveryListener(listener);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(IDiscoveryListener)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#addDiscoveryListener(IDiscoveryListener)}.
 	 */
 	@Test
-	public final void testDiscoverDevicesValidListener() {
+	public void testAddDiscoveryListener() {
 		// Setup the resources for the test.
 		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
 		
 		// Call the method under test.
-		network.discoverDevices(listener);
+		network.addDiscoveryListener(listener);
+		
+		// Verify that the listener has been added successfully.
+		List<IDiscoveryListener> internalListenersList = Whitebox.<List<IDiscoveryListener>> getInternalState(network, "discoveryListeners");
+		assertEquals(internalListenersList.size(), 1);
+		assertEquals(internalListenersList.get(0), listener);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#removeDiscoveryListener(IDiscoveryListener)}.
+	 * 
+	 * <p>A {@code NullPointerException} exception must be thrown when passing 
+	 * a null listener.</p>
+	 */
+	@Test(expected=NullPointerException.class)
+	public void testRemoveNullDiscoveryListener() {
+		// Setup the resources for the test.
+		IDiscoveryListener listener = null;
+		
+		// Call the method under test.
+		network.removeDiscoveryListener(listener);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#removeDiscoveryListener(IDiscoveryListener)}.
+	 */
+	@Test
+	public void testRemoveDiscoveryListener() {
+		// Setup the resources for the test.
+		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
+		
+		// Add the listener.
+		network.addDiscoveryListener(listener);
+		
+		// Verify that the listener has been added successfully.
+		List<IDiscoveryListener> internalListenersList = Whitebox.<List<IDiscoveryListener>> getInternalState(network, "discoveryListeners");
+		assertEquals(internalListenersList.size(), 1);
+		assertEquals(internalListenersList.get(0), listener);
+		
+		// Call the method under test.
+		network.removeDiscoveryListener(listener);
+		
+		// Verify that the listener has been removed successfully.
+		assertEquals(internalListenersList.size(), 0);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#startDiscoveryProcess()}.
+	 */
+	@Test
+	public void testStartDiscoveryProcessWithoutListeners() {
+		// Setup the resources for the test.
+		ArrayList<IDiscoveryListener> listeners = new ArrayList<IDiscoveryListener>();
+		
+		// Call the method under test.
+		network.startDiscoveryProcess();
 		
 		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDevices(listener, null, NodeDiscovery.USE_DEVICE_TIMEOUT);
+		Mockito.verify(ndMock, Mockito.times(1)).startDiscoveryProcess(listeners);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(IDiscoveryListener, long)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#startDiscoveryProcess()}.
 	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * pass a negative value for the timeout.</p>
-	 * 
-	 * @throws XBeeException 
+	 * <p>An {@code IllegalStateException} exception must be thrown when trying
+	 * to start a discovery process when it is already running.</p>
 	 */
-	@Test
-	public final void testDiscoverDevicesNegativeTimeout() throws XBeeException {
+	@Test(expected=IllegalStateException.class)
+	public void testStartDiscoveryProcessAlreadyRunning() {
 		// Setup the resources for the test.
-		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
-		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The timeout must be bigger than 0.")));
+		Mockito.when(ndMock.isRunning()).thenReturn(true);
 		
 		// Call the method under test.
-		network.discoverDevices(listener, -6);
+		network.startDiscoveryProcess();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(IDiscoveryListener, long)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#startDiscoveryProcess()}.
 	 */
 	@Test
-	public final void testDiscoverDevicesValidListenerAndTimeout() {
+	public void testStartDiscoveryProcess() {
 		// Setup the resources for the test.
 		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
-		long timeout = 500;
+		ArrayList<IDiscoveryListener> listeners = new ArrayList<IDiscoveryListener>();
+		listeners.add(listener);
+		
+		// Add the listener.
+		network.addDiscoveryListener(listener);
 		
 		// Call the method under test.
-		network.discoverDevices(listener, timeout);
+		network.startDiscoveryProcess();
 		
 		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDevices(listener, null, timeout);
+		Mockito.verify(ndMock, Mockito.times(1)).startDiscoveryProcess(listeners);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(IDiscoveryListener, Set, long)}.
-	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * pass a negative value for the timeout.</p>
-	 * 
-	 * @throws XBeeException 
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#stopDiscoveryProcess()}.
 	 */
 	@Test
-	public final void testDiscoverDevicesOptionsNegativeTimeout() throws XBeeException {
-		// Setup the resources for the test.
-		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
-		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("The timeout must be bigger than 0.")));
-		
+	public void testStopDiscoveryProcess() {
 		// Call the method under test.
-		network.discoverDevices(listener, (Set<DiscoveryOptions>) null, -6);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#discoverDevices(IDiscoveryListener, Set, long)}.
-	 */
-	@Test
-	public final void testDiscoverDevicesValidListenerTimeoutAndOptions() {
-		// Setup the resources for the test.
-		IDiscoveryListener listener = PowerMockito.mock(IDiscoveryListener.class);
-		long timeout = 500;
-		Set<DiscoveryOptions> options = EnumSet.of(DiscoveryOptions.APPEND_DD, DiscoveryOptions.DISCOVER_MYSELF);
-		
-		// Call the method under test.
-		network.discoverDevices(listener, options, timeout);
+		network.stopDiscoveryProcess();
 		
 		// Verify the result.
-		Mockito.verify(ndMock, Mockito.times(1)).discoverDevices(listener, options, timeout);
+		Mockito.verify(ndMock, Mockito.times(1)).stopDiscoveryProcess();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#isDiscoveryRunning()}.
+	 */
+	@Test
+	public void testIsDiscoveryRunning() {
+		// Call the method under test.
+		boolean isRunning = network.isDiscoveryRunning();
+		
+		// Verify the result.
+		Mockito.verify(ndMock, Mockito.times(1)).isRunning();
+		
+		assertEquals(isRunning, Whitebox.getInternalState(ndMock, "running"));
 	}
 }

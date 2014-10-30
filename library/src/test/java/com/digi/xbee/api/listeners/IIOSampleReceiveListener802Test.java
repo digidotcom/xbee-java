@@ -93,7 +93,7 @@ public class IIOSampleReceiveListener802Test {
 		
 		// Mock the XBee network.
 		XBeeNetwork network = Mockito.mock(XBeeNetwork.class);
-		Mockito.when(network.getDeviceBy64BitAddress(Mockito.any(XBee64BitAddress.class))).thenReturn(remote802Device);
+		Mockito.when(network.getDevice(Mockito.any(XBee64BitAddress.class))).thenReturn(remote802Device);
 		
 		// Mock the XBee device.
 		xbeeDevice = Mockito.mock(XBeeDevice.class);

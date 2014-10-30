@@ -83,7 +83,7 @@ public class IDataReceiveListenerXBeeTest {
 		
 		// Mock the XBee network.
 		XBeeNetwork network = Mockito.mock(XBeeNetwork.class);
-		Mockito.when(network.getDeviceBy64BitAddress(Mockito.any(XBee64BitAddress.class))).thenReturn(remoteXBeeDevice);
+		Mockito.when(network.getDevice(Mockito.any(XBee64BitAddress.class))).thenReturn(remoteXBeeDevice);
 		
 		// Mock the XBee device.
 		xbeeDevice = Mockito.mock(XBeeDevice.class);

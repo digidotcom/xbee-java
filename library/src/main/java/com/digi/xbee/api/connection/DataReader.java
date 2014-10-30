@@ -25,6 +25,7 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
+import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
@@ -378,69 +379,73 @@ public class DataReader extends Thread {
 		RemoteXBeeDevice remoteDevice = null;
 		byte[] data = null;
 		
-		switch(apiType) {
-		case RECEIVE_PACKET:
-			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(receivePacket.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
+		try {
+			switch(apiType) {
+			case RECEIVE_PACKET:
+				ReceivePacket receivePacket = (ReceivePacket)apiPacket;
+				remoteDevice = network.getDevice(receivePacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				data = receivePacket.getRFData();
+				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+				break;
+			case RX_64:
+				RX64Packet rx64Packet = (RX64Packet)apiPacket;
+				remoteDevice = network.getDevice(rx64Packet.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				data = rx64Packet.getRFData();
+				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+				break;
+			case RX_16:
+				RX16Packet rx16Packet = (RX16Packet)apiPacket;
+				remoteDevice = network.getDevice(rx16Packet.get16bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				data = rx16Packet.getRFData();
+				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+				break;
+			case IO_DATA_SAMPLE_RX_INDICATOR:
+				IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+				remoteDevice = network.getDevice(ioSamplePacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
+				break;
+			case RX_IO_64:
+				RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+				remoteDevice = network.getDevice(rx64IOPacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
+				break;
+			case RX_IO_16:
+				RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+				remoteDevice = network.getDevice(rx16IOPacket.get16bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
+				break;
+			case MODEM_STATUS:
+				ModemStatusPacket modemStatusPacket = (ModemStatusPacket)apiPacket;
+				notifyModemStatusReceived(modemStatusPacket.getStatus());
+			default:
+				break;
 			}
-			data = receivePacket.getRFData();
-			notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-			break;
-		case RX_64:
-			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(rx64Packet.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			data = rx64Packet.getRFData();
-			notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-			break;
-		case RX_16:
-			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			remoteDevice = network.getDeviceBy16BitAddress(rx16Packet.get16bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			data = rx16Packet.getRFData();
-			notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-			break;
-		case IO_DATA_SAMPLE_RX_INDICATOR:
-			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(ioSamplePacket.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
-			break;
-		case RX_IO_64:
-			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(rx64IOPacket.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
-			break;
-		case RX_IO_16:
-			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-			remoteDevice = network.getDeviceBy16BitAddress(rx16IOPacket.get16bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
-			break;
-		case MODEM_STATUS:
-			ModemStatusPacket modemStatusPacket = (ModemStatusPacket)apiPacket;
-			notifyModemStatusReceived(modemStatusPacket.getStatus());
-		default:
-			break;
+		} catch (XBeeException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 	

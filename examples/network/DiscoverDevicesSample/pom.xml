@@ -7,10 +7,10 @@
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
-	<artifactId>discover-devices-async</artifactId>
+	<artifactId>discover-devices</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Discover Devices Async. Sample</name>
+	<name>Discover Devices Sample</name>
 
 	<properties>
 		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
@@ -18,7 +18,7 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		<directory>../../../target/examples/network/DiscoverDevicesAsyncSample</directory>
+		<directory>../../../target/examples/network/DiscoverDevicesSample</directory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -32,7 +32,7 @@
 						<!-- automatically creates the classpath using all project dependencies,
 							 also adding the project build directory -->
 						<classpath/>
-						<argument>com.digi.xbee.api.discoverdevicesasync.MainApp</argument>
+						<argument>com.digi.xbee.api.discoverdevices.MainApp</argument>
 					</arguments>
 				</configuration>
 			</plugin>

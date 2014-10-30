@@ -255,6 +255,10 @@ public class XBeeNetwork {
 	 * Configures the discovery timeout ({@code NT} parameter) with the given 
 	 * value.
 	 * 
+	 * <p>Note that in some protocols, the discovery process may take longer
+	 * that the value set in this method due to the network propagation time.
+	 * </p>
+	 * 
 	 * @param timeout New discovery timeout in milliseconds.
 	 * 
 	 * @throws TimeoutException if there is a timeout setting the discovery

@@ -349,29 +349,49 @@ class NodeDiscovery {
 	 * @return Maximum network discovery time.
 	 */
 	private long calculateDeadline(List<IDiscoveryListener> listeners) {
-		long timeout = DEFAULT_TIMEOUT;
+		long timeout = -1;
 		
-		// Read the device timeout (NT).
+		// Read the maximum discovery timeout (N?).
 		try {
-			timeout = ByteUtils.byteArrayToLong(xbeeDevice.getParameter("NT")) * 100;
+			timeout = ByteUtils.byteArrayToLong(xbeeDevice.getParameter("N?"));
 		} catch (XBeeException e) {
-			String error = "Could not read the discovery timeout from the device (NT). "
-					+ "The default timeout (" + DEFAULT_TIMEOUT + " ms.) will be used.";
-			notifyDiscoveryError(listeners, error);
+			logger.debug("{}Could not read the N? value.", xbeeDevice.toString());
 		}
 		
-		long deadline = System.currentTimeMillis() + timeout;
-		
-		// In DigiMesh/DigiPoint the network discovery timeout is NT + the 
-		// network propagation time. It means that if the user sends an AT 
-		// command just after NT ms, s/he will receive a timeout exception. 
-		// Add 3 seconds to avoid this issue.
-		if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH || 
-				xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_POINT) {
-			deadline += 3000;
+		// If N? does not exist, read the NT parameter.
+		if (timeout == -1) {
+			// Read the device timeout (NT).
+			try {
+				timeout = ByteUtils.byteArrayToLong(xbeeDevice.getParameter("NT")) * 100;
+			} catch (XBeeException e) {
+				timeout = DEFAULT_TIMEOUT;
+				String error = "Could not read the discovery timeout from the device (NT). "
+						+ "The default timeout (" + DEFAULT_TIMEOUT + " ms.) will be used.";
+				notifyDiscoveryError(listeners, error);
+			}
+			
+			// In DigiMesh/DigiPoint the network discovery timeout is NT + the 
+			// network propagation time. It means that if the user sends an AT 
+			// command just after NT ms, s/he will receive a timeout exception. 
+			if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH) {
+				timeout += 3000;
+			} else if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_POINT) {
+				timeout += 8000;
+			}
 		}
 		
-		return deadline;
+		if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH) {
+			try {
+				// If the module is 'Sleep support', wait another discovery cycle.
+				boolean isSleepSupport = ByteUtils.byteArrayToInt(xbeeDevice.getParameter("SM")) == 7;
+				if (isSleepSupport)
+					timeout += timeout + (timeout * 0.1);
+			} catch (XBeeException e) {
+				logger.debug("{}Could not determine if the module is 'Sleep Support'.", xbeeDevice.toString());
+			}
+		}
+		
+		return System.currentTimeMillis() + timeout;
 	}
 	
 	/**

@@ -38,18 +38,18 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 *                        remote 802.15.4 device.
 	 * @param addr64 The 64-bit address to identify this remote 802.15.4 device.
 	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
-	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteRaw802Device(Raw802Device localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code XBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -62,13 +62,13 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 * @param id The node identifier of this remote 802.15.4 device. It might be 
 	 *           {@code null}.
 	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or  
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true} or  
 	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4}
-	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteRaw802Device(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String id) {
@@ -80,7 +80,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code Raw802Device} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -93,7 +93,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr16 == null}.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public RemoteRaw802Device(Raw802Device localXBeeDevice, XBee16BitAddress addr16) {
 		super(localXBeeDevice, XBee64BitAddress.UNKNOWN_ADDRESS);
@@ -102,7 +102,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * interface to be used.
 	 * 
 	 * @param localXBeeDevice The local 802.15.4 device that will behave as 
@@ -115,7 +115,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr16 == null}.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public RemoteRaw802Device(XBeeDevice localXBeeDevice, XBee16BitAddress addr16) {
 		super(localXBeeDevice, XBee64BitAddress.UNKNOWN_ADDRESS);
@@ -132,7 +132,7 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	 * 
 	 * @param addr64 The 64-bit address to be set to the device.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public void set64BitAddress(XBee64BitAddress addr64) {
 		this.xbee64BitAddress = addr64;

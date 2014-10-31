@@ -42,11 +42,11 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 	 *                        remote XBee device.
 	 * @param addr64 The 64-bit address to identify this remote XBee device.
 	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
@@ -70,8 +70,8 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String ni) {

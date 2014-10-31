@@ -166,12 +166,12 @@ public class Raw802Device extends XBeeDevice {
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any XBee related exception.
 	 * 
-	 * @see XBee16BitAddress
-	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
-	 * @see #sendDataAsync(XBee64BitAddress, byte[])
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 * @see #sendData(XBee16BitAddress, byte[])
 	 * @see #sendData(XBee64BitAddress, byte[])
+	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])
+	 * @see #sendDataAsync(XBee64BitAddress, byte[])
 	 */
 	public void sendDataAsync(XBee16BitAddress address, byte[] data) throws XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
@@ -206,7 +206,7 @@ public class Raw802Device extends XBeeDevice {
 	 * Sends the provided data to the XBee device of the network corresponding 
 	 * to the given 16-bit address.
 	 * 
-	 * <p>This method blocks till a success or error response arrives or the 
+	 * <p>This method blocks until a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
 	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
@@ -224,9 +224,9 @@ public class Raw802Device extends XBeeDevice {
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see XBee16BitAddress
-	 * @see #getReceiveTimeout()
-	 * @see #setReceiveTimeout(int)
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see XBeeDevice#getReceiveTimeout()
+	 * @see XBeeDevice#setReceiveTimeout(int)
 	 * @see #sendData(RemoteXBeeDevice, byte[])
 	 * @see #sendData(XBee64BitAddress, byte[])
 	 * @see #sendDataAsync(RemoteXBeeDevice, byte[])

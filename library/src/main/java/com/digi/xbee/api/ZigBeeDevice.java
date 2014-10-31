@@ -80,7 +80,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code serialPortParameters == null}.
 	 * 
-	 * @see SerialPortParameters
+	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public ZigBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
@@ -95,7 +95,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null}
 	 * 
-	 * @see IConnectionInterface
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public ZigBeeDevice(IConnectionInterface connectionInterface) {
 		super(connectionInterface);

@@ -29,8 +29,8 @@ import com.digi.xbee.api.models.XBeeProtocol;
 public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
-	 * with the given local {@code ZigBee} which contains the connection 
+	 * Class constructor. Instantiates a new {@code RemoteZigBeeDevice} object 
+	 * with the given local {@code ZigBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 
 	 * @param localXBeeDevice The local ZigBee device that will behave as 
@@ -38,18 +38,18 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 *                        remote ZigBee device.
 	 * @param addr64 The 64-bit address to identify this remote ZigBee device.
 	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
-	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteZigBeeDevice(ZigBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteZigBeeDevice} object 
 	 * with the given local {@code XBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -58,12 +58,12 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 *                        remote ZigBee device.
 	 * @param addr64 The 64-bit address to identify this remote ZigBee device.
 	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true} or 
 	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.ZIGBEE}.
-	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteZigBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
@@ -74,7 +74,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * Class constructor. Instantiates a new {@code RemoteZigBeeDevice} object 
 	 * with the given local {@code XBeeDevice} which contains the connection 
 	 * interface to be used.
 	 * 
@@ -87,13 +87,13 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 * @param ni The node identifier of this remote ZigBee device. It might be 
 	 *           {@code null}.
 	 * 
-	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true} or 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true} or 
 	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.ZIGBEE}.
-	 * @throws NullPointerException If {@code localXBeeDevice == null} or
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RemoteZigBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String ni) {

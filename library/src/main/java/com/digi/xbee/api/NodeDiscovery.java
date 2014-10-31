@@ -43,7 +43,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * result a list of discovered XBee Devices.</p> 
  * 
  * <p>The discovery process updates the network of the local device with the new
- * discovered modules and refresh the already existing references.</p>
+ * discovered modules and refreshes the already existing references.</p>
  */
 class NodeDiscovery {
 	
@@ -67,7 +67,7 @@ class NodeDiscovery {
 	protected Logger logger;
 	
 	/**
-	 * Instantiates a Node Discovery object.
+	 * Instantiates a new {@code NodeDiscovery} object.
 	 * 
 	 * @param xbeeDevice XBee Device to perform the discovery operation.
 	 * 
@@ -101,8 +101,8 @@ class NodeDiscovery {
 	 * @return The discovered remote XBee device with the given identifier, 
 	 *         {@code null} if the timeout expires and the device was not found.
 	 * 
-	 * @throws InterfaceNotOpenException If the device is not open.
-	 * @throws XBeeException If there is an error sending the discovery command.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws XBeeException if there is an error sending the discovery command.
 	 * 
 	 * @see #discoverDevices(List)
 	 */
@@ -143,8 +143,8 @@ class NodeDiscovery {
 	 * @return A list of the discovered remote XBee devices with the given 
 	 *         identifiers.
 	 * 
-	 * @throws InterfaceNotOpenException If the device is not open.
-	 * @throws XBeeException If there is an error discovering the devices.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws XBeeException if there is an error discovering the devices.
 	 * 
 	 * @see #discoverDevice(String)
 	 */
@@ -187,11 +187,11 @@ class NodeDiscovery {
 	 * 
 	 * @param listeners Discovery listeners to be notified about process events.
 	 * 
-	 * @throws InterfaceNotOpenException If the device is not open.
-	 * @throws NullPointerException If {@code listeners == null}.
+	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws NullPointerException if {@code listeners == null}.
 	 * 
-	 * @see #stopDiscoveryProcess()
 	 * @see #isRunning()
+	 * @see #stopDiscoveryProcess()
 	 */
 	public void startDiscoveryProcess(final List<IDiscoveryListener> listeners) {
 		// Check if the connection is open.
@@ -220,8 +220,8 @@ class NodeDiscovery {
 	/**
 	 * Stops the discovery process if it is running.
 	 * 
-	 * @see #startDiscoveryProcess(ArrayList)
 	 * @see #isRunning()
+	 * @see #startDiscoveryProcess(List)
 	 */
 	public void stopDiscoveryProcess() {
 		discovering = false;
@@ -249,7 +249,7 @@ class NodeDiscovery {
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
 	 * 
-	 * @throws XBeeException If there is an error sending the discovery command.
+	 * @throws XBeeException if there is an error sending the discovery command.
 	 */
 	private void performNodeDiscovery(List<IDiscoveryListener> listeners, String id) throws XBeeException {
 		try {
@@ -270,7 +270,7 @@ class NodeDiscovery {
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
 	 * 
-	 * @throws XBeeException If there is an error sending the discovery command.
+	 * @throws XBeeException if there is an error sending the discovery command.
 	 */
 	private void discoverDevicesAPI(final List<IDiscoveryListener> listeners, final String id) throws XBeeException {
 		if (deviceList == null)
@@ -402,7 +402,7 @@ class NodeDiscovery {
 	/**
 	 * Returns a byte array with the remote device data to be parsed.
 	 * 
-	 * @param packet The API packet which contains the data.
+	 * @param packet The API packet that contains the data.
 	 * 
 	 * @return A byte array with the data to be parsed.
 	 */
@@ -544,7 +544,7 @@ class NodeDiscovery {
 	 * @param id The identifier of the device to be discovered, or {@code null}
 	 *           to discover all devices in the network.
 	 * 
-	 * @throws XBeeException If there is an error writing in the communication interface.
+	 * @throws XBeeException if there is an error writing in the communication interface.
 	 */
 	private void sendNodeDiscoverCommand(String id) throws XBeeException {
 		if (id == null)

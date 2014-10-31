@@ -14,7 +14,8 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates the available XBee protocols.
+ * Enumerates the available XBee protocols. The XBee protocol is determined 
+ * by the combination of hardware and firmware of an XBee device.
  */
 public enum XBeeProtocol {
 	
@@ -47,13 +48,13 @@ public enum XBeeProtocol {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeeProtocol} 
-	 * for the enumeration.
+	 * Class constructor. Instantiates a new {@code XBeeProtocol} enumeration 
+	 * entry with the given parameters.
 	 * 
-	 * @param id Protocol ID.
-	 * @param description Protocol description.
+	 * @param id XBee protocol ID.
+	 * @param description XBee protocol description.
 	 */
-	XBeeProtocol(int id, String description) {
+	private XBeeProtocol(int id, String description) {
 		this.id = id;
 		this.description = description;
 	}
@@ -77,11 +78,11 @@ public enum XBeeProtocol {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeProtocol} corresponding to the given ID.
+	 * Retrieves the {@code XBeeProtocol} associated to the given ID.
 	 * 
-	 * @param id The ID of the protocol to retrieve.
+	 * @param id The ID of the {@code XBeeProtocol} to retrieve.
 	 * 
-	 * @return The {@code XBeeProtocol} corresponding to the ID.
+	 * @return The {@code XBeeProtocol} associated to the given ID.
 	 */
 	public static XBeeProtocol get(int id) {
 		if (!lookupTable.containsKey(id))
@@ -93,9 +94,15 @@ public enum XBeeProtocol {
 	 * Determines the XBee protocol based on the given Hardware and firmware 
 	 * versions.
 	 * 
-	 * @param hardwareVersion The hardware version to determine its protocol.
-	 * @param firmwareVersion The firmware version to determine its protocol.
-	 * @return The XBee protocol corresponding to the given hardware and firmware versions.
+	 * @param hardwareVersion The hardware version of the protocol to 
+	 *                        determine.
+	 * @param firmwareVersion The firmware version of the protocol to 
+	 *                        determine.
+	 * 
+	 * @return The XBee protocol corresponding to the given hardware and 
+	 *         firmware versions.
+	 * 
+	 * @see HardwareVersion
 	 */
 	public static XBeeProtocol determineProtocol(HardwareVersion hardwareVersion, String firmwareVersion) {
 		if (hardwareVersion == null || firmwareVersion == null || hardwareVersion.getValue() < 0x09)

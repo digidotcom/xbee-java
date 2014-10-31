@@ -12,7 +12,7 @@
 package com.digi.xbee.api.exceptions;
 
 /**
- * This exception will be thrown when the operation performed is not supported
+ * This exception will be thrown when the operation performed is not supported 
  * by the XBee device.
  * 
  * @see XBeeDeviceException

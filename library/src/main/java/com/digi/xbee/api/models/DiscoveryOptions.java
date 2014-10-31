@@ -86,12 +86,14 @@ public enum DiscoveryOptions {
 	 * Calculates the total value of a combination of several options for the 
 	 * given protocol.
 	 * 
-	 * @param protocol The protocol to calculate the value of all the given 
-	 *                 discovery options.
+	 * @param protocol The {@code XBeeProtocol} to calculate the value of all 
+	 *                 the given discovery options.
 	 * @param options Collection of options to get the final value.
 	 * 
-	 * @return the value to be configured in the module depending on the given
+	 * @return The value to be configured in the module depending on the given
 	 *         collection of options and the protocol.
+	 * 
+	 * @see XBeeProtocol
 	 */
 	public static int calculateDiscoveryValue (XBeeProtocol protocol, Set<DiscoveryOptions> options) {
 		// Calculate value to be configured.

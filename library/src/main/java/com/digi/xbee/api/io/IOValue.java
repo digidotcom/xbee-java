@@ -14,7 +14,10 @@ package com.digi.xbee.api.io;
 import java.util.HashMap;
 
 /**
- * Enumerates the possible values of a {@code IOLine} configured as digital I/O.
+ * Enumerates the possible values of a {@code IOLine} configured as digital 
+ * I/O.
+ * 
+ * @see IOLine
  */
 public enum IOValue {
 
@@ -35,40 +38,41 @@ public enum IOValue {
 	}
 	
 	/**
-	 * Creates a new IO value with the given ID and name.
+	 * Class constructor. Instantiates a new {@code IOValue} enumeration entry 
+	 * with the given parameters.
 	 * 
 	 * @param id IO value ID.
 	 * @param name IO value name.
 	 */
-	IOValue(int id, String name) {
+	private IOValue(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 	
 	/**
-	 * Retrieves the IO value ID.
+	 * Retrieves the ID of the IO value.
 	 * 
-	 * @return IO value ID.
+	 * @return The ID of the IO value.
 	 */
 	public int getID() {
 		return id;
 	}
 	
 	/**
-	 * Retrieves the IO value name.
+	 * Retrieves the name of the IO value.
 	 * 
-	 * @return IO value name.
+	 * @return The name of the IO value.
 	 */
 	public String getName() {
 		return name;
 	}
 	
 	/**
-	 * Retrieves the IO Value corresponding to the provided value ID.
+	 * Retrieves the {@code IOValue} associated to the provided value ID.
 	 * 
 	 * @param valueID The ID of the {@code IOValue} to retrieve.
 	 * 
-	 * @return The IO Value corresponding to the provided value ID.
+	 * @return The {@code IOValue} associated to the provided value ID.
 	 */
 	public static IOValue getIOValue(int valueID) {
 		if (lookupTable.containsKey(valueID))

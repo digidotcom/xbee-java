@@ -12,10 +12,10 @@
 package com.digi.xbee.api.exceptions;
 
 /**
- * This exception will be thrown when trying to perform any operation over a 
- * closed interface.
+ * This exception will be thrown when trying to perform any operation with 
+ * the XBee device and its communication interface is closed.
  * 
- * @see ConnectionException
+ * @see RuntimeException
  */
 public class InterfaceNotOpenException extends RuntimeException {
 
@@ -24,7 +24,7 @@ public class InterfaceNotOpenException extends RuntimeException {
 	private static final String DEFAULT_MESSAGE = "The connection interface is not open.";
 
 	/**
-	 * Creates an {@code InterfaceNotOpenedException} with 
+	 * Creates an {@code InterfaceNotOpenException} with 
 	 * {@value #DEFAULT_MESSAGE} as its error detail message.
 	 */
 	public InterfaceNotOpenException() {
@@ -32,7 +32,7 @@ public class InterfaceNotOpenException extends RuntimeException {
 	}
 	
 	/**
-	 * Creates an {@code InterfaceNotOpenedException} with the specified 
+	 * Creates an {@code InterfaceNotOpenException} with the specified 
 	 * message.
 	 * 
 	 * @param message The associated message.

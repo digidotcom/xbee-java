@@ -12,8 +12,8 @@
 package com.digi.xbee.api.models;
 
 /**
- * This class lists all the possible options that can be set while transmitting 
- * an XBee data packet.
+ * This class lists all the possible options that can be set while 
+ * transmitting an XBee data packet.
  * 
  * <p>The transmit options are usually set as a bitfield meaning that the 
  * options can be combined using the '|' operand.</p>
@@ -28,7 +28,8 @@ public class XBeeTransmitOptions {
 	/**
 	 * Disables acknowledgments on all unicasts (value: {@value}).
 	 * 
-	 * <p>Only valid for DigiMesh, 802.15.4 and Point-to-multipoint protocols.</p>
+	 * <p>Only valid for DigiMesh, 802.15.4 and Point-to-multipoint 
+	 * protocols.</p>
 	 */
 	public static final int DISABLE_ACK = 0x01;
 	
@@ -50,7 +51,8 @@ public class XBeeTransmitOptions {
 	
 	/**
 	 * Sends packet with broadcast {@code PAN ID}. Packet will be sent to all 
-	 * devices in the same channel ignoring the {@code PAN ID} (value: {@value}).
+	 * devices in the same channel ignoring the {@code PAN ID} 
+	 * (value: {@value}).
 	 * 
 	 * <p>It cannot be combined with other options.</p>
 	 * 
@@ -89,31 +91,35 @@ public class XBeeTransmitOptions {
 	/**
 	 * Uses the extended transmission timeout (value: {@value}).
 	 * 
-	 * <p>Setting the extended timeout bit causes the stack to set the extended 
-	 * transmission timeout for the destination address.</p>
+	 * <p>Setting the extended timeout bit causes the stack to set the 
+	 * extended transmission timeout for the destination address.</p>
 	 * 
 	 * <p>Only valid for ZigBee XBee protocol.</p>
 	 */
 	public static final int USE_EXTENDED_TIMEOUT = 0x40;
 	
 	/**
-	 * Transmission is performed using point-to-multipoint mode (value: {@value}).
+	 * Transmission is performed using point-to-Multipoint mode 
+	 * (value: {@value}).
 	 * 
-	 * <p>Only valid for DigiMesh 868/900 and Point-to-multipoint 868/900 protocols.</p>
+	 * <p>Only valid for DigiMesh 868/900 and Point-to-Multipoint 868/900 
+	 * protocols.</p>
 	 */
 	public static final int POINT_MULTIPOINT_MODE = 0x40;
 	
 	/**
 	 * Transmission is performed using repeater mode (value: {@value}).
 	 * 
-	 * <p>Only valid for DigiMesh 868/900 and Point-to-multipoint 868/900 protocols.</p>
+	 * <p>Only valid for DigiMesh 868/900 and Point-to-Multipoint 868/900 
+	 * protocols.</p>
 	 */
 	public static final int REPEATER_MODE = 0x80;
 	
 	/**
 	 * Transmission is performed using DigiMesh mode (value: {@value}).
 	 * 
-	 * <p>Only valid for DigiMesh 868/900 and Point-to-multipoint 868/900 protocols.</p>
+	 * <p>Only valid for DigiMesh 868/900 and Point-to-Multipoint 868/900 
+	 * protocols.</p>
 	 */
 	public static final int DIGIMESH_MODE = 0xC0;
 }

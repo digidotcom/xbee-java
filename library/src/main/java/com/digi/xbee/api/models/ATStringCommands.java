@@ -14,7 +14,9 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates several AT commands used to parse AT command packets.
+ * Enumerates several AT commands used to parse AT command packets. The list 
+ * of AT Command alias listed here represents those AT commands whose values 
+ * should be parsed as strings.
  */
 public enum ATStringCommands {
 	
@@ -35,14 +37,34 @@ public enum ATStringCommands {
 	
 	private final String command;
 	
+	/**
+	 * Class constructor. Instantiates a new enumeration element of type 
+	 * {@code ATStringCommands} with the given AT Command alias.
+	 * 
+	 * @param command The AT Command alias.
+	 */
 	private ATStringCommands(String command) {
 		this.command = command;
 	}
 	
+	/**
+	 * Retrieves the AT Command alias.
+	 * 
+	 * @return The AT Command alias.
+	 */
 	public String getCommand() {
 		return command;
 	}
 	
+	/**
+	 * Retrieves the {@code ATStringCommands} for the given AT Command alias.
+	 * 
+	 * @param command The AT Command alias to retrieve the corresponding 
+	 *                {@code ATStringCommands}.
+	 * 
+	 * @return The {@code ATStringCommands} associated to the given AT Command 
+	 *         alias. 
+	 */
 	public static ATStringCommands get(String command) {
 		return lookupTable.get(command.toUpperCase());
 	}

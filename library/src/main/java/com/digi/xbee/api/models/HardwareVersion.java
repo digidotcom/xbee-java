@@ -12,7 +12,7 @@
 package com.digi.xbee.api.models;
 
 /**
- * This class represents an XBee hardware version number.
+ * This class represents the hardware version number of an XBee device.
  */
 public class HardwareVersion {
 	
@@ -25,10 +25,10 @@ public class HardwareVersion {
 	private final String description;
 	
 	/**
-	 * Class constructor. Instances a new HardwareVersion object with the given 
-	 * parameters.
+	 * Class constructor. Instantiates a new {@code HardwareVersion} object 
+	 * with the given parameters.
 	 * 
-	 * @param value The hardware version value.
+	 * @param value The hardware version numeric value.
 	 * @param description The hardware version description.
 	 * 
 	 * @throws IllegalArgumentException if {@code value < 0} or
@@ -48,9 +48,9 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the Hardware version value.
+	 * Retrieves the Hardware version numeric value.
 	 * 
-	 * @return Hardware version value.
+	 * @return Hardware version numeric value.
 	 */
 	public int getValue() {
 		return value;
@@ -66,10 +66,14 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the Hardware version associated to the given ID.
+	 * Retrieves the {@code HardwareVersion} object associated to the given 
+	 * numeric value.
 	 * 
-	 * @param value Hardware version value to retrieve.
-	 * @return The Hardware version for the given value, null if not exists.
+	 * @param value Numeric value of the {@code HardwareVersion} retrieve.
+	 * 
+	 * @return The {@code HardwareVersion} associated to the given value, 
+	 *         {@code null} if there is not any {@code HardwareVersion} with 
+	 *         that value.
 	 */
 	public static HardwareVersion get(int value) {
 		HardwareVersionEnum hvEnum = HardwareVersionEnum.get(value);
@@ -79,11 +83,15 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the Hardware version associated to the given ID.
+	 * Retrieves the {@code HardwareVersion} object associated to the given 
+	 * numeric value and description.
 	 * 
-	 * @param value Hardware version value to retrieve.
-	 * @param description The hardware description.
-	 * @return The Hardware version for the given ID, null if not exists.
+	 * @param value Numeric value of the {@code HardwareVersion} retrieve.
+	 * @param description Description of the {@code HardwareVersion} retrieve.
+	 * 
+	 * @return The {@code HardwareVersion} associated to the given value and 
+	 *         description, {@code null} if there is not any 
+	 *         {@code HardwareVersion} associated to those values.
 	 * 
 	 * @throws IllegalArgumentException if {@code value < 0} or
 	 *                                  if {@code description.length() < 1}.

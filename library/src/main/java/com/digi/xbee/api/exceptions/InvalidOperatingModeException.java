@@ -14,11 +14,12 @@ package com.digi.xbee.api.exceptions;
 import com.digi.xbee.api.models.OperatingMode;
 
 /**
- * This exception will be thrown if the operating mode is different than
- * {@link OperatingMode#API} and {@link OperatingMode#API_ESCAPE}.
+ * This exception will be thrown when performing any action with the XBee 
+ * device and its operating mode is different than {@link OperatingMode#API} 
+ * and {@link OperatingMode#API_ESCAPE}.
  * 
- * @see OperatingMode
  * @see XBeeDeviceException
+ * @see com.digi.xbee.api.models.OperatingMode
  */
 public class InvalidOperatingModeException extends XBeeDeviceException {
 
@@ -36,11 +37,11 @@ public class InvalidOperatingModeException extends XBeeDeviceException {
 	
 	/**
 	 * Creates an {@code InvalidOperatingModeException} with the specified
-	 * mode.
+	 * operating mode.
 	 * 
 	 * @param mode The unsupported operating mode.
 	 * 
-	 * @see OperatingMode
+	 * @see com.digi.xbee.api.models.OperatingMode
 	 */
 	public InvalidOperatingModeException(OperatingMode mode) {
 		super("Unsupported operating mode: " + mode);

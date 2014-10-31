@@ -15,9 +15,10 @@ import com.digi.xbee.api.models.XBeeTransmitStatus;
 
 /**
  * This exception will be thrown when receiving a transmit status different than 
- * {@code XBeeTransmitStatus.SUCCESS} after sending an XBee API packet.
+ * {@code XBeeTransmitStatus#SUCCESS} after sending an XBee API packet.
  * 
  * @see CommunicationException
+ * @see com.digi.xbee.api.models.XBeeTransmitStatus
  */
 public class TransmitException extends CommunicationException {
 
@@ -35,7 +36,7 @@ public class TransmitException extends CommunicationException {
 	 * 
 	 * @param transmitStatus The status of the transmission.
 	 * 
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public TransmitException(XBeeTransmitStatus transmitStatus) {
 		super(DEFAULT_MESSAGE);
@@ -49,7 +50,7 @@ public class TransmitException extends CommunicationException {
 	 * @param message The associated message.
 	 * @param transmitStatus The status of the transmission.
 	 * 
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public TransmitException(String message, XBeeTransmitStatus transmitStatus) {
 		super(message);
@@ -65,7 +66,7 @@ public class TransmitException extends CommunicationException {
 	 * @param transmitStatus The status of the transmission.
 	 * 
 	 * @see Throwable
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public TransmitException(String message, Throwable cause, XBeeTransmitStatus transmitStatus) {
 		super(message, cause);
@@ -78,14 +79,14 @@ public class TransmitException extends CommunicationException {
 	 * 
 	 * @return The status of the transmission.
 	 * 
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public XBeeTransmitStatus getTransmitStatus() {
 		return transmitStatus;
 	}
 	
 	/**
-	 * Retrieves the text with containing the status of the transmission from 
+	 * Retrieves the text containing the status of the transmission from 
 	 * the exception.
 	 * 
 	 * @return The text with the status of the transmission.

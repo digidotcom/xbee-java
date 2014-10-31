@@ -16,7 +16,8 @@ import java.util.HashMap;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * Enumerates the different power levels.
+ * Enumerates the different power levels. The power level indicates the output 
+ * power value of a radio when transmitting data.
  */
 public enum PowerLevel {
 
@@ -47,7 +48,7 @@ public enum PowerLevel {
 	 * @param value Power level value 
 	 * @param description Power level description.
 	 */
-	PowerLevel(int value, String description) {
+	private PowerLevel(int value, String description) {
 		this.value = value;
 		this.description = description;
 	}
@@ -71,11 +72,13 @@ public enum PowerLevel {
 	}
 	
 	/**
-	 * Retrieves the power level associated to the given value.
+	 * Retrieves the {@code PowerLevel} entry associated to the given value.
 	 * 
-	 * @param value Value of the power level to retrieve.
-	 * @return The power level of the associated value, {@code #LEVEL_UNKNOWN} 
-	 *         if it could not be found in the table.
+	 * @param value Value of the {@code PowerLevel} to retrieve.
+	 * 
+	 * @return The {@code PowerLevel} entry associated to the given value, 
+	 *         {@code #LEVEL_UNKNOWN} if the value could not be found in the 
+	 *         list.
 	 */
 	public static PowerLevel get(int value) {
 		PowerLevel powerLevel = lookupTable.get(value);

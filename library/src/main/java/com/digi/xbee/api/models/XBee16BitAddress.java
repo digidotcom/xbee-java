@@ -20,32 +20,33 @@ import com.digi.xbee.api.utils.HexUtils;
  * 
  * <p>This address is only applicable for:</p>
  * <ul>
- * <li>802.15.4</li>
- * <li>ZigBee</li>
- * <li>ZNet 2.5</li>
- * <li>XTend (Legacy)</li>
+ *   <li>802.15.4</li>
+ *   <li>ZigBee</li>
+ *   <li>ZNet 2.5</li>
+ *   <li>XTend (Legacy)</li>
  * </ul>
  * 
- * <p>DigiMesh and Point-to-multipoint does not support 16-bit addressing.</p>
+ * <p>DigiMesh and Point-to-Multipoint protocols don't support 16-bit 
+ * addressing.</p>
  * 
  * <p>Each device has its own 16-bit address which is unique in the network. 
  * It is automatically assigned when the radio joins the network for ZigBee 
- * and Znet 2.5, and manually configured in 802.15.4 radios.</p>
+ * and ZNet 2.5, and manually configured in 802.15.4 radios.</p>
  * 
  */
 public final class XBee16BitAddress {
 
 	// Constants
 	/**
-	 * 16-bit address reserved for the coordinator.
+	 * 16-bit address reserved for the coordinator (value: {@value}).
 	 */
 	public static final XBee16BitAddress COORDINATOR_ADDRESS = new XBee16BitAddress("0000");
 	/**
-	 * 16-bit broadcast address.
+	 * 16-bit broadcast address (value: {@value}).
 	 */
 	public static final XBee16BitAddress BROADCAST_ADDRESS = new XBee16BitAddress("FFFF");
 	/**
-	 * 16-bit unknown address.
+	 * 16-bit unknown address (value: {@value}).
 	 */
 	public static final XBee16BitAddress UNKNOWN_ADDRESS = new XBee16BitAddress("FFFE");
 	
@@ -60,8 +61,8 @@ public final class XBee16BitAddress {
 	private final byte[] address;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBee16BitAddress} 
-	 * with the given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBee16BitAddress} with the given parameters.
 	 * 
 	 * @param hsb High significant byte of the address.
 	 * @param lsb Low significant byte of the address.
@@ -83,10 +84,10 @@ public final class XBee16BitAddress {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBee16BitAddress} 
-	 * with the given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBee16BitAddress} with the given parameters.
 	 * 
-	 * @param address Address as byte array.
+	 * @param address The 16-bit address as byte array.
 	 * 
 	 * @throws IllegalArgumentException if {@code address.length < 1} or
 	 *                                  if {@code address.length > 2}.
@@ -110,13 +111,13 @@ public final class XBee16BitAddress {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBee16BitAddress} 
-	 * with the given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBee16BitAddress} with the given parameters.
 	 * 
 	 * <p>The string must be the hexadecimal representation of a 16-bit 
 	 * address.</p> 
 	 * 
-	 * @param address String containing the address.
+	 * @param address String containing the 16-bit address.
 	 * 
 	 * @throws IllegalArgumentException if {@code address.length() < 1} or
 	 *                                  if {@code address} contains 
@@ -162,7 +163,7 @@ public final class XBee16BitAddress {
 	}
 	
 	/**
-	 * Retrieves the 16-bit address value.
+	 * Retrieves the 16-bit address value in byte array format.
 	 * 
 	 * @return Address value as byte array.
 	 */

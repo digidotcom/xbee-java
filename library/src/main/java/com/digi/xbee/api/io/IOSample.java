@@ -18,19 +18,20 @@ import com.digi.xbee.api.utils.ByteUtils;
 
 /**
  * This class represents an IO Data Sample. The sample is built using the
- * the constructor. The sample contains an analog and digital mask indicating which IO lines 
- * are configured with that functionality.
+ * the constructor. The sample contains an analog and digital mask indicating 
+ * which IO lines are configured with that functionality.
  * 
- * <p>Depending on the protocol the XBee device is executing, the digital and analog masks are 
- * retrieved in separated bytes (2 bytes for the digital mask and 1 for the analog mask) or 
- * merged contained (digital and analog masks are contained in 2 bytes).</p> 
+ * <p>Depending on the protocol the XBee device is executing, the digital and 
+ * analog masks are retrieved in separated bytes (2 bytes for the digital 
+ * mask and 1 for the analog mask) or merged (digital and analog masks are 
+ * contained in the same 2 bytes).</p> 
  * <br>
  * <p><b>802.15.4 Protocol</b></p>
  * <br>
  * <p>Digital and analog channels masks</p>
  * <p>------------------------------------------------------------------</p>
- * <p>Indicates which digital and ADC IO lines are configured in the module. Each
- * bit corresponds to one digital or ADC IO line on the module:</p>
+ * <p>Indicates which digital and ADC IO lines are configured in the module. 
+ * Each bit corresponds to one digital or ADC IO line on the module:</p>
  * <br>
  * <BLOCKQUOTE>
  *      <p>bit 0 =  DIO0</p>1
@@ -50,7 +51,8 @@ import com.digi.xbee.api.utils.ByteUtils;
  *      <p>bit 14 = AD5</p>0
  *      <p>bit 15 = N/A</p>0
  * <br>
- *      <p>Example: mask of {@code 0x0C29} means DIO0, DIO3, DIO5, AD1 and AD2 enabled.</p>
+ *      <p>Example: mask of {@code 0x0C29} means DIO0, DIO3, DIO5, AD1 and 
+ *      AD2 enabled.</p>
  *      <p>0 0 0 0 1 1 0 0 0 0 1 0 1 0 0 1</p>
  * </BLOCKQUOTE>
  * <br><br>
@@ -79,7 +81,8 @@ import com.digi.xbee.api.utils.ByteUtils;
  *      <p>bit 14 = DIO14</p>
  *      <p>bit 15 = N/A</p>
  * <br>
- *      <p>Example: mask of {@code 0x040B} means DIO0, DIO1, DIO2, DIO3 and DIO10 enabled.</p>
+ *      <p>Example: mask of {@code 0x040B} means DIO0, DIO1, DIO2, DIO3 and 
+ *      DIO10 enabled.</p>
  *      <p>0 0 0 0 0 1 0 0 0 0 0 0 1 0 1 1</p>
  * <br><br>
  * </BLOCKQUOTE>
@@ -120,8 +123,8 @@ public class IOSample {
 	private final HashMap<IOLine, IOValue> digitalValuesMap = new HashMap<IOLine, IOValue>();
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code IOSample} with 
-	 * the given IO sample payload.
+	 * Class constructor. Instantiates a new object of type {@code IOSample} 
+	 * with the given IO sample payload.
 	 * 
 	 * @param ioSamplePayload The payload corresponding to an IO sample.
 	 * 
@@ -197,8 +200,8 @@ public class IOSample {
 	}
 	
 	/**
-	 * Parses the information contained in the IO sample bytes reading the value of 
-	 * each configured DIO and ADC.
+	 * Parses the information contained in the IO sample bytes reading the 
+	 * value of each configured DIO and ADC.
 	 */
 	private void parseIOSample() {
 		int dataIndex = 4;
@@ -301,13 +304,15 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves whether or not the given IO line has a digital value.
+	 * Retrieves whether or not this IO sample contains a digital value for 
+	 * the given IO line.
 	 * 
 	 * @param ioLine The IO line to check if has a digital value.
 	 * 
 	 * @return {@code true} if the given IO line has a digital value, 
 	 *         {@code false} otherwise.
 	 * 
+	 * @see #hasDigitalValues()
 	 * @see IOLine
 	 */
 	public boolean hasDigitalValue(IOLine ioLine) {
@@ -320,9 +325,10 @@ public class IOSample {
 	 * @return {@code HashMap} with the digital value of each configured IO 
 	 *         line.
 	 * 
+	 * @see #getDigitalValue(IOLine)
+	 * @see #hasDigitalValues()
 	 * @see IOLine
 	 * @see IOValue
-	 * @see #getDigitalValue(IOLine)
 	 */
 	public HashMap<IOLine, IOValue> getDigitalValues() {
 		return digitalValuesMap;
@@ -338,9 +344,10 @@ public class IOSample {
 	 * @throws IllegalArgumentException if the given IO line does not have 
 	 *                                  an associated digital value.
 	 * 
+	 * @see #getDigitalValues()
+	 * @see #hasDigitalValues()
 	 * @see IOLine
 	 * @see IOValue
-	 * @see #getDigitalValues()
 	 */
 	public IOValue getDigitalValue(IOLine ioLine) {
 		if (!digitalValuesMap.containsKey(ioLine))
@@ -362,10 +369,10 @@ public class IOSample {
 	 *  
 	 * @return {@code true} if there are analog values, {@code false} otherwise.
 	 * 
-	 * @see IOLine
-	 * @see #hasAnalogValue(IOLine)
-	 * @see #getAnalogValues()
 	 * @see #getAnalogValue(IOLine)
+	 * @see #getAnalogValues()
+	 * @see #hasAnalogValue(IOLine)
+	 * @see IOLine
 	 */
 	public boolean hasAnalogValues() {
 		return analogValuesMap.size() > 0;
@@ -379,10 +386,10 @@ public class IOSample {
 	 * @return {@code true} if the given IO line has an analog value, 
 	 *         {@code false} otherwise.
 	 * 
-	 * @see IOLine
-	 * @see #hasAnalogValues()
-	 * @see #getAnalogValues()
 	 * @see #getAnalogValue(IOLine)
+	 * @see #getAnalogValues()
+	 * @see #hasAnalogValues()
+	 * @see IOLine
 	 */
 	public boolean hasAnalogValue(IOLine ioLine) {
 		return analogValuesMap.containsKey(ioLine);
@@ -391,12 +398,13 @@ public class IOSample {
 	/**
 	 * Retrieves the analog values map.
 	 * 
-	 * @return {@code HashMap} with the analog value of each configured IO line.
+	 * @return {@code HashMap} with the analog value of each configured IO 
+	 *         line.
 	 * 
-	 * @see IOLine
 	 * @see #getAnalogValue(IOLine)
-	 * @see #hasAnalogValues()
 	 * @see #hasAnalogValue(IOLine)
+	 * @see #hasAnalogValues()
+	 * @see IOLine
 	 */
 	public HashMap<IOLine, Integer> getAnalogValues() {
 		return analogValuesMap;
@@ -412,10 +420,10 @@ public class IOSample {
 	 * @throws IllegalArgumentException if the given IO line does not have 
 	 *                                  an associated analog value.
 	 * 
-	 * @see IOLine
 	 * @see #getAnalogValues()
 	 * @see #hasAnalogValue(IOLine)
 	 * @see #hasAnalogValues()
+	 * @see IOLine
 	 */
 	public int getAnalogValue(IOLine ioLine) {
 		if (!analogValuesMap.containsKey(ioLine))

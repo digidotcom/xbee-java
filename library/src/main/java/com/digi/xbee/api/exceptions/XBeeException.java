@@ -13,7 +13,8 @@ package com.digi.xbee.api.exceptions;
 
 /**
  * Generic XBee API exception. This class and its subclasses indicate
- * conditions that an application might want to catch.
+ * conditions that an application might want to catch. This exception can be 
+ * thrown when any problem related to the XBee device occurs.
  * 
  * @see Exception
  */

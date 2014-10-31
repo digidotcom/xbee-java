@@ -14,7 +14,10 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates the different transmit status.
+ * Enumerates the different transmit status. Transmit status field is part of 
+ * the {@code TransmitStatusPacket} indicating the status of the transmission.
+ * 
+ * @see com.digi.xbee.api.packet.common.TransmitStatusPacket;
  */
 public enum XBeeTransmitStatus {
 
@@ -53,13 +56,13 @@ public enum XBeeTransmitStatus {
 	}
 	
 	/**
-	 * Class constructor. Instances a new XBee Transmit Status entry with the
-	 * given parameters.
+	 * Class constructor. Instantiates a new {@code XBeeTransmitStatus} entry 
+	 * with the given parameters.
 	 * 
-	 * @param id XBee Transmit Status ID.
-	 * @param description XBee Transmit Status description.
+	 * @param id XBee transmit status ID.
+	 * @param description XBee transmit status description.
 	 */
-	XBeeTransmitStatus(int id, String description) {
+	private XBeeTransmitStatus(int id, String description) {
 		this.id = id;
 		this.description = description;
 	}
@@ -67,7 +70,7 @@ public enum XBeeTransmitStatus {
 	/**
 	 * Retrieves the XBee transmit status ID.
 	 * 
-	 * @return XBee Transmit Status ID.
+	 * @return XBee transmit status ID.
 	 */
 	public int getId() {
 		return id;
@@ -76,18 +79,18 @@ public enum XBeeTransmitStatus {
 	/**
 	 * Retrieves the XBee transmit status description.
 	 * 
-	 * @return XBee Transmit Status description.
+	 * @return XBee transmit status description.
 	 */
 	public String getDescription() {
 		return description;
 	}
 	
 	/**
-	 * Retrieves the XBee transmit status for the given ID.
+	 * Retrieves the {@code XBeeTransmitStatus} associated to the given ID.
 	 * 
-	 * @param id ID to retrieve the XBee transmit status.
+	 * @param id ID of the {@code XBeeTransmitStatus} to retrieve.
 	 * 
-	 * @return The XBee transmit status associated with the given ID.
+	 * @return The {@code XBeeTransmitStatus} associated to the given ID.
 	 */
 	public static XBeeTransmitStatus get(int id) {
 		return lookupTable.get(id);

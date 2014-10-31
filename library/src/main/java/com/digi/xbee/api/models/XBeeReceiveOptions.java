@@ -13,36 +13,43 @@ package com.digi.xbee.api.models;
 
 /**
  * This class lists all the possible options that have been set while
- * receiving an XBee packet. The receive options are usually
- * set as a bitfield meaning that the options can be combined using
- * the '|' operand.
+ * receiving an XBee packet.
+ * 
+ * <p>The receive options are usually set as a bitfield meaning that the 
+ * options can be combined using the '|' operand.</p>
  */
 public class XBeeReceiveOptions {
 
 	/**
-	 * No special receive options.
+	 * No special receive options (value: {@value}).
 	 */
 	public static final int NONE = 0x00;
 	
 	/**
-	 * Packet was acknowledged. Not valid for WiFi protocol.
+	 * Packet was acknowledged (value: {@value}).
+	 * 
+	 * <p>Not valid for Wi-Fi protocol</p>
 	 */
 	public static final int PACKET_ACKNOWLEDGED = 0x01;
 	
 	/**
-	 * Packet was a broadcast packet. Not valid for WiFi protocol.
+	 * Packet was a broadcast packet (value: {@value}).
+	 * 
+	 * <p>Not valid for Wi-Fi protocol</p>
 	 */
 	public static final int BROADCAST_PACKET = 0x02;
 	
 	/**
-	 * Packet encrypted with APS encryption. Only valid for ZigBee
-	 * XBee protocol.
+	 * Packet encrypted with APS encryption (value: {@value}).
+	 * 
+	 * <p>Only valid for ZigBee XBee protocol.</p>
 	 */
 	public static final int APS_ENCRYPTED = 0x20;
 	
 	/**
-	 * Packet was sent from an end device (if known). Only valid 
-	 * for ZigBee XBee protocol.
+	 * Packet was sent from an end device, if known (value: {@value}).
+	 * 
+	 * <p>Only valid for ZigBee XBee protocol.</p>
 	 */
 	public static final int SENT_FROM_END_DEVICE = 0x40;
 }

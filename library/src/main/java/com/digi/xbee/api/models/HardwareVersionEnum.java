@@ -82,21 +82,21 @@ public enum HardwareVersionEnum {
 	}
 	
 	/**
-	 * Class constructor. Instances a new {@code HardwareVersion} enumeration
-	 * entry with the given parameters.
+	 * Class constructor. Instantiates a new {@code HardwareVersion} 
+	 * enumeration entry with the given parameters.
 	 * 
-	 * @param value Hardware version value 
+	 * @param value Hardware version numeric value 
 	 * @param description Hardware version description.
 	 */
-	HardwareVersionEnum(int value, String description) {
+	private HardwareVersionEnum(int value, String description) {
 		this.value = value;
 		this.description = description;
 	}
 	
 	/**
-	 * Retrieves the Hardware version value.
+	 * Retrieves the Hardware version numeric value.
 	 * 
-	 * @return The hardware version value.
+	 * @return The hardware version numeric value.
 	 */
 	public int getValue() {
 		return value;
@@ -112,10 +112,15 @@ public enum HardwareVersionEnum {
 	}
 	
 	/**
-	 * Retrieves the hardware version associated to the given ID.
+	 * Retrieves the {@code HardwareVersionEnum} associated to the given 
+	 * numeric value.
 	 * 
-	 * @param value Hardware version value to retrieve.
-	 * @return The hardware version for the given ID, null if it does not exist.
+	 * @param value Numeric value of the {@code HardwareVersionEnum} to 
+	 *              retrieve.
+	 * 
+	 * @return The {@code HardwareVersionEnum} associated to the given numeric 
+	 *         value, {@code null} if there is not any 
+	 *         {@code HardwareVersionEnum} associated to that value.
 	 */
 	public static HardwareVersionEnum get(int value) {
 		return lookupTable.get(value);

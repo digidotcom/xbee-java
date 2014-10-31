@@ -12,7 +12,9 @@
 package com.digi.xbee.api.models;
 
 /**
- * Enumerates the different working modes of the XBee device.
+ * Enumerates the different working modes of the XBee device. The operating 
+ * mode establishes the way a user communicates with an XBee device through 
+ * its serial interface.
  */
 public enum OperatingMode {
 
@@ -28,29 +30,30 @@ public enum OperatingMode {
 	private final String name;
 	
 	/**
-	 * Creates a new XBee mode with the given ID.
+	 * Class constructor. Instantiates a new {@code OperatingMode} enumeration 
+	 * entry with the given parameters.
 	 * 
-	 * @param id XBee mode ID.
-	 * @param name XBee mode name.
+	 * @param id Operating mode ID.
+	 * @param name Operating mode name.
 	 */
-	OperatingMode(int id, String name) {
+	private OperatingMode(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 	
 	/**
-	 * Retrieves the XBee mode ID.
+	 * Retrieves the operating mode ID.
 	 * 
-	 * @return XBee mode ID.
+	 * @return Operating mode ID.
 	 */
 	public int getID() {
 		return id;
 	}
 	
 	/**
-	 * Retrieves the XBee mode name.
+	 * Retrieves the operating mode name.
 	 * 
-	 * @return XBee mode name.
+	 * @return Operating mode name.
 	 */
 	public String getName() {
 		return name;

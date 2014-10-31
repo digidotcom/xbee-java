@@ -17,7 +17,7 @@ import java.util.HashMap;
  * Enumerates the different IO lines that can be found in the XBee devices. 
  * 
  * <p>Depending on the hardware and firmware of the device, the number of lines 
- * that it contains as well as their functionality may vary. Refer to the 
+ * that can be used as well as their functionality may vary. Refer to the 
  * product manual to learn more about the IO lines of your XBee device.</p>
  */
 public enum IOLine {
@@ -59,8 +59,8 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code IOLine} for the 
-	 * enumeration.
+	 * Class constructor. Instantiates a new {@code IOLine} enumeration entry 
+	 * with the given parameters.
 	 * 
 	 * @param name The name of the IO line.
 	 * @param index The index associated to the IO line.
@@ -68,7 +68,7 @@ public enum IOLine {
 	 * @param atPWMCommand The PWM AT command corresponding to the IO line 
 	 *                     (if any).
 	 */
-	IOLine(String name, int index, String atCommand, String atPWMCommand) {
+	private IOLine(String name, int index, String atCommand, String atPWMCommand) {
 		this.name = name;
 		this.index = index;
 		this.atCommand = atCommand;
@@ -105,7 +105,7 @@ public enum IOLine {
 	/**
 	 * Retrieves whether or not the IO line has PWM capability.
 	 * 
-	 * @return {@code true} if the provided IO line has PWM, {@code true} 
+	 * @return {@code true} if the provided IO line has PWM, {@code false} 
 	 *         otherwise.
 	 */
 	public boolean hasPWMCapability() {
@@ -122,10 +122,11 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the IO line corresponding to the provided index.
+	 * Retrieves the {@code IOLine} associated to the given index.
 	 * 
-	 * @param index The index corresponding to the IO line to retrieve.
-	 * @return The IO line corresponding to the provided index.
+	 * @param index The index corresponding to the {@code IOLine} to retrieve.
+	 * 
+	 * @return The {@code IOLine} associated to the given index.
 	 */
 	public static IOLine getDIO(int index) {
 		if (lookupTableIndex.containsKey(index))

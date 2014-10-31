@@ -14,7 +14,11 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates all the possible states of an AT Command after executing it.
+ * Enumerates all the possible states of an AT Command after executing it. 
+ * {@code ATCommadResponse} objects will contain an entry of this enumerator 
+ * indicating the status of the AT Command that was executed.
+ * 
+ * @see ATCommandResponse
  */
 public enum ATCommandStatus {
 
@@ -39,7 +43,7 @@ public enum ATCommandStatus {
 	}
 	
 	/**
-	 * Class constructor. Instances a new enumeration element of type 
+	 * Class constructor. Instantiates a new enumeration element of type 
 	 * {@code ATCommandStatus} with the given parameters.
 	 * 
 	 * @param id AT Command Status ID.
@@ -69,11 +73,11 @@ public enum ATCommandStatus {
 	}
 	
 	/**
-	 * Retrieves the AT Command Status for the given ID.
+	 * Retrieves the {@code ATCommandStatus} associated to the given ID.
 	 * 
-	 * @param id ID to retrieve AT Command Status.
+	 * @param id ID to retrieve the corresponding {@code ATCommandStatus}.
 	 * 
-	 * @return AT Command Status associated with the given ID.
+	 * @return The {@code ATCommandStatus} associated to the given ID.
 	 */
 	public static ATCommandStatus get(int id) {
 		if (lookupTable.get(id) == null)

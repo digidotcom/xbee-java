@@ -18,7 +18,8 @@ package com.digi.xbee.api.models;
  * <p>AT commands can be sent directly to the connected device or to remote 
  * devices and may have parameters.</p> 
  * 
- * <p>After executing an AT Command, an AT Response is received from the device.</p>
+ * <p>After executing an AT Command, an AT Response is received from the 
+ * device.</p>
  * 
  * @see ATCommandResponse
  */
@@ -30,10 +31,10 @@ public class ATCommand {
 	private byte[] parameter;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code ATCommand} with
-	 * the given parameters.
+	 * Class constructor. Instantiates a new object of type {@code ATCommand} 
+	 * with the given parameters.
 	 * 
-	 * @param command The AT Command.
+	 * @param command The AT Command alias.
 	 * 
 	 * @throws IllegalArgumentException if {@code command.length() != 2}.
 	 * @throws NullPointerException if {@code command == null}.
@@ -43,13 +44,13 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code ATCommand} with
-	 * the given parameters.
+	 * Class constructor. Instantiates a new object of type {@code ATCommand} 
+	 * with the given parameters.
 	 * 
-	 * <p>If not parameter is required the constructor {@link #ATCommand(String)}
-	 * is recommended.</p>
+	 * <p>If not parameter is required the constructor 
+	 * {@link #ATCommand(String)} is recommended.</p>
 	 * 
-	 * @param command The AT Command.
+	 * @param command The AT Command alias.
 	 * @param parameter The command parameter as string.
 	 * 
 	 * @throws IllegalArgumentException if {@code command.length() != 2}.
@@ -60,13 +61,13 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code ATCommand} with
-	 * the given parameters.
+	 * Class constructor. Instantiates a new object of type {@code ATCommand} 
+	 * with the given parameters.
 	 * 
-	 * <p>If not parameter is required the constructor {@link #ATCommand(String)}
-	 * is recommended.</p>
+	 * <p>If not parameter is required the constructor 
+	 * {@link #ATCommand(String)} is recommended.</p>
 	 * 
-	 * @param command The AT Command.
+	 * @param command The AT Command alias.
 	 * @param parameter The command parameter as byte array.
 	 * 
 	 * @throws IllegalArgumentException if {@code command.length() != 2}.
@@ -83,9 +84,9 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Retrieves the AT command.
+	 * Retrieves the AT command alias.
 	 * 
-	 * @return The AT command.
+	 * @return The AT command alias.
 	 */
 	public String getCommand() {
 		return command;
@@ -94,7 +95,8 @@ public class ATCommand {
 	/**
 	 * Retrieves the AT command parameter.
 	 * 
-	 * @return The AT command parameter, {@code null} if none.
+	 * @return The AT command parameter, {@code null} if the command does not 
+	 *         have a parameter.
 	 */
 	public byte[] getParameter() {
 		return parameter;
@@ -103,7 +105,8 @@ public class ATCommand {
 	/**
 	 * Retrieves the AT command parameter in string format.
 	 * 
-	 * @return The AT command parameter, {@code null} if none.
+	 * @return The AT command parameter, {@code null} if the command does not 
+	 *         have a parameter.
 	 */
 	public String getParameterString() {
 		if (parameter == null)
@@ -114,7 +117,7 @@ public class ATCommand {
 	/**
 	 * Sets the AT command parameter as string.
 	 * 
-	 * @param parameter The AT command parameter as string, {@code null} if none.
+	 * @param parameter The AT command parameter as string.
 	 */
 	public void setParameter(String parameter) {
 		this.parameter = parameter.getBytes();
@@ -123,8 +126,7 @@ public class ATCommand {
 	/**
 	 * Sets the AT command parameter as byte array.
 	 * 
-	 * @param parameter The AT command parameter as byte array, {@code null} if 
-	 *                  none.
+	 * @param parameter The AT command parameter as byte array.
 	 */
 	public void setParameter(byte[] parameter) {
 		this.parameter = parameter;

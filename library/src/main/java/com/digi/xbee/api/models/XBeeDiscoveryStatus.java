@@ -14,7 +14,11 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates all the possible states of the discovery.
+ * Enumerates all the possible states of the discovery. Discovery status field 
+ * is part of the {@code TransmitStatusPacket} indicating the status of the 
+ * discovery when a packet is sent.
+ * 
+ * @see com.digi.xbee.api.packet.common.TransmitStatusPacket;
  */
 public enum XBeeDiscoveryStatus {
 
@@ -39,41 +43,41 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Class constructor. Instances a new enumeration element of type 
+	 * Class constructor. Instantiates a new enumeration element of type 
 	 * {@code XBeeDiscoveryStatus} with the given parameters.
 	 * 
-	 * @param id XBee Discovery Status ID.
-	 * @param description XBee Discovery Status description.
+	 * @param id Discovery Sstatus ID.
+	 * @param description Discovery status description.
 	 */
-	XBeeDiscoveryStatus(int id, String description) {
+	private XBeeDiscoveryStatus(int id, String description) {
 		this.id = id;
 		this.description = description;
 	}
 	
 	/**
-	 * Retrieves the XBee Discovery Status ID.
+	 * Retrieves the discovery status ID.
 	 * 
-	 * @return The XBee Discovery Status ID.
+	 * @return The discovery status ID.
 	 */
 	public int getId() {
 		return id;
 	}
 	
 	/**
-	 * Retrieves the XBee Discovery Status description.
+	 * Retrieves the discovery status description.
 	 * 
-	 * @return XBee Discovery Status description.
+	 * @return Discovery status description.
 	 */
 	public String getDescription() {
 		return description;
 	}
 	
 	/**
-	 * Retrieves the XBee Discovery Status for the given ID.
+	 * Retrieves the {@code XBeeDiscoveryStatus} associated to the given ID.
 	 * 
-	 * @param id ID to retrieve XBee Discovery Status Status.
+	 * @param id ID of the {@code XBeeDiscoveryStatus} to retrieve.
 	 * 
-	 * @return XBee Discovery Status Status associated with the given ID.
+	 * @return The {@code XBeeDiscoveryStatus} associated with the given ID.
 	 */
 	public static XBeeDiscoveryStatus get(int id) {
 		XBeeDiscoveryStatus status = lookupTable.get(id);

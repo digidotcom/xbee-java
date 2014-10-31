@@ -15,7 +15,7 @@ package com.digi.xbee.api.exceptions;
  * This exception will be thrown when trying to open an interface that is
  * already opened by the application.
  * 
- * @see ConnectionException
+ * @see RuntimeException
  */
 public class InterfaceAlreadyOpenException extends RuntimeException {
 

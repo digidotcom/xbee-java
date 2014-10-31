@@ -38,30 +38,31 @@ public enum SpecialByte {
 	private final int value;
 	
 	/**
-	 * Class constructor. Instances a new Special Byte with the given value.
+	 * Class constructor. Instantiates a new {@code SpecialByte} enumeration 
+	 * entry with the given value.
 	 * 
 	 * @param value Value of the special byte.
 	 */
-	SpecialByte(int value) {
+	private SpecialByte(int value) {
 		this.value = value;
 	}
 	
 	/**
-	 * Retrieves the Special Byte value.
+	 * Retrieves the special byte value.
 	 * 
-	 * @return The Special Byte value.
+	 * @return The special byte value.
 	 */
 	public int getValue() {
 		return value;
 	}
 	
 	/**
-	 * Retrieves the Special Byte associated with the given value.
+	 * Retrieves the {@code SpecialByte} entry associated with the given value.
 	 * 
-	 * @param value Value to retrieve Special Byte.
+	 * @param value Value of the {@code SpecialByte} to retrieve.
 	 * 
-	 * @return Special Byte for the given value, {@code null} if it does not 
-	 *         exist.
+	 * @return {@code SpecialByte} associated to the given value, {@code null} 
+	 *         if it does not exist in the list.
 	 */
 	public static SpecialByte get(int value) {
 		return lookupTable.get(value);

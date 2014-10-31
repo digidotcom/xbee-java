@@ -16,7 +16,9 @@ import java.util.HashMap;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * Enumerates the different modem status events.
+ * Enumerates the different modem status events. This enumeration list is 
+ * intended to be used within the 
+ * {@link com.digi.xbee.api.packet.common.ModemStatusPacket} packet.
  */
 public enum ModemStatusEvent {
 
@@ -56,8 +58,8 @@ public enum ModemStatusEvent {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code ModemStatusEvent} enumeration entry 
-	 * with the given parameters.
+	 * Class constructor. Instantiates a new {@code ModemStatusEvent} 
+	 * enumeration entry  with the given parameters.
 	 * 
 	 * @param id Modem status ID.
 	 * @param description Modem status description.
@@ -86,10 +88,10 @@ public enum ModemStatusEvent {
 	}
 	
 	/**
-	 * Retrieves the modem status associated to the given ID.
+	 * Retrieves the {@code ModemStatusEvent} associated to the given ID.
 	 * 
-	 * @param id ID of the modem status to retrieve.
-	 * @return The modem status associated with the given ID.
+	 * @param id ID of the {@code ModemStatusEvent} to retrieve.
+	 * @return The {@code ModemStatusEvent} associated with the given ID.
 	 */
 	public static ModemStatusEvent get(int id) {
 		ModemStatusEvent status = lookupTable.get(id);
@@ -102,6 +104,7 @@ public enum ModemStatusEvent {
 	 * (non-Javadoc)
 	 * @see java.lang.Enum#toString()
 	 */
+	@Override
 	public String toString() {
 		return HexUtils.byteToHexString((byte)id) + ": " + description;
 	}

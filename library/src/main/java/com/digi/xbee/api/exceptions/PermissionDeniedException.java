@@ -13,7 +13,8 @@ package com.digi.xbee.api.exceptions;
 
 /**
  * This exception will be thrown when the user does not have the appropriate
- * access to the connection interface.
+ * access to the connection interface. Usually happens when the XBee device is 
+ * communicating through a serial port.
  * 
  * @see ConnectionException
  */

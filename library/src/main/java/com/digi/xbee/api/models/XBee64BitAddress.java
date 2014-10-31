@@ -20,21 +20,20 @@ import com.digi.xbee.api.utils.HexUtils;
  * 
  * <p>The 64-bit address is a unique device address assigned during 
  * manufacturing. This address is unique to each physical device.</p>
- * 
  */
 public final class XBee64BitAddress {
 
 	// Constants
 	/**
-	 * 64-bit address reserved for the coordinator.
+	 * 64-bit address reserved for the coordinator (value: {@value}).
 	 */
 	public static final XBee64BitAddress COORDINATOR_ADDRESS = new XBee64BitAddress("0000");
 	/**
-	 * 64-bit broadcast address.
+	 * 64-bit broadcast address (value: {@value}).
 	 */
 	public static final XBee64BitAddress BROADCAST_ADDRESS = new XBee64BitAddress("FFFF");
 	/**
-	 * 64-bit unknown address.
+	 * 64-bit unknown address (value: {@value}).
 	 */
 	public static final XBee64BitAddress UNKNOWN_ADDRESS = new XBee64BitAddress("FFFE");
 	
@@ -52,8 +51,8 @@ public final class XBee64BitAddress {
 	private final byte[] address;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBee64BitAddress}
-	 * with the given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBee64BitAddress} with the given parameters.
 	 * 
 	 * @param address The XBee 64-bit address as byte array.
 	 * 
@@ -78,8 +77,8 @@ public final class XBee64BitAddress {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBee64BitAddress}
-	 * with the given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBee64BitAddress} with the given parameters.
 	 * 
 	 * <p>The string must be the hexadecimal representation of a 64-bit 
 	 * address.</p>
@@ -110,18 +109,18 @@ public final class XBee64BitAddress {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBee64BitAddress}
-	 * with the given bytes being {@code b0} the more significant byte and 
-	 * {@code b7} the less significant byte.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBee64BitAddress} with the given bytes being {@code b0} the 
+	 * more significant byte and {@code b7} the less significant byte.
 	 * 
-	 * @param b0 XBee 64 bit address b0.
-	 * @param b1 XBee 64 bit address b1.
-	 * @param b2 XBee 64 bit address b2.
-	 * @param b3 XBee 64 bit address b3.
-	 * @param b4 XBee 64 bit address b4.
-	 * @param b5 XBee 64 bit address b5.
-	 * @param b6 XBee 64 bit address b6.
-	 * @param b7 XBee 64 bit address b7.
+	 * @param b0 XBee 64-bit address bit 0.
+	 * @param b1 XBee 64-bit address bit 1.
+	 * @param b2 XBee 64-bit address bit 2.
+	 * @param b3 XBee 64-bit address bit 3.
+	 * @param b4 XBee 64-bit address bit 4.
+	 * @param b5 XBee 64-bit address bit 5.
+	 * @param b6 XBee 64-bit address bit 6.
+	 * @param b7 XBee 64-bit address bit 7.
 	 * 
 	 * @throws IllegalArgumentException if {@code b0 > 255} or
 	 *                                  if {@code b0 < 0} or
@@ -179,8 +178,8 @@ public final class XBee64BitAddress {
 	}
 	
 	/**
-	 * Generates a Device ID to be used in Device Cloud from this XBee 64-bit 
-	 * Address.
+	 * Generates the Device ID corresponding to this {@code XBee64BitAddress} 
+	 * to be used in Device Cloud.
 	 * 
 	 * @return Device ID corresponding to this address.
 	 */

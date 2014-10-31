@@ -71,7 +71,7 @@ public enum AssociationIndicationStatus {
 	 * Class constructor. Instantiates a new {@code AssociationIndicationStatus} 
 	 * enumeration entry with the given parameters.
 	 * 
-	 * @param value Association indication status value 
+	 * @param value Association indication status value.
 	 * @param description Association indication status description.
 	 */
 	AssociationIndicationStatus(int value, String description) {
@@ -98,7 +98,8 @@ public enum AssociationIndicationStatus {
 	}
 	
 	/**
-	 * Retrieves the association indication status associated to the given value.
+	 * Retrieves the {@code AssociationIndicationStatus} associated to the 
+	 * given value.
 	 * 
 	 * @param value Value of the association indication status to retrieve.
 	 * @return The association indication status of the associated value, {@code null} 

@@ -19,7 +19,8 @@ import com.digi.xbee.api.RemoteXBeeDevice;
  * if the message is a broadcast message (was received or is being sent via 
  * broadcast). 
  * 
- * <p>This class is used for sequential packet reading within the XBee Java API.</p>
+ * <p>This class is used within the XBee Java Library to read data sent by 
+ * remote devices.</p>
  */
 public class XBeeMessage {
 
@@ -29,29 +30,33 @@ public class XBeeMessage {
 	private boolean isBroadcast;
 	
 	/**
-	 * Class constructor. Instantiates a new object of type {@code XBeeMessage} with the 
-	 * given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBeeMessage} with the given parameters.
 	 * 
 	 * @param remoteXBeeDevice The remote XBee device the message belongs to.
 	 * @param data Byte array containing the data of the message.
 	 * 
 	 * @throws NullPointerException if {@code address == null} or
 	 *                              if {@code data == null}.
+	 * 
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
 	public XBeeMessage(RemoteXBeeDevice remoteXBeeDevice, byte[] data) {
 		this(remoteXBeeDevice, data, false);
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new object of type {@code XBeeMessage} with the 
-	 * given parameters.
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code XBeeMessage} with the given parameters.
 	 * 
 	 * @param remoteXBeeDevice The remote XBee device the message belongs to.
 	 * @param data Byte array containing the data of the message.
-	 * @param isBroadcast Indicates if the message is being sent or was received via broadcast.
+	 * @param isBroadcast Indicates if the message was received via broadcast.
 	 * 
 	 * @throws NullPointerException if {@code xbeeAddress == null} or
 	 *                              if {@code data == null}.
+	 * 
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
 	public XBeeMessage(RemoteXBeeDevice remoteXBeeDevice, byte[] data, boolean isBroadcast) {
 		if (remoteXBeeDevice == null)
@@ -67,7 +72,9 @@ public class XBeeMessage {
 	/**
 	 * Retrieves the remote XBee device this message is associated to.
 	 * 
-	 * @return The remote XBee device.
+	 * @return The remote XBee device this message is associated to.
+	 * 
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
 	public RemoteXBeeDevice getDevice() {
 		return remoteXBeeDevice;
@@ -92,11 +99,10 @@ public class XBeeMessage {
 	}
 	
 	/**
-	 * Retrieves whether or not the message is being sent or was received via 
-	 * broadcast.
+	 * Retrieves whether or not the message was received via broadcast.
 	 * 
-	 * @return True if the message is being sent or was received via broadcast, 
-	 *         false otherwise.
+	 * @return {@code true} if the message was received via broadcast, 
+	 *         {@code false} otherwise.
 	 */
 	public boolean isBroadcast() {
 		return isBroadcast;

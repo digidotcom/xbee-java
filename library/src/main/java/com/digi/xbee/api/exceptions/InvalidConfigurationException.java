@@ -13,7 +13,8 @@ package com.digi.xbee.api.exceptions;
 
 /**
  * This exception will be thrown when trying to open an interface with an
- * invalid configuration.
+ * invalid configuration. Usually happens when the XBee device is 
+ * communicating through a serial port.
  * 
  * @see ConnectionException
  */

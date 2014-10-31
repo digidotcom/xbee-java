@@ -19,6 +19,7 @@ import com.digi.xbee.api.models.ATCommandStatus;
  * AT command.
  * 
  * @see CommunicationException
+ * @see com.digi.xbee.api.models.ATCommandStatus
  */
 public class ATCommandException extends CommunicationException {
 
@@ -36,7 +37,7 @@ public class ATCommandException extends CommunicationException {
 	 * 
 	 * @param atCommandStatus The status of the AT command response.
 	 * 
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 */
 	public ATCommandException(ATCommandStatus atCommandStatus) {
 		super(DEFAULT_MESSAGE);
@@ -50,7 +51,7 @@ public class ATCommandException extends CommunicationException {
 	 * @param message The associated message.
 	 * @param atCommandStatus The status of the AT command response.
 	 * 
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 */
 	public ATCommandException(String message, ATCommandStatus atCommandStatus) {
 		super(message);
@@ -67,7 +68,7 @@ public class ATCommandException extends CommunicationException {
 	 * @param atCommandStatus The status of the AT command response.
 	 * 
 	 * @see Throwable
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 */
 	public ATCommandException(String message, Throwable cause, ATCommandStatus atCommandStatus) {
 		super(message, cause);
@@ -80,14 +81,14 @@ public class ATCommandException extends CommunicationException {
 	 * 
 	 * @return The status of the AT command response.
 	 * 
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 */
 	public ATCommandStatus getCommandStatus() {
 		return atCommandStatus;
 	}
 	
 	/**
-	 * Retrieves the text with containing the status of the AT command response 
+	 * Retrieves the text containing the status of the AT command response 
 	 * from the exception.
 	 * 
 	 * @return The text with the status of the AT command response.

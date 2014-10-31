@@ -17,9 +17,9 @@ package com.digi.xbee.api;
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>
  * 
- * @see XBeeNetwork
  * @see DigiMeshNetwork
  * @see DigiPointNetwork
+ * @see XBeeNetwork
  * @see ZigBeeNetwork
  */
 public class Raw802Network extends XBeeNetwork {
@@ -29,7 +29,7 @@ public class Raw802Network extends XBeeNetwork {
 	 * 
 	 * @param device Local 802.15.4 device to get the network from.
 	 * 
-	 * @throws NullPointerException If {@code device == null}.
+	 * @throws NullPointerException if {@code device == null}.
 	 * 
 	 * @see Raw802Device
 	 */

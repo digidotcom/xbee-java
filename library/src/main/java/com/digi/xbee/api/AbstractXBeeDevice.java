@@ -43,7 +43,6 @@ import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.HardwareVersion;
-import com.digi.xbee.api.models.HardwareVersionEnum;
 import com.digi.xbee.api.models.PowerLevel;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -75,8 +74,40 @@ import com.digi.xbee.api.utils.HexUtils;
 public abstract class AbstractXBeeDevice {
 	
 	// Constants.
+	
+	/**
+	 * Default receive timeout used to wait for a response in synchronous 
+	 * operations: {@value} ms.
+	 * 
+	 * @see XBeeDevice#getReceiveTimeout()
+	 * @see XBeeDevice#setReceiveTimeout(int)
+	 */
 	protected static int DEFAULT_RECEIVE_TIMETOUT = 2000; // 2.0 seconds of timeout to receive packet and command responses.
+	
+	/**
+	 * Timeout to wait before entering in command mode: {@value} ms.
+	 * 
+	 * <p>It is used to determine the operating mode of the module (this 
+	 * library only supports API modes, not transparent mode).</p>
+	 * 
+	 * <p>This value depends on the {@code GT}, {@code AT} and/or {@code BT} 
+	 * parameters.</p>
+	 * 
+	 * @see XBeeDevice#determineOperatingMode()
+	 */
 	protected static int TIMEOUT_BEFORE_COMMAND_MODE = 1200;
+	
+	/**
+	 * Timeout to wait after entering in command mode: {@value} ms.
+	 * 
+	 * <p>It is used to determine the operating mode of the module (this 
+	 * library only supports API modes, not transparent mode).</p>
+	 * 
+	 * <p>This value depends on the {@code GT}, {@code AT} and/or {@code BT} 
+	 * parameters.</p>
+	 * 
+	 * @see XBeeDevice#determineOperatingMode()
+	 */
 	protected static int TIMEOUT_ENTER_COMMAND_MODE = 1500;
 	
 	// Variables.
@@ -94,14 +125,14 @@ public abstract class AbstractXBeeDevice {
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
 	
+	protected AbstractXBeeDevice localXBeeDevice;
+	
 	protected Logger logger;
 	
 	private String nodeID;
 	private String firmwareVersion;
 	
 	private HardwareVersion hardwareVersion;
-	
-	protected AbstractXBeeDevice localXBeeDevice;
 	
 	private Object ioLock = new Object();
 	
@@ -119,8 +150,14 @@ public abstract class AbstractXBeeDevice {
 	 *                 Other connection parameters will be set as default (8 
 	 *                 data bits, 1 stop bit, no parity, no flow control).
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0}.
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 */
 	public AbstractXBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -137,12 +174,18 @@ public abstract class AbstractXBeeDevice {
 	 * @param parity Serial port data bits.
 	 * @param flowControl Serial port data bits.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
 	 *                                  if {@code dataBits < 0} or
 	 *                                  if {@code stopBits < 0} or
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 */
 	public AbstractXBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -158,7 +201,12 @@ public abstract class AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code serialPortParameters == null}.
 	 * 
-	 * @see SerialPortParameters
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public AbstractXBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
@@ -173,7 +221,12 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null}.
 	 * 
-	 * @see IConnectionInterface
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public AbstractXBeeDevice(IConnectionInterface connectionInterface) {
 		if (connectionInterface == null)
@@ -199,7 +252,12 @@ public abstract class AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		this(localXBeeDevice, addr64, null, null);
@@ -223,8 +281,13 @@ public abstract class AbstractXBeeDevice {
 	 * @throws NullPointerException If {@code localXBeeDevice == null} or
 	 *                              if {@code addr64 == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String id) {
@@ -248,38 +311,48 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the connection interface associated to this XBee device.
+	 * Returns the connection interface associated to this XBee device.
 	 * 
 	 * @return XBee device's connection interface.
 	 * 
-	 * @see IConnectionInterface
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public IConnectionInterface getConnectionInterface() {
 		return connectionInterface;
 	}
 	
 	/**
-	 * Retrieves whether or not the XBee device is a remote device.
+	 * Returns whether this XBee device is a remote device.
 	 * 
-	 * @return {@code true} if the XBee device is a remote device, 
+	 * @return {@code true} if this XBee device is a remote device, 
 	 *         {@code false} otherwise.
 	 */
 	abstract public boolean isRemote();
 	
 	/**
-	 * Reads some parameters from the device and obtains its protocol.
+	 * Reads some parameters from this device and obtains its protocol.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * <p>This method refresh the values of:</p>
+	 * <ul>
+	 * <li>64-bit address only if it is not initialized.</li>
+	 * <li>Node Identifier.</li>
+	 * <li>Hardware version if it is not initialized.</li>
+	 * <li>Firmware version.</li>
+	 * <li>XBee device protocol.</li>
+	 * <li>16-bit address (not for DigiMesh modules).</li>
+	 * </ul>
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout reading the parameters.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #get64BitAddress()
 	 * @see #get16BitAddress()
-	 * @see #getNodeID()
-	 * @see #setNodeID(String)
+	 * @see #get64BitAddress()
 	 * @see #getHardwareVersion()
+	 * @see #getNodeID()
 	 * @see #getFirmwareVersion()
 	 * @see #getXBeeProtocol()
+	 * @see #setNodeID(String)
 	 */
 	public void readDeviceInfo() throws TimeoutException, XBeeException {
 		byte[] response = null;
@@ -325,33 +398,42 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the 16-bit address of the XBee device.
+	 * Returns the 16-bit address of this XBee device.
 	 * 
-	 * @return The 16-bit address of the XBee device.
+	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>
 	 * 
-	 * @see XBee16BitAddress
+	 * @return The 16-bit address of this XBee device.
+	 * 
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public XBee16BitAddress get16BitAddress() {
 		return xbee16BitAddress;
 	}
 	
 	/**
-	 * Retrieves the 64-bit address of the XBee device.
+	 * Returns the 64-bit address of this XBee device.
 	 * 
-	 * @return The 64-bit address of the XBee device.
+	 * <p>If this value is {@code null} or 
+	 * {@code XBee64BitAddress.UNKNOWN_ADDRESS}, use the 
+	 * {@link #readDeviceInfo()} method to get its value.</p>
 	 * 
-	 * @see XBee64BitAddress
+	 * @return The 64-bit address of this XBee device.
+	 * 
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress get64BitAddress() {
 		return xbee64BitAddress;
 	}
 	
 	/**
-	 * Retrieves the Operating mode (AT, API or API escaped) of the XBee device.
+	 * Returns the Operating mode (AT, API or API escaped) of this XBee device 
+	 * for a local device, and the operating mode of the local device used as 
+	 * communication interface for a remote device.
 	 * 
-	 * @return The operating mode of the XBee device.
+	 * @return The operating mode of the local XBee device.
 	 * 
-	 * @see OperatingMode
+	 * @see #isRemote()
+	 * @see com.digi.xbee.api.models.OperatingMode
 	 */
 	protected OperatingMode getOperatingMode() {
 		if (isRemote())
@@ -360,20 +442,24 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the XBee Protocol of the XBee device.
+	 * Returns the XBee Protocol of this XBee device.
+	 * 
+	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>
 	 * 
 	 * @return The XBee device protocol.
 	 * 
-	 * @see XBeeProtocol
+	 * @see com.digi.xbee.api.models.XBeeProtocol
 	 */
 	public XBeeProtocol getXBeeProtocol() {
 		return xbeeProtocol;
 	}
 	
 	/**
-	 * Retrieves the node identifier of the XBee device.
+	 * Returns the node identifier of this XBee device.
 	 * 
-	 * @return The node identifier of the device.
+	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>
+	 * 
+	 * @return The node identifier of this device.
 	 * 
 	 * @see #setNodeID(String)
 	 */
@@ -382,12 +468,12 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the node identifier of the XBee device.
+	 * Sets the node identifier of this XBee device.
 	 * 
 	 * @param nodeID The new node id of the device.
 	 * 
 	 * @throws IllegalArgumentException if {@code nodeID.length > 20}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code nodeID == null}.
 	 * @throws TimeoutException if there is a timeout setting the node ID value.
 	 * @throws XBeeException if there is any other XBee related exception.
@@ -406,8 +492,10 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the firmware version (hexadecimal string value) of the XBee 
+	 * Returns the firmware version (hexadecimal string value) of this XBee 
 	 * device.
+	 * 
+	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>
 	 * 
 	 * @return The firmware version of the XBee device.
 	 */
@@ -416,20 +504,23 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the hardware version of the XBee device.
+	 * Returns the hardware version of this XBee device.
+	 * 
+	 * <p>If this value is {@code null}, use the {@link #readDeviceInfo()} 
+	 * method to get its value.</p>
 	 * 
 	 * @return The hardware version of the XBee device.
 	 * 
-	 * @see HardwareVersion
-	 * @see HardwareVersionEnum
+	 * @see com.digi.xbee.api.models.HardwareVersion
+	 * @see com.digi.xbee.api.models.HardwareVersionEnum
 	 */
 	public HardwareVersion getHardwareVersion() {
 		return hardwareVersion;
 	}
 	
 	/**
-	 * Updates the current device reference with the data provided for the given 
-	 * device.
+	 * Updates the current device reference with the data provided for the 
+	 * given device.
 	 * 
 	 * <p><b>This is only for internal use.</b></p>
 	 * 
@@ -475,10 +566,15 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param listener Listener to be notified when new packets are received.
 	 * 
-	 * @see IPacketReceiveListener
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
 	 * @see #removePacketListener(IPacketReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 */
 	protected void addPacketListener(IPacketReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.addPacketReceiveListener(listener);
@@ -491,10 +587,15 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
-	 * @see IPacketReceiveListener
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
 	 * @see #addPacketListener(IPacketReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 */
 	protected void removePacketListener(IPacketReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.removePacketReceiveListener(listener);
@@ -509,10 +610,15 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param listener Listener to be notified when new data is received.
 	 * 
-	 * @see IDataReceiveListener
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
 	 * @see #removeDataListener(IDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IDataReceiveListener
 	 */
 	protected void addDataListener(IDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.addDataReceiveListener(listener);
@@ -525,10 +631,15 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param listener Listener to be removed from the list of listeners.
 	 * 
-	 * @see IDataReceiveListener
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
 	 * @see #addDataListener(IDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IDataReceiveListener
 	 */
 	protected void removeDataListener(IDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.removeDataReceiveListener(listener);
@@ -545,12 +656,13 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
-	 * @see IIOSampleReceiveListener
 	 * @see #removeIOSampleListener(IIOSampleReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener
 	 */
 	protected void addIOSampleListener(IIOSampleReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.addIOSampleReceiveListener(listener);
@@ -565,12 +677,13 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
-	 * @see IIOSampleReceiveListener
 	 * @see #addIOSampleListener(IIOSampleReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener
 	 */
 	protected void removeIOSampleListener(IIOSampleReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.removeIOSampleReceiveListener(listener);
@@ -588,12 +701,13 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
-	 * @see IModemStatusReceiveListener
 	 * @see #removeModemStatusListener(IModemStatusReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener
 	 */
 	protected void addModemStatusListener(IModemStatusReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
+		
 		if (dataReader == null)
 			return;
 		dataReader.addModemStatusReceiveListener(listener);
@@ -608,8 +722,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
-	 * @see IModemStatusReceiveListener
 	 * @see #addModemStatusListener(IModemStatusReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener
 	 */
 	protected void removeModemStatusListener(IModemStatusReceiveListener listener) {
 		if (listener == null)
@@ -630,18 +744,19 @@ public abstract class AbstractXBeeDevice {
 	 * @return An {@code ATCommandResponse} object containing the response of 
 	 *         the command or {@code null} if there is no response.
 	 *         
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws InvalidOperatingModeException if the operating mode is different 
+	 *                                       than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
+	 * @throws IOException if an I/O error occurs while sending the AT command.
+	 * @throws NullPointerException if {@code command == null}.
 	 * @throws TimeoutException if the configured time expires while waiting 
 	 *                          for the command reply.
-	 * @throws IOException if an I/O error occurs while sending the AT command.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code command == null}.
 	 * 
-	 * @see ATCommand
-	 * @see ATCommandResponse
-	 * @see XBeeDevice#setReceiveTimeout(int)
 	 * @see XBeeDevice#getReceiveTimeout()
+	 * @see XBeeDevice#setReceiveTimeout(int)
+	 * @see com.digi.xbee.api.models.ATCommand
+	 * @see com.digi.xbee.api.models.ATCommandResponse
 	 */
 	protected ATCommandResponse sendATCommand(ATCommand command) 
 			throws InvalidOperatingModeException, TimeoutException, IOException {
@@ -706,21 +821,24 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Sends the given XBee packet asynchronously.
 	 * 
+	 * <p>The method will not wait for an answer for the packet.</p>
+	 * 
 	 * <p>To be notified when the answer is received, use 
 	 * {@link #sendXBeePacket(XBeePacket, IPacketReceiveListener)}.</p>
 	 * 
 	 * @param packet XBee packet to be sent asynchronously.
 	 * 
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws InvalidOperatingModeException if the operating mode is different 
+	 *                                       than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
-	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * 
-	 * @see XBeePacket
 	 * @see #sendXBeePacket(XBeePacket)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
 	 * @see #sendXBeePacketAsync(XBeePacket)
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	protected void sendXBeePacketAsync(XBeePacket packet) 
 			throws InvalidOperatingModeException, IOException {
@@ -728,24 +846,28 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sends the given XBee packet asynchronously and registers the given packet
-	 * listener (if not {@code null}) to wait for an answer.
+	 * Sends the given XBee packet asynchronously and registers the given 
+	 * packet listener (if not {@code null}) to wait for an answer.
+	 * 
+	 * <p>The method will not wait for an answer for the packet, but the given 
+	 * listener will be notified when the answer arrives.</p>
 	 * 
 	 * @param packet XBee packet to be sent.
 	 * @param packetReceiveListener Listener for the operation, {@code null} 
 	 *                              not to be notified when the answer arrives.
-	 *                              
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws InvalidOperatingModeException if the operating mode is different 
+	 *                                       than {@link OperatingMode#API} and 
 	 *                                       {@link OperatingMode#API_ESCAPE}.
 	 * @throws IOException if an I/O error occurs while sending the XBee packet.
-	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * 
-	 * @see XBeePacket
-	 * @see IPacketReceiveListener
 	 * @see #sendXBeePacket(XBeePacket)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
 	 * @see #sendXBeePacketAsync(XBeePacket)
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListenerTest
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	protected void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)
 			throws InvalidOperatingModeException, IOException {
@@ -794,20 +916,22 @@ public abstract class AbstractXBeeDevice {
 	 * @param packet XBee packet to be sent.
 	 * @return An {@code XBeePacket} containing the response of the sent packet 
 	 *         or {@code null} if there is no response.
-	 *         
-	 * @throws InvalidOperatingModeException if the operating mode is different than {@link OperatingMode#API} and 
-	 *                                       {@link OperatingMode#API_ESCAPE}.
-	 * @throws TimeoutException if the configured time expires while waiting for the packet reply.
-	 * @throws IOException if an I/O error occurs while sending the XBee packet.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code packet == null}.
 	 * 
-	 * @see XBeePacket
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws InvalidOperatingModeException if the operating mode is different 
+	 *                                       than {@link OperatingMode#API} and 
+	 *                                       {@link OperatingMode#API_ESCAPE}.
+	 * @throws IOException if an I/O error occurs while sending the XBee packet.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * @throws TimeoutException if the configured time expires while waiting for
+	 *                          the packet reply.
+	 * 
 	 * @see #sendXBeePacket(XBeePacket)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
 	 * @see #sendXBeePacketAsync(XBeePacket)
 	 * @see XBeeDevice#setReceiveTimeout(int)
 	 * @see XBeeDevice#getReceiveTimeout()
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	protected XBeePacket sendXBeePacket(final XBeePacket packet) 
 			throws InvalidOperatingModeException, TimeoutException, IOException {
@@ -876,7 +1000,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param xbeePacket The packet to add the frame ID.
 	 * 
-	 * @see XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	private void insertFrameID(XBeePacket xbeePacket) {
 		if (xbeePacket instanceof XBeeAPIPacket)
@@ -887,7 +1011,7 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the packet listener corresponding to the provided sent packet. 
+	 * Returns the packet listener corresponding to the provided sent packet. 
 	 * 
 	 * <p>The listener will filter those packets  matching with the Frame ID of 
 	 * the sent packet storing them in the provided responseList array.</p>
@@ -898,9 +1022,9 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return A packet receive listener that will filter the packets received 
 	 *         corresponding to the sent one.
-	 *         
-	 * @see IPacketReceiveListener
-	 * @see XBeePacket
+	 * 
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	private IPacketReceiveListener createPacketReceivedListener(final XBeePacket sentPacket, final ArrayList<XBeePacket> responseList) {
 		IPacketReceiveListener packetReceiveListener = new IPacketReceiveListener() {
@@ -953,15 +1077,15 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves whether or not the sent packet is the same than the received one.
+	 * Returns whether the sent packet is the same than the received one.
 	 * 
 	 * @param sentPacket The packet sent.
 	 * @param receivedPacket The packet received.
 	 * 
 	 * @return {@code true} if the sent packet is the same than the received 
 	 *         one, {@code false} otherwise.
-	 *         
-	 * @see XBeePacket
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	private boolean isSamePacket(XBeePacket sentPacket, XBeePacket receivedPacket) {
 		// TODO Should not we implement the {@code equals} method in the XBeePacket??
@@ -971,12 +1095,14 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Writes the given XBee packet in the connection interface.
+	 * Writes the given XBee packet in the connection interface of this device.
 	 * 
 	 * @param packet XBee packet to be written.
 	 * 
 	 * @throws IOException if an I/O error occurs while writing the XBee packet 
 	 *                     in the connection interface.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	private void writePacket(XBeePacket packet) throws IOException {
 		logger.debug(toString() + "Sending XBee packet: \n{}", packet.toPrettyString());
@@ -993,7 +1119,7 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the next Frame ID of the XBee protocol.
+	 * Returns the next Frame ID of this XBee device.
 	 * 
 	 * @return The next Frame ID.
 	 */
@@ -1010,19 +1136,23 @@ public abstract class AbstractXBeeDevice {
 	
 	/**
 	 * Sends the provided {@code XBeePacket} and determines if the transmission 
-	 * status is success for synchronous transmissions. If the status is not 
-	 * success, an {@code TransmitException} is thrown.
+	 * status is success for synchronous transmissions.
+	 * 
+	 * <p>If the status is not success, an {@code TransmitException} is thrown.</p>
 	 * 
 	 * @param packet The {@code XBeePacket} to be sent.
-	 * @param asyncTransmission Determines whether or not the transmission 
-	 *                          should be made asynchronously.
+	 * @param asyncTransmission Determines whether the transmission must be 
+	 *                          asynchronous.
 	 * 
-	 * @throws TransmitException if {@code packet} is not an instance of {@code TransmitStatusPacket} or 
-	 *                           if {@code packet} is not an instance of {@code TXStatusPacket} or 
-	 *                           if its transmit status is different than {@code XBeeTransmitStatus.SUCCESS}.
+	 * @throws TransmitException if {@code packet} is not an instance of 
+	 *                           {@code TransmitStatusPacket} or 
+	 *                           if {@code packet} is not an instance of 
+	 *                           {@code TXStatusPacket} or 
+	 *                           if its transmit status is different than 
+	 *                           {@code XBeeTransmitStatus.SUCCESS}.
 	 * @throws XBeeException if there is any other XBee related error.
 	 * 
-	 * @see XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	protected void sendAndCheckXBeePacket(XBeePacket packet, boolean asyncTransmission) throws TransmitException, XBeeException {
 		XBeePacket receivedPacket = null;
@@ -1059,21 +1189,21 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the configuration of the given IO line.
+	 * Sets the configuration of the given IO line of this XBee device.
 	 * 
 	 * @param ioLine The IO line to configure.
 	 * @param ioMode The IO mode to set to the IO line.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ioLine == null} or
+	 *                              if {@code ioMode == null}.
 	 * @throws TimeoutException if there is a timeout sending the set 
 	 *                          configuration command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null} or
-	 *                              if {@code ioMode == null}.
 	 * 
-	 * @see IOLine
-	 * @see IOMode
 	 * @see #getIOConfiguration(IOLine)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOMode
 	 */
 	public void setIOConfiguration(IOLine ioLine, IOMode ioMode) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1089,21 +1219,22 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the configuration mode of the provided IO line.
+	 * Returns the configuration mode of the provided IO line of this XBee 
+	 * device.
 	 * 
 	 * @param ioLine The IO line to get its configuration.
 	 * 
 	 * @return The IO mode (configuration) of the provided IO line.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws TimeoutException if there is a timeout sending the get 
 	 *                          configuration command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
-	 * @see IOLine
-	 * @see IOMode
 	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOMode
 	 */
 	public IOMode getIOConfiguration(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1124,25 +1255,26 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the digital value (high or low) to the provided IO line.
+	 * Sets the digital value (high or low) to the provided IO line of this 
+	 * XBee device.
 	 * 
 	 * @param ioLine The IO line to set its value.
 	 * @param ioValue The IOValue to set to the IO line ({@code HIGH} or 
 	 *              {@code LOW}).
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ioLine == null} or 
+	 *                              if {@code ioValue == null}.
 	 * @throws TimeoutException if there is a timeout sending the set DIO 
 	 *                          command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null} or 
-	 *                              if {@code ioValue == null}.
 	 * 
-	 * @see IOLine
-	 * @see IOValue
-	 * @see IOMode#DIGITAL_OUT_HIGH
-	 * @see IOMode#DIGITAL_OUT_LOW
 	 * @see #getIOConfiguration(IOLine)
 	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOValue
+	 * @see com.digi.xbee.api.io.IOMode#DIGITAL_OUT_HIGH
+	 * @see com.digi.xbee.api.io.IOMode#DIGITAL_OUT_LOW
 	 */
 	public void setDIOValue(IOLine ioLine, IOValue ioValue) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1159,25 +1291,37 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the digital value of the provided IO line (must be configured 
-	 * as digital I/O).
+	 * Returns the digital value of the provided IO line of this XBee device.
+	 * 
+	 * <p>The provided <b>IO line must be previously configured as digital I/O
+	 * </b>. To do so, use {@code setIOConfiguration} and the following 
+	 * {@code IOMode}:</p>
+	 * 
+	 * <ul>
+	 * <li>{@code IOMode.DIGITAL_IN} to configure as digital input.</li>
+	 * <li>{@code IOMode.DIGITAL_OUT_HIGH} to configure as digital output, high.
+	 * </li>
+	 * <li>{@code IOMode.DIGITAL_OUT_LOW} to configure as digital output, low.
+	 * </li>
+	 * </ul>
 	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * 
 	 * @return The digital value corresponding to the provided IO line.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code ioLine == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO values 
 	 *                          command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see IOLine
-	 * @see IOMode#DIGITAL_IN
-	 * @see IOMode#DIGITAL_OUT_HIGH
-	 * @see IOMode#DIGITAL_OUT_LOW
 	 * @see #getIOConfiguration(IOLine)
 	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOValue
+	 * @see com.digi.xbee.api.io.IOMode#DIGITAL_IN
+	 * @see com.digi.xbee.api.io.IOMode#DIGITAL_OUT_HIGH
+	 * @see com.digi.xbee.api.io.IOMode#DIGITAL_OUT_LOW
 	 */
 	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1196,28 +1340,34 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the duty cycle (in %) of the provided IO line. 
+	 * Sets the duty cycle (in %) of the provided IO line of this XBee device. 
 	 * 
-	 * <p>IO line must be PWM capable({@code hasPWMCapability()}) and 
-	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
+	 * <p>The provided <b>IO line must be</b>:</p>
+	 * 
+	 * <ul>
+	 * <li><b>PWM capable</b> ({@link IOLine#hasPWMCapability()}).</li>
+	 * <li>Previously <b>configured as PWM Output</b> (use 
+	 * {@code setIOConfiguration} and {@code IOMode.PWM}).</li>
+	 * </ul>
 	 * 
 	 * @param ioLine The IO line to set its duty cycle value.
 	 * @param dutyCycle The duty cycle of the PWM.
 	 * 
-	 * @throws TimeoutException if there is a timeout sending the set PWM duty 
-	 *                          cycle command.
-	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false} or 
 	 *                                  if {@code value < 0} or
 	 *                                  if {@code value > 1023}.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code ioLine == null}.
+	 * @throws TimeoutException if there is a timeout sending the set PWM duty 
+	 *                          cycle command.
+	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see IOLine
-	 * @see IOMode#PWM
-	 * @see #getPWMDutyCycle(IOLine)
+	 * @see #getIOConfiguration(IOLine)
 	 * @see #getIOConfiguration(IOLine)
 	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see #getPWMDutyCycle(IOLine)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOMode#PWM
 	 */
 	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1240,28 +1390,34 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Gets the PWM duty cycle (in %) corresponding to the provided IO line.
+	 * Gets the PWM duty cycle (in %) corresponding to the provided IO line of 
+	 * this XBee device.
 	 * 
-	 * <p>IO line must be PWM capable ({@code hasPWMCapability()}) and 
-	 * it must be configured as PWM Output ({@code IOMode.PWM}).</p>
+	 * <p>The provided <b>IO line must be</b>:</p>
+	 * 
+	 * <ul>
+	 * <li><b>PWM capable</b> ({@link IOLine#hasPWMCapability()}).</li>
+	 * <li>Previously <b>configured as PWM Output</b> (use 
+	 * {@code setIOConfiguration} and {@code IOMode.PWM}).</li>
+	 * </ul>
 	 * 
 	 * @param ioLine The IO line to get its PWM duty cycle.
 	 * 
 	 * @return The PWM duty cycle value corresponding to the provided IO line 
 	 *         (0% - 100%).
 	 * 
+	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws TimeoutException if there is a timeout sending the get PWM duty 
 	 *                          cycle command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws IllegalArgumentException if {@code ioLine.hasPWMCapability() == false}.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
-	 * @see IOLine
-	 * @see IOMode#PWM
-	 * @see #setPWMDutyCycle(IOLine, double)
 	 * @see #getIOConfiguration(IOLine)
 	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see #setPWMDutyCycle(IOLine, double)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOMode#PWM
 	 */
 	public double getPWMDutyCycle(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1282,23 +1438,25 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the analog value of the provided IO line (must be configured 
-	 * as ADC).
+	 * Returns the analog value of the provided IO line of this XBee device.
+	 * 
+	 * <p>The provided <b>IO line must be previously configured as ADC</b>. To 
+	 * do so, use {@code setIOConfiguration} and {@code IOMode.ADC}.</p>
 	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * 
 	 * @return The analog value corresponding to the provided IO line.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ioLine == null}.
 	 * @throws TimeoutException if there is a timeout sending the get IO values
 	 *                          command.
 	 * @throws XBeeException if there is any other XBee related exception.
-	 * @throws InterfaceNotOpenException if the device is not open.
-	 * @throws NullPointerException if {@code ioLine == null}.
 	 * 
-	 * @see IOLine
-	 * @see IOMode#ADC
 	 * @see #getIOConfiguration(IOLine)
 	 * @see #setIOConfiguration(IOLine, IOMode)
+	 * @see com.digi.xbee.api.io.IOLine
+	 * @see com.digi.xbee.api.io.IOMode#ADC
 	 */
 	public int getADCValue(IOLine ioLine) throws TimeoutException, XBeeException {
 		// Check IO line.
@@ -1317,21 +1475,22 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the 64 bit destination extended address.
+	 * Sets the 64-bit destination extended address of this XBee device.
 	 * 
 	 * <p>{@link XBee64BitAddress#BROADCAST_ADDRESS} is the broadcast address 
 	 * for the PAN. {@link XBee64BitAddress#COORDINATOR_ADDRESS} can be used to 
 	 * address the Pan Coordinator.</p>
 	 * 
-	 * @param xbee64BitAddress Destination address.
+	 * @param xbee64BitAddress 64-bit destination address to be configured.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code xbee64BitAddress == null}.
-	 * @throws InterfaceNotOpenException if the device is not open.
 	 * @throws TimeoutException if there is a timeout sending the set 
 	 *                          destination address command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see #getDestinationAddress()
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public void setDestinationAddress(XBee64BitAddress xbee64BitAddress) throws TimeoutException, XBeeException {
 		if (xbee64BitAddress == null)
@@ -1355,16 +1514,21 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the 64 bit destination extended address.
+	 * Returns the 64-bit destination extended address of this XBee device.
 	 * 
-	 * @return 64 bit destination address.
+	 * <p>{@link XBee64BitAddress#BROADCAST_ADDRESS} is the broadcast address 
+	 * for the PAN. {@link XBee64BitAddress#COORDINATOR_ADDRESS} can be used to 
+	 * address the Pan Coordinator.</p>
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @return 64-bit destination address.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the get
 	 *                          destination address command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see #setDestinationAddress(XBee64BitAddress)
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress getDestinationAddress() throws TimeoutException, XBeeException {
 		byte[] dh = getParameter("DH");
@@ -1378,25 +1542,30 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the IO sampling rate to enable periodic sampling.
+	 * Sets the IO sampling rate to enable periodic sampling in this XBee 
+	 * device.
+	 * 
+	 * <p>A sample rate of {@code 0} ms. disables this feature.</p>
 	 * 
 	 * <p>All enabled digital IO and analog inputs will be sampled and
 	 * transmitted every {@code rate} milliseconds to the configured destination
 	 * address.</p>
 	 * 
-	 * <p>A sample rate of {@code 0} ms. disables this feature.</p>
+	 * <p>The destination address can be configured using the 
+	 * {@code setDestinationAddress(XBee64BitAddress)} method and retrieved by 
+	 * {@code getDestinationAddress()}.</p>
 	 * 
 	 * @param rate IO sampling rate in milliseconds.
 	 * 
 	 * @throws IllegalArgumentException if {@code rate < 0} or {@code rate >
 	 *                                  0xFFFF}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the set IO
 	 *                          sampling rate command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #getDestinationAddress()
+	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #getIOSamplingRate()
 	 */
 	public void setIOSamplingRate(int rate) throws TimeoutException, XBeeException {
@@ -1411,18 +1580,24 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the IO sampling rate.
+	 * Returns the IO sampling rate of this XBee device.
 	 * 
 	 * <p>A sample rate of {@code 0} means the IO sampling feature is disabled.
 	 * </p>
 	 * 
+	 * <p>Periodic sampling allows this XBee module to take an IO sample and 
+	 * transmit it to a remote device (configured in the destination address) 
+	 * at the configured periodic rate (ms).</p>
+	 * 
 	 * @return IO sampling rate in milliseconds.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the get IO
 	 *                          sampling rate command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
+	 * @see #getDestinationAddress()
+	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #setIOSamplingRate(int)
 	 */
 	public int getIOSamplingRate() throws TimeoutException, XBeeException {
@@ -1435,26 +1610,30 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the digital IO lines to be monitored and sampled when their status
-	 * changes.
+	 * Sets the digital IO lines of this XBee device to be monitored and 
+	 * sampled whenever their status changes.
+	 * 
+	 * <p>A {@code null} set of lines disables this feature.</p>
 	 * 
 	 * <p>If a change is detected on an enabled digital IO pin, a digital IO
 	 * sample is immediately transmitted to the configured destination address.
 	 * </p>
 	 * 
-	 * <p>A {@code null} set disables this feature.</p>
+	 * <p>The destination address can be configured using the 
+	 * {@code setDestinationAddress(XBee64BitAddress)} method and retrieved by 
+	 * {@code getDestinationAddress()}.</p>
 	 * 
 	 * @param lines Set of IO lines to be monitored, {@code null} to disable 
 	 *              this feature.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the set DIO
 	 *                          change detection command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
+	 * @see #getDestinationAddress()
 	 * @see #getDIOChangeDetection()
 	 * @see #setDestinationAddress(XBee64BitAddress)
-	 * @see #getDestinationAddress()
 	 */
 	public void setDIOChangeDetection(Set<IOLine> lines) throws TimeoutException, XBeeException {
 		// Check connection.
@@ -1477,19 +1656,26 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the set of IO lines that are monitored for change detection.
+	 * Returns the set of IO lines of this device that are monitored for 
+	 * change detection.
 	 * 
 	 * <p>A {@code null} set means the DIO change detection feature is disabled.
 	 * </p>
 	 * 
+	 * <p>Modules can be configured to transmit to the configured destination 
+	 * address a data sample immediately whenever a monitored digital IO line 
+	 * changes state.</p> 
+	 * 
 	 * @return Set of digital IO lines that are monitored for change detection,
 	 *         {@code null} if there are no monitored lines.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the get DIO
 	 *                          change detection command.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
+	 * @see #getDestinationAddress()
+	 * @see #setDestinationAddress(XBee64BitAddress)
 	 * @see #setDIOChangeDetection(Set)
 	 */
 	public Set<IOLine> getDIOChangeDetection() throws TimeoutException, XBeeException {
@@ -1515,10 +1701,22 @@ public abstract class AbstractXBeeDevice {
 	 * Applies changes to all command registers causing queued command register
 	 * values to be applied.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * <p>This method must be invoked if the 'apply configuration changes' 
+	 * option is disabled and the changes to this XBee device parameters must 
+	 * be applied.</p>
+	 * 
+	 * <p>To know if the 'apply configuration changes' option is enabled, use 
+	 * the {@code isApplyConfigurationChangesEnabled()} method. And to 
+	 * enable/disable this feature the method 
+	 * {@code enableApplyConfigurationChanges(boolean)}.</p>
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the get Apply
 	 *                          Changes command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #enableApplyConfigurationChanges(boolean)
+	 * @see #isApplyConfigurationChangesEnabled()
 	 */
 	public void applyChanges() throws TimeoutException, XBeeException {
 		executeParameter("AC");
@@ -1532,6 +1730,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws ATCommandException if {@code response == null} or 
 	 *                            if {@code response.getResponseStatus() != ATCommandStatus.OK}.
+	 * 
+	 * @see com.digi.xbee.api.models.ATCommandResponse
 	 */
 	protected void checkATCommandResponseIsValid(ATCommandResponse response) throws ATCommandException {
 		if (response == null || response.getResponseStatus() == null)
@@ -1541,17 +1741,17 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves an IO sample from the XBee device containing the value of all
+	 * Returns an IO sample from this XBee device containing the value of all
 	 * enabled digital IO and analog input channels.
 	 * 
 	 * @return An IO sample containing the value of all enabled digital IO and
 	 *         analog input channels.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout getting the IO sample.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see IOSample
+	 * @see com.digi.xbee.api.io.IOSample
 	 */
 	public IOSample readIOSample() throws TimeoutException, XBeeException {
 		// Check connection.
@@ -1582,9 +1782,9 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the latest 802.15.4 IO packet and returns its value.
+	 * Returns the latest 802.15.4 IO packet and returns its value.
 	 * 
-	 * @return The value of the latest received 802.15.4 IO packet. 
+	 * @return The value of the latest received 802.15.4 IO packet.
 	 */
 	private byte[] receiveRaw802IOPacket() {
 		ioPacketReceived = false;
@@ -1647,8 +1847,8 @@ public abstract class AbstractXBeeDevice {
 	};
 	
 	/**
-	 * Performs a software reset on the module and blocks until the process
-	 * is completed.
+	 * Performs a software reset on this XBee device and blocks until the 
+	 * process is completed.
 	 * 
 	 * @throws TimeoutException if the configured time expires while waiting 
 	 *                          for the command reply.
@@ -1657,9 +1857,9 @@ public abstract class AbstractXBeeDevice {
 	abstract public void reset() throws TimeoutException, XBeeException;
 	
 	/**
-	 * Sets the given parameter with the provided value in the XBee device.
+	 * Sets the given parameter with the provided value in this XBee device.
 	 * 
-	 * @param parameter The AT command corresponding to the parameter to be set.
+	 * @param parameter The name of the parameter to be set.
 	 * @param parameterValue The value of the parameter to set.
 	 * 
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
@@ -1668,8 +1868,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout setting the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #getParameter(String)
 	 * @see #executeParameter(String)
+	 * @see #getParameter(String)
 	 */
 	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
 		if (parameterValue == null)
@@ -1679,9 +1879,9 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Gets the value of the given parameter from the XBee device.
+	 * Gets the value of the given parameter from this XBee device.
 	 * 
-	 * @param parameter The AT command corresponding to the parameter to be get.
+	 * @param parameter The name of the parameter to retrieve its value.
 	 * 
 	 * @return A byte array containing the value of the parameter.
 	 * 
@@ -1690,8 +1890,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout getting the parameter value.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setParameter(String, byte[])
 	 * @see #executeParameter(String)
+	 * @see #setParameter(String, byte[])
 	 */
 	public byte[] getParameter(String parameter) throws TimeoutException, XBeeException {
 		byte[] parameterValue = sendParameter(parameter, null);
@@ -1703,33 +1903,31 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Executes the given parameter in the XBee device.
+	 * Executes the given command in this XBee device.
 	 * 
-	 * <p>This method is intended to be used for those parameters that cannot 
+	 * <p>This method is intended to be used for those AT parameters that cannot 
 	 * be read or written, they just execute some action in the XBee module.</p>
 	 * 
-	 * @param parameter The AT command corresponding to the parameter to be 
-	 *                  executed.
+	 * @param parameter The AT command to be executed.
 	 * 
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout executing the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setParameter(String, byte[])
 	 * @see #getParameter(String)
+	 * @see #setParameter(String, byte[])
 	 */
 	public void executeParameter(String parameter) throws TimeoutException, XBeeException {
 		sendParameter(parameter, null);
 	}
 	
 	/**
-	 * Sends the given AT parameter to the XBee device with an optional argument 
-	 * or value and returns the response (likely the value) of that parameter 
-	 * in a byte array format.
+	 * Sends the given AT parameter to this XBee device with an optional 
+	 * argument or value and returns the response (likely the value) of that 
+	 * parameter in a byte array format.
 	 * 
-	 * @param parameter The AT command corresponding to the parameter to be 
-	 *                  executed.
+	 * @param parameter The name of the AT command to be executed.
 	 * @param parameterValue The value of the parameter to set (if any).
 	 * 
 	 * @return A byte array containing the value of the parameter.
@@ -1739,9 +1937,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout executing the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setParameter(String, byte[])
 	 * @see #getParameter(String)
 	 * @see #executeParameter(String)
+	 * @see #setParameter(String, byte[])
 	 */
 	private byte[] sendParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
 		if (parameter == null)
@@ -1776,18 +1974,20 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Enables or disables the apply configuration changes option.
+	 * Enables or disables the 'apply configuration changes' option for this 
+	 * device.
 	 * 
-	 * <p>Enabling this option means that when any parameter of the XBee device 
-	 * is set, it will be also applied.</p>
+	 * <p>Enabling this option means that when any parameter of this XBee 
+	 * device is set, it will be also applied.</p>
 	 * 
-	 * <p>If this option is disabled you will need to issue the 
-	 * {@code #applyChanges()} method in order to apply the changes in all the 
-	 * parameters that were previously set.</p>
+	 * <p>If this option is disabled, the method {@code applyChanges()} must be 
+	 * used in order to apply the changes in all the parameters that were 
+	 * previously set.</p>
 	 * 
 	 * @param enabled {@code true} to apply configuration changes when an XBee 
 	 *                parameter is set, {@code false} otherwise.
 	 * 
+	 * @see #applyChanges()
 	 * @see #isApplyConfigurationChangesEnabled()
 	 */
 	public void enableApplyConfigurationChanges(boolean enabled) {
@@ -1795,10 +1995,19 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves whether or not the apply configuration changes option is enabled.
+	 * Returns whether the 'apply configuration changes' option is enabled in 
+	 * this device.
 	 * 
-	 * @return True if the option is enabled, false otherwise.
+	 * <p>If this option is enabled, when any parameter of this XBee device is 
+	 * set, it will be also applied.</p>
 	 * 
+	 * <p>If this option is disabled, the method {@code applyChanges()} must be 
+	 * used in order to apply the changes in all the parameters that were 
+	 * previously set.</p>
+	 * 
+	 * @return {@code true} if the option is enabled, {@code false} otherwise.
+	 * 
+	 * @see #applyChanges()
 	 * @see #enableApplyConfigurationChanges(boolean)
 	 */
 	public boolean isApplyConfigurationChangesEnabled() {
@@ -1806,17 +2015,18 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Configures the 16-bit address (network address) of the XBee device with the provided one.
+	 * Configures the 16-bit address (network address) of this XBee device with 
+	 * the provided one.
 	 * 
 	 * @param xbee16BitAddress The new 16-bit address.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code xbee16BitAddress == null}.
 	 * @throws TimeoutException if there is a timeout setting the address.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see XBee16BitAddress
 	 * @see #get16BitAddress()
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	protected void set16BitAddress(XBee16BitAddress xbee16BitAddress) throws TimeoutException, XBeeException {
 		if (xbee16BitAddress == null)
@@ -1828,13 +2038,21 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the operating PAN ID of the XBee device.
+	 * Returns the operating PAN ID (Personal Area Network Identifier) of 
+	 * this XBee device.
 	 * 
-	 * @return The operating PAN ID of the XBee device.
+	 * <p>For modules to communicate they must be configured with the same 
+	 * identifier. Only modules with matching IDs can communicate with each 
+	 * other.This parameter allows multiple networks to co-exist on the same 
+	 * physical channel.</p>
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @return The operating PAN ID of this XBee device.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout getting the PAN ID.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setPANID(byte[])
 	 */
 	public byte[] getPANID() throws TimeoutException, XBeeException {
 		switch (getXBeeProtocol()) {
@@ -1846,16 +2064,23 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the PAN ID of the XBee device.
+	 * Sets the PAN ID (Personal Area Network Identifier) of this XBee device.
 	 * 
-	 * @param panID The new PAN ID of the XBee device.
+	 * <p>For modules to communicate they must be configured with the same 
+	 * identifier. Only modules with matching IDs can communicate with each 
+	 * other.This parameter allows multiple networks to co-exist on the same 
+	 * physical channel.</p>
+	 * 
+	 * @param panID The new PAN ID of this XBee device.
 	 * 
 	 * @throws IllegalArgumentException if {@code panID.length == 0} or 
 	 *                                  if {@code panID.length > 8}.
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code panID == null}.
 	 * @throws TimeoutException if there is a timeout setting the PAN ID.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getPANID()
 	 */
 	public void setPANID(byte[] panID) throws TimeoutException, XBeeException {
 		if (panID == null)
@@ -1869,15 +2094,17 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the output power level of the XBee device.
+	 * Returns the output power level at which this XBee device transmits 
+	 * conducted power.
 	 * 
-	 * @return The output power level of the XBee device.
+	 * @return The output power level of this XBee device.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout getting the power level.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see PowerLevel
+	 * @see #setPowerLevel(PowerLevel)
+	 * @see com.digi.xbee.api.models.PowerLevel
 	 */
 	public PowerLevel getPowerLevel() throws TimeoutException, XBeeException {
 		byte[] powerLevelValue = getParameter("PL");
@@ -1885,16 +2112,19 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sets the output power level of the XBee device.
+	 * Sets the output power level at which this XBee device transmits 
+	 * conducted power.
 	 * 
-	 * @param powerLevel The new output power level to be set in the XBee device.
+	 * @param powerLevel The new output power level to be set in this XBee 
+	 *                   device.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code powerLevel == null}.
 	 * @throws TimeoutException if there is a timeout setting the power level.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see PowerLevel
+	 * @see #getPowerLevel()
+	 * @see com.digi.xbee.api.models.PowerLevel
 	 */
 	public void setPowerLevel(PowerLevel powerLevel) throws TimeoutException, XBeeException {
 		if (powerLevel == null)
@@ -1904,16 +2134,20 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Retrieves the current association indication status of the XBee device.
+	 * Returns the current association status of this XBee device.
+	 * 
+	 * <p>It indicates occurrences of errors during the last association 
+	 * request.</p>
 	 * 
 	 * @return The association indication status of the XBee device.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout getting the association 
 	 *                          indication status.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see AssociationIndicationStatus
+	 * @see #forceDisassociate()
+	 * @see com.digi.xbee.api.models.AssociationIndicationStatus
 	 */
 	protected AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
 		byte[] associationIndicationValue = getParameter("AI");
@@ -1921,25 +2155,35 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Forces the XBee device to disassociate from the network and re-attempt 
-	 * to associate.
+	 * Forces this XBee device to immediately disassociate from the network and 
+	 * re-attempt to associate.
 	 * 
 	 * <p>Only valid for End Devices.</p>
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout executing the 
 	 *         disassociation command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getAssociationIndicationStatus()
 	 */
 	protected void forceDisassociate() throws TimeoutException, XBeeException {
 		executeParameter("DA");
 	}
 	
 	/**
-	 * Writes parameter values to non-volatile memory of the XBee device so that
-	 * parameter modifications persist through subsequent resets.
+	 * Writes configurable parameter values to the non-volatile memory of this 
+	 * XBee device so that parameter modifications persist through subsequent 
+	 * resets.
 	 * 
-	 * @throws InterfaceNotOpenException if the device is not open.
+	 * <p>Parameters values remain in this device's memory until overwritten by 
+	 * subsequent use of this method.</p>
+	 * 
+	 * <p>If changes are made without writing them to non-volatile memory, the 
+	 * module reverts back to previously saved parameters the next time the 
+	 * module is powered-on.</p>
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout executing the write 
 	 *                          changes command.
 	 * @throws XBeeException if there is any other XBee related exception.

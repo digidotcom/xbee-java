@@ -17,10 +17,10 @@ package com.digi.xbee.api;
  * <p>The network allows the discovery of remote devices in the same network 
  * as the local one and stores them.</p>
  * 
- * @see XBeeNetwork
  * @see DigiMeshNetwork
  * @see DigiPointNetwork
  * @see Raw802Network
+ * @see XBeeNetwork
  */
 public class ZigBeeNetwork extends XBeeNetwork {
 
@@ -29,7 +29,7 @@ public class ZigBeeNetwork extends XBeeNetwork {
 	 * 
 	 * @param device Local ZigBee device to get the network from.
 	 * 
-	 * @throws NullPointerException If {@code device == null}.
+	 * @throws NullPointerException if {@code device == null}.
 	 * 
 	 * @see ZigBeeDevice
 	 */

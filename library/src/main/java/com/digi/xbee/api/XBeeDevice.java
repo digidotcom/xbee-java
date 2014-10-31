@@ -1123,10 +1123,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 */
 	@Override
 	public String toString() {
-		String id = getNodeID();
-		if (id == null)
-			id = "";
-		String addr64 = get64BitAddress() == null ? "" : get64BitAddress().toString();
+		String id = getNodeID() == null ? "" : getNodeID();
+		String addr64 = get64BitAddress() == null || get64BitAddress() == XBee64BitAddress.UNKNOWN_ADDRESS ? 
+				"" : get64BitAddress().toString();
 		
 		if (id.length() == 0 && addr64.length() == 0)
 			return super.toString();

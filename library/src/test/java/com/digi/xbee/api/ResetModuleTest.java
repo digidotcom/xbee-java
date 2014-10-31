@@ -39,7 +39,7 @@ public class ResetModuleTest {
 
 	// Constants.
 	private static final String SEND_AT_COMMAND_METHOD = "sendATCommand";
-	private static final String WAIT_FOR_MODEM_STATUS_PACKET_METHOD = "waitForModemStatusPacket";
+	private static final String WAIT_FOR_MODEM_RESET_STATUS_PACKET_METHOD = "waitForModemResetStatusPacket";
 	
 	// Variables.
 	private SerialPortRxTx connectionInterface;
@@ -105,7 +105,7 @@ public class ResetModuleTest {
 	@Test
 	public void testSoftwareResetOk() throws Exception {
 		// Return True when waiting for the Modem Status packet.
-		PowerMockito.doReturn(true).when(xbeeDevice, WAIT_FOR_MODEM_STATUS_PACKET_METHOD);
+		PowerMockito.doReturn(true).when(xbeeDevice, WAIT_FOR_MODEM_RESET_STATUS_PACKET_METHOD);
 		
 		// Verify that the software reset is performed successfully.
 		xbeeDevice.reset();
@@ -142,7 +142,7 @@ public class ResetModuleTest {
 	@Test(expected=TimeoutException.class)
 	public void testSoftwareResetModemStatusPacketNotReceived() throws Exception {
 		// Return False when waiting for the Modem Status packet.
-		PowerMockito.doReturn(false).when(xbeeDevice, WAIT_FOR_MODEM_STATUS_PACKET_METHOD);
+		PowerMockito.doReturn(false).when(xbeeDevice, WAIT_FOR_MODEM_RESET_STATUS_PACKET_METHOD);
 		
 		// Perform a software reset.
 		xbeeDevice.reset();

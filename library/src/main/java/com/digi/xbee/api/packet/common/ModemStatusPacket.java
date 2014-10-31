@@ -19,24 +19,24 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a Modem Status packet. Packet is built using the parameters of 
- * the constructor or providing a valid API payload.
+ * This class represents a Modem Status packet. Packet is built using the 
+ * parameters of the constructor or providing a valid API payload.
  * 
- * <p>RF module status messages are sent from the module in response to specific conditions
- * and indicates the state of the modem in that moment.</p>
+ * <p>RF module status messages are sent from the module in response to specific 
+ * conditions and indicates the state of the modem in that moment.</p>
  * 
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class ModemStatusPacket extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 2; // 1 (Frame type) + 1 (Modem status)
 	
-	// Variables
+	// Variables.
 	private ModemStatusEvent modemStatusEvent;
 	
 	/**
-	 * Creates an new {@code ModemStatusPacket} from the given payload.
+	 * Creates a new {@code ModemStatusPacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a Modem Status packet ({@code 0x8A}).
@@ -70,7 +70,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new object of type {@code ModemStatusPacket} 
+	 * Class constructor. Instantiates a new {@code ModemStatusPacket} object
 	 * with the given modem status.
 	 * 
 	 * @param modemStatusEvent Modem status event enum. entry.
@@ -107,7 +107,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves modem status event enum. entry.
+	 * Returns modem status event enum. entry.
 	 * 
 	 * @return Modem status event enum. entry.
 	 */

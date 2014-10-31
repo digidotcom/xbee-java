@@ -33,7 +33,8 @@ import com.digi.xbee.api.utils.HexUtils;
  * message. This message will indicate if the packet was transmitted 
  * successfully or if there was a failure.</p>
  * 
- * <p>This packet is the response to standard and explicit transmit requests.</p>
+ * <p>This packet is the response to standard and explicit transmit requests.
+ * </p>
  * 
  * @see TransmitPacket
  */
@@ -42,7 +43,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 7; // 1 (Frame type) + 1 (frame ID) + 2 (16-bit address) + 1 (retry count) + 1 (delivery status) + 1 (discovery status)
 		
-	// Variables
+	// Variables.
 	private final XBee16BitAddress destAddress16;
 	
 	private final int tranmistRetryCount;
@@ -52,7 +53,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code TransmitStatusPacket} from the given payload.
+	 * Creates a new {@code TransmitStatusPacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a Transmit Status packet ({@code 0x8B}).
@@ -61,7 +62,7 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	 * @return Parsed Transmit Status packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TRANSMIT_STATUS.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code tranmistRetryCount < 0} or
@@ -107,8 +108,8 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code TransmitStatusPacket} with the given parameters.
+	 * Class constructor. Instantiates a new {@code TransmitStatusPacket} 
+	 * object with the given parameters.
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress16 16-bit Network address the packet was delivered to.
@@ -125,12 +126,12 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	 *                              if {@code transmitStatus == null} or
 	 *                              if {@code discoveryStatus == null}.
 	 * 
-	 * @see XBee16BitAddress
-	 * @see XBeeTransmitStatus
-	 * @see XBeeDiscoveryStatus
+	 * @see com.digi.xbee.api.models.XBeeDiscoveryStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
-	public TransmitStatusPacket(int frameID, XBee16BitAddress destAddress16, int tranmistRetryCount, XBeeTransmitStatus transmitStatus, 
-			XBeeDiscoveryStatus discoveryStatus) {
+	public TransmitStatusPacket(int frameID, XBee16BitAddress destAddress16, int tranmistRetryCount, 
+			XBeeTransmitStatus transmitStatus, XBeeDiscoveryStatus discoveryStatus) {
 		super(APIFrameType.TRANSMIT_STATUS);
 		
 		if (destAddress16 == null)
@@ -180,18 +181,18 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16-bit destination address. 
+	 * Returns the 16-bit destination address. 
 	 * 
 	 * @return The 16-bit destination address.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	
 	/**
-	 * Retrieves the transmit retry count.
+	 * Returns the transmit retry count.
 	 * 
 	 * @return Transmit retry count.
 	 */
@@ -200,18 +201,18 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the transmit status.
+	 * Returns the transmit status.
 	 * 
 	 * @return Transmit status.
 	 * 
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public XBeeTransmitStatus getTransmitStatus() {
 		return transmitStatus;
 	}
 	
 	/**
-	 * Retrieves the discovery status.
+	 * Returns the discovery status.
 	 * 
 	 * @return Discovery status.
 	 * 

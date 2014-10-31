@@ -29,7 +29,7 @@ package com.digi.xbee.api.packet;
  */
 public class XBeeChecksum {
 
-	// Variables
+	// Variables.
 	private int value = 0;
 	
 	/**

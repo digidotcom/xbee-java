@@ -32,11 +32,11 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public abstract class XBeePacket {
 
-	// Variables
+	// Variables.
 	private XBeeChecksum checksum;
 	
 	/**
-	 * Class constructor. Instances a new {@code XBeePacket}.
+	 * Class constructor. Instantiates a new {@code XBeePacket} object.
 	 */
 	protected XBeePacket() {
 		checksum = new XBeeChecksum();
@@ -103,14 +103,14 @@ public abstract class XBeePacket {
 	}
 
 	/**
-	 * Retrieves the packet data.
+	 * Returns the packet data.
 	 * 
 	 * @return The packet data.
 	 */
 	public abstract byte[] getPacketData();
 
 	/**
-	 * Retrieves the packet length.
+	 * Returns the packet length.
 	 * 
 	 * @return The packet length.
 	 */
@@ -122,7 +122,7 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * Retrieves the packet checksum.
+	 * Returns the packet checksum.
 	 * 
 	 * <p>To calculate: Not including frame delimiters and length, add all 
 	 * bytes keeping only the lowest 8 bits of the result and subtract the 
@@ -139,7 +139,7 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * Retrieves a map with the XBee packet parameters and their values.
+	 * Returns a map with the XBee packet parameters and their values.
 	 * 
 	 * @return A sorted map containing the XBee packet parameters with their 
 	 *         values.
@@ -154,7 +154,7 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * Retrieves a map with the XBee packet parameters and their values.
+	 * Returns a map with the XBee packet parameters and their values.
 	 * 
 	 * @return A sorted map containing the XBee packet parameters with their 
 	 *         values.
@@ -171,7 +171,7 @@ public abstract class XBeePacket {
 	}
 	
 	/**
-	 * Retrieves a pretty string representing the packet.
+	 * Returns a pretty string representing the packet.
 	 * 
 	 * @return Pretty String representing the packet.
 	 */
@@ -185,22 +185,23 @@ public abstract class XBeePacket {
 	
 	/**
 	 * Parses the given hexadecimal string and returns a Generic XBee packet. 
-	 * The string can contain white spaces.
+	 * 
+	 * <p>The string can contain white spaces.</p>
 	 * 
 	 * @param packet The hexadecimal string to parse.
 	 * @param mode The operating mode to parse the packet (API 1 or API 2).
 	 * 
 	 * @return The generated Generic XBee Packet.
 	 * 
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
+	 *                                  if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws InvalidPacketException if the given string does not represent a 
 	 *                                valid frame: invalid checksum, length, 
 	 *                                start delimiter, etc.
-	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
-	 *                                  if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * 
-	 * @see OperatingMode#API
-	 * @see OperatingMode#API_ESCAPE
+	 * @see com.digi.xbee.api.models.OperatingMode#API
+	 * @see com.digi.xbee.api.models.OperatingMode#API_ESCAPE
 	 */
 	public static XBeePacket parsePacket(String packet, OperatingMode mode) throws InvalidPacketException {
 		if (packet == null)
@@ -217,16 +218,16 @@ public abstract class XBeePacket {
 	 * 
 	 * @return The generated Generic XBee Packet.
 	 * 
-	 * @throws InvalidPacketException if the given byte array does not represent 
-	 *                                a valid frame: invalid checksum, length, 
-	 *                                start delimiter, etc.
 	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
 	 *                                  if {@code mode != OperatingMode.API_ESCAPE} 
 	 *                                  or if {@code packet.length == 0}.
+	 * @throws InvalidPacketException if the given byte array does not represent 
+	 *                                a valid frame: invalid checksum, length, 
+	 *                                start delimiter, etc.
 	 * @throws NullPointerException if {@code packet == null}.
 	 * 
-	 * @see OperatingMode#API
-	 * @see OperatingMode#API_ESCAPE
+	 * @see com.digi.xbee.api.models.OperatingMode#API
+	 * @see com.digi.xbee.api.models.OperatingMode#API_ESCAPE
 	 */
 	public static XBeePacket parsePacket(byte[] packet, OperatingMode mode) throws InvalidPacketException {
 		if (packet == null)

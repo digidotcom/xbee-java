@@ -39,15 +39,15 @@ import com.digi.xbee.api.models.ATStringCommands;
  * of the AT command.</p>
  * 
  * @see ATCommandPacket
- * @see ATCommandStatus
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.models.ATCommandStatus
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class ATCommandResponsePacket extends XBeeAPIPacket {
 	
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 5; // 1 (Frame type) + 1 (frame ID) + 2 (AT command) + 1 (status byte)
 	
-	// Variables
+	// Variables.
 	private final ATCommandStatus status;
 	
 	private final String command;
@@ -57,7 +57,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code ATCommandResponsePacket} from the given payload.
+	 * Creates a new {@code ATCommandResponsePacket} object from the given 
+	 * payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a AT Command Response packet ({@code 0x88}).
@@ -66,7 +67,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @return Parsed AT Command Response packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.AT_COMMAND.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
@@ -107,8 +108,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code ATCommandResponsePacket} with the given parameters.
+	 * Class constructor. Instantiates a new {@code ATCommandResponsePacket} 
+	 * object with the given parameters.
 	 * 
 	 * @param frameID The XBee API frame ID.
 	 * @param status The AT command response status.
@@ -120,7 +121,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code status == null} or 
 	 *                              if {@code command == null}.
 	 * 
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 */
 	public ATCommandResponsePacket(int frameID, ATCommandStatus status, String command, byte[] commandValue) {
 		super(APIFrameType.AT_COMMAND_RESPONSE);
@@ -167,7 +168,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command response status.
+	 * Returns the AT command response status.
 	 * 
 	 * @return The AT command response status.
 	 * 
@@ -178,7 +179,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command.
+	 * Returns the AT command.
 	 * 
 	 * @return The AT command.
 	 */
@@ -208,7 +209,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command response value.
+	 * Returns the AT command response value.
 	 * 
 	 * @return The AT command response value.
 	 */
@@ -217,7 +218,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command response value as String.
+	 * Returns the AT command response value as String.
 	 * 
 	 * @return The AT command response value as String, {@code null} if no 
 	 *         value is set.

@@ -121,13 +121,14 @@ import com.digi.xbee.api.utils.HexUtils;
  * 
  * <p>The {@code cmdID} frame (API-identifier) indicates which API messages 
  * will be contained in the {@code cmdData} frame (Identifier-specific data).
- * (see {@link com.digi.xbee.api.packet.APIFrameType}).</p>
+ * </p>
  * 
  * <p>To test data integrity, a <b>checksum</b> is calculated and verified on 
  * non-escaped data.</p>
  * 
+ * @see APIFrameType
  * @see XBeePacket
- * @see OperatingMode
+ * @see com.digi.xbee.api.models.OperatingMode
  */
 public class XBeePacketParser {
 	
@@ -141,19 +142,19 @@ public class XBeePacketParser {
 	 * @param inputStream Input stream to read bytes from.
 	 * @param mode XBee device operating mode.
 	 * 
-	 * @return Parsed packet from the inputstream.
+	 * @return Parsed packet from the input stream.
 	 * 
+	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
+	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws InvalidPacketException if there is not enough data in the stream or 
 	 *                                if there is an error verifying the checksum or
 	 *                                if the payload is invalid for the specified frame type.
-	 * @throws IllegalArgumentException if {@code mode != OperatingMode.API } and
-	 *                              if {@code mode != OperatingMode.API_ESCAPE}.
 	 * @throws NullPointerException if {@code inputStream == null} or 
 	 *                              if {@code mode == null}.
 	 * 
 	 * @see XBeePacket
-	 * @see OperatingMode#API
-	 * @see OperatingMode#API_ESCAPE
+	 * @see com.digi.xbee.api.models.OperatingMode#API
+	 * @see com.digi.xbee.api.models.OperatingMode#API_ESCAPE
 	 */
 	public XBeePacket parsePacket(InputStream inputStream, OperatingMode mode) throws InvalidPacketException {
 		if (inputStream == null)
@@ -216,8 +217,8 @@ public class XBeePacketParser {
 	 *                              if {@code mode == null}.
 	 * 
 	 * @see XBeePacket
-	 * @see OperatingMode#API
-	 * @see OperatingMode#API_ESCAPE
+	 * @see com.digi.xbee.api.models.OperatingMode#API
+	 * @see com.digi.xbee.api.models.OperatingMode#API_ESCAPE
 	 */
 	public XBeePacket parsePacket(byte[] packetByteArray, OperatingMode mode) throws InvalidPacketException {
 		if (packetByteArray == null)
@@ -253,8 +254,8 @@ public class XBeePacketParser {
 	 * @throws InvalidPacketException if the payload is invalid for the 
 	 *                                specified frame type.
 	 * 
-	 * @see XBeePacket
 	 * @see APIFrameType
+	 * @see XBeePacket
 	 */
 	private XBeePacket parsePayload(byte[] payload) throws InvalidPacketException {
 		// Get the API frame type.

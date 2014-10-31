@@ -20,14 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
-import com.digi.xbee.api.models.XBeeReceiveOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a RX (Receive) 16 Request packet. Packet is built 
+ * This class represents an RX (Receive) 16 Request packet. Packet is built 
  * using the parameters of the constructor or providing a valid API payload.
  * 
  * <p>When the module receives an RF packet, it is sent out the UART using this 
@@ -36,7 +35,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>This packet is the response to TX (transmit) 16 Request packets.</p>
  * 
  * @see TX16Packet
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  *
  */
 public class RX16Packet extends XBeeAPIPacket {
@@ -44,7 +43,7 @@ public class RX16Packet extends XBeeAPIPacket {
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 5; // 1 (Frame type) + 2 (16-bit address) + 1 (signal strength) + 1 (receive options)
 	
-	// Variables
+	// Variables.
 	private final XBee16BitAddress sourceAddress16;
 	
 	private final int rssi;
@@ -55,7 +54,7 @@ public class RX16Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code RX16Packet} from the given payload.
+	 * Creates a new {@code RX16Packet} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a RX16 packet ({@code 0x81}).
@@ -64,7 +63,7 @@ public class RX16Packet extends XBeeAPIPacket {
 	 * @return Parsed RX 16 packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_16.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
@@ -106,7 +105,7 @@ public class RX16Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code RX16Packet} with
+	 * Class constructor. Instantiates a new {@code RX16Packet} object with
 	 * the given parameters.
 	 * 
 	 * @param sourceAddress16 16-bit address of the sender.
@@ -120,8 +119,8 @@ public class RX16Packet extends XBeeAPIPacket {
 	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress16 == null}.
 	 * 
-	 * @see XBeeReceiveOptions
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public RX16Packet(XBee16BitAddress sourceAddress16, int rssi, int receiveOptions, byte[] rfData) {
 		super(APIFrameType.RX_16);
@@ -181,18 +180,18 @@ public class RX16Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 16-bit sender/source address. 
+	 * Returns the 16-bit sender/source address. 
 	 * 
 	 * @return The 16-bit sender/source address.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public XBee16BitAddress get16bitSourceAddress() {
 		return sourceAddress16;
 	}
 	
 	/**
-	 * Retrieves the Received Signal Strength Indicator (RSSI).
+	 * Returns the Received Signal Strength Indicator (RSSI).
 	 * 
 	 * @return The Received Signal Strength Indicator (RSSI).
 	 */
@@ -201,11 +200,11 @@ public class RX16Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the receive options bitfield.
+	 * Returns the receive options bitfield.
 	 * 
 	 * @return Receive options bitfield.
 	 * 
-	 * @see XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
 	 */
 	public int getReceiveOptions() {
 		return receiveOptions;
@@ -221,7 +220,7 @@ public class RX16Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the received RF data.
+	 * Returns the received RF data.
 	 * 
 	 * @return Received RF data.
 	 */

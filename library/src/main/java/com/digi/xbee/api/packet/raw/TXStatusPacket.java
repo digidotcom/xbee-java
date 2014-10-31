@@ -28,18 +28,18 @@ import com.digi.xbee.api.utils.HexUtils;
  * 
  * @see TX16Packet
  * @see TX64Packet
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class TXStatusPacket extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 3; // 1 (Frame type) + 1 (frame ID) + 1 (status)
 	
-	// Variables
+	// Variables.
 	private final XBeeTransmitStatus transmitStatus;
 	
 	/**
-	 * Creates an new {@code TXStatusPacket} from the given payload.
+	 * Creates a new {@code TXStatusPacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a TX Status packet ({@code 0x89}).
@@ -48,7 +48,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	 * @return Parsed TX status packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TX_STATUS.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
@@ -79,7 +79,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code TXStatusPacket} 
+	 * Class constructor. Instantiates a new {@code TXStatusPacket} object
 	 * with the given parameters.
 	 * 
 	 * @param frameID Packet frame ID.
@@ -89,7 +89,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code transmitStatus == null}.
 	 * 
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public TXStatusPacket(int frameID, XBeeTransmitStatus transmitStatus) {
 		super(APIFrameType.TX_STATUS);
@@ -122,11 +122,11 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the transmit status.
+	 * Returns the transmit status.
 	 * 
 	 * @return Transmit status.
 	 * 
-	 * @see XBeeTransmitStatus
+	 * @see com.digi.xbee.api.models.XBeeTransmitStatus
 	 */
 	public XBeeTransmitStatus getTransmitStatus() {
 		return transmitStatus;

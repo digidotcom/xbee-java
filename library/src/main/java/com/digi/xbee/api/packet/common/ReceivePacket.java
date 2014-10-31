@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeReceiveOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.ByteUtils;
@@ -41,15 +40,15 @@ import com.digi.xbee.api.utils.HexUtils;
  * transmission parameters.</p>
  * 
  * @see TransmitPacket
- * @see XBeeReceiveOptions
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.models.XBeeReceiveOptions
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class ReceivePacket extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 12; // 1 (Frame type) + 8 (32-bit address) + 2 (16-bit address) + 1 (receive options)
 	
-	// Variables
+	// Variables.
 	private final XBee64BitAddress sourceAddress64;
 	
 	private final XBee16BitAddress sourceAddress16;
@@ -61,7 +60,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	private Logger logger;
 
 	/**
-	 * Creates an new {@code ReceivePacket} from the given payload.
+	 * Creates a new {@code ReceivePacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a Receive packet ({@code 0x90}).
@@ -110,7 +109,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code ReceivePacket}
+	 * Class constructor. Instantiates a new {@code ReceivePacket} object
 	 * with the given parameters.
 	 * 
 	 * @param sourceAddress64 64-bit address of the sender.
@@ -123,9 +122,9 @@ public class ReceivePacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code sourceAddress64 == null} or 
 	 *                              if {@code sourceAddress16 == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress 
-	 * @see XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public ReceivePacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, int receiveOptions, byte[] rfData){
 		super(APIFrameType.RECEIVE_PACKET);
@@ -184,33 +183,33 @@ public class ReceivePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64-bit sender/source address. 
+	 * Returns the 64-bit sender/source address. 
 	 * 
 	 * @return The 64-bit sender/source address.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress get64bitSourceAddress() {
 		return sourceAddress64;
 	}
 	
 	/**
-	 * Retrieves the 16-bit sender/source address.
+	 * Returns the 16-bit sender/source address.
 	 * 
 	 * @return The 16-bit sender/source address.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public XBee16BitAddress get16bitSourceAddress() {
 		return sourceAddress16;
 	}
 	
 	/**
-	 * Retrieves the receive options bitfield.
+	 * Returns the receive options bitfield.
 	 * 
 	 * @return Receive options bitfield.
 	 * 
-	 * @see XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
 	 */
 	public int getReceiveOptions() {
 		return receiveOptions;
@@ -226,7 +225,7 @@ public class ReceivePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the received RF data.
+	 * Returns the received RF data.
 	 * 
 	 * @return Received RF data.
 	 */

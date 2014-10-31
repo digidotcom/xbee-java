@@ -22,7 +22,7 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public enum APIFrameType {
 
-	// Enumeration elements
+	// Enumeration elements.
 	TX_64 (0x00, "TX (Transmit) Request 64-bit address"),
 	TX_16 (0x01, "TX (Transmit) Request 16-bit address"),
 	AT_COMMAND (0x08, "AT Command"),
@@ -41,7 +41,7 @@ public enum APIFrameType {
 	REMOTE_AT_COMMAND_RESPONSE (0x97, "Remote Command Response"),
 	GENERIC (0xFF, "Generic");
 	
-	// Variables
+	// Variables.
 	private final int idValue;
 	
 	private final String name;
@@ -54,11 +54,11 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type API Frame Type with
+	 * Class constructor. Instantiates a new {@code APIFrameType} object with
 	 * the given value and name.
 	 * 
-	 * @param idValue frame type value.
-	 * @param name frame type name.
+	 * @param idValue Frame type value.
+	 * @param name Frame type name.
 	 */
 	APIFrameType(int idValue, String name) {
 		this.idValue = idValue;
@@ -66,11 +66,11 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Retrieves the {@code APIFrameType} associated with the given ID value.
+	 * Returns the {@code APIFrameType} associated with the given ID value.
 	 * 
-	 * @param value ID value to retrieve {@code APIFrameType};
+	 * @param value ID value to retrieve {@code APIFrameType}.
 	 * 
-	 * @return the {@code APIFrameType} for the given ID value, {@code null} if 
+	 * @return The {@code APIFrameType} for the given ID value, {@code null} if 
 	 *         it does not exist.
 	 */
 	public static APIFrameType get(int value) {
@@ -79,7 +79,7 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Retrieves the API frame type value.
+	 * Returns the API frame type value.
 	 * 
 	 * @return The API frame type value.
 	 */
@@ -88,7 +88,7 @@ public enum APIFrameType {
 	}
 	
 	/**
-	 * Retrieves API frame type name.
+	 * Returns the API frame type name.
 	 * 
 	 * @return API frame type name.
 	 */

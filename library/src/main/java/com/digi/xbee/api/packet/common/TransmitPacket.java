@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -34,22 +33,19 @@ import com.digi.xbee.api.utils.HexUtils;
  * packet to the specified destination.</p>
  * 
  * <p>The 64-bit destination address should be set to {@code 0x000000000000FFFF} 
- * for a broadcast transmission (to all devices) 
- * ({@link com.digi.xbee.api.models.XBee64BitAddress#BROADCAST_ADDRESS}).</p>
+ * for a broadcast transmission (to all devices).</p>
  * 
  * <p>The coordinator can be addressed by either setting the 64-bit address to 
  * all {@code 0x00} and the 16-bit address to {@code 0xFFFE}, OR by setting the 
  * 64-bit address to the coordinator's 64-bit address and the 16-bit address to 
- * {@code 0x0000} ({@link com.digi.xbee.api.models.XBee64BitAddress#COORDINATOR_ADDRESS}, 
- * {@link com.digi.xbee.api.models.XBee16BitAddress#COORDINATOR_ADDRESS}).</p>
+ * {@code 0x0000}.</p>
  * 
  * <p>For all other transmissions, setting the 16-bit address to the correct 
  * 16-bit address can help improve performance when transmitting to multiple 
  * destinations.</p>
  * 
  * <p>If a 16-bit address is not known, this field should be set to 
- * {@code 0xFFFE} (unknown) 
- * ({@link com.digi.xbee.api.models.XBee16BitAddress#UNKNOWN_ADDRESS}).</p> 
+ * {@code 0xFFFE} (unknown).</p> 
  * 
  * <p>The Transmit Status frame 
  * ({@link com.digi.xbee.api.packet.APIFrameType#TRANSMIT_REQUEST}) will 
@@ -63,18 +59,22 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>The maximum number of payload bytes can be read with the {@code NP} 
  * command.</p>
  * 
- * <p>Several transmit options can be set using the transmit options bitfield
- * (see {@link com.digi.xbee.api.models.XBeeTransmitOptions}).</p>
+ * <p>Several transmit options can be set using the transmit options bitfield.
+ * </p>
  * 
- * @see XBeeTransmitOptions
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.models.XBeeTransmitOptions
+ * @see com.digi.xbee.api.models.XBee16BitAddress#COORDINATOR_ADDRESS
+ * @see com.digi.xbee.api.models.XBee16BitAddress#UNKNOWN_ADDRESS
+ * @see com.digi.xbee.api.models.XBee64BitAddress#BROADCAST_ADDRESS
+ * @see com.digi.xbee.api.models.XBee64BitAddress#COORDINATOR_ADDRESS
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class TransmitPacket extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 14; // 1 (Frame type) + 1 (frame ID) + 8 (64-bit address) + 2 (16-bit address) + 1 (broadcast radious) + 1 (options)
 	
-	// Variables
+	// Variables.
 	private final XBee64BitAddress destAddress64;
 	
 	private final XBee16BitAddress destAddress16;
@@ -87,7 +87,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code TransmitPacket} from the given payload.
+	 * Creates a new {@code TransmitPacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a Transmit packet ({@code 0x10}).
@@ -96,7 +96,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * @return Parsed Transmit Request packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TRANSMIT_REQUEST.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code broadcastRadius < 0} or
@@ -148,7 +148,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code TransmitPacket} 
+	 * Class constructor. Instantiates a new {@code TransmitPacket} object
 	 * with the given parameters.
 	 * 
 	 * @param frameID Frame ID.
@@ -168,11 +168,12 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code destAddress64 == null} or
 	 *                              if {@code destAddress16 == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress
-	 * @see XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public TransmitPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, int broadcastRadius, int transmitOptions, byte[] rfData) {
+	public TransmitPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16, 
+			int broadcastRadius, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TRANSMIT_REQUEST);
 		
 		if (destAddress64 == null)
@@ -237,40 +238,42 @@ public class TransmitPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64-bit destination address.
+	 * Returns the 64-bit destination address.
 	 * 
 	 * @return The 64-bit destination address.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress get64bitDestinationAddress() {
 		return destAddress64;
 	}
 	
 	/**
-	 * Retrieves the 16-bit destination address.
+	 * Returns the 16-bit destination address.
 	 * 
 	 * @return The 16-bit destination address.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	
 	/**
-	 * Retrieves the broadcast radius.
+	 * Returns the broadcast radius.
 	 * 
-	 * @return Broadcast radius.
+	 * @return The broadcast radius.
 	 */
 	public int getBroadcastRadius() {
 		return broadcastRadius;
 	}
 	
 	/**
-	 * Retrieves the transmit options bitfield.
+	 * Returns the transmit options bitfield.
 	 * 
-	 * @return Transmit options bitfield.
+	 * @return The transmit options bitfield.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
 	 */
 	public int getTransmitOptions() {
 		return transmitOptions;
@@ -286,7 +289,7 @@ public class TransmitPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the RF Data to send.
+	 * Returns the RF Data to send.
 	 * 
 	 * @return RF Data to send.
 	 */

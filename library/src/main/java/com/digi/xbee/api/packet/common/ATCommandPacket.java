@@ -35,14 +35,14 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>Command response is received as an {@code ATCommandResponsePacket}.</p>
  * 
  * @see ATCommandResponsePacket
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class ATCommandPacket extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 4; // 1 (Frame type) + 1 (frame ID) + 2 (AT command)
 	
-	// Variables
+	// Variables.
 	private final String command;
 	
 	private byte[] parameter;
@@ -50,7 +50,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code ATCommandPacket} from the given payload.
+	 * Creates a new {@code ATCommandPacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a AT Command packet ({@code 0x08}).
@@ -59,7 +59,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @return Parsed AT Command packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.AT_COMMAND.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
@@ -95,7 +95,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code ATCommandPacket}
+	 * Class constructor. Instantiates a new {@code ATCommandPacket} object
 	 * with the given parameters.
 	 * 
 	 * @param frameID XBee API frame ID.
@@ -112,7 +112,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code ATCommandPacket}
+	 * Class constructor. Instantiates a new {@code ATCommandPacket} object
 	 * with the given parameters.
 	 * 
 	 * @param frameID XBee API frame ID.
@@ -164,7 +164,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command.
+	 * Returns the AT command.
 	 * 
 	 * @return The AT command.
 	 */
@@ -194,7 +194,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command parameter.
+	 * Returns the AT command parameter.
 	 * 
 	 * @return The AT command parameter.
 	 */
@@ -203,7 +203,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command parameter as String.
+	 * Returns the AT command parameter as String.
 	 * 
 	 * @return The AT command parameter as String, {@code null} if no parameter 
 	 *         is set.

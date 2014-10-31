@@ -38,7 +38,7 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code GenericXBeePacket} from the given payload.
+	 * Creates a new {@code GenericXBeePacket} from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a Generic packet ({@code 0xFF}).
@@ -47,7 +47,7 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	 * @return Parsed Generic packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.GENERIC.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}}.
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static GenericXBeePacket createPacket(byte[] payload) {
@@ -72,7 +72,8 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances an XBee packet with the given packet data.
+	 * Class constructor. Instantiates an XBee packet with the given packet 
+	 * data.
 	 * 
 	 * @param rfData The XBee RF Data.
 	 */
@@ -117,7 +118,7 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the XBee RF Data of the packet.
+	 * Returns the XBee RF Data of the packet.
 	 * 
 	 * @return The RF Data.
 	 */

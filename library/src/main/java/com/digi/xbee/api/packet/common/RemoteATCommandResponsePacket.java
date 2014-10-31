@@ -37,21 +37,22 @@ import com.digi.xbee.api.utils.HexUtils;
  * Response message out the UART. Some commands may send back multiple frames--
  * for example, Node Discover ({@code ND}) command.</p>
  * 
- * <p>This packet is received in response of a {@code RemoteATCommandPacket}.</p>
+ * <p>This packet is received in response of a {@code RemoteATCommandPacket}.
+ * </p>
  * 
  * <p>Response also includes an {@code ATCommandStatus} object with the status 
  * of the AT command.</p>
  * 
  * @see RemoteATCommandPacket
- * @see ATCommandStatus
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.models.ATCommandStatus
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 15; // 1 (Frame type) + 1 (frame ID) + 8 (32-bit address) + 2 (16-bit address) + 2 (AT command) + 1 (status)
 	
-	// Variables
+	// Variables.
 	private final XBee64BitAddress sourceAddress64;
 	
 	private final XBee16BitAddress sourceAddress16;
@@ -65,8 +66,8 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code RemoteATCommandResponsePacket} from the given 
-	 * payload.
+	 * Creates an new {@code RemoteATCommandResponsePacket} object from the 
+	 * given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a Remote AT Command Response packet ({@code 0x97}).
@@ -75,7 +76,7 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @return Parsed Remote AT Command Response packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.REMOTE_AT_COMMAND_RESPONSE.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
@@ -125,8 +126,8 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code RemoteATCommandResponsePacket} with the given parameters.
+	 * Class constructor. Instantiates a new 
+	 * {@code RemoteATCommandResponsePacket} object with the given parameters.
 	 * 
 	 * @param frameID frame ID.
 	 * @param sourceAddress64 64-bit address of the remote radio returning 
@@ -143,11 +144,12 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 *                              if {@code command == null} or
 	 *                              if {@code status == null}.
 	 * 
-	 * @see XBee64BitAddress
-	 * @see XBee16BitAddress
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public RemoteATCommandResponsePacket(int frameID, XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, String command, ATCommandStatus status, byte[] commandValue) {
+	public RemoteATCommandResponsePacket(int frameID, XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, 
+			String command, ATCommandStatus status, byte[] commandValue) {
 		super(APIFrameType.REMOTE_AT_COMMAND_RESPONSE);
 		
 		if (sourceAddress64 == null)
@@ -200,40 +202,40 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64-bit source address. 
+	 * Returns the 64-bit source address. 
 	 * 
 	 * @return The 64-bit source address.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress get64bitSourceAddress() {
 		return sourceAddress64;
 	}
 	
 	/**
-	 * Retrieves the 16-bit source address.
+	 * Returns the 16-bit source address.
 	 * 
 	 * @return The 16-bit source address.
 	 * 
-	 * @see XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public XBee16BitAddress get16bitSourceAddress() {
 		return sourceAddress16;
 	}
 	
 	/**
-	 * Retrieves the AT command response status.
+	 * Returns the AT command response status.
 	 * 
 	 * @return The AT command response status.
 	 * 
-	 * @see ATCommandStatus
+	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 */
 	public ATCommandStatus getStatus() {
 		return status;
 	}
 	
 	/**
-	 * Retrieves the AT command.
+	 * Returns the AT command.
 	 * 
 	 * @return The AT command.
 	 */
@@ -272,7 +274,7 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the AT command response value as String.
+	 * Returns the AT command response value as String.
 	 * 
 	 * @return The AT command response value as String, {@code null} if no 
 	 *         value is set.

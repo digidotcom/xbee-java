@@ -38,7 +38,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code UnknownXBeePacket} from the given payload.
+	 * Creates a new {@code UnknownXBeePacket} from the given payload.
 	 * 
 	 * @param payload The API frame payload. The first byte will be the frame 
 	 *                type.
@@ -46,7 +46,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 * 
 	 * @return Parsed Unknown packet.
 	 * 
-	 * @throws IllegalArgumentException if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}}.
+	 * @throws IllegalArgumentException if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static UnknownXBeePacket createPacket(byte[] payload) {
@@ -69,7 +69,8 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances an XBee packet with the given packet data.
+	 * Class constructor. Instantiates an XBee packet with the given packet 
+	 * data.
 	 * 
 	 * @param apiIDValue The XBee API integer value of the packet.
 	 * @param rfData The XBee RF Data.
@@ -118,7 +119,7 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the XBee RF Data of the packet.
+	 * Returns the XBee RF Data of the packet.
 	 * 
 	 * @return The RF Data.
 	 */

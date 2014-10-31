@@ -22,26 +22,25 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeReceiveOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents a RX64 Address IO packet. Packet is built using the 
+ * This class represents an RX64 Address IO packet. Packet is built using the 
  * parameters of the constructor or providing a valid API payload.
  * 
  * <p>I/O data is sent out the UART using an API frame.</p>
  * 
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class RX64IOPacket extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 11; // 1 (Frame type) + 8 (64-bit address) + 1 (RSSI) + 1 (receive options)
 	
-	// Variables
+	// Variables.
 	private final XBee64BitAddress sourceAddress64;
 	
 	private final IOSample ioSample;
@@ -54,7 +53,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code RX64IOPacket} from the given payload.
+	 * Creates an new {@code RX64IOPacket} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a RX64 Address IO packet ({@code 0x82}).
@@ -63,7 +62,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * @return Parsed RX64 Address IO packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_64.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
@@ -106,7 +105,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code RX64IOPacket} with
+	 * Class constructor. Instantiates a new {@code RX64IOPacket} object with
 	 * the given parameters.
 	 * 
 	 * @param sourceAddress64 64-bit address of the sender.
@@ -121,8 +120,8 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 *                                  if {@code rfData.length < 5}.
 	 * @throws NullPointerException if {@code sourceAddress64 == null}.
 	 * 
-	 * @see XBeeReceiveOptions
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public RX64IOPacket(XBee64BitAddress sourceAddress64, int rssi, int receiveOptions, byte[] rfData) {
 		super(APIFrameType.RX_IO_64);
@@ -186,18 +185,18 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64-bit sender/source address. 
+	 * Returns the 64-bit sender/source address. 
 	 * 
 	 * @return The 64-bit sender/source address.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress get64bitSourceAddress() {
 		return sourceAddress64;
 	}
 	
 	/**
-	 * Retrieves the Received Signal Strength Indicator (RSSI).
+	 * Returns the Received Signal Strength Indicator (RSSI).
 	 * 
 	 * @return The Received Signal Strength Indicator (RSSI).
 	 */
@@ -206,23 +205,23 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the receive options bitfield.
+	 * Returns the receive options bitfield.
 	 * 
 	 * @return Receive options bitfield.
 	 * 
-	 * @see XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
 	 */
 	public int getReceiveOptions() {
 		return receiveOptions;
 	}
 	
 	/**
-	 * Retrieves the IO sample corresponding to the data contained in the packet.
+	 * Returns the IO sample corresponding to the data contained in the packet.
 	 * 
 	 * @return The IO sample of the packet, {@code null} if the packet has not 
 	 *         any data or if the sample could not be generated correctly.
 	 * 
-	 * @see IOSample
+	 * @see com.digi.xbee.api.io.IOSample
 	 */
 	public IOSample getIOSample() {
 		return ioSample;
@@ -238,7 +237,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the received RF data.
+	 * Returns the received RF data.
 	 * 
 	 * @return Received RF data.
 	 */

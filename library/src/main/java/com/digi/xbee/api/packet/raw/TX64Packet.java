@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
-import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
@@ -33,14 +32,14 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>A TX Request message will cause the module to transmit data as an RF 
  * Packet.</p>
  * 
- * @see XBeeAPIPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class TX64Packet extends XBeeAPIPacket {
 
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 11; // 1 (Frame type) + 1 (frame ID) + 8 (address) + 1 (transmit options)
 	
-	// Variables
+	// Variables.
 	private final int transmitOptions;
 	
 	private final XBee64BitAddress destAddress64;
@@ -50,7 +49,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	private Logger logger;
 	
 	/**
-	 * Creates an new {@code TX64Packet} from the given payload.
+	 * Creates a new {@code TX64Packet} object from the given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
 	 *                corresponding to a TX64 Request packet ({@code 0x00}).
@@ -59,7 +58,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @return Parsed TX (transmit) 64 Request packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TX_64.getValue()} or
-	 *                                  if {@code payload.length < {@value #MIN_API_PAYLOAD_LENGTH}} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
 	 *                                  if {@code transmitOptions < 0} or
@@ -101,7 +100,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Class constructor. Instances a new object of type {@code TX64Packet} with
+	 * Class constructor. Instantiates a new {@code TX64Packet} object with
 	 * the given parameters.
 	 * 
 	 * @param frameID Frame ID.
@@ -115,8 +114,8 @@ public class TX64Packet extends XBeeAPIPacket {
 	 *                                  if {@code transmitOptions > 255}.
 	 * @throws NullPointerException if {@code destAddress64 == null}.
 	 * 
-	 * @see XBeeTransmitOptions
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public TX64Packet(int frameID, XBee64BitAddress destAddress64, int transmitOptions, byte[] rfData) {
 		super(APIFrameType.TX_64);
@@ -174,22 +173,22 @@ public class TX64Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the 64-bit destination address.
+	 * Returns the 64-bit destination address.
 	 * 
 	 * @return The 64-bit destination address.
 	 * 
-	 * @see XBee64BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public XBee64BitAddress get64bitDestinationAddress() {
 		return destAddress64;
 	}
 	
 	/**
-	 * Retrieves the transmit options bitfield.
+	 * Returns the transmit options bitfield.
 	 * 
 	 * @return Transmit options bitfield.
 	 * 
-	 * @see XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
 	 */
 	public int getTransmitOptions() {
 		return transmitOptions;
@@ -205,7 +204,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Retrieves the RF Data to send.
+	 * Returns the RF Data to send.
 	 * 
 	 * @return RF data to send.
 	 */

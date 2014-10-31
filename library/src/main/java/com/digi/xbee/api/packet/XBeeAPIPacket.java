@@ -26,16 +26,17 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>Derived classes should implement their own methods to generate the API 
  * data and frame ID in case they support it.</p>
  * 
- * <p>Basic operations such as frame type retrieval are performed in this class.</p>
+ * <p>Basic operations such as frame type retrieval are performed in this class.
+ * </p>
  * 
  * @see XBeePacket
  */
 public abstract class XBeeAPIPacket extends XBeePacket {
 
-	// Constants
+	// Constants.
 	public final static int NO_FRAME_ID = 9999;
 	
-	// Variables
+	// Variables.
 	protected int frameID = NO_FRAME_ID;
 	
 	private APIFrameType frameType = null;
@@ -45,8 +46,8 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	private Logger logger;
 
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeeAPIPacket} 
-	 * with the given API ID.
+	 * Class constructor. Instantiates a new {@code XBeeAPIPacket} object with 
+	 * the given API frame type.
 	 * 
 	 * @param frameType XBee packet frame type.
 	 * 
@@ -67,8 +68,8 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code XBeeAPIPacket}
-	 * with the given API ID integer.
+	 * Class constructor. Instantiates a new {@code XBeeAPIPacket} object with 
+	 * the given frame type value.
 	 * 
 	 * @param frameTypeValue XBee packet frame type integer value.
 	 * 
@@ -88,7 +89,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Retrieves the XBee packet frame type.
+	 * Returns the XBee packet frame type.
 	 * 
 	 * @return The XBee packet frame type.
 	 * 
@@ -99,7 +100,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Retrieves the XBee packet frame type integer value.
+	 * Returns the XBee packet frame type integer value.
 	 * 
 	 * @return The XBee packet frame type integer value.
 	 */
@@ -132,7 +133,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Retrieves the XBee API packet data.
+	 * Returns the XBee API packet data.
 	 * 
 	 * <p>This does not include the frame ID if it is needed.</p>
 	 * 
@@ -160,7 +161,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Retrieves the XBee API packet specific data.
+	 * Returns the XBee API packet specific data.
 	 * 
 	 * <p>This does not include the frame ID if it is needed.</p>
 	 * 
@@ -169,7 +170,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	protected abstract byte[] getAPIPacketSpecificData();
 	
 	/**
-	 * Retrieves whether the API packet needs API Frame ID or not.
+	 * Returns whether the API packet needs API Frame ID or not.
 	 * 
 	 * @return {@code true} if the packet needs API Frame ID, {@code false} 
 	 *         otherwise.
@@ -177,17 +178,17 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	public abstract boolean needsAPIFrameID();
 	
 	/**
-	 * Retrieves the Frame ID of the API packet.
+	 * Returns the Frame ID of the API packet.
 	 * 
 	 * <p>If the frame ID is not configured or if the API packet does not need 
 	 * a Frame ID ({@code if (!needsAPIFrameID())}) this method returns 
 	 * {@code NO_FRAME_ID} ({@value #NO_FRAME_ID}).</p>
 	 * 
-	 * @return frame ID.
+	 * @return The frame ID.
 	 * 
-	 * @see #setFrameID(int)
-	 * @see #needsAPIFrameID()
 	 * @see #NO_FRAME_ID
+	 * @see #needsAPIFrameID()
+	 * @see #setFrameID(int)
 	 */
 	public int getFrameID() {
 		if (needsAPIFrameID())
@@ -201,11 +202,11 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * <p>If the API packet does not need a frame ID 
 	 * ({@code if (!needsAPIFrameID())}), this method does nothing.</p>
 	 * 
-	 * @param frameID frame ID to set.
+	 * @param frameID The frame ID to set.
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or 
 	 *                                  if {@code frameID > 255}.
-	 *                                  
+	 * 
 	 * @see #getFrameID()
 	 */
 	public void setFrameID(int frameID) {
@@ -217,24 +218,25 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Retrieves whether or not the packet is a broadcast packet.
+	 * Returns whether or not the packet is a broadcast packet.
 	 * 
-	 * @return True if the packet is a broadcast packet, false otherwise.
+	 * @return {@code true} if the packet is a broadcast packet, {@code false} 
+	 *         otherwise.
 	 */
 	public boolean isBroadcast() {
 		return false;
 	}
 	
 	/**
-	 * Returns whether the given id is the current frame id.
+	 * Returns whether the given ID is the current frame ID.
 	 * 
-	 * @param id the frame id to check.
+	 * @param id The frame id to check.
 	 * 
 	 * @return {@code true} if frame ID is equal to the {@code id} provided, 
-	 *         {@code false} otherwise or if the frame does not need an id.
-	 *         
-	 * @see #needsAPIFrameID()
+	 *         {@code false} otherwise or if the frame does not need an ID.
+	 * 
 	 * @see #getFrameID()
+	 * @see #needsAPIFrameID()
 	 * @see #setFrameID(int)
 	 */
 	public boolean checkFrameID(int id) {
@@ -269,7 +271,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	}
 	
 	/**
-	 * Retrieves a map with the XBee packet parameters and their values.
+	 * Returns a map with the XBee packet parameters and their values.
 	 * 
 	 * @return A sorted map containing the XBee packet parameters with their 
 	 *         values.

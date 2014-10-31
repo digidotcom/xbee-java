@@ -2,7 +2,7 @@
   ------------
   This is a sample Java application to show how to manage (get and set) common 
   parameters of the XBee device. Common parameters are split in cached and 
-  non-cached parameters. For that reason, the application refresh the cached 
+  non-cached parameters. For that reason, the application refreshes the cached 
   parameters before reading and displaying them. Then, it configures, reads 
   and displays the value of non-cached parameters.
   

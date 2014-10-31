@@ -38,7 +38,7 @@ public class MainApp {
 	// TODO Replace with the baud rate of your module.
 	private static final int BAUD_RATE = 9600;
 	
-	private static final byte[] PARAM_VALUE_PAN_ID = new byte[]{0x01, 0x23, 0x45, 0x67, (byte)0x89, (byte)0xAB, (byte)0xCF, (byte)0xEF};
+	private static final byte[] PARAM_VALUE_PAN_ID = new byte[]{0x01, 0x23};
 	
 	private static final XBee64BitAddress PARAM_DESTINATION_ADDR = XBee64BitAddress.BROADCAST_ADDRESS;
 	

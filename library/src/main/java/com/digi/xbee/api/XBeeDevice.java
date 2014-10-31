@@ -12,7 +12,6 @@
 package com.digi.xbee.api;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
@@ -29,6 +28,7 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
+import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -929,38 +929,40 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see com.digi.xbee.api.models.ModemStatusEvent#STATUS_HARDWARE_RESET
 	 * @see com.digi.xbee.api.models.ModemStatusEvent#STATUS_WATCHDOG_TIMER_RESET
 	 */
-	private boolean waitForModemStatusPacket() {
+	private boolean waitForModemResetStatusPacket() {
 		modemStatusReceived = false;
-		addPacketListener(modemStatusListener);
+		addModemStatusListener(resetStatusListener);
 		synchronized (resetLock) {
 			try {
 				resetLock.wait(TIMEOUT_RESET);
 			} catch (InterruptedException e) { }
 		}
-		removePacketListener(modemStatusListener);
+		removeModemStatusListener(resetStatusListener);
 		return modemStatusReceived;
 	}
 	
 	/**
-	 * Custom listener for Modem Status packets.
+	 * Custom listener for modem reset packets.
 	 * 
-	 * <p>When a Modem Status packet is received with status 0x00 or 0x01, it 
+	 * <p>When a Modem Status packet is received with status 
+	 * {@code ModemStatusEvent.STATUS_HARDWARE_RESET} or 
+	 * {@code ModemStatusEvent.STATUS_WATCHDOG_TIMER_RESET}, it 
 	 * notifies the object that was waiting for the reception.</p>
+	 * 
+	 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener
+	 * @see com.digi.xbee.api.models.ModemStatusEvent#STATUS_HARDWARE_RESET
+	 * @see com.digi.xbee.api.models.ModemStatusEvent#STATUS_WATCHDOG_TIMER_RESET
 	 */
-	private IPacketReceiveListener modemStatusListener = new IPacketReceiveListener() {
+	private IModemStatusReceiveListener resetStatusListener = new IModemStatusReceiveListener() {
+		
 		/*
 		 * (non-Javadoc)
-		 * @see com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(com.digi.xbee.api.packet.XBeePacket)
+		 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener#modemStatusEventReceived(com.digi.xbee.api.models.ModemStatusEvent)
 		 */
-		public void packetReceived(XBeePacket receivedPacket) {
-			// Discard non API packets.
-			if (!(receivedPacket instanceof XBeeAPIPacket))
-				return;
-			
-			byte[] hardwareReset = new byte[] {(byte) 0x8A, 0x00};
-			byte[] watchdogTimerReset = new byte[] {(byte) 0x8A, 0x01};
-			if (Arrays.equals(receivedPacket.getPacketData(), hardwareReset) ||
-					Arrays.equals(receivedPacket.getPacketData(), watchdogTimerReset)) {
+		@Override
+		public void modemStatusEventReceived(ModemStatusEvent modemStatusEvent) {
+			if (modemStatusEvent == ModemStatusEvent.STATUS_HARDWARE_RESET
+					|| modemStatusEvent == ModemStatusEvent.STATUS_WATCHDOG_TIMER_RESET){
 				modemStatusReceived = true;
 				// Continue execution by notifying the lock object.
 				synchronized (resetLock) {
@@ -993,7 +995,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		checkATCommandResponseIsValid(response);
 		
 		// Wait for a Modem Status packet.
-		if (!waitForModemStatusPacket())
+		if (!waitForModemResetStatusPacket())
 			throw new TimeoutException("Timeout waiting for the Modem Status packet.");
 		
 		logger.info(toString() + "Module reset successfully.");

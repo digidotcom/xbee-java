@@ -15,21 +15,20 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.io.IOSample;
 
 /**
- * This interface defines the required methods that should be implemented to 
- * behave as a IO Sample listener and be notified when IO samples are received 
- * from an XBee device of the network.
+ * This interface defines the required methods that an object should implement
+ * to behave as an IO Sample listener and be notified when IO samples are 
+ * received from a remote XBee device of the network.
  */
 public interface IIOSampleReceiveListener {
 	
 	/**
 	 * Called when an IO sample is received through the connection interface.
 	 * 
-	 * @param remoteDevice The device that sent the sample.
-	 * @param ioSample The IO sample.
+	 * @param remoteDevice The remote XBee device that sent the sample.
+	 * @param ioSample The received IO sample.
 	 * 
-	 * @see IOSample
-	 * @see RemoteXBeeDevice
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
+	 * @see com.digi.xbee.api.io.IOSample
 	 */
 	public void ioSampleReceived(RemoteXBeeDevice remoteDevice, IOSample ioSample);
-
 }

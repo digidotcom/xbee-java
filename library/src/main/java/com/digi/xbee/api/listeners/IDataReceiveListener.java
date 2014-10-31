@@ -15,17 +15,21 @@ import com.digi.xbee.api.models.XBeeMessage;
 
 /**
  * This interface defines the required methods that should be implemented to 
- * behave as a data listener and be notified when new data is received from an 
- * XBee device of the network.
+ * behave as a data listener and be notified when new data is received from a 
+ * remote XBee device of the network.
  */
 public interface IDataReceiveListener {
 
 	/**
-	 * Called when data is received from a remote node.
+	 * Called when data is received from a remote node of the network.
 	 * 
-	 * @param xbeeMessage XBeeMessage object containing the data, the address 
-	 *                    of the remote XBee device that sent the data and a flag 
-	 *                    indicating if the data was sent via broadcast.
+	 * @param xbeeMessage An {@code XBeeMessage} object containing the data,
+	 *                    the address of the {@code RemoteXBeeDevice} that sent
+	 *                    the data and a flag indicating whether the data was 
+	 *                    sent via broadcast or not.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeeMessage
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
 	public void dataReceived(XBeeMessage xbeeMessage);
 }

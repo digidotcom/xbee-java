@@ -3,14 +3,17 @@ package com.digi.xbee.api.listeners;
 import com.digi.xbee.api.RemoteXBeeDevice;
 
 /**
- * Listener interface used to be notified about device discovery events. 
+ * Interface defining the required methods that an object should implement to be 
+ * notified about device discovery events. 
  */
 public interface IDiscoveryListener {
 
 	/**
-	 * Notifies that a remote device was discovered.
+	 * Notifies that a remote device was discovered in the network.
 	 * 
 	 * @param discoveredDevice The discovered remote device.
+	 * 
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
 	public void deviceDiscovered(RemoteXBeeDevice discoveredDevice);
 	

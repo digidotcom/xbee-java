@@ -14,18 +14,19 @@ package com.digi.xbee.api.listeners;
 import com.digi.xbee.api.packet.XBeePacket;
 
 /**
- * This interface defines the required methods that should be implemented to 
- * behave as a packet listener and be notified when new packets are received 
- * from an XBee device of the network.
+ * This interface defines the required methods that an object should implement
+ * to behave as a packet listener and be notified when new packets are received 
+ * from a remote XBee device of the network.
  */
 public interface IPacketReceiveListener {
 
 	/**
-	 * Called when a packet received through the connection interface.
+	 * Called when an XBee packet is received through the connection interface.
 	 * 
-	 * @param receivedPacket The received packet.
+	 * @param receivedPacket The received XBee packet.
 	 * 
-	 * @see XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket
 	 */
 	public void packetReceived(XBeePacket receivedPacket);
 }

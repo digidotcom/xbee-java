@@ -76,7 +76,7 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the name of the IO line.
+	 * Returns the name of the IO line.
 	 * 
 	 * @return The name of the IO line.
 	 */
@@ -85,7 +85,7 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the index of the IO line.
+	 * Returns the index of the IO line.
 	 * 
 	 * @return The index of the IO line.
 	 */
@@ -94,7 +94,7 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the configuration AT command associated to the IO line.
+	 * Returns the configuration AT command associated to the IO line.
 	 * 
 	 * @return The configuration AT command associated to the IO line.
 	 */
@@ -103,7 +103,7 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves whether or not the IO line has PWM capability.
+	 * Returns whether or not the IO line has PWM capability.
 	 * 
 	 * @return {@code true} if the provided IO line has PWM, {@code false} 
 	 *         otherwise.
@@ -113,7 +113,7 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the PWM AT command associated to the IO line.
+	 * Returns the PWM AT command associated to the IO line.
 	 * 
 	 * @return The PWM AT command associated to the IO line.
 	 */
@@ -122,7 +122,7 @@ public enum IOLine {
 	}
 	
 	/**
-	 * Retrieves the {@code IOLine} associated to the given index.
+	 * Returns the {@code IOLine} associated to the given index.
 	 * 
 	 * @param index The index corresponding to the {@code IOLine} to retrieve.
 	 * 

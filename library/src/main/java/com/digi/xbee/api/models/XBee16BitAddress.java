@@ -145,7 +145,7 @@ public final class XBee16BitAddress {
 	}
 	
 	/**
-	 * Retrieves the address high significant byte.
+	 * Returns the address high significant byte.
 	 * 
 	 * @return Address high significant byte.
 	 */
@@ -154,7 +154,7 @@ public final class XBee16BitAddress {
 	}
 	
 	/**
-	 * Retrieves the address low significant byte.
+	 * Returns the address low significant byte.
 	 * 
 	 * @return Address low significant byte.
 	 */
@@ -163,7 +163,7 @@ public final class XBee16BitAddress {
 	}
 	
 	/**
-	 * Retrieves the 16-bit address value in byte array format.
+	 * Returns the 16-bit address value in byte array format.
 	 * 
 	 * @return Address value as byte array.
 	 */

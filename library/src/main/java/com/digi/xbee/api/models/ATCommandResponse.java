@@ -104,7 +104,7 @@ public class ATCommandResponse {
 	}
 	
 	/**
-	 * Retrieves the AT command that generated the response.
+	 * Returns the AT command that generated the response.
 	 * 
 	 * @return The AT command that generated the response.
 	 * 
@@ -115,7 +115,7 @@ public class ATCommandResponse {
 	}
 	
 	/**
-	 * Retrieves the AT command response data in byte array format if any.
+	 * Returns the AT command response data in byte array format if any.
 	 * 
 	 * @return The AT command response data in byte array format, 
 	 *         {@code null} if there is not response data.
@@ -125,7 +125,7 @@ public class ATCommandResponse {
 	}
 	
 	/**
-	 * Retrieves the AT command response data as string if any.
+	 * Returns the AT command response data as string if any.
 	 * 
 	 * @return The AT command response data as string, {@code null} if there 
 	 *         is not response data.
@@ -137,7 +137,7 @@ public class ATCommandResponse {
 	}
 	
 	/**
-	 * Retrieves the AT command response status.
+	 * Returns the AT command response status.
 	 * 
 	 * @return The AT command response status.
 	 * 

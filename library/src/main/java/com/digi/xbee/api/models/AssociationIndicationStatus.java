@@ -80,7 +80,7 @@ public enum AssociationIndicationStatus {
 	}
 	
 	/**
-	 * Retrieves the association indication status value.
+	 * Returns the association indication status value.
 	 * 
 	 * @return The association indication status value.
 	 */
@@ -89,7 +89,7 @@ public enum AssociationIndicationStatus {
 	}
 	
 	/**
-	 * Retrieves the association indication status description.
+	 * Returns the association indication status description.
 	 * 
 	 * @return The association indication status description.
 	 */
@@ -98,7 +98,7 @@ public enum AssociationIndicationStatus {
 	}
 	
 	/**
-	 * Retrieves the {@code AssociationIndicationStatus} associated to the 
+	 * Returns the {@code AssociationIndicationStatus} associated to the 
 	 * given value.
 	 * 
 	 * @param value Value of the association indication status to retrieve.

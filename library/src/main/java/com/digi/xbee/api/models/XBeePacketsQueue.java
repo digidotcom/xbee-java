@@ -93,7 +93,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the first packet from the queue waiting up to the specified 
+	 * Returns the first packet from the queue waiting up to the specified 
 	 * timeout if  necessary for an XBee packet to become available. 
 	 * {@code null }if the queue is empty.
 	 * 
@@ -119,7 +119,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the first packet from the queue whose 64-bit source address 
+	 * Returns the first packet from the queue whose 64-bit source address 
 	 * matches the address of the provided remote XBee device.
 	 * 
 	 * <p>The methods waits up to the specified timeout if necessary for an 
@@ -160,7 +160,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the first data packet from the queue waiting up to the 
+	 * Returns the first data packet from the queue waiting up to the 
 	 * specified timeout if necessary for an XBee data packet to become 
 	 * available. {@code null} if the queue is empty or there is not any data 
 	 * packet inside.
@@ -194,7 +194,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the first data packet from the queue whose 64-bit source 
+	 * Returns the first data packet from the queue whose 64-bit source 
 	 * address matches the address of the provided remote XBee device.
 	 * 
 	 * <p>The methods waits up to the specified timeout if necessary for an 
@@ -237,7 +237,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves whether or not the source address of the provided XBee packet 
+	 * Returns whether or not the source address of the provided XBee packet 
 	 * matches the address of the given remote XBee device.
 	 * 
 	 * @param xbeePacket The XBee packet to compare its address with the 
@@ -287,7 +287,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves whether or not the given XBee packet is a data packet.
+	 * Returns whether or not the given XBee packet is a data packet.
 	 * 
 	 * @param xbeePacket The XBee packet to check if is data packet.
 	 * 
@@ -323,7 +323,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the maximum size of the XBee packets queue.
+	 * Returns the maximum size of the XBee packets queue.
 	 * 
 	 * @return The maximum size of the XBee packets queue.
 	 */
@@ -332,7 +332,7 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Retrieves the current size of the XBee packets queue.
+	 * Returns the current size of the XBee packets queue.
 	 * 
 	 * @return The current size of the XBee packets queue.
 	 */

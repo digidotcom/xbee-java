@@ -70,7 +70,7 @@ public class XBeeMessage {
 	}
 	
 	/**
-	 * Retrieves the remote XBee device this message is associated to.
+	 * Returns the remote XBee device this message is associated to.
 	 * 
 	 * @return The remote XBee device this message is associated to.
 	 * 
@@ -81,7 +81,7 @@ public class XBeeMessage {
 	}
 	
 	/**
-	 * Retrieves the a byte array containing the data of the message.
+	 * Returns the a byte array containing the data of the message.
 	 * 
 	 * @return A byte array containing the data of the message.
 	 */
@@ -90,7 +90,7 @@ public class XBeeMessage {
 	}
 	
 	/**
-	 * Retrieves the data of the message in string format.
+	 * Returns the data of the message in string format.
 	 * 
 	 * @return The data of the message in string format.
 	 */
@@ -99,7 +99,7 @@ public class XBeeMessage {
 	}
 	
 	/**
-	 * Retrieves whether or not the message was received via broadcast.
+	 * Returns whether or not the message was received via broadcast.
 	 * 
 	 * @return {@code true} if the message was received via broadcast, 
 	 *         {@code false} otherwise.

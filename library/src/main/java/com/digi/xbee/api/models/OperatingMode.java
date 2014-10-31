@@ -42,7 +42,7 @@ public enum OperatingMode {
 	}
 	
 	/**
-	 * Retrieves the operating mode ID.
+	 * Returns the operating mode ID.
 	 * 
 	 * @return Operating mode ID.
 	 */
@@ -51,7 +51,7 @@ public enum OperatingMode {
 	}
 	
 	/**
-	 * Retrieves the operating mode name.
+	 * Returns the operating mode name.
 	 * 
 	 * @return Operating mode name.
 	 */

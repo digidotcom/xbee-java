@@ -50,7 +50,7 @@ public enum IOValue {
 	}
 	
 	/**
-	 * Retrieves the ID of the IO value.
+	 * Returns the ID of the IO value.
 	 * 
 	 * @return The ID of the IO value.
 	 */
@@ -59,7 +59,7 @@ public enum IOValue {
 	}
 	
 	/**
-	 * Retrieves the name of the IO value.
+	 * Returns the name of the IO value.
 	 * 
 	 * @return The name of the IO value.
 	 */
@@ -68,7 +68,7 @@ public enum IOValue {
 	}
 	
 	/**
-	 * Retrieves the {@code IOValue} associated to the provided value ID.
+	 * Returns the {@code IOValue} associated to the provided value ID.
 	 * 
 	 * @param valueID The ID of the {@code IOValue} to retrieve.
 	 * 

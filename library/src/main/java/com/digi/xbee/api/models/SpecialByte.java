@@ -48,7 +48,7 @@ public enum SpecialByte {
 	}
 	
 	/**
-	 * Retrieves the special byte value.
+	 * Returns the special byte value.
 	 * 
 	 * @return The special byte value.
 	 */
@@ -57,7 +57,7 @@ public enum SpecialByte {
 	}
 	
 	/**
-	 * Retrieves the {@code SpecialByte} entry associated with the given value.
+	 * Returns the {@code SpecialByte} entry associated with the given value.
 	 * 
 	 * @param value Value of the {@code SpecialByte} to retrieve.
 	 * 

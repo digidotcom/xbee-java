@@ -55,7 +55,7 @@ public enum ATCommandStatus {
 	}
 	
 	/**
-	 * Retrieves the AT Command Status ID.
+	 * Returns the AT Command Status ID.
 	 * 
 	 * @return The AT Command Status ID.
 	 */
@@ -64,7 +64,7 @@ public enum ATCommandStatus {
 	}
 	
 	/**
-	 * Retrieves the AT Command Status description.
+	 * Returns the AT Command Status description.
 	 * 
 	 * @return AT Command Status description.
 	 */
@@ -73,7 +73,7 @@ public enum ATCommandStatus {
 	}
 	
 	/**
-	 * Retrieves the {@code ATCommandStatus} associated to the given ID.
+	 * Returns the {@code ATCommandStatus} associated to the given ID.
 	 * 
 	 * @param id ID to retrieve the corresponding {@code ATCommandStatus}.
 	 * 

@@ -60,7 +60,7 @@ public enum XBeeProtocol {
 	}
 	
 	/**
-	 * Retrieves the XBee protocol ID.
+	 * Returns the XBee protocol ID.
 	 * 
 	 * @return XBee protocol ID.
 	 */
@@ -69,7 +69,7 @@ public enum XBeeProtocol {
 	}
 	
 	/**
-	 * Retrieves the XBee protocol description.
+	 * Returns the XBee protocol description.
 	 * 
 	 * @return XBee protocol description.
 	 */
@@ -78,7 +78,7 @@ public enum XBeeProtocol {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeProtocol} associated to the given ID.
+	 * Returns the {@code XBeeProtocol} associated to the given ID.
 	 * 
 	 * @param id The ID of the {@code XBeeProtocol} to retrieve.
 	 * 

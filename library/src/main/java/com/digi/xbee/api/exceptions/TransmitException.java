@@ -74,7 +74,7 @@ public class TransmitException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeTransmitStatus} of the exception containing 
+	 * Returns the {@code XBeeTransmitStatus} of the exception containing 
 	 * information about the transmission.
 	 * 
 	 * @return The status of the transmission.
@@ -86,7 +86,7 @@ public class TransmitException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the text containing the status of the transmission from 
+	 * Returns the text containing the status of the transmission from 
 	 * the exception.
 	 * 
 	 * @return The text with the status of the transmission.

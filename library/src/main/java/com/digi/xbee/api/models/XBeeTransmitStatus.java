@@ -68,7 +68,7 @@ public enum XBeeTransmitStatus {
 	}
 	
 	/**
-	 * Retrieves the XBee transmit status ID.
+	 * Returns the XBee transmit status ID.
 	 * 
 	 * @return XBee transmit status ID.
 	 */
@@ -77,7 +77,7 @@ public enum XBeeTransmitStatus {
 	}
 	
 	/**
-	 * Retrieves the XBee transmit status description.
+	 * Returns the XBee transmit status description.
 	 * 
 	 * @return XBee transmit status description.
 	 */
@@ -86,7 +86,7 @@ public enum XBeeTransmitStatus {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeTransmitStatus} associated to the given ID.
+	 * Returns the {@code XBeeTransmitStatus} associated to the given ID.
 	 * 
 	 * @param id ID of the {@code XBeeTransmitStatus} to retrieve.
 	 * 

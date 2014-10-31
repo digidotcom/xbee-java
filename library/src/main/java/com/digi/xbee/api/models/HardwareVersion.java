@@ -48,7 +48,7 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the Hardware version numeric value.
+	 * Returns the Hardware version numeric value.
 	 * 
 	 * @return Hardware version numeric value.
 	 */
@@ -57,7 +57,7 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the Hardware version description.
+	 * Returns the Hardware version description.
 	 * 
 	 * @return Hardware version description.
 	 */
@@ -66,7 +66,7 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the {@code HardwareVersion} object associated to the given 
+	 * Returns the {@code HardwareVersion} object associated to the given 
 	 * numeric value.
 	 * 
 	 * @param value Numeric value of the {@code HardwareVersion} retrieve.
@@ -83,7 +83,7 @@ public class HardwareVersion {
 	}
 	
 	/**
-	 * Retrieves the {@code HardwareVersion} object associated to the given 
+	 * Returns the {@code HardwareVersion} object associated to the given 
 	 * numeric value and description.
 	 * 
 	 * @param value Numeric value of the {@code HardwareVersion} retrieve.

@@ -94,7 +94,7 @@ public enum HardwareVersionEnum {
 	}
 	
 	/**
-	 * Retrieves the Hardware version numeric value.
+	 * Returns the Hardware version numeric value.
 	 * 
 	 * @return The hardware version numeric value.
 	 */
@@ -103,7 +103,7 @@ public enum HardwareVersionEnum {
 	}
 	
 	/**
-	 * Retrieves the hardware version description.
+	 * Returns the hardware version description.
 	 * 
 	 * @return The hardware version description.
 	 */
@@ -112,7 +112,7 @@ public enum HardwareVersionEnum {
 	}
 	
 	/**
-	 * Retrieves the {@code HardwareVersionEnum} associated to the given 
+	 * Returns the {@code HardwareVersionEnum} associated to the given 
 	 * numeric value.
 	 * 
 	 * @param value Numeric value of the {@code HardwareVersionEnum} to 

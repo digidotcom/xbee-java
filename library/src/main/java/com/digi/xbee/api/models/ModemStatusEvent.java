@@ -70,7 +70,7 @@ public enum ModemStatusEvent {
 	}
 	
 	/**
-	 * Retrieves the modem status ID.
+	 * Returns the modem status ID.
 	 * 
 	 * @return The modem status ID.
 	 */
@@ -79,7 +79,7 @@ public enum ModemStatusEvent {
 	}
 	
 	/**
-	 * Retrieves the modem status description.
+	 * Returns the modem status description.
 	 * 
 	 * @return Modem status description.
 	 */
@@ -88,7 +88,7 @@ public enum ModemStatusEvent {
 	}
 	
 	/**
-	 * Retrieves the {@code ModemStatusEvent} associated to the given ID.
+	 * Returns the {@code ModemStatusEvent} associated to the given ID.
 	 * 
 	 * @param id ID of the {@code ModemStatusEvent} to retrieve.
 	 * @return The {@code ModemStatusEvent} associated with the given ID.

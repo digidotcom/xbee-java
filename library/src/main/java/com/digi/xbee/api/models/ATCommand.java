@@ -84,7 +84,7 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Retrieves the AT command alias.
+	 * Returns the AT command alias.
 	 * 
 	 * @return The AT command alias.
 	 */
@@ -93,7 +93,7 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Retrieves the AT command parameter.
+	 * Returns the AT command parameter.
 	 * 
 	 * @return The AT command parameter, {@code null} if the command does not 
 	 *         have a parameter.
@@ -103,7 +103,7 @@ public class ATCommand {
 	}
 	
 	/**
-	 * Retrieves the AT command parameter in string format.
+	 * Returns the AT command parameter in string format.
 	 * 
 	 * @return The AT command parameter, {@code null} if the command does not 
 	 *         have a parameter.

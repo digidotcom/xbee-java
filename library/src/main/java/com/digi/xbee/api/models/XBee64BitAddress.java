@@ -169,7 +169,7 @@ public final class XBee64BitAddress {
 	}
 	
 	/**
-	 * Retrieves the XBee 64-bit address value as byte array.
+	 * Returns the XBee 64-bit address value as byte array.
 	 * 
 	 * @return XBee 64-bit address value as byte array.
 	 */

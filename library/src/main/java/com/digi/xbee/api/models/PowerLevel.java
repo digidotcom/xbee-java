@@ -54,7 +54,7 @@ public enum PowerLevel {
 	}
 	
 	/**
-	 * Retrieves the power level value.
+	 * Returns the power level value.
 	 * 
 	 * @return The power level value.
 	 */
@@ -63,7 +63,7 @@ public enum PowerLevel {
 	}
 	
 	/**
-	 * Retrieves the power level description.
+	 * Returns the power level description.
 	 * 
 	 * @return The power level description.
 	 */
@@ -72,7 +72,7 @@ public enum PowerLevel {
 	}
 	
 	/**
-	 * Retrieves the {@code PowerLevel} entry associated to the given value.
+	 * Returns the {@code PowerLevel} entry associated to the given value.
 	 * 
 	 * @param value Value of the {@code PowerLevel} to retrieve.
 	 * 

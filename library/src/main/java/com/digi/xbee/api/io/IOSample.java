@@ -258,7 +258,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the HSB of the digital mask.
+	 * Returns the HSB of the digital mask.
 	 * 
 	 * @return HSB of the digital mask.
 	 * 
@@ -270,7 +270,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the LSB of the digital mask.
+	 * Returns the LSB of the digital mask.
 	 * 
 	 * @return LSB of the digital mask.
 	 * 
@@ -282,7 +282,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the combined (HSB + LSB) digital mask.
+	 * Returns the combined (HSB + LSB) digital mask.
 	 * 
 	 * @return The combined digital mask.
 	 * 
@@ -304,7 +304,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves whether or not this IO sample contains a digital value for 
+	 * Returns whether or not this IO sample contains a digital value for 
 	 * the given IO line.
 	 * 
 	 * @param ioLine The IO line to check if has a digital value.
@@ -320,7 +320,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the digital values map.
+	 * Returns the digital values map.
 	 * 
 	 * @return {@code HashMap} with the digital value of each configured IO 
 	 *         line.
@@ -335,7 +335,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the digital value of the provided IO line.
+	 * Returns the digital value of the provided IO line.
 	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * 
@@ -356,7 +356,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the analog mask.
+	 * Returns the analog mask.
 	 * 
 	 * @return Analog mask.
 	 */
@@ -365,7 +365,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves whether or not the {@code IOSample} has analog values.
+	 * Returns whether or not the {@code IOSample} has analog values.
 	 *  
 	 * @return {@code true} if there are analog values, {@code false} otherwise.
 	 * 
@@ -379,7 +379,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves whether or not the given IO line has an analog value.
+	 * Returns whether or not the given IO line has an analog value.
 	 * 
 	 * @param ioLine The IO line to check if has an analog value.
 	 * 
@@ -396,7 +396,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the analog values map.
+	 * Returns the analog values map.
 	 * 
 	 * @return {@code HashMap} with the analog value of each configured IO 
 	 *         line.
@@ -411,7 +411,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the analog value of the provided IO line.
+	 * Returns the analog value of the provided IO line.
 	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * 
@@ -432,7 +432,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves whether or not the IOSample has power supply value.
+	 * Returns whether or not the IOSample has power supply value.
 	 * 
 	 * @return {@code true} if the IOSample has power supply value, 
 	 *         {@code false} otherwise.
@@ -444,7 +444,7 @@ public class IOSample {
 	}
 	
 	/**
-	 * Retrieves the value of the power supply voltage.
+	 * Returns the value of the power supply voltage.
 	 * 
 	 * @return The value of the power supply voltage.
 	 * 

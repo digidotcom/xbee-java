@@ -65,7 +65,7 @@ public enum DiscoveryOptions {
 	}
 	
 	/**
-	 * Retrieves the value of the discovery option.
+	 * Returns the value of the discovery option.
 	 * 
 	 * @return The discovery option value.
 	 */
@@ -74,7 +74,7 @@ public enum DiscoveryOptions {
 	}
 	
 	/**
-	 * Retrieves the description of the discovery option.
+	 * Returns the description of the discovery option.
 	 * 
 	 * @return The discovery option description.
 	 */

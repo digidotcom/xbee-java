@@ -48,7 +48,7 @@ public enum ATStringCommands {
 	}
 	
 	/**
-	 * Retrieves the AT Command alias.
+	 * Returns the AT Command alias.
 	 * 
 	 * @return The AT Command alias.
 	 */
@@ -57,7 +57,7 @@ public enum ATStringCommands {
 	}
 	
 	/**
-	 * Retrieves the {@code ATStringCommands} for the given AT Command alias.
+	 * Returns the {@code ATStringCommands} for the given AT Command alias.
 	 * 
 	 * @param command The AT Command alias to retrieve the corresponding 
 	 *                {@code ATStringCommands}.

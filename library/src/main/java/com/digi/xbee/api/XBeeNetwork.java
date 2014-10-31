@@ -435,6 +435,8 @@ public class XBeeNetwork {
 	public RemoteXBeeDevice getDevice(XBee16BitAddress address) throws OperationNotSupportedException {
 		if (localDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH)
 			throw new OperationNotSupportedException("DigiMesh protocol does not support 16-bit addressing.");
+		if (localDevice.getXBeeProtocol() == XBeeProtocol.DIGI_POINT)
+			throw new OperationNotSupportedException("Point-to-Multipoint protocol does not support 16-bit addressing.");
 		if (address == null)
 			throw new NullPointerException("16-bit address cannot be null.");
 		if (address.equals(XBee16BitAddress.UNKNOWN_ADDRESS))

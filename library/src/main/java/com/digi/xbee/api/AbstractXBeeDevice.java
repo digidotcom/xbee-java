@@ -316,8 +316,9 @@ public abstract class AbstractXBeeDevice {
 		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
 		
 		// Get the 16-bit address. This must be done after obtaining the protocol because 
-		// DigiMesh protocol does not have 16-bit addresses.
-		if (getXBeeProtocol() != XBeeProtocol.DIGI_MESH) {
+		// DigiMesh and Point-to-Multipoint protocols don't have 16-bit addresses.
+		if (getXBeeProtocol() != XBeeProtocol.DIGI_MESH 
+				&& getXBeeProtocol() != XBeeProtocol.DIGI_POINT) {
 			response = getParameter("MY");
 			xbee16BitAddress = new XBee16BitAddress(response);
 		}

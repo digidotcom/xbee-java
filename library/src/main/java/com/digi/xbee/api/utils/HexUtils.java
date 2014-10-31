@@ -17,20 +17,24 @@ package com.digi.xbee.api.utils;
  */
 public class HexUtils {
 
-	static final String HEXES = "0123456789ABCDEF";
-	static final String HEX_HEADER = "0x";
+	// Constants.
+	private static final String HEXES = "0123456789ABCDEF";
+	private static final String HEX_HEADER = "0x";
 	
 	/**
-	 * Converts the given byte array into a hex string.
+	 * Converts the given byte array into an hex string.
 	 * 
 	 * @param value Byte array to convert to hex string.
 	 * 
-	 * @return Converted byte array to hex string or {@code null} 
-	 *         if {@code value == null}.
+	 * @return Converted byte array to hex string.
+	 * 
+	 * @throws NullPointerException if {@code value == null}.
+	 * 
+	 * @see #hexStringToByteArray(String)
 	 */
 	public static String byteArrayToHexString(byte[] value) {
 		if (value == null )
-			return null;
+			throw new NullPointerException("Value to convert cannot be null");
 		final StringBuilder hex = new StringBuilder(2 * value.length );
 		for (final byte b : value) {
 			hex.append(HEXES.charAt((b & 0xF0) >> 4))
@@ -40,7 +44,7 @@ public class HexUtils {
 	}
 	
 	/**
-	 * Converts the given byte  into a hex string.
+	 * Converts the given byte into an hex string.
 	 * 
 	 * @param value Byte to convert to hex string.
 	 * 
@@ -57,15 +61,17 @@ public class HexUtils {
 	/**
 	 * Converts the given hex string into a byte array.
 	 * 
-	 * @param value Hex string to convert to.
+	 * @param value Hex string to convert to byte array.
 	 * 
 	 * @return Byte array of the given hex string.
 	 * 
 	 * @throws NullPointerException if {@code value == null}.
+	 * 
+	 * @see #byteArrayToHexString(byte[])
 	 */
 	public static byte[] hexStringToByteArray(String value) {
 		if (value == null)
-			throw new NullPointerException("Value cannot be null.");
+			throw new NullPointerException("Value to convert cannot be null.");
 		
 		value = value.trim();
 		if (value.startsWith(HEX_HEADER))
@@ -84,12 +90,12 @@ public class HexUtils {
 	}
 	
 	/**
-	 * Internal function to check if the parameter is a string or a numeric 
-	 * value.
+	 * Checks whether the given parameter is a string or a numeric value.
 	 * 
-	 * @param parameter parameter to check.
+	 * @param parameter Parameter to check.
 	 * 
-	 * @return {@code true} if contains letters, {@code false} otherwise.
+	 * @return {@code true} if the given parameter is a string,
+	 *         {@code false} otherwise.
 	 * 
 	 * @throws NullPointerException if {@code parameter == null}.
 	 */
@@ -106,7 +112,7 @@ public class HexUtils {
 	}
 	
 	/**
-	 * Retrieves the given integer as hexadecimal string.
+	 * Converts the given integer into an hexadecimal string.
 	 * 
 	 * @param value The integer value to convert to hexadecimal string.
 	 * @param minBytes The minimum number of bytes to be represented.
@@ -127,13 +133,16 @@ public class HexUtils {
 	}
 	
 	/**
-	 * Retrieves the given hexadecimal string splitting the content byte by byte.
+	 * Converts the given hexadecimal string to a pretty format by splitting the 
+	 * content byte by byte.
 	 * 
-	 * @param hexString The hexadecimal string to split.
+	 * @param hexString The hexadecimal string to convert.
 	 * 
-	 * @return The hexadecimal string with the bytes split.
+	 * @return The hexadecimal string with pretty format.
 	 * 
 	 * @throws NullPointerException if {@code hexString == null}.
+	 * 
+	 * @see #prettyHexString(byte[])
 	 */
 	public static String prettyHexString(String hexString) {
 		if (hexString == null)
@@ -149,14 +158,16 @@ public class HexUtils {
 	}
 	
 	/**
-	 * Converts the given byte array into a hex string and retrieves it 
-	 * splitting the content byte by byte.
+	 * Converts the given byte array into an hex string and retrieves it 
+	 * in pretty format by splitting the content byte by byte.
 	 * 
-	 * @param value The byte array to convert and split.
+	 * @param value The byte array to convert to pretty hex string.
 	 * 
-	 * @return The hexadecimal string with the bytes split.
+	 * @return The hexadecimal pretty string.
 	 * 
 	 * @throws NullPointerException if {@code value == null}.
+	 * 
+	 * @see #prettyHexString(String)
 	 */
 	public static String prettyHexString(byte[] value) {
 		return prettyHexString(byteArrayToHexString(value));

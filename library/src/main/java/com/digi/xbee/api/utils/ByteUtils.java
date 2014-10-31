@@ -21,17 +21,18 @@ import java.io.ByteArrayOutputStream;
 public class ByteUtils {
 
 	/**
-	 * Reads the given amount of bytes from the given Byte array input stream.
+	 * Reads the given amount of bytes from the given byte array input stream.
 	 * 
 	 * @param numBytes Number of bytes to read.
-	 * @param inputStream Byte array input stream to read from.
+	 * @param inputStream Byte array input stream to read bytes from.
 	 * 
 	 * @return An array with the read bytes.
 	 * 
 	 * @throws IllegalArgumentException if {@code numBytes < 0}.
 	 * @throws NullPointerException if {@code inputStream == null}.
 	 * 
-	 * @see ByteArrayInputStream
+	 * @see #readString(ByteArrayInputStream)
+	 * @see #readUntilCR(ByteArrayInputStream)
 	 */
 	public static byte[] readBytes(int numBytes, ByteArrayInputStream inputStream) {
 		if (inputStream == null)
@@ -47,11 +48,14 @@ public class ByteUtils {
 	/**
 	 * Reads a null-terminated string from the given byte array input stream.
 	 * 
-	 * @param inputStream Byte array input stream to read from.
+	 * @param inputStream Byte array input stream to read string  from.
 	 * 
 	 * @return The read string from the given {@code ByteArrayInputStream}.
 	 * 
 	 * @throws NullPointerException if {@code inputStream == null}.
+	 * 
+	 * @see #readBytes(int, ByteArrayInputStream)
+	 * @see #readUntilCR(ByteArrayInputStream)
 	 */
 	public static String readString(ByteArrayInputStream inputStream) {
 		if (inputStream == null)
@@ -65,11 +69,13 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given long into a byte array.
+	 * Converts the given long value into a byte array.
 	 * 
-	 * @param value Long to convert to.
+	 * @param value Long value to convert to byte array.
 	 * 
-	 * @return Byte array of the given long (8 bytes length).
+	 * @return Byte array of the given long value (8 bytes length).
+	 * 
+	 * @see #byteArrayToLong(byte[])
 	 */
 	public static byte[] longToByteArray(long value) {
 		return new byte[] {
@@ -87,24 +93,26 @@ public class ByteUtils {
 	/**
 	 * Converts the given byte array (8 bytes length max) into a long.
 	 * 
-	 * @param b Byte array to convert to long (8 bytes length max).
+	 * @param byteArray Byte array to convert to long (8 bytes length max).
 	 * 
-	 * @return Converted long.
+	 * @return Converted long value.
 	 * 
 	 * @throws NullPointerException if {@code b == null}.
+	 * 
+	 * @see #longToByteArray(long)
 	 */
-	public static long byteArrayToLong(byte[] b) {
-		if (b == null)
+	public static long byteArrayToLong(byte[] byteArray) {
+		if (byteArray == null)
 			throw new NullPointerException("Byte array cannot be null.");
 		
-		byte[] values = b;
-		if (b.length < 8) {
+		byte[] values = byteArray;
+		if (byteArray.length < 8) {
 			values = new byte[8];
-			int diff = 8 - b.length;
+			int diff = 8 - byteArray.length;
 			for (int i = 0; i < diff; i++)
 				values[i] = 0;
 			for (int i = diff; i < 8; i++)
-				values[i] = b[i - diff];
+				values[i] = byteArray[i - diff];
 		}
 		return ((long)values[0] << 56) 
 				+ ((long)(values[1] & 0xFF) << 48) 
@@ -117,11 +125,13 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given integer into a byte array.
+	 * Converts the given integer value into a byte array.
 	 * 
-	 * @param value Integer to convert to.
+	 * @param value Integer value to convert to byte array.
 	 * 
 	 * @return Byte array of the given integer (4 bytes length).
+	 * 
+	 * @see #byteArrayToInt(byte[])
 	 */
 	public static byte[] intToByteArray(int value) {
 		return new byte[] {
@@ -133,27 +143,28 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given byte array (4 bytes length max) into an
-	 * integer.
+	 * Converts the given byte array (4 bytes length max) into an integer.
 	 * 
-	 * @param b Byte array to convert to integer (4 bytes length max).
+	 * @param byteArray Byte array to convert to integer (4 bytes length max).
 	 * 
-	 * @return Converted integer.
+	 * @return Converted integer value.
 	 * 
-	 * @throws NullPointerException if {@code b == null}.
+	 * @throws NullPointerException if {@code byteArray == null}.
+	 * 
+	 * @see #intToByteArray(int)
 	 */
-	public static int byteArrayToInt(byte[] b) {
-		if (b == null)
+	public static int byteArrayToInt(byte[] byteArray) {
+		if (byteArray == null)
 			throw new NullPointerException("Byte array cannot be null.");
 		
-		byte[] values = b;
-		if (b.length < 4) {
+		byte[] values = byteArray;
+		if (byteArray.length < 4) {
 			values = new byte[4];
-			int diff = 4 - b.length;
+			int diff = 4 - byteArray.length;
 			for (int i = 0; i < diff; i++)
 				values[i] = 0;
 			for (int i = diff; i < 4; i++)
-				values[i] = b[i - diff];
+				values[i] = byteArray[i - diff];
 		}
 		return ((values[0] & 0xFF) << 24)
 				| ((values[1] & 0xFF) << 16)
@@ -162,11 +173,13 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given short into a byte array.
+	 * Converts the given short value into a byte array.
 	 * 
-	 * @param value Short to convert to.
+	 * @param value Short value to convert to byte array.
 	 * 
 	 * @return Byte array of the given short (2 bytes length).
+	 * 
+	 * @see #byteArrayToShort(byte[])
 	 */
 	public static byte[] shortToByteArray(short value) {
 		byte[] b = new byte[2];
@@ -176,30 +189,34 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given byte array to short.
+	 * Converts the given byte array (2 bytes length max) to short.
 	 * 
-	 * @param b byte array to convert to.
+	 * @param byteArray Byte array to convert to short (2 bytes length max).
 	 * 
-	 * @return short of the given byte array (2 bytes length).
+	 * @return Converted short value.
 	 * 
-	 * @throws NullPointerException if {@code b == null}.
+	 * @throws NullPointerException if {@code byteArray == null}.
+	 * 
+	 * @see #shortToByteArray(short)
 	 */
-	public static short byteArrayToShort(byte[] b) {
-		if (b == null)
+	public static short byteArrayToShort(byte[] byteArray) {
+		if (byteArray == null)
 			throw new NullPointerException("Byte array cannot be null.");
 		
-		return (short) (((b[0] << 8) & 0xFF00) 
-						| b[1] & 0x00FF);
+		return (short) (((byteArray[0] << 8) & 0xFF00) 
+						| byteArray[1] & 0x00FF);
 	}
 	
 	/**
 	 * Converts the given string into a byte array.
 	 * 
-	 * @param value String to convert to.
+	 * @param value String to convert to byte array.
 	 * 
 	 * @return Byte array of the given string.
 	 * 
 	 * @throws NullPointerException if {@code value == null}.
+	 * 
+	 * @see #byteArrayToString(byte[])
 	 */
 	public static byte[] stringToByteArray(String value) {
 		if (value == null)
@@ -209,7 +226,7 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given string byte array into a string.
+	 * Converts the given byte array into a string.
 	 * 
 	 * @param value Byte array to convert to string.
 	 * 
@@ -225,11 +242,11 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given byte into a integer.
+	 * Converts the given byte into an integer.
 	 * 
-	 * @param b Byte to convert to.
+	 * @param b Byte to convert to integer.
 	 * 
-	 * @return converted byte into integer.
+	 * @return Converted byte into integer.
 	 */
 	public static int byteToInt(byte b) {
 		return (int) b & 0xFF;
@@ -239,8 +256,9 @@ public class ByteUtils {
 	 * Returns whether the specified bit of the given integer is set to 1
 	 * or not.
 	 * 
-	 * @param containerInteger Integer to check bit position enablement.
-	 * @param bitPosition Position of the bit to check in the integer.
+	 * @param containerInteger Integer to check the given bit position
+	 *                         enablement state.
+	 * @param bitPosition Position of the bit to check its enablement state.
 	 * 
 	 * @return {@code true} if the given bit position is set to {@code 1} 
 	 *         in the {@code containerInteger}, {@code false} otherwise.
@@ -253,11 +271,11 @@ public class ByteUtils {
 	 * Reads an integer value from the given byte using the given bit offset 
 	 * and the given bit size.
 	 * 
-	 * @param containerByte Byte to read integer from.
+	 * @param containerByte Byte to read the integer from.
 	 * @param bitOffset Offset inside the byte to start reading integer value.
-	 * @param bitLength Size in bits of the integer value.
+	 * @param bitLength Size in bits of the integer value to read.
 	 * 
-	 * @return The integer value read.
+	 * @return The integer read value.
 	 */
 	public static int readIntegerFromByte(byte containerByte, int bitOffset, int bitLength) {
 		int readInteger = 0;
@@ -271,10 +289,10 @@ public class ByteUtils {
 	/**
 	 * Reads a boolean value from the given byte at the given bit position.
 	 * 
-	 * @param containerByte Byte to read boolean from.
-	 * @param bitOffset Offset of the bit to read.
+	 * @param containerByte Byte to read boolean value from.
+	 * @param bitOffset Offset inside the byte to read the boolean value.
 	 * 
-	 * @return The boolean value.
+	 * @return The read boolean value.
 	 */
 	public static boolean readBooleanFromByte(byte containerByte, int bitOffset) {
 		return isBitEnabled(containerByte, bitOffset);
@@ -282,13 +300,16 @@ public class ByteUtils {
 	
 	/**
 	 * Reads from the given byte array input stream until a CR character is
-	 * found or end of stream. Read bytes are returned.
+	 * found or the end of stream is reached. Read bytes are returned.
 	 * 
 	 * @param inputStream Byte array input stream to read from.
 	 * 
 	 * @return An array with the read bytes.
 	 * 
 	 * @throws NullPointerException if {@code inputStream == null}.
+	 * 
+	 * @see #readBytes(int, ByteArrayInputStream)
+	 * @see #readString(ByteArrayInputStream)
 	 */
 	public static byte[] readUntilCR(ByteArrayInputStream inputStream) {
 		if (inputStream == null)
@@ -303,14 +324,15 @@ public class ByteUtils {
 	
 	/**
 	 * Generates a new byte array of the given size using the given data and 
-	 * filling with ASCII zeros (0x48) the remaining space. If new size is 
-	 * lower than current, array is truncated.
+	 * filling with ASCII zeros (0x48) the remaining space.
+	 * 
+	 * <p>If new size is lower than current, array is truncated.</p>
 	 * 
 	 * @param data Data to use in the new array.
 	 * @param finalSize Final size of the array.
 	 * 
-	 * @return Final byte array of the given size replacing with zeros the 
-	 *         remaining space.
+	 * @return Final byte array of the given size containing the given data and
+	 *         replacing with zeros the remaining space.
 	 * 
 	 * @throws NullPointerException if {@code data == null}.
 	 */

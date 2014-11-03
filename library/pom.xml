@@ -3,19 +3,76 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.digi.xbee</groupId>
-		<artifactId>xbeeapi-parent</artifactId>
+		<artifactId>xbjlib-parent</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>..\pom.xml</relativePath>
 	</parent>
-	<artifactId>xbeejapi</artifactId>
+	<artifactId>xbjlib</artifactId>
 	<packaging>jar</packaging>
 	
-	<name>XBee Java API Code</name>
+	<name>XBee Java Library</name>
+	
+	<properties>
+		<maven-source-plugin.version>2.4</maven-source-plugin.version>
+		<javadoc.plugin.version>2.10.1</javadoc.plugin.version>
+		<maven.build.timestamp.format>yyyy-MMM-dd HH:mm z</maven.build.timestamp.format>
+	</properties>
 	
 	<build>
 		<directory>../target/library</directory>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
+			<!-- Generate a package with the sources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Generate a package with the javadoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${javadoc.plugin.version}</version>
+				<configuration>
+					<show>public</show>
+					<author>true</author>
+					<nodeprecated>true</nodeprecated>
+					<nodeprecatedlist>true</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<source>1.6</source>
+					<version>true</version>
+					<docfilessubdirs>true</docfilessubdirs>
+					<!--<javadocDirectory>${basedir}/src/main/javadoc/</javadocDirectory>-->
+					<!--<overview>${basedir}/src/main/javadoc/overview.html</overview>-->
+					<stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
+					<windowtitle>${project.name}</windowtitle>
+					<doctitle>${project.name}</doctitle>
+					<bottom>&amp;copy; Copyright ${project.inceptionYear}&#x2013;{currentYear} &lt;a href=&quot;{organizationURL}&quot; target=&quot;_blank&quot;&gt;{organizationName}&lt;/a&gt; All rights reserved.</bottom>
+					<footer>&lt;em&gt;${project.name} ${project.version}&lt;br&gt;${maven.build.timestamp}&lt;/em&gt;</footer>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>

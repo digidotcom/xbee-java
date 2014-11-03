@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.digi.xbee</groupId>
-		<artifactId>xbeeapi-parent</artifactId>
+		<artifactId>xbjlib-parent</artifactId>
 		<version>0.1-SNAPSHOT</version>
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
@@ -42,7 +42,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.digi.xbee</groupId>
-			<artifactId>xbeejapi</artifactId>
+			<artifactId>xbjlib</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>

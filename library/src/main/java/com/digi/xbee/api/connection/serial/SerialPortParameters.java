@@ -14,15 +14,15 @@ package com.digi.xbee.api.connection.serial;
 /**
  * Helper class used to store serial connection parameters information.
  * 
- * Parameters are stored as public variables so that can be accessed and read
- * from any class.
+ * <p>Parameters are stored as public variables so that they can be accessed
+ * and read from any class.</p>
  */
 public final class SerialPortParameters {
 	
 	// Constants.
 	private static final int HASH_SEED = 23;
 	
-	// Variables
+	// Variables.
 	public final int baudrate;
 	public final int dataBits;
 	public final int stopBits;
@@ -30,8 +30,8 @@ public final class SerialPortParameters {
 	public final int flowControl;
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code SerialPortParameters} with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortParameters} object
+	 * with the given parameters.
 	 * 
 	 * @param baudrate Serial connection baud rate,
 	 * @param dataBits Serial connection data bits.

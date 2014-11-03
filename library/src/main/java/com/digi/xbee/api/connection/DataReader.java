@@ -50,19 +50,19 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * Thread that constantly reads data from the input stream.
+ * Thread that constantly reads data from an input stream.
  * 
- * <p>Depending on the working mode, read data is notified as is to the 
+ * <p>Depending on the XBee operating mode, read data is notified as is to the 
  * subscribed listeners or is parsed to a packet using the packet parser and 
  * then notified to subscribed listeners.</p> 
  */
 public class DataReader extends Thread {
 	
-	// Constants
+	// Constants.
 	private final static int ALL_FRAME_IDS = 99999;
 	private final static int MAXIMUM_PARALLEL_LISTENER_THREADS = 20;
 	
-	// Variables
+	// Variables.
 	private boolean running = false;
 	
 	private IConnectionInterface connectionInterface;
@@ -85,15 +85,21 @@ public class DataReader extends Thread {
 	private XBeeDevice xbeeDevice;
 	
 	/**
-	 * Class constructor. Instances a new {@code DataReader} object for the 
-	 * given interface.
+	 * Class constructor. Instantiates a new {@code DataReader} object for the 
+	 * given connection interface using the given XBee operating mode and XBee
+	 * device.
 	 * 
-	 * @param connectionInterface Connection interface to read from.
+	 * @param connectionInterface Connection interface to read data from.
 	 * @param mode XBee operating mode.
-	 * @param xbeeDevice Reference to the XBee device containing this DataReader object.
+	 * @param xbeeDevice Reference to the XBee device containing this 
+	 *                   {@code DataReader} object.
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null} or
 	 *                                 {@code mode == null}.
+	 * 
+	 * @see IConnectionInterface
+	 * @see #com.digi.xbee.api.XBeeDevice
+	 * @see #com.digi.xbee.api.models.OperatingMode
 	 */
 	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode, XBeeDevice xbeeDevice) {
 		if (connectionInterface == null)
@@ -110,11 +116,13 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Sets the mode of the reader.
+	 * Sets the XBee operating mode of this data reader.
 	 * 
-	 * @param mode XBee mode
+	 * @param mode New XBee operating mode.
 	 * 
 	 * @throws NullPointerException if {@code mode == null}.
+	 * 
+	 * @see #com.digi.xbee.api.models.OperatingMode
 	 */
 	public void setXBeeReaderMode(OperatingMode mode) {
 		if (mode == null)
@@ -124,15 +132,16 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given data receive listener to the list of listeners to be 
-	 * notified when data is received.
+	 * Adds the given data receive listener to the list of listeners that will 
+	 * be notified when XBee data packets are received.
 	 * 
-	 * <p>If the listener has been already included this method does nothing.</p>
+	 * <p>If the listener has been already added, this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when new data is received.
+	 * @param listener Listener to be notified when new XBee data packets are 
+	 *                 received.
 	 * 
-	 * @see IDataReceiveListener
 	 * @see #removeDataReceiveListener(IDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IDataReceiveListener
 	 */
 	public void addDataReceiveListener(IDataReceiveListener listener) {
 		synchronized (dataReceiveListeners) {
@@ -145,12 +154,13 @@ public class DataReader extends Thread {
 	 * Removes the given data receive listener from the list of data receive 
 	 * listeners.
 	 * 
-	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
 	 * 
-	 * @param listener Data receive listener to remove.
+	 * @param listener Data receive listener to be remove from the list.
 	 * 
-	 * @see IDataReceiveListener
 	 * @see #addDataReceiveListener(IDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IDataReceiveListener
 	 */
 	public void removeDataReceiveListener(IDataReceiveListener listener) {
 		synchronized (dataReceiveListeners) {
@@ -160,36 +170,37 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given packet receive listener to the list of listeners to be 
-	 * notified when a packet is received.
+	 * Adds the given packet receive listener to the list of listeners that will
+	 * be notified when any XBee packet is received.
 	 * 
-	 * <p>If the listener has been already included this method does nothing.</p>
+	 * <p>If the listener has been already added, this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when a packet is received.
+	 * @param listener Listener to be notified when any XBee packet is received.
 	 * 
-	 * @see IPacketReceiveListener
 	 * @see #addPacketReceiveListener(IPacketReceiveListener, int)
 	 * @see #removePacketReceiveListener(IPacketReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 */
 	public void addPacketReceiveListener(IPacketReceiveListener listener) {
 		addPacketReceiveListener(listener, ALL_FRAME_IDS);
 	}
 	
 	/**
-	 * Adds the given packet receive listener to the list of listeners to be 
-	 * notified when a packet is received.
+	 * Adds the given packet receive listener to the list of listeners that will
+	 * be notified when an XBee packet with the given frame ID is received.
 	 * 
-	 * <p>If the listener has been already included this method does nothing.</p>
+	 * <p>If the listener has been already added, this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when a packet is received.
+	 * @param listener Listener to be notified when an XBee packet with the
+	 *                 provided frame ID is received.
 	 * @param frameID Frame ID for which this listener should be notified and 
 	 *                removed after.
 	 *                Using {@link #ALL_FRAME_IDS} this listener will be 
 	 *                notified always and will be removed only by user request.
 	 * 
-	 * @see IPacketReceiveListener
 	 * @see #addPacketReceiveListener(IPacketReceiveListener)
 	 * @see #removePacketReceiveListener(IPacketReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 */
 	public void addPacketReceiveListener(IPacketReceiveListener listener, int frameID) {
 		synchronized (packetReceiveListeners) {
@@ -198,18 +209,18 @@ public class DataReader extends Thread {
 		}
 	}
 	
-	
 	/**
 	 * Removes the given packet receive listener from the list of XBee packet 
 	 * receive listeners.
 	 * 
-	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
 	 * 
-	 * @param listener Packet receive listener to remove.
+	 * @param listener Packet receive listener to remove from the list.
 	 * 
-	 * @see IPacketReceiveListener
 	 * @see #addPacketReceiveListener(IPacketReceiveListener)
 	 * @see #addPacketReceiveListener(IPacketReceiveListener, int)
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 */
 	public void removePacketReceiveListener(IPacketReceiveListener listener) {
 		synchronized (packetReceiveListeners) {
@@ -219,15 +230,16 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given IO sample receive listener to the list of listeners to 
-	 * be notified when IO samples are received.
+	 * Adds the given IO sample receive listener to the list of listeners that 
+	 * will be notified when an IO sample packet is received.
 	 * 
-	 * <p>If the listener has been already included this method does nothing.</p>
+	 * <p>If the listener has been already added, this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when new IO samples are received.
+	 * @param listener Listener to be notified when new IO sample packets are 
+	 *                 received.
 	 * 
-	 * @see IIOSampleReceiveListener
 	 * @see #removeIOSampleReceiveListener(IIOSampleReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener
 	 */
 	public void addIOSampleReceiveListener(IIOSampleReceiveListener listener) {
 		synchronized (ioSampleReceiveListeners) {
@@ -240,12 +252,13 @@ public class DataReader extends Thread {
 	 * Removes the given IO sample receive listener from the list of IO sample 
 	 * receive listeners.
 	 * 
-	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
 	 * 
-	 * @param listener IO sample receive listener to remove.
+	 * @param listener IO sample receive listener to remove from the list.
 	 * 
-	 * @see IIOSampleReceiveListener
 	 * @see #addIOSampleReceiveListener(IIOSampleReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener
 	 */
 	public void removeIOSampleReceiveListener(IIOSampleReceiveListener listener) {
 		synchronized (ioSampleReceiveListeners) {
@@ -255,15 +268,16 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given Modem Status receive listener to the list of listeners to 
-	 * be notified when a modem status event is received.
+	 * Adds the given Modem Status receive listener to the list of listeners 
+	 * that will be notified when a modem status packet is received.
 	 * 
-	 * <p>If the listener has been already included this method does nothing.</p>
+	 * <p>If the listener has been already added, this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when new modem status events are received.
+	 * @param listener Listener to be notified when new modem status packets are
+	 *                 received.
 	 * 
-	 * @see IModemStatusReceiveListener
 	 * @see #removeModemStatusReceiveListener(IModemStatusReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener
 	 */
 	public void addModemStatusReceiveListener(IModemStatusReceiveListener listener) {
 		synchronized (modemStatusListeners) {
@@ -273,15 +287,16 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Removes the given Modem Status receive listener from the list of Modem Status 
-	 * receive listeners.
+	 * Removes the given Modem Status receive listener from the list of Modem 
+	 * Status receive listeners.
 	 * 
-	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
 	 * 
-	 * @param listener Modem Status receive listener to remove.
+	 * @param listener Modem Status receive listener to remove from the list.
 	 * 
-	 * @see IModemStatusReceiveListener
 	 * @see #addModemStatusReceiveListener(IModemStatusReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener
 	 */
 	public void removeModemStatusReceiveListener(IModemStatusReceiveListener listener) {
 		synchronized (modemStatusListeners) {
@@ -353,11 +368,13 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * A packet was received, dispatch it to the corresponding listener(s).
+	 * Dispatches the received XBee packet to the corresponding listener(s).
 	 * 
-	 * @param packet The received packet.
+	 * @param packet The received XBee packet to be dispatched to the 
+	 *               corresponding listeners.
 	 * 
-	 * @see XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket
 	 */
 	private void packetReceived(XBeePacket packet) {
 		// Add the packet to the packets queue.
@@ -450,9 +467,13 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed data receive listeners that data has been received.
+	 * Notifies subscribed data receive listeners that a new XBee data packet 
+	 * has been received in form of an {@code XBeeMessage}.
 	 *
-	 * @param xbeeMessage The XBee message.
+	 * @param xbeeMessage The XBee message to be sent to subscribed XBee data
+	 *                    listeners.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeeMessage
 	 */
 	private void notifyDataReceived(final XBeeMessage xbeeMessage) {
 		if (xbeeMessage.isBroadcast())
@@ -490,11 +511,13 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed packet listeners that a packet has been received.
+	 * Notifies subscribed XBee packet listeners that a new XBee packet has 
+	 * been received.
 	 *
-	 * @param packet The received packet.
+	 * @param packet The received XBee packet.
 	 * 
-	 * @see XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket
 	 */
 	private void notifyPacketReceived(final XBeePacket packet) {
 		logger.debug(connectionInterface.toString() + "Packet received: \n{}", packet.toPrettyString());
@@ -537,13 +560,14 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed IO sample listeners that an IO sample has been received.
+	 * Notifies subscribed IO sample listeners that a new IO sample packet has
+	 * been received.
 	 *
-	 * @param ioSample The IO sample.
-	 * @param remoteDevice The device that sent the sample.
+	 * @param ioSample The received IO sample.
+	 * @param remoteDevice The remote XBee device that sent the sample.
 	 * 
-	 * @see IOSample
-	 * @see RemoteXBeeDevice
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
+	 * @see com.digi.xbee.api.io.IOSample
 	 */
 	private void notifyIOSampleReceived(final RemoteXBeeDevice remoteDevice, final IOSample ioSample) {
 		logger.debug(connectionInterface.toString() + "IO sample received.");
@@ -576,11 +600,12 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed Modem Status listeners that Modem Status event has been received.
+	 * Notifies subscribed Modem Status listeners that a Modem Status event 
+	 * packet has been received.
 	 *
 	 * @param modemStatusEvent The Modem Status event.
 	 * 
-	 * @see ModemStatusEvent
+	 * @see com.digi.xbee.api.models.ModemStatusEvent
 	 */
 	private void notifyModemStatusReceived(final ModemStatusEvent modemStatusEvent) {
 		logger.debug(connectionInterface.toString() + "Modem Status event received.");
@@ -613,10 +638,12 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Returns whether the Data reader is running or not.
+	 * Returns whether this Data reader is running or not.
 	 * 
 	 * @return {@code true} if the Data reader is running, {@code false} 
 	 *         otherwise.
+	 * 
+	 * @see #stopReader()
 	 */
 	public boolean isRunning() {
 		return running;
@@ -624,6 +651,8 @@ public class DataReader extends Thread {
 	
 	/**
 	 * Stops the Data reader thread.
+	 * 
+	 * @see #isRunning()
 	 */
 	public void stopReader() {
 		running = false;
@@ -634,9 +663,11 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Retrieves the queue of read XBee packets.
+	 * Returns the queue of read XBee packets.
 	 * 
 	 * @return The queue of read XBee packets.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeePacketsQueue
 	 */
 	public XBeePacketsQueue getXBeePacketsQueue() {
 		return xbeePacketsQueue;

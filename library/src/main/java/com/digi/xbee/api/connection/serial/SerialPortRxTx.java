@@ -37,12 +37,12 @@ import com.digi.xbee.api.exceptions.InvalidInterfaceException;
 import com.digi.xbee.api.exceptions.PermissionDeniedException;
 
 /**
- * This class represents a serial port and uses the RxTx library to communicate
+ * This class represents a serial port using the RxTx library to communicate
  * with it.
  */
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
-	// Variables
+	// Variables.
 	private RXTXPort serialPort;
 	
 	private InputStream inputStream;
@@ -58,8 +58,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTx}
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
+	 * the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
@@ -67,6 +67,9 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 * 
+	 * @see #SerialPortRxTx(String, int)
+	 * @see #SerialPortRxTx(String, int, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters, int)
 	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters) {
@@ -74,8 +77,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTx} 
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
+	 * the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
@@ -84,7 +87,10 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
-	 *
+	 * 
+	 * @see #SerialPortRxTx(String, int)
+	 * @see #SerialPortRxTx(String, int, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters)
 	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, SerialPortParameters parameters, int receiveTimeout) {
@@ -93,8 +99,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTx} 
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
+	 * the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
@@ -102,19 +108,23 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
-	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
-	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
-	 * @see AbstractSerialPort#DEFAULT_PARITY
-	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
-	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
+	 * @see #DEFAULT_DATA_BITS
+	 * @see #DEFAULT_FLOW_CONTROL
+	 * @see #DEFAULT_PARITY
+	 * @see #DEFAULT_STOP_BITS
+	 * @see #DEFAULT_PORT_TIMEOUT
+	 * @see #SerialPortRxTx(String, int, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters)
+	 * @see #SerialPortRxTx(String, SerialPortParameters, int)
+	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, int baudRate) {
 		this(port, baudRate, DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTx} 
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
+	 * the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
@@ -124,10 +134,14 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
-	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
-	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
-	 * @see AbstractSerialPort#DEFAULT_PARITY
-	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
+	 * @see #DEFAULT_DATA_BITS
+	 * @see #DEFAULT_FLOW_CONTROL
+	 * @see #DEFAULT_PARITY
+	 * @see #DEFAULT_STOP_BITS
+	 * @see #SerialPortRxTx(String, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters)
+	 * @see #SerialPortRxTx(String, SerialPortParameters, int)
+	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTx(String port, int baudRate, int receiveTimeout) {
 		super(port, baudRate, receiveTimeout);
@@ -400,9 +414,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Retrieves the list of available serial ports.
+	 * Retrieves the list of available serial ports in the system.
 	 * 
 	 * @return List of available serial ports.
+	 * 
+	 * @see #listSerialPortsInfo()
 	 */
 	public static String[] listSerialPorts() {
 		ArrayList<String> serialPorts = new ArrayList<String>();
@@ -423,10 +439,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	}
 	
 	/**
-	 * Retrieves the list of available serial ports with description.
+	 * Retrieves the list of available serial ports with their information.
 	 * 
-	 * @return List of available serial ports with their description.
+	 * @return List of available serial ports with their information.
 	 * 
+	 * @see #listSerialPorts()
 	 * @see SerialPortInfo
 	 */
 	public static ArrayList<SerialPortInfo> listSerialPortsInfo() {

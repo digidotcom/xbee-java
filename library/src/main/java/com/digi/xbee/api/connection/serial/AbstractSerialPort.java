@@ -25,7 +25,7 @@ import com.digi.xbee.api.exceptions.InvalidConfigurationException;
  */
 public abstract class AbstractSerialPort implements IConnectionInterface {
 	
-	// Constants
+	// Constants.
 	/**
 	 * Default receive timeout: {@value} seconds.
 	 * 
@@ -58,7 +58,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	protected static final String PORT_ALIAS = "Serial Port";
 	
-	// Variables
+	// Variables.
 	protected String port;
 	
 	protected int baudRate;
@@ -71,15 +71,18 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instantiates a new object of type 
-	 * {@code AbstractSerialPort} with the given parameters.
+	 * Class constructor. Instantiates a new {@code AbstractSerialPort} object
+	 * with the given parameters.
 	 * 
 	 * @param port COM port name to use.
-	 * @param parameters Serial connection parameters.
+	 * @param parameters Serial port connection parameters.
 	 * 
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 * 
+	 * @see #AbstractSerialPort(String, int)
+	 * @see #AbstractSerialPort(String, int, int)
+	 * @see #AbstractSerialPort(String, SerialPortParameters, int)
 	 * @see SerialPortParameters
 	 */
 	protected AbstractSerialPort(String port, SerialPortParameters parameters) {
@@ -87,8 +90,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code AbstractSerialPort} with the given parameters.
+	 * Class constructor. Instantiates a new {@code AbstractSerialPort} object 
+	 * with the given parameters.
 	 * 
 	 * @param port COM port name to use.
 	 * @param baudRate Serial connection baud rate, the rest of parameters will 
@@ -96,19 +99,22 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
-	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
-	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
-	 * @see AbstractSerialPort#DEFAULT_PARITY
-	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
-	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
+	 * @see #DEFAULT_DATA_BITS
+	 * @see #DEFAULT_FLOW_CONTROL
+	 * @see #DEFAULT_PARITY
+	 * @see #DEFAULT_STOP_BITS
+	 * @see #DEFAULT_PORT_TIMEOUT
+	 * @see #AbstractSerialPort(String, int, int)
+	 * @see #AbstractSerialPort(String, SerialPortParameters)
+	 * @see #AbstractSerialPort(String, SerialPortParameters, int)
 	 */
 	protected AbstractSerialPort(String port, int baudRate) {
 		this(port, new SerialPortParameters(baudRate, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_FLOW_CONTROL), DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code AbstractSerialPort} with the given parameters.
+	 * Class constructor. Instantiates a new {@code AbstractSerialPort} object
+	 * with the given parameters.
 	 * 
 	 * @param port COM port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
@@ -118,27 +124,33 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
-	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
-	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
-	 * @see AbstractSerialPort#DEFAULT_PARITY
-	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
+	 * @see DEFAULT_DATA_BITS
+	 * @see DEFAULT_FLOW_CONTROL
+	 * @see DEFAULT_PARITY
+	 * @see DEFAULT_STOP_BITS
+	 * @see #AbstractSerialPort(String, int)
+	 * @see #AbstractSerialPort(String, SerialPortParameters)
+	 * @see #AbstractSerialPort(String, SerialPortParameters, int)
 	 */
 	protected AbstractSerialPort(String port, int baudRate, int receiveTimeout) {
 		this(port, new SerialPortParameters(baudRate, DEFAULT_DATA_BITS, DEFAULT_STOP_BITS, DEFAULT_PARITY, DEFAULT_FLOW_CONTROL), receiveTimeout);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type 
-	 * {@code AbstractSerialPort} with the given parameters.
+	 * Class constructor. Instantiates a new {@code AbstractSerialPort} object
+	 * with the given parameters.
 	 * 
 	 * @param port COM port name to use.
-	 * @param parameters Serial connection parameters.
+	 * @param parameters Serial port connection parameters.
 	 * @param receiveTimeout Serial connection receive timeout in milliseconds.
 	 * 
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 *
+	 * @see #AbstractSerialPort(String, int)
+	 * @see #AbstractSerialPort(String, int, int)
+	 * @see #AbstractSerialPort(String, SerialPortParameters)
 	 * @see SerialPortParameters
 	 */
 	protected AbstractSerialPort(String port, SerialPortParameters parameters, int receiveTimeout) {
@@ -168,7 +180,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Retrieves the name of the Serial Port.
+	 * Returns the name of the serial port.
 	 * 
 	 * @return Port name.
 	 */
@@ -177,48 +189,77 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Sets the DTR line with the given state.
+	 * Sets the state of the DTR.
 	 * 
 	 * @param state {@code true} to set the line status high, {@code false} to 
 	 *              set it low.
+	 * 
+	 * @see #isCD()
+	 * @see #isCTS()
+	 * @see #isDSR()
+	 * @see #setRTS(boolean)
 	 */
 	public abstract void setDTR(boolean state);
 	
 	/**
-	 * Sets the RTS line with the given state.
+	 * Sets the state of the RTS line.
 	 * 
 	 * @param state {@code true} to set the line status high, {@code false} to 
 	 *              set it low.
+	 * 
+	 * @see #isCD()
+	 * @see #isCTS()
+	 * @see #isDSR()
+	 * @see #setDTR(boolean)
 	 */
 	public abstract void setRTS(boolean state);
 	
 	/**
-	 * Retrieves the state of the CTS line.
+	 * Returns the state of the CTS line.
 	 * 
 	 * @return {@code true} if the line is high, {@code false} otherwise.
+	 * 
+	 * @see #isCD()
+	 * @see #isDSR()
+	 * @see #setDTR(boolean)
+	 * @see #setRTS(boolean)
 	 */
 	public abstract boolean isCTS();
 	
 	/**
-	 * Retrieves the state of the DSR line.
+	 * Returns the state of the DSR line.
 	 * 
 	 * @return {@code true} if the line is high, {@code false} otherwise.
+	 * 
+	 * @see #isCD()
+	 * @see #isCTS()
+	 * @see #setDTR(boolean)
+	 * @see #setRTS(boolean)
 	 */
 	public abstract boolean isDSR();
 	
 	/**
-	 * Retrieves the state of the CD line.
+	 * Returns the state of the CD line.
 	 * 
 	 * @return {@code true} if the line is high, {@code false} otherwise.
+	 * 
+	 * @see #isCTS()
+	 * @see #isDSR()
+	 * @see #setDTR(boolean)
+	 * @see #setRTS(boolean)
 	 */
 	public abstract boolean isCD();
 	
 	/**
-	 * Retrieves whether or not the port's flow control is configured in 
+	 * Returns whether or not the port's flow control is configured in 
 	 * hardware mode.
 	 *  
 	 * @return {@code true} if the flow control is hardware, {@code false} 
 	 *         otherwise.
+	 * 
+	 * @see #getPortParameters()
+	 * @see #setPortParameters(SerialPortParameters)
+	 * @see #setPortParameters(int, int, int, int, int)
 	 */
 	public boolean isHardwareFlowControl() {
 		return parameters.flowControl == FLOW_CONTROL_HW;
@@ -233,7 +274,6 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param parity The new value of parity.
 	 * @param flowControl The new value of flow control.
 	 * 
-	 * @throws InvalidConfigurationException if the configuration is invalid.
 	 * @throws ConnectionException if any error occurs when setting the serial 
 	 *                             port parameters
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
@@ -241,6 +281,10 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 *                                  if {@code stopBits < 0} or
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
+	 * @throws InvalidConfigurationException if the configuration is invalid.
+	 * 
+	 * @see #getPortParameters()
+	 * @see #setPortParameters(SerialPortParameters)
 	 */
 	public void setPortParameters(int baudRate, int dataBits, int stopBits, int parity, int flowControl) throws InvalidConfigurationException, ConnectionException {
 		SerialPortParameters parameters = new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl);
@@ -248,15 +292,18 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Sets the new parameters of the serial port.
+	 * Sets the new parameters of the serial port as 
+	 * {@code SerialPortParameters}.
 	 * 
 	 * @param parameters The new serial port parameters.
 	 * 
-	 * @throws InvalidConfigurationException if the configuration is invalid.
 	 * @throws ConnectionException if any error occurs when setting the serial 
 	 *                             port parameters.
+	 * @throws InvalidConfigurationException if the configuration is invalid.
 	 * @throws NullPointerException if {@code parameters == null}.
 	 * 
+	 * @see #getPortParameters()
+	 * @see #setPortParameters(int, int, int, int, int)
 	 * @see SerialPortParameters
 	 */
 	public void setPortParameters(SerialPortParameters parameters) throws InvalidConfigurationException, ConnectionException {
@@ -276,32 +323,43 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * 
 	 * @param enabled {@code true} to enable the Break line, {@code false} to 
 	 *                disable it.
+	 * 
+	 * @see #sendBreak(int)
 	 */
 	public abstract void setBreak(boolean enabled);
 	
 	/**
-	 * Sends a break signal of the given duration (in milliseconds).
+	 * Sends a break signal to the serial port with the given duration
+	 * (in milliseconds).
 	 * 
-	 * @param duration Duration of the break signal.
+	 * @param duration Duration of the break signal in milliseconds.
+	 * 
+	 * @see #setBreak(boolean)
 	 */
 	public abstract void sendBreak(int duration);
 	
 	/**
 	 * Sets the read timeout of the serial port (in milliseconds).
 	 * 
-	 * @param timeout The new read timeout.
+	 * @param timeout The new read timeout of the serial port in milliseconds.
+	 * 
+	 * @see #getReadTimeout()
 	 */
 	public abstract void setReadTimeout(int timeout);
 	
 	/**
-	 * Retrieves the read timeout of the serial port (in milliseconds).
+	 * Returns the read timeout of the serial port (in milliseconds).
 	 * 
-	 * @return The read timeout.
+	 * @return The read timeout of the serial port in milliseconds.
+	 * 
+	 * @see #setReadTimeout(int)
 	 */
 	public abstract int getReadTimeout();
 	
 	/**
-	 * Purges the serial port removing all input data.
+	 * Purges the serial port removing all the data from the input stream.
+	 * 
+	 * @see #flush()
 	 */
 	public void purge() {
 		if (getInputStream() != null) {
@@ -317,6 +375,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	
 	/**
 	 * Flushes the available data of the output stream.
+	 * 
+	 * @see #purge()
 	 */
 	public void flush() {
 		if (getOutputStream() != null) {
@@ -447,32 +507,12 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Reads the given number of bytes from the serial port.
+	 * Returns the XBee serial port parameters.
 	 * 
-	 * @param buffer The buffer where the read bytes will be placed.
+	 * @return The XBee serial port parameters.
 	 * 
-	 * @return The number of bytes read.
-	 * 
-	 * @throws IOException If the first byte cannot be read for any reason other than the end of the file, 
-	 *                     if the input stream has been closed, or 
-	 *                     if some other I/O error occurs. 
-	 * @throws NullPointerException if {@code buffer == null}.
-	 */
-	public int readDataBlocking(byte[] buffer) throws IOException {
-		if (buffer == null)
-			throw new NullPointerException("Buffer cannot be null.");
-		
-		int readBytes = 0;
-		if (getInputStream() != null)
-			readBytes = getInputStream().read(buffer);
-		return readBytes;
-	}
-	
-	/**
-	 * Retrieves the XBee port serial parameters.
-	 * 
-	 * @return The XBee port serial parameters.
-	 * 
+	 * @see #setPortParameters(SerialPortParameters)
+	 * @see #setPortParameters(int, int, int, int, int)
 	 * @see SerialPortParameters
 	 */
 	public SerialPortParameters getPortParameters() {
@@ -483,9 +523,12 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	}
 	
 	/**
-	 * Retrieves the serial port receive timeout (in milliseconds).
+	 * Returns the serial port receive timeout (in milliseconds).
 	 * 
-	 * @return The serial port receive timeout.
+	 * @return The serial port receive timeout in milliseconds.
+	 * 
+	 * @see #getReadTimeout()
+	 * @see #setReadTimeout(int)
 	 */
 	public int getReceiveTimeout() {
 		return receiveTimeout;

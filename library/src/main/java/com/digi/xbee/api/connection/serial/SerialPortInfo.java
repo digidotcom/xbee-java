@@ -12,30 +12,34 @@
 package com.digi.xbee.api.connection.serial;
 
 /**
- * Helper class used to store port information.
+ * Helper class used to store serial port information.
  */
 public class SerialPortInfo {
 	
-	// Variables
+	// Variables.
 	private String portName;
 	private String portDescription;
 	
 	/**
-	 * Class constructor. Instances a new serial port info object with the 
-	 * given parameters.
+	 * Class constructor. Instantiates a new {@code SerialPortInfo} object with
+	 * the given parameters.
 	 * 
 	 * @param portName Name of the port.
+	 * 
+	 * @see #SerialPortInfo(String, String)
 	 */
 	public SerialPortInfo(String portName) {
 		this(portName, null);
 	}
 	
 	/**
-	 * Class constructor. Instances a new serial port info object with the 
-	 * given parameters.
+	 * Class constructor. Instantiates a new {@code SerialPortInfo} object with
+	 * the given parameters.
 	 * 
 	 * @param portName Name of the port.
 	 * @param portDescription Description of the port.
+	 * 
+	 * @see #SerialPortInfo(String)
 	 */
 	public SerialPortInfo(String portName, String portDescription) {
 		this.portName = portName;
@@ -43,18 +47,22 @@ public class SerialPortInfo {
 	}
 	
 	/**
-	 * Retrieves the port name.
+	 * Returns the serial port name.
 	 * 
-	 * @return The port name.
+	 * @return The serial port name.
+	 * 
+	 * @see #getPortDescription()
 	 */
 	public String getPortName() {
 		return portName;
 	}
 	
 	/**
-	 * Retrieves the serial port description.
+	 * Returns the serial port description.
 	 * 
 	 * @return The serial port description.
+	 * 
+	 * @see #getPortName()
 	 */
 	public String getPortDescription() {
 		return portDescription;
@@ -64,6 +72,8 @@ public class SerialPortInfo {
 	 * Sets the serial port description.
 	 * 
 	 * @param portDescription The serial port description.
+	 * 
+	 * @see #getPortDescription()
 	 */
 	public void setPortDescription(String portDescription) {
 		this.portDescription = portDescription;

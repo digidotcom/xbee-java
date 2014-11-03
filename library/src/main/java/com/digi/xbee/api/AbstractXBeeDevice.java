@@ -82,7 +82,7 @@ public abstract class AbstractXBeeDevice {
 	 * @see XBeeDevice#getReceiveTimeout()
 	 * @see XBeeDevice#setReceiveTimeout(int)
 	 */
-	protected static int DEFAULT_RECEIVE_TIMETOUT = 2000; // 2.0 seconds of timeout to receive packet and command responses.
+	protected final static int DEFAULT_RECEIVE_TIMETOUT = 2000; // 2.0 seconds of timeout to receive packet and command responses.
 	
 	/**
 	 * Timeout to wait before entering in command mode: {@value} ms.
@@ -95,7 +95,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see XBeeDevice#determineOperatingMode()
 	 */
-	protected static int TIMEOUT_BEFORE_COMMAND_MODE = 1200;
+	protected final static int TIMEOUT_BEFORE_COMMAND_MODE = 1200;
 	
 	/**
 	 * Timeout to wait after entering in command mode: {@value} ms.
@@ -108,7 +108,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see XBeeDevice#determineOperatingMode()
 	 */
-	protected static int TIMEOUT_ENTER_COMMAND_MODE = 1500;
+	protected final static int TIMEOUT_ENTER_COMMAND_MODE = 1500;
 	
 	// Variables.
 	protected IConnectionInterface connectionInterface;
@@ -866,7 +866,7 @@ public abstract class AbstractXBeeDevice {
 	 * @see #sendXBeePacket(XBeePacket)
 	 * @see #sendXBeePacket(XBeePacket, IPacketReceiveListener)
 	 * @see #sendXBeePacketAsync(XBeePacket)
-	 * @see com.digi.xbee.api.listeners.IPacketReceiveListenerTest
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	protected void sendXBeePacket(XBeePacket packet, IPacketReceiveListener packetReceiveListener)

@@ -38,15 +38,15 @@ public final class XBee16BitAddress {
 
 	// Constants
 	/**
-	 * 16-bit address reserved for the coordinator (value: {@value}).
+	 * 16-bit address reserved for the coordinator (value: 0000).
 	 */
 	public static final XBee16BitAddress COORDINATOR_ADDRESS = new XBee16BitAddress("0000");
 	/**
-	 * 16-bit broadcast address (value: {@value}).
+	 * 16-bit broadcast address (value: FFFF).
 	 */
 	public static final XBee16BitAddress BROADCAST_ADDRESS = new XBee16BitAddress("FFFF");
 	/**
-	 * 16-bit unknown address (value: {@value}).
+	 * 16-bit unknown address (value: FFFE).
 	 */
 	public static final XBee16BitAddress UNKNOWN_ADDRESS = new XBee16BitAddress("FFFE");
 	

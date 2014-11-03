@@ -17,7 +17,7 @@ import java.util.HashMap;
  * Enumerates the different transmit status. Transmit status field is part of 
  * the {@code TransmitStatusPacket} indicating the status of the transmission.
  * 
- * @see com.digi.xbee.api.packet.common.TransmitStatusPacket;
+ * @see com.digi.xbee.api.packet.common.TransmitStatusPacket
  */
 public enum XBeeTransmitStatus {
 

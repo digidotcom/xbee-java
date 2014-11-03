@@ -18,7 +18,7 @@ import java.util.HashMap;
  * is part of the {@code TransmitStatusPacket} indicating the status of the 
  * discovery when a packet is sent.
  * 
- * @see com.digi.xbee.api.packet.common.TransmitStatusPacket;
+ * @see com.digi.xbee.api.packet.common.TransmitStatusPacket
  */
 public enum XBeeDiscoveryStatus {
 
@@ -46,7 +46,7 @@ public enum XBeeDiscoveryStatus {
 	 * Class constructor. Instantiates a new enumeration element of type 
 	 * {@code XBeeDiscoveryStatus} with the given parameters.
 	 * 
-	 * @param id Discovery Sstatus ID.
+	 * @param id Discovery Status ID.
 	 * @param description Discovery status description.
 	 */
 	private XBeeDiscoveryStatus(int id, String description) {

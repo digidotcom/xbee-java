@@ -25,15 +25,15 @@ public final class XBee64BitAddress {
 
 	// Constants
 	/**
-	 * 64-bit address reserved for the coordinator (value: {@value}).
+	 * 64-bit address reserved for the coordinator (value: 0000000000000000).
 	 */
 	public static final XBee64BitAddress COORDINATOR_ADDRESS = new XBee64BitAddress("0000");
 	/**
-	 * 64-bit broadcast address (value: {@value}).
+	 * 64-bit broadcast address (value: 000000000000FFFF).
 	 */
 	public static final XBee64BitAddress BROADCAST_ADDRESS = new XBee64BitAddress("FFFF");
 	/**
-	 * 64-bit unknown address (value: {@value}).
+	 * 64-bit unknown address (value: 000000000000FFFE).
 	 */
 	public static final XBee64BitAddress UNKNOWN_ADDRESS = new XBee64BitAddress("FFFE");
 	

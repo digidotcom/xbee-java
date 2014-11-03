@@ -917,10 +917,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/**
 	 * Waits until a Modem Status packet with a reset status, 
-	 * {@code ModemStatusEvent.STATUS_HARDWARE_RESET} 
-	 * ({@value com.digi.xbee.api.models.ModemStatusEvent#STATUS_HARDWARE_RESET), 
-	 * or a watchdog timer reset, {@code ModemStatusEvent.STATUS_WATCHDOG_TIMER_RESET} 
-	 * ({@value com.digi.xbee.api.models.ModemStatusEvent#STATUS_WATCHDOG_TIMER_RESET),
+	 * {@code ModemStatusEvent.STATUS_HARDWARE_RESET} (0x00), or a watchdog 
+	 * timer reset, {@code ModemStatusEvent.STATUS_WATCHDOG_TIMER_RESET} (0x01),
 	 * is received or the timeout expires.
 	 * 
 	 * @return {@code true} if the Modem Status packet is received, 

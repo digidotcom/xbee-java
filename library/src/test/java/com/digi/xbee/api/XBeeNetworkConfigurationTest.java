@@ -607,7 +607,7 @@ public class XBeeNetworkConfigurationTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#clear()}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#clearDeviceList()}.
 	 * 
 	 * Clear non-empty network.
 	 */
@@ -631,7 +631,7 @@ public class XBeeNetworkConfigurationTest {
 		assertThat("There must be " + list.size() + " devices in the network", network.getNumberOfDevices(), is(equalTo(list.size())));
 		
 		// Call the method under test.
-		network.clear();
+		network.clearDeviceList();
 		
 		// Verify the result.
 		assertThat(add64Map.size(), is(equalTo(0)));

@@ -683,8 +683,8 @@ public class XBeeNetwork {
 	 * 
 	 * <p>The network will be empty after this call returns.</p>
 	 */
-	public void clear() {
-		logger.debug("{}Clearing network.", localDevice.toString());
+	public void clearDeviceList() {
+		logger.debug("{}Clearing the network.", localDevice.toString());
 		remotesBy64BitAddr.clear();
 		remotesBy64BitAddr.clear();
 	}

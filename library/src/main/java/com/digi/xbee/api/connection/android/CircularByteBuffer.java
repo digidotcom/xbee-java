@@ -25,31 +25,36 @@ public class CircularByteBuffer {
 	private boolean empty = true;
 
 	/**
-	 * Creates a circular buffer with the indicated capacity in bytes.
+	 * Instantiates a new {@code CircularByteBuffer} with the given capacity
+	 * in bytes.
 	 * 
-	 * @param size Circular buffer size in bytes.
+	 * @param size Circular byte buffer size in bytes.
 	 * 
 	 * @throws IllegalArgumentException if {@code size < 1}.
 	 */
 	public CircularByteBuffer(int size) {
 		if (size < 1)
 			throw new IllegalArgumentException("Buffer size must be greater than 0.");
+		
 		buffer = new byte[size];
 		readIndex = 0;
 		writeIndex = 0;
 	}
 
 	/**
-	 * Writes the given amount of bytes to the circular buffer.
+	 * Writes the given amount of bytes to the circular byte buffer.
 	 * 
 	 * @param data Bytes to write.
-	 * @param offset Offset inside data to start writing bytes in.
+	 * @param offset Offset inside data where bytes to write start.
 	 * @param numBytes Number of bytes to write.
-	 * @return the number of bytes actually written.
+	 * @return The number of bytes actually written.
 	 * 
-	 * @throws NullPointerException if {@code data == null}.
 	 * @throws IllegalArgumentException if {@code offset < 0} or
 	 *                                  if {@code numBytes < 1}.
+	 * @throws NullPointerException if {@code data == null}.
+	 * 
+	 * @see #read(byte[], int, int)
+	 * @see #skip(int)
 	 */
 	public synchronized int write(byte[] data, int offset, int numBytes) {
 		if (data == null)
@@ -85,16 +90,20 @@ public class CircularByteBuffer {
 	}
 
 	/**
-	 * Reads the given amount of bytes to the given array from the circular buffer.
+	 * Reads the given amount of bytes to the given array from the circular byte
+	 * buffer.
 	 * 
 	 * @param data Byte buffer to place read bytes in.
 	 * @param offset Offset inside data to start placing read bytes in.
 	 * @param numBytes Number of bytes to read.
 	 * @return The number of bytes actually read.
 	 * 
-	 * @throws NullPointerException if {@code data == null}.
 	 * @throws IllegalArgumentException if {@code offset < 0} or
 	 *                                  if {@code numBytes < 1}.
+	 * @throws NullPointerException if {@code data == null}.
+	 * 
+	 * @see #skip(int)
+	 * @see #write(byte[], int, int)
 	 */
 	public synchronized int read(byte[] data, int offset, int numBytes) {
 		if (data == null)
@@ -133,12 +142,15 @@ public class CircularByteBuffer {
 	}
 
 	/**
-	 * Skips the given number of bytes from the circular buffer.
+	 * Skips the given number of bytes from the circular byte buffer.
 	 * 
 	 * @param numBytes Number of bytes to skip.
-	 * @return the number of bytes actually skipped.
+	 * @return The number of bytes actually skipped.
 	 * 
 	 * @throws IllegalArgumentException if {@code numBytes < 1}.
+	 * 
+	 * @see #read(byte[], int, int)
+	 * @see #write(byte[], int, int)
 	 */
 	public synchronized int skip(int numBytes) {
 		if (numBytes < 1)
@@ -163,9 +175,12 @@ public class CircularByteBuffer {
 	}
 
 	/**
-	 * Retrieves the available number of bytes to read.
+	 * Returns the available number of bytes to read from the byte buffer.
 	 * 
 	 * @return The number of bytes in the buffer available for reading.
+	 * 
+	 * @see #getCapacity()
+	 * @see #read(byte[], int, int)
 	 */
 	public int availableToRead() {
 		if (empty)
@@ -177,7 +192,7 @@ public class CircularByteBuffer {
 	}
 
 	/**
-	 * Retrieves the current read index.
+	 * Returns the current read index.
 	 * 
 	 * @return readIndex The current read index.
 	 */
@@ -186,7 +201,7 @@ public class CircularByteBuffer {
 	}
 
 	/**
-	 * Retrieves the current write index.
+	 * Returns the current write index.
 	 * 
 	 * @return writeIndex The current write index.
 	 */
@@ -195,7 +210,7 @@ public class CircularByteBuffer {
 	}
 	
 	/**
-	 * Retrieves the circular byte buffer capacity.
+	 * Returns the circular byte buffer capacity.
 	 * 
 	 * @return The circular byte buffer capacity.
 	 */

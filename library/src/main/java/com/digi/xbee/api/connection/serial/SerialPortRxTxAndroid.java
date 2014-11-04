@@ -25,9 +25,13 @@ import android.gnu.io.SerialPortEvent;
 import android.gnu.io.SerialPortEventListener;
 import android.gnu.io.UnsupportedCommOperationException;
 
+/**
+ * This class represents a serial port using the RxTx library for Android to 
+ * communicate with it.
+ */
 public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
-	// Variables
+	// Variables.
 	private RXTXPort serialPort;
 	
 	private InputStream inputStream;
@@ -43,8 +47,8 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTxAndroid}
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTxAndroid} object
+	 * using the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
@@ -52,6 +56,9 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 * 
+	 * @see #SerialPortRxTx(String, int)
+	 * @see #SerialPortRxTx(String, int, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters, int)
 	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTxAndroid(String port, SerialPortParameters parameters) {
@@ -59,8 +66,8 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTxAndroid} 
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTxAndroid} object
+	 * using the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
@@ -69,7 +76,10 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
-	 *
+	 * 
+	 * @see #SerialPortRxTx(String, int)
+	 * @see #SerialPortRxTx(String, int, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters)
 	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTxAndroid(String port, SerialPortParameters parameters, int receiveTimeout) {
@@ -78,8 +88,8 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTxAndroid} 
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTxAndroid} object
+	 * using the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
@@ -87,19 +97,23 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	 * 
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
-	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
-	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
-	 * @see AbstractSerialPort#DEFAULT_PARITY
-	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
-	 * @see AbstractSerialPort#DEFAULT_PORT_TIMEOUT
+	 * @see #DEFAULT_DATA_BITS
+	 * @see #DEFAULT_FLOW_CONTROL
+	 * @see #DEFAULT_PARITY
+	 * @see #DEFAULT_STOP_BITS
+	 * @see #DEFAULT_PORT_TIMEOUT
+	 * @see #SerialPortRxTx(String, int, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters)
+	 * @see #SerialPortRxTx(String, SerialPortParameters, int)
+	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTxAndroid(String port, int baudRate) {
 		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
 	}
 	
 	/**
-	 * Class constructor. Instances a new object of type {@code SerialPortRxTxAndroid} 
-	 * with the given parameters.
+	 * Class constructor. Instances a new {@code SerialPortRxTxAndroid} object
+	 * using the given parameters.
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
@@ -109,10 +123,14 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
-	 * @see AbstractSerialPort#DEFAULT_DATA_BITS
-	 * @see AbstractSerialPort#DEFAULT_FLOW_CONTROL
-	 * @see AbstractSerialPort#DEFAULT_PARITY
-	 * @see AbstractSerialPort#DEFAULT_STOP_BITS
+	 * @see #DEFAULT_DATA_BITS
+	 * @see #DEFAULT_FLOW_CONTROL
+	 * @see #DEFAULT_PARITY
+	 * @see #DEFAULT_STOP_BITS
+	 * @see #SerialPortRxTx(String, int)
+	 * @see #SerialPortRxTx(String, SerialPortParameters)
+	 * @see #SerialPortRxTx(String, SerialPortParameters, int)
+	 * @see SerialPortParameters
 	 */
 	public SerialPortRxTxAndroid(String port, int baudRate, int receiveTimeout) {
 		super(port, baudRate, receiveTimeout);
@@ -386,9 +404,11 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	}
 	
 	/**
-	 * Retrieves the list of available serial ports.
+	 * Returns the list of available serial ports in the system.
 	 * 
 	 * @return List of available serial ports.
+	 * 
+	 * @see #listSerialPortsInfo()
 	 */
 	public static String[] listSerialPorts() {
 		ArrayList<String> serialPorts = new ArrayList<String>();
@@ -409,7 +429,7 @@ public class SerialPortRxTxAndroid extends AbstractSerialPort implements SerialP
 	}
 	
 	/**
-	 * Retrieves the list of available serial ports with description.
+	 * Returns the list of available serial ports with description.
 	 * 
 	 * @return List of available serial ports with their description.
 	 * 

@@ -77,66 +77,92 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	private Logger logger;
 
 	/**
-	 * Class constructor. Instances a new Android XBee Interface with the given
-	 * parameters. This constructor requires that all methods calling {@link #connect()} method
-	 * are executed in a thread different than the UI to avoid hangs while waiting for USB
-	 * device permissions.
+	 * Class constructor. Instantiates a new {@code AndroidXBeeInterface} object
+	 * with the given parameters.
 	 * 
-	 * @param context Android context.
-	 * @param baudRate Device baud rate to use, may be {@code null}
-	 * @param usbDevice USB device to use.
+	 * <p>This constructor requires that methods calling {@link #connect()}
+	 * method to be executed in a thread different than the UI to avoid hangs
+	 * while waiting for USB device permissions.</p>
 	 * 
-	 * @throws NullPointerException if {@code context == null}.
+	 * @param context The Android context.
+	 * @param baudRate Device baud rate to use.
+	 * @param usbDevice USB device to use, may be {@code null}
+	 * 
 	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #AndroidXBeeInterface(Context, int)
+	 * @see #AndroidXBeeInterface(Context, int, AndroidUSBPermissionListener)
+	 * @see #AndroidXBeeInterface(Context, int, UsbDevice, AndroidUSBPermissionListener)
+	 * @see android.hardware.usb.UsbDevice
 	 */
 	public AndroidXBeeInterface(Context context, int baudRate, UsbDevice usbDevice) {
 		this(context, baudRate, usbDevice, null);
 	}
 
 	/**
-	 * Class constructor. Instances a new Android XBee Interface with the given
-	 * parameters. This constructor requires that all methods calling {@link #connect()} method
-	 * are executed in a thread different than the UI to avoid hangs while waiting for USB
-	 * device permissions.
+	 * Class constructor. Instantiates a new {@code AndroidXBeeInterface} object
+	 * with the given parameters.
 	 * 
-	 * @param context Android context.
+	 * <p>This constructor requires all methods calling {@link #connect()} 
+	 * method to be executed in a thread different than the UI to avoid hangs
+	 * while waiting for USB device permissions.</p>
+	 * 
+	 * @param context The Android context.
 	 * @param baudRate Device baud rate to use.
 	 * 
-	 * @throws NullPointerException if {@code context == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #AndroidXBeeInterface(Context, int, AndroidUSBPermissionListener)
+	 * @see #AndroidXBeeInterface(Context, int, UsbDevice)
+	 * @see #AndroidXBeeInterface(Context, int, UsbDevice, AndroidUSBPermissionListener)
 	 */
 	public AndroidXBeeInterface(Context context, int baudRate) {
 		this(context, baudRate, null, null);
 	}
 
 	/**
-	 * Class constructor. Instances a new Android XBee Interface with the given
-	 * parameters.
+	 * Class constructor. Instantiates a new {@code AndroidXBeeInterface} object
+	 * with the given parameters.
 	 * 
-	 * @param context Android context.
+	 * @param context The Android context.
 	 * @param baudRate Device baud rate to use.
 	 * @param permissionListener Android USB permission listener to be notified 
-	 *                           when access to USB device is granted, may be {@code null}.
+	 *                           when access to USB device is granted, may be
+	 *                           {@code null}.
 	 * 
-	 * @throws NullPointerException if {@code context == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #AndroidXBeeInterface(Context, int)
+	 * @see #AndroidXBeeInterface(Context, int, UsbDevice)
+	 * @see #AndroidXBeeInterface(Context, int, UsbDevice, AndroidUSBPermissionListener)
+	 * @see AndroidUSBPermissionListener
 	 */
 	public AndroidXBeeInterface(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		this(context, baudRate, null, permissionListener);
 	}
 	
 	/**
-	 * Class constructor. Instances a new Android XBee Interface with the given
-	 * parameters.
+	 * Class constructor. Instantiates a new {@code AndroidXBeeInterface} object
+	 * with the given parameters.
 	 * 
-	 * @param context Android context.
+	 * @param context The Android context.
 	 * @param baudRate Device baud rate to use.
 	 * @param usbDevice USB device to use, may be {@code null}.
 	 * @param permissionListener Android USB permission listener to be notified 
-	 *                           when access to USB device is granted, may be {@code null}.
+	 *                           when access to USB device is granted, may be 
+	 *                           {@code null}.
 	 * 
-	 * @throws NullPointerException if {@code context == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #AndroidXBeeInterface(Context, int)
+	 * @see #AndroidXBeeInterface(Context, int, AndroidUSBPermissionListener)
+	 * @see #AndroidXBeeInterface(Context, int, UsbDevice)
+	 * @see AndroidUSBPermissionListener
+	 * @see android.hardware.usb.UsbDevice
 	 */
 	public AndroidXBeeInterface(Context context, int baudRate, UsbDevice usbDevice, AndroidUSBPermissionListener permissionListener) {
 		if (context == null)
@@ -153,12 +179,13 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	}
 
 	/**
-	 * Calculates a divisor from baud rate and base clock for FT232BM, FT2232C 
-	 * and FT232LR.
+	 * Calculates a valid divisor for the given baud rate and base clock for
+	 * the FT232BM, FT2232C and FT232LR chips.
 	 * 
 	 * @param baud Desired baud rate. 
 	 * @param base The base clock.
-	 * @return The divisor.
+	 * 
+	 * @return The calculated divisor.
 	 */
 	private int calculateBaudRate(int baud, int base) {
 		int divisor;
@@ -346,7 +373,8 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	/**
 	 * Looks for a compatible USB device to use as XBee device.
 	 * 
-	 * @return The USB device found, {@code null} if no compatible device is found.
+	 * @return The USB device found, {@code null} if no compatible device is
+	 *         found.
 	 */
 	private UsbDevice findDevice() {
 		UsbDevice usbDevice = null;
@@ -364,7 +392,8 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	/**
 	 * Starts the USB device connection.
 	 * 
-	 * @throws InterfaceInUseException if there is an error claiming the USB interface.
+	 * @throws InterfaceInUseException if there is an error claiming the USB
+	 *                                 interface.
 	 */
 	private void startUSBConnection() throws InterfaceInUseException {
 		// Create the USB connection.

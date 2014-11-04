@@ -23,8 +23,8 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 
 /**
- * This class acts as a wrapper to write data to the USB Interface in Android and
- * behaves like a {@code OutputStream} class.
+ * This class acts as a wrapper to write data to the USB Interface in Android
+ * behaving like an {@code OutputStream} class.
  */
 public class AndroidUSBOutputStream extends OutputStream {
 
@@ -39,11 +39,14 @@ public class AndroidUSBOutputStream extends OutputStream {
 	private Logger logger;
 
 	/**
-	 * Class constructor. Instances a new {@code AndroidUSBOutputStream} object with the given
-	 * parameters.
+	 * Class constructor. Instantiates a new {@code AndroidUSBOutputStream}
+	 * object with the given parameters.
 	 * 
 	 * @param writeEndpoint The USB end point to use to write data to.
 	 * @param connection The USB connection to use to write data to.
+	 * 
+	 * @see android.hardware.usb.UsbDeviceConnection
+	 * @see android.hardware.usb.UsbEndpoint
 	 */
 	public AndroidUSBOutputStream(UsbEndpoint writeEndpoint, UsbDeviceConnection connection) {
 		this.usbConnection = connection;

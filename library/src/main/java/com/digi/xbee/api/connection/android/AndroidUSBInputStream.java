@@ -24,8 +24,8 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 
 /**
- * This class acts as a wrapper to read data from the USB Interface in Android and
- * behaves like an {@code InputputStream} class.
+ * This class acts as a wrapper to read data from the USB Interface in Android
+ * behaving like an {@code InputputStream} class.
  */
 public class AndroidUSBInputStream extends InputStream {
 
@@ -50,12 +50,17 @@ public class AndroidUSBInputStream extends InputStream {
 	private Logger logger;
 	
 	/**
-	 * Class constructor. Instances a new {@code AndroidUSBInputStream} object with the given
-	 * parameters.
+	 * Class constructor. Instantiates a new {@code AndroidUSBInputStream}
+	 * object with the given parameters.
 	 * 
-	 * @param androidInterface The XBee Android interface to which the stream belongs to.
+	 * @param androidInterface The XBee Android interface to which this
+	 *                         {@code AndroidUSBInputStream} belongs to.
 	 * @param readEndpoint The USB end point to use to read data from.
 	 * @param connection The USB connection to use to read data from.
+	 * 
+	 * @see AndroidXBeeInterface
+	 * @see android.hardware.usb.UsbDeviceConnection
+	 * @see android.hardware.usb.UsbEndpoint
 	 */
 	public AndroidUSBInputStream(AndroidXBeeInterface androidInterface, UsbEndpoint readEndpoint, UsbDeviceConnection connection) {
 		this.usbConnection = connection;
@@ -121,7 +126,10 @@ public class AndroidUSBInputStream extends InputStream {
 	}
 
 	/**
-	 * Starts the USB input stream read thread to start reading from the USB connection.
+	 * Starts the USB input stream read thread to start reading data from the
+	 * USB Android connection.
+	 * 
+	 * @see #stopReadThread()
 	 */
 	public void startReadThread() {
 		readBuffer = new CircularByteBuffer(READ_BUFFER_SIZE);
@@ -149,6 +157,8 @@ public class AndroidUSBInputStream extends InputStream {
 
 	/**
 	 * Stops the USB input stream read thread.
+	 * 
+	 * @see #startReadThread()
 	 */
 	public void stopReadThread() {
 		working = false;

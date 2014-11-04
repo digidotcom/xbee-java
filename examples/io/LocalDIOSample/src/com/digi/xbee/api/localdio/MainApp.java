@@ -40,7 +40,7 @@ public class MainApp {
 	private static final int READ_TIMEOUT = 250;
 	
 	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
-	private static final IOLine IOLINE_OUT = IOLine.DIO12;
+	private static final IOLine IOLINE_OUT = IOLine.DIO4_AD4;
 	
 	/**
 	 * Application main method.

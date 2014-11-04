@@ -48,7 +48,7 @@
          - XBIB-U-DEV board:
              * The example is already configured to use this carrier board. 
                The input line is configured to use the SW5 user button of the 
-               board and the output line is connected to the DS2 user LED. No
+               board and the output line is connected to the DS4 user LED. No
 			   further changes are necessary.
          
          - XBee Development Board:
@@ -69,5 +69,5 @@
        boards it is the DIO3.
        
     2) Verify that the status of the LED corresponding to the digital output
-       line changes. In the XBIB boards it is the DIO12.
+       line changes. In the XBIB boards it is the DIO4.
        

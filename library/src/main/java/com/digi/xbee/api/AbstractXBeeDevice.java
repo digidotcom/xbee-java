@@ -1759,17 +1759,18 @@ public abstract class AbstractXBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		// Try to build an IO Sample from the sample payload.
-		byte[] samplePayload = getParameter("IS");
+		byte[] samplePayload = null;
 		IOSample ioSample;
 		
-		// If it is a local 802.15.4 device, the response does not contain the
-		// IO sample, so we have to create a packet listener to receive the
-		// sample.
+		// The response to the IS command in local 802.15.4 devices is empty, 
+		// so we have to create a packet listener to receive the IO sample.
 		if (!isRemote() && getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
+			executeParameter("IS");
 			samplePayload = receiveRaw802IOPacket();
 			if (samplePayload == null)
 				throw new TimeoutException("Timeout waiting for the IO response packet.");
-		}
+		} else
+			samplePayload = getParameter("IS");
 		
 		try {
 			ioSample = new IOSample(samplePayload);

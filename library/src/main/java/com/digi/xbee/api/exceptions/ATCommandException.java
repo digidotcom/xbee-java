@@ -15,7 +15,7 @@ import com.digi.xbee.api.models.ATCommandStatus;
 
 /**
  * This exception will be thrown when receiving a command response containing 
- * a status different than {@code ATCommandStatus.OK} after sending an XBee 
+ * a status different than {@code ATCommandStatus#OK} after sending an XBee 
  * AT command.
  * 
  * @see CommunicationException
@@ -76,7 +76,7 @@ public class ATCommandException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the {@code ATCommandStatus} of the exception containing 
+	 * Returns the {@code ATCommandStatus} of the exception containing 
 	 * information about the AT command response.
 	 * 
 	 * @return The status of the AT command response.
@@ -88,7 +88,7 @@ public class ATCommandException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the text containing the status of the AT command response 
+	 * Returns the text containing the status of the AT command response 
 	 * from the exception.
 	 * 
 	 * @return The text with the status of the AT command response.

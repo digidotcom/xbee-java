@@ -46,7 +46,7 @@ public enum XBeeDiscoveryStatus {
 	 * Class constructor. Instantiates a new enumeration element of type 
 	 * {@code XBeeDiscoveryStatus} with the given parameters.
 	 * 
-	 * @param id Discovery Status ID.
+	 * @param id Discovery status ID.
 	 * @param description Discovery status description.
 	 */
 	private XBeeDiscoveryStatus(int id, String description) {
@@ -55,7 +55,7 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Retrieves the discovery status ID.
+	 * Returns the discovery status ID.
 	 * 
 	 * @return The discovery status ID.
 	 */
@@ -64,7 +64,7 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Retrieves the discovery status description.
+	 * Returns the discovery status description.
 	 * 
 	 * @return Discovery status description.
 	 */
@@ -73,7 +73,7 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeDiscoveryStatus} associated to the given ID.
+	 * Returns the {@code XBeeDiscoveryStatus} associated to the given ID.
 	 * 
 	 * @param id ID of the {@code XBeeDiscoveryStatus} to retrieve.
 	 * 

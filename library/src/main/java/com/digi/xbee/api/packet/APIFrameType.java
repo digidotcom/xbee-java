@@ -26,6 +26,7 @@ public enum APIFrameType {
 	TX_64 (0x00, "TX (Transmit) Request 64-bit address"),
 	TX_16 (0x01, "TX (Transmit) Request 16-bit address"),
 	AT_COMMAND (0x08, "AT Command"),
+	AT_COMMAND_QUEUE (0x09, "AT Command Queue"),
 	TRANSMIT_REQUEST (0x10, "Transmit Request"),
 	REMOTE_AT_COMMAND_REQUEST (0x17, "Remote AT Command Request"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),

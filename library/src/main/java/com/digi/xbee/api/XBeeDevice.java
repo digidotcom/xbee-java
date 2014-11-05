@@ -13,8 +13,11 @@ package com.digi.xbee.api;
 
 import java.io.IOException;
 
+import android.content.Context;
+
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
@@ -91,6 +94,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(IConnectionInterface)
 	 * @see #XBeeDevice(String, SerialPortParameters)
 	 * @see #XBeeDevice(String, int, int, int, int, int)
+	 * @see #XBeeDevice(Context, int)
+	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
 	public XBeeDevice(String port, int baudRate) {
 		super(port, baudRate);
@@ -118,6 +123,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(IConnectionInterface)
 	 * @see #XBeeDevice(String, int)
 	 * @see #XBeeDevice(String, SerialPortParameters)
+	 * @see #XBeeDevice(Context, int)
+	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
 	public XBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		super(port, baudRate, dataBits, stopBits, parity, flowControl);
@@ -137,10 +144,55 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(IConnectionInterface)
 	 * @see #XBeeDevice(String, int)
 	 * @see #XBeeDevice(String, int, int, int, int, int)
+	 * @see #XBeeDevice(Context, int)
+	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public XBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		super(port, serialPortParameters);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #XBeeDevice(IConnectionInterface)
+	 * @see #XBeeDevice(String, int)
+	 * @see #XBeeDevice(String, SerialPortParameters)
+	 * @see #XBeeDevice(String, int, int, int, int, int)
+	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 */
+	public XBeeDevice(Context context, int baudrate) {
+		super(XBee.createConnectiontionInterface(context, baudrate));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * @param permissionListener The USB permission listener that will be 
+	 *                           notified when user grants USB permissions.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #XBeeDevice(IConnectionInterface)
+	 * @see #XBeeDevice(String, int)
+	 * @see #XBeeDevice(String, SerialPortParameters)
+	 * @see #XBeeDevice(String, int, int, int, int, int)
+	 * @see #XBeeDevice(Context, int)
+	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 */
+	public XBeeDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
+		super(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
 	}
 	
 	/**
@@ -155,6 +207,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(String, int)
 	 * @see #XBeeDevice(String, SerialPortParameters)
 	 * @see #XBeeDevice(String, int, int, int, int, int)
+	 * @see #XBeeDevice(Context, int)
+	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public XBeeDevice(IConnectionInterface connectionInterface) {

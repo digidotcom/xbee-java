@@ -20,8 +20,11 @@ import java.util.TreeSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.content.Context;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.DataReader;
+import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
@@ -162,6 +165,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
 	public AbstractXBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -190,6 +195,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
 	public AbstractXBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -210,10 +217,59 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public AbstractXBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 */
+	public AbstractXBeeDevice(Context context, int baudrate) {
+		this(XBee.createConnectiontionInterface(context, baudrate));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * @param permissionListener The USB permission listener that will be 
+	 *                           notified when user grants USB permissions.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 */
+	public AbstractXBeeDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
+		this(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
 	}
 	
 	/**
@@ -230,6 +286,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public AbstractXBeeDevice(IConnectionInterface connectionInterface) {
@@ -261,6 +319,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
 	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
@@ -290,6 +350,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */

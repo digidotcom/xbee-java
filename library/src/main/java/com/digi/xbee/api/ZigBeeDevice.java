@@ -11,7 +11,10 @@
  */
 package com.digi.xbee.api;
 
+import android.content.Context;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -53,6 +56,12 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * 
 	 * @throws IllegalArgumentException if {@code baudRate < 0}.
 	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see #ZigBeeDevice(IConnectionInterface)
+	 * @see #ZigBeeDevice(String, SerialPortParameters)
+	 * @see #ZigBeeDevice(String, int, int, int, int, int)
+	 * @see #ZigBeeDevice(Context, int)
+	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
 	public ZigBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -75,6 +84,12 @@ public class ZigBeeDevice extends XBeeDevice {
 	 *                                  if {@code parity < 0} or
 	 *                                  if {@code flowControl < 0}.
 	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see #ZigBeeDevice(IConnectionInterface)
+	 * @see #ZigBeeDevice(String, int)
+	 * @see #ZigBeeDevice(String, SerialPortParameters)
+	 * @see #ZigBeeDevice(Context, int)
+	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
 	public ZigBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -90,10 +105,58 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code serialPortParameters == null}.
 	 * 
+	 * @see #ZigBeeDevice(IConnectionInterface)
+	 * @see #ZigBeeDevice(String, int)
+	 * @see #ZigBeeDevice(String, int, int, int, int, int)
+	 * @see #ZigBeeDevice(Context, int)
+	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public ZigBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #ZigBeeDevice(IConnectionInterface)
+	 * @see #ZigBeeDevice(String, int)
+	 * @see #ZigBeeDevice(String, SerialPortParameters)
+	 * @see #ZigBeeDevice(String, int, int, int, int, int)
+	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 */
+	public ZigBeeDevice(Context context, int baudrate) {
+		super(XBee.createConnectiontionInterface(context, baudrate));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * @param permissionListener The USB permission listener that will be 
+	 *                           notified when user grants USB permissions.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #ZigBeeDevice(String, int)
+	 * @see #ZigBeeDevice(String, SerialPortParameters)
+	 * @see #ZigBeeDevice(String, int, int, int, int, int)
+	 * @see #ZigBeeDevice(Context, int)
+	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 */
+	public ZigBeeDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
+		super(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
 	}
 	
 	/**

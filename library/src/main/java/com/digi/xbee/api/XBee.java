@@ -11,7 +11,11 @@
  */
 package com.digi.xbee.api;
 
+import android.content.Context;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
+import com.digi.xbee.api.connection.android.AndroidXBeeInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.connection.serial.SerialPortRxTxAndroid;
@@ -30,6 +34,7 @@ public class XBee {
 	 * 
 	 * @return The serial port connection interface.
 	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see #createConnectiontionInterface(String, SerialPortParameters)
@@ -67,6 +72,52 @@ public class XBee {
 		else
 			connectionInterface = new SerialPortRxTx(port, serialPortParameters);
 		return connectionInterface;
+	}
+	
+	/**
+	 * Retrieves an XBee Android connection interface for the given context and
+	 * baud rate.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * 
+	 * @return The XBee Android connection interface.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #createConnectiontionInterface(String, int)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 */
+	public static IConnectionInterface createConnectiontionInterface(Context context, int baudRate) {
+		return createConnectiontionInterface(context, baudRate, null);
+	}
+	
+	/**
+	 * Retrieves an XBee Android connection interface for the given context and
+	 * baud rate.
+	 * 
+	 * @param context The Android context.
+	 * @param baudRate The USB connection baud rate.
+	 * @param permissionListener The USB permission listener that will be 
+	 *                           notified when user grants USB permissions.
+	 * 
+	 * @return The XBee Android connection interface.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws NullPointerException if {@code context == null}.
+	 * 
+	 * @see #createConnectiontionInterface(String, int)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 */
+	public static IConnectionInterface createConnectiontionInterface(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
+		if (context == null)
+			throw new NullPointerException("Android context cannot be null");
+		
+		return new AndroidXBeeInterface(context, baudRate, permissionListener);
 	}
 	
 	/**

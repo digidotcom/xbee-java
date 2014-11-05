@@ -373,8 +373,8 @@ public class DataReader extends Thread {
 	 * @param packet The received XBee packet to be dispatched to the 
 	 *               corresponding listeners.
 	 * 
-	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	private void packetReceived(XBeePacket packet) {
 		// Add the packet to the packets queue.
@@ -516,8 +516,8 @@ public class DataReader extends Thread {
 	 *
 	 * @param packet The received XBee packet.
 	 * 
-	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket
+	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	private void notifyPacketReceived(final XBeePacket packet) {
 		logger.debug(connectionInterface.toString() + "Packet received: \n{}", packet.toPrettyString());

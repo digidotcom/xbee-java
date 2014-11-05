@@ -31,7 +31,7 @@ public class MainApp {
 	// TODO Replace with the baud rate of your sender module.
 	private static final int BAUD_RATE = 9600;
 	
-	private static final String DATA_TO_SEND = "Hello XBees!";
+	private static final String DATA_TO_SEND = "Hello XBee World!";
 	
 	/**
 	 * Application main method.

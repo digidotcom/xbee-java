@@ -78,9 +78,10 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 		super(localXBeeDevice, addr64, addr16, ni);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#isRemote()
+	/**
+	 * Always returns {@code true}, since it is a remote device.
+	 * 
+	 * @return {@code true} always.
 	 */
 	@Override
 	public boolean isRemote() {

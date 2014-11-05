@@ -98,8 +98,8 @@ public class DataReader extends Thread {
 	 *                                 {@code mode == null}.
 	 * 
 	 * @see IConnectionInterface
-	 * @see #com.digi.xbee.api.XBeeDevice
-	 * @see #com.digi.xbee.api.models.OperatingMode
+	 * @see com.digi.xbee.api.XBeeDevice
+	 * @see com.digi.xbee.api.models.OperatingMode
 	 */
 	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode, XBeeDevice xbeeDevice) {
 		if (connectionInterface == null)
@@ -122,7 +122,7 @@ public class DataReader extends Thread {
 	 * 
 	 * @throws NullPointerException if {@code mode == null}.
 	 * 
-	 * @see #com.digi.xbee.api.models.OperatingMode
+	 * @see com.digi.xbee.api.models.OperatingMode
 	 */
 	public void setXBeeReaderMode(OperatingMode mode) {
 		if (mode == null)

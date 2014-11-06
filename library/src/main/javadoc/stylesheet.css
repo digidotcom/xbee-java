@@ -17,12 +17,12 @@ body {
 }
 a:link, a:visited {
     text-decoration:none;
-    color:#4A6782;
+    color:#006633;
 }
 a:hover, a:focus {
     text-decoration:none;
     /*color:#bb7a2a;*/
-    color:#E6B800;
+    color:#000000;
 }
 a:active {
     text-decoration:none;
@@ -133,7 +133,7 @@ Navigation bar styles
 .bar {
     /*background-color:#4D7A97;*/
     /*background-color:#234E8F;*/
-    background-color:#003366;
+    background-color:#4f5454;
     color:#FFFFFF;
     padding:.8em .5em .4em .8em;
     height:auto;/*height:1.8em;*/
@@ -143,7 +143,7 @@ Navigation bar styles
 .topNav {
     /*background-color:#4D7A97;*/
     /*background-color:#234E8F;*/
-    background-color:#003366;
+    background-color:#4f5454;
     color:#FFFFFF;
     float:left;
     padding:0;
@@ -158,7 +158,7 @@ Navigation bar styles
     margin-top:10px;
     /*background-color:#4D7A97;*/
     /*background-color:#234E8F;*/
-    background-color:#003366;
+    background-color:#4f5454;
     color:#FFFFFF;
     float:left;
     padding:0;
@@ -206,16 +206,16 @@ ul.subNavList li{
 .topNav a:hover, .bottomNav a:hover {
     text-decoration:none;
     /*color:#bb7a2a;*/
-    color:#E6B800;
+    color:#00a05b;
     text-transform:uppercase;
 }
 .navBarCell1Rev {
     /*background-color:#F8981D;*/
     /*background-color:#FFFFFF;*/
-    background-color:#E6B800;
+    background-color:#FFFFFF;
     /*color:#253441;*/
     /*color:#234E8F;*/
-    color:#003366;
+    color:#4f5454;
     margin: auto 5px;
     /**/
     border-radius:3px;
@@ -446,7 +446,7 @@ Table styles
     display:inline-block;
     float:left;
     /*background-color:#F8981D;*/
-    background-color:#E6B800;
+    background-color:#00a05b;
     /*border: none;*/
     height:16px;
     /**/
@@ -467,7 +467,7 @@ Table styles
     display:inline-block;
     float:left;
     /*background-color:#F8981D;*/
-    background-color:#E6B800;
+    background-color:#00a05b;
     height:16px;
 }
 .memberSummary caption span.tableTab span {
@@ -480,7 +480,7 @@ Table styles
     float:left;
     /*background-color:#4D7A97;*/
     /*background-color:#234E8F;*/
-    background-color:#003366;
+    background-color:#4f5454;
     height:16px;
 }
 .memberSummary caption span.tableTab, .memberSummary caption span.activeTableTab {
@@ -498,7 +498,7 @@ Table styles
     position:relative;
     float:left;
     /*background-color:#F8981D;*/
-    background-color:#E6B800;
+    background-color:#00a05b;
 }
 .memberSummary .activeTableTab .tabEnd {
     display:none;
@@ -507,7 +507,7 @@ Table styles
     position:relative; 
     float:left;
     /*background-color:#F8981D;*/
-    background-color:#E6B800;
+    background-color:#00a05b;
 }
 .memberSummary .tableTab .tabEnd {
     display:none;
@@ -516,7 +516,7 @@ Table styles
     position:relative;
     /*background-color:#4D7A97;*/
     /*background-color:#234E8F;*/
-    background-color:#003366;
+    background-color:#4f5454;
     float:left;
 
 }

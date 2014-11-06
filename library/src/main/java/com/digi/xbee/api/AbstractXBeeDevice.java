@@ -54,6 +54,7 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
+import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
@@ -787,9 +788,10 @@ public abstract class AbstractXBeeDevice {
 					remoteATCommandOptions |= RemoteATCommandOptions.OPTION_APPLY_CHANGES;
 				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), remote16BitAddress, remoteATCommandOptions, command.getCommand(), command.getParameter());
 			} else {
-				// TODO: If the apply configuration changes option is enabled, send an AT command frame. 
-				//       If the apply configuration changes option is disabled, send a queue AT command frame.
-				packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+				if (isApplyConfigurationChangesEnabled())
+					packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+				else
+					packet = new ATCommandQueuePacket(getNextFrameID(), command.getCommand(), command.getParameter());
 			}
 			if (command.getParameter() == null)
 				logger.debug(toString() + "Sending AT command '{}'.", command.getCommand());

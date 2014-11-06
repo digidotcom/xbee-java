@@ -20,6 +20,7 @@ import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
+import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
@@ -276,6 +277,9 @@ public class XBeePacketParser {
 			break;
 		case AT_COMMAND:
 			packet = ATCommandPacket.createPacket(payload);
+			break;
+		case AT_COMMAND_QUEUE:
+			packet = ATCommandQueuePacket.createPacket(payload);
 			break;
 		case TRANSMIT_REQUEST:
 			packet = TransmitPacket.createPacket(payload);

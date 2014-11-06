@@ -15,7 +15,7 @@
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.remotedio.MainApp.java:
       Main application class. It instantiates a local XBee device and a remote 
       XBee device, establishes a serial connection with the local one, 
@@ -53,11 +53,13 @@
              'REMOTE' text.
        
     3) Ensure that the modules are in API mode and on the same network.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     4) Set the port and baud rate of the local XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the modules in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
        
     5) The final step is to configure the IO lines in the example. Depending 
        on the carrier board you are using you may need to change a couple of 

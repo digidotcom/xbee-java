@@ -11,7 +11,7 @@
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.receivemodemstatus.MainApp.java:
       Main application class. It instantiates an XBee device and establishes a 
       serial connection with it.
@@ -26,6 +26,7 @@
   
     * One XBee radio in API mode and its corresponding carrier board (XBIB 
       or XBee Development Board).
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
@@ -34,11 +35,13 @@
        computer's USB or serial ports.
        
     2) Ensure that the module is in API mode.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     3) Set the port and baud rate of the XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the module in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
 
 
   Running the example

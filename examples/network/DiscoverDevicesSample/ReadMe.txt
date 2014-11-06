@@ -13,7 +13,7 @@
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.discoverdevices.MainApp.java:
       Main application class. It instantiates an XBee device, establishes a 
       serial connection with it and gets the XBee network object. Then, 
@@ -30,6 +30,7 @@
   
     * At least two XBee radios in API mode and their corresponding carrier 
       board (XBIB or equivalent). More than two radios are recommended.
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
@@ -38,11 +39,13 @@
        computer's USB or serial ports.
        
     2) Ensure that the modules are in API mode and on the same network.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     3) Set the port and baud rate of the local XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the modules in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
 
 
   Running the example

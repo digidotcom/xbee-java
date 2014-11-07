@@ -13,8 +13,6 @@
 	<name>XBee Java Library</name>
 	
 	<properties>
-		<maven-source-plugin.version>2.4</maven-source-plugin.version>
-		<javadoc.plugin.version>2.10.1</javadoc.plugin.version>
 		<maven.build.timestamp.format>yyyy-MMM-dd HH:mm z</maven.build.timestamp.format>
 	</properties>
 	
@@ -53,7 +51,7 @@
 					<noindex>false</noindex>
 					<nonavbar>false</nonavbar>
 					<notree>false</notree>
-					<source>1.6</source>
+					<source>1.7</source>
 					<version>true</version>
 					<docfilessubdirs>true</docfilessubdirs>
 					<!--<javadocDirectory>${basedir}/src/main/javadoc/</javadocDirectory>-->
@@ -63,6 +61,8 @@
 					<doctitle>${project.name}</doctitle>
 					<bottom>&amp;copy; Copyright ${project.inceptionYear}&#x2013;{currentYear} &lt;a href=&quot;{organizationURL}&quot; target=&quot;_blank&quot;&gt;{organizationName}&lt;/a&gt; All rights reserved.</bottom>
 					<footer>&lt;em&gt;${project.name} ${project.version}&lt;br&gt;${maven.build.timestamp}&lt;/em&gt;</footer>
+					<linksource>true</linksource>
+					<keywords>true</keywords>
 				</configuration>
 				<executions>
 					<execution>
@@ -73,6 +73,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Unpack the RXTX dependency -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>

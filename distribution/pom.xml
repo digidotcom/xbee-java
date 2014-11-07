@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>com.digi.xbee</groupId>
+		<artifactId>xbjlib-parent</artifactId>
+		<version>0.1-SNAPSHOT</version>
+		<relativePath>..\pom.xml</relativePath>
+	</parent>
+	
+	<artifactId>distribution</artifactId>
+	
+	<packaging>pom</packaging>
+	
+	<name>XBee Java Library Distribution</name>
+	
+	<dependencies>
+		<!-- NOTE: These dependency declaration is only required to sort this 
+		project to the end of the line in the multimodule build. Since we only 
+		include the xbjlib module in our assembly, we only need to ensure this 
+		distribution project builds AFTER that one... -->
+		<dependency>
+			<groupId>com.digi.xbee</groupId>
+			<artifactId>xbjlib</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+		<!-- Add the dependecy to the native libraries of rxtx -->
+		<dependency>
+			<groupId>org.rxtx</groupId>
+			<artifactId>rxtx-native</artifactId>
+			<version>${rxtx.version}</version>
+		</dependency>
+		<!-- Add the rest of SLF4J bindings to be included in the distribution 
+		deliverable -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j-simple.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>${slf4j-nop.version}</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<directory>../target/${project.artifactId}</directory>
+		<!-- Generate the deliverable file  -->
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>distro-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>XBJL-${project.version}</finalName>
+							<descriptors>
+								<descriptor>src/main/assembly/assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>

@@ -1,0 +1,97 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+	<id>${assemblyId}</id>
+	<formats>
+		<format>tar.bz2</format>
+		<format>tar.gz</format>
+		<format>zip</format>
+	</formats>
+	<baseDirectory>XBJL-${project.version}-${assemblyId}</baseDirectory>
+	<fileSets>
+		<!-- Include license, release notes and readme files -->
+		<fileSet>
+			<directory>${project.basedir}/..</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>README*</include>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+				<include>release_notes*</include>
+			</includes>
+		</fileSet>
+		<!-- Include sources jars -->
+		<fileSet>
+			<directory>${project.build.directory}/../library</directory>
+			<!--<excludes>
+				<exclude>*-test-sources.jar</exclude>
+			</excludes>-->
+			<includes>
+				<include>*-sources.jar</include>
+			</includes>
+			<outputDirectory>src</outputDirectory>
+		</fileSet>
+		<!-- Include javadoc jar -->
+		<fileSet>
+			<directory>${project.build.directory}/../library</directory>
+			<includes>
+				<include>*-javadoc.jar</include>
+			</includes>
+			<outputDirectory>javadoc</outputDirectory>
+		</fileSet>
+		<!-- Include javadoc unpacked -->
+		<fileSet>
+			<directory>${project.build.directory}/../library/apidocs</directory>
+			<outputDirectory>javadoc/apidocs</outputDirectory>
+		</fileSet>
+		<!-- Include example sources -->
+		<fileSet>
+			<directory>${project.basedir}/../examples</directory>
+			<excludes>
+				<exclude>**/pom.xml</exclude>
+			</excludes>
+			<outputDirectory>examples</outputDirectory>
+		</fileSet>
+	</fileSets>
+	<dependencySets>
+		<!-- Include the XBee Java Library jar -->
+		<dependencySet>
+			<includes>
+				<include>com.digi.xbee:xbjlib:jar:*</include>
+			</includes>
+			<outputDirectory>/</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<scope>runtime</scope>
+		</dependencySet>
+		<!-- Include all the dependencies jars except the rxtx native libs for the current os -->
+		<dependencySet>
+			<excludes>
+				<exclude>org.rxtx:rxtx-native:jar:*</exclude>
+				<exclude>com.digi.xbee:xbjlib:jar:*</exclude>
+			</excludes>
+			<outputDirectory>libraries</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<scope>runtime</scope>
+		</dependencySet>
+		<!-- Include all the rxtx native libs -->
+		<dependencySet>
+			<excludes>
+				<exclude>org.rxtx:rxtx-native:jar:${build.type}</exclude>
+			</excludes>
+			<includes>
+				<include>org.rxtx:rxtx-native:jar</include>
+			</includes>
+			<unpack>true</unpack>
+			<unpackOptions>
+				<excludes>
+					<exclude>**/META-INF</exclude>
+					<exclude>**/MANIFEST.MF</exclude>
+				</excludes>
+			</unpackOptions>
+			<outputDirectory>libraries/native</outputDirectory>
+			<useProjectArtifact>false</useProjectArtifact>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+</assembly>

@@ -339,10 +339,8 @@ public class IOSample {
 	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * 
-	 * @return The {@code IOValue} of the given IO line.
-	 * 
-	 * @throws IllegalArgumentException if the given IO line does not have 
-	 *                                  an associated digital value.
+	 * @return The {@code IOValue} of the given IO line or {@code null} if the
+	 *         IO sample does not contain a digital value for the given IO line.
 	 * 
 	 * @see #getDigitalValues()
 	 * @see #hasDigitalValues()
@@ -351,7 +349,7 @@ public class IOSample {
 	 */
 	public IOValue getDigitalValue(IOLine ioLine) {
 		if (!digitalValuesMap.containsKey(ioLine))
-			throw new IllegalArgumentException(ioLine.getName() + " does not have a digital value.");
+			return null;
 		return digitalValuesMap.get(ioLine);
 	}
 	
@@ -415,19 +413,17 @@ public class IOSample {
 	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * 
-	 * @return The analog value of the given IO line.
-	 *  
-	 * @throws IllegalArgumentException if the given IO line does not have 
-	 *                                  an associated analog value.
+	 * @return The analog value of the given IO line or {@code null} if the
+	 *         IO sample does not contain an analog value for the given IO line.
 	 * 
 	 * @see #getAnalogValues()
 	 * @see #hasAnalogValue(IOLine)
 	 * @see #hasAnalogValues()
 	 * @see IOLine
 	 */
-	public int getAnalogValue(IOLine ioLine) {
+	public Integer getAnalogValue(IOLine ioLine) {
 		if (!analogValuesMap.containsKey(ioLine))
-			throw new IllegalArgumentException(ioLine.getName() + " does not have an analog value.");
+			return null;
 		return analogValuesMap.get(ioLine);
 	}
 	

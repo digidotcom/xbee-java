@@ -102,12 +102,7 @@ public class IORawSampleTest {
 				assertEquals(IOValue.HIGH, ioSample.getDigitalValues().get(ioLine));
 			} else {
 				assertFalse(ioSample.hasDigitalValue(ioLine));
-				try {
-					ioSample.getDigitalValue(ioLine);
-					fail("Digital value shouldn't have been retrieved.");
-				} catch (Exception e) {
-					assertEquals(IllegalArgumentException.class, e.getClass());
-				}
+				assertNull(ioSample.getDigitalValue(ioLine));
 				assertNull(ioSample.getDigitalValues().get(ioLine));
 			}
 		}
@@ -131,12 +126,7 @@ public class IORawSampleTest {
 		// Verify that there is not any analog value.
 		for (IOLine ioLine:IOLine.values()) {
 			assertFalse(ioSample.hasAnalogValue(ioLine));
-			try {
-				ioSample.getAnalogValue(ioLine);
-				fail("Analog value shouldn't have been retrieved.");
-			} catch (Exception e) {
-				assertEquals(IllegalArgumentException.class, e.getClass());
-			}
+			assertNull(ioSample.getAnalogValue(ioLine));
 			assertNull(ioSample.getAnalogValues().get(ioLine));
 		}
 	}
@@ -159,12 +149,7 @@ public class IORawSampleTest {
 		// Verify that there is not any digital value.
 		for (IOLine ioLine:IOLine.values()) {
 			assertFalse(ioSample.hasDigitalValue(ioLine));
-			try {
-				ioSample.getDigitalValue(ioLine);
-				fail("Digital value shouldn't have been retrieved.");
-			} catch (Exception e) {
-				assertEquals(IllegalArgumentException.class, e.getClass());
-			}
+			assertNull(ioSample.getDigitalValue(ioLine));
 			assertNull(ioSample.getDigitalValues().get(ioLine));
 		}
 	}
@@ -189,20 +174,15 @@ public class IORawSampleTest {
 		for (IOLine ioLine:IOLine.values()) {
 			if (ioLine == IOLine.DIO1_AD1) {
 				assertTrue(ioSample.hasAnalogValue(ioLine));
-				assertEquals(DIO1_ANALOG_VALUE, ioSample.getAnalogValue(ioLine));
+				assertEquals(DIO1_ANALOG_VALUE, (int)ioSample.getAnalogValue(ioLine));
 				assertEquals(DIO1_ANALOG_VALUE, (int)ioSample.getAnalogValues().get(ioLine));
 			} else if (ioLine == IOLine.DIO3_AD3) {
 				assertTrue(ioSample.hasAnalogValue(ioLine));
-				assertEquals(DIO3_ANALOG_VALUE, ioSample.getAnalogValue(ioLine));
+				assertEquals(DIO3_ANALOG_VALUE, (int)ioSample.getAnalogValue(ioLine));
 				assertEquals(DIO3_ANALOG_VALUE, (int)ioSample.getAnalogValues().get(ioLine));
 			} else {
 				assertFalse(ioSample.hasAnalogValue(ioLine));
-				try {
-					ioSample.getAnalogValue(ioLine);
-					fail("Analog value shouldn't have been retrieved.");
-				} catch (Exception e) {
-					assertEquals(IllegalArgumentException.class, e.getClass());
-				}
+				assertNull(ioSample.getAnalogValue(ioLine));
 				assertNull(ioSample.getAnalogValues().get(ioLine));
 			}
 		}
@@ -240,12 +220,7 @@ public class IORawSampleTest {
 				assertEquals(IOValue.HIGH, ioSample.getDigitalValues().get(ioLine));
 			} else {
 				assertFalse(ioSample.hasDigitalValue(ioLine));
-				try {
-					ioSample.getDigitalValue(ioLine);
-					fail("Digital value shouldn't have been retrieved.");
-				} catch (Exception e) {
-					assertEquals(IllegalArgumentException.class, e.getClass());
-				}
+				assertNull(ioSample.getDigitalValue(ioLine));
 				assertNull(ioSample.getDigitalValues().get(ioLine));
 			}
 		}
@@ -271,20 +246,15 @@ public class IORawSampleTest {
 		for (IOLine ioLine:IOLine.values()) {
 			if (ioLine == IOLine.DIO1_AD1) {
 				assertTrue(ioSample.hasAnalogValue(ioLine));
-				assertEquals(DIO1_ANALOG_VALUE, ioSample.getAnalogValue(ioLine));
+				assertEquals(DIO1_ANALOG_VALUE, (int)ioSample.getAnalogValue(ioLine));
 				assertEquals(DIO1_ANALOG_VALUE, (int)ioSample.getAnalogValues().get(ioLine));
 			} else if (ioLine == IOLine.DIO3_AD3) {
 				assertTrue(ioSample.hasAnalogValue(ioLine));
-				assertEquals(DIO3_ANALOG_VALUE, ioSample.getAnalogValue(ioLine));
+				assertEquals(DIO3_ANALOG_VALUE, (int)ioSample.getAnalogValue(ioLine));
 				assertEquals(DIO3_ANALOG_VALUE, (int)ioSample.getAnalogValues().get(ioLine));
 			} else {
 				assertFalse(ioSample.hasAnalogValue(ioLine));
-				try {
-					ioSample.getAnalogValue(ioLine);
-					fail("Analog value shouldn't have been retrieved.");
-				} catch (Exception e) {
-					assertEquals(IllegalArgumentException.class, e.getClass());
-				}
+				assertNull(ioSample.getAnalogValue(ioLine));
 				assertNull(ioSample.getAnalogValues().get(ioLine));
 			}
 		}

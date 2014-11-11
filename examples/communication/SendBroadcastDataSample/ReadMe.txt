@@ -59,7 +59,8 @@
   modules of the network. When that happens, a line with the result of the 
   operation is printed to the standard output:
        
-    Sending broadcast data >> 48 65 6C 6C 6F 20 58 42 65 65 73 21 | Hello XBees!... Success
+    Sending broadcast data 'Hello XBee World!'...
+    Success
        
   Verify that in the XCTU console a new RX frame has been received. Select it 
   and review the details, some of the details will be similar to:
@@ -68,6 +69,6 @@
     - Length:                  Depends on the XBee protocol.
     - Frame type:              Depends on the XBee protocol.
     - 64-bit source address:   The XBee sender's 64-bit address.
-    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 73 21
-                               Hello XBees!
+    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21
+                               Hello XBee World!
        

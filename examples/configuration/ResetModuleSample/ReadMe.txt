@@ -44,7 +44,7 @@
   that the following message is printed out in the console of the launched 
   application:
     
-    "XBee module reset successfully"
+    ">> XBee module reset successfully"
     
   That message indicates that the module was reset correctly.
   

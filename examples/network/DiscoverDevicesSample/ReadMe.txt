@@ -56,12 +56,12 @@
   
     1) The output console states the following message:
        
-         "Discovering remote XBee devices..."
+         ">> Discovering remote XBee devices..."
        
     2) For each discovered device the output console should display the 
        following message: 
        
-         "Device discovered: XXXXXXXXXXXXXXXX"
+         ">> Device discovered: XXXXXXXXXXXXXXXX"
        
            - Where XXXXXXXXXXXXXXXX is the MAC address of the remote XBee 
              device.
@@ -69,5 +69,5 @@
     3) When the discovery process finishes the following message should be 
        displayed:
        
-         "Discovery process finished successfully."
+         ">> Discovery process finished successfully."
        

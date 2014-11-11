@@ -8,7 +8,7 @@
 		<format>tar.gz</format>
 		<format>zip</format>
 	</formats>
-	<baseDirectory>XBJL-${project.version}-${assemblyId}</baseDirectory>
+	<baseDirectory>${project.build.finalName}</baseDirectory>
 	<fileSets>
 		<!-- Include license, release notes and readme files -->
 		<fileSet>
@@ -21,29 +21,28 @@
 				<include>release_notes*</include>
 			</includes>
 		</fileSet>
-		<!-- Include sources jars -->
+		<!-- Include the library sources jars -->
 		<fileSet>
 			<directory>${project.build.directory}/../library</directory>
-			<!--<excludes>
-				<exclude>*-test-sources.jar</exclude>
-			</excludes>-->
 			<includes>
 				<include>*-sources.jar</include>
 			</includes>
 			<outputDirectory>src</outputDirectory>
 		</fileSet>
-		<!-- Include javadoc jar -->
+		<!-- Include the library sources -->
 		<fileSet>
-			<directory>${project.build.directory}/../library</directory>
-			<includes>
-				<include>*-javadoc.jar</include>
-			</includes>
-			<outputDirectory>javadoc</outputDirectory>
+			<directory>${project.basedir}/../library/src/main/java</directory>
+			<outputDirectory>src/main</outputDirectory>
+		</fileSet>
+		<!-- Include the library test sources -->
+		<fileSet>
+			<directory>${project.basedir}/../library/src/test/java</directory>
+			<outputDirectory>src/test</outputDirectory>
 		</fileSet>
 		<!-- Include javadoc unpacked -->
 		<fileSet>
 			<directory>${project.build.directory}/../library/apidocs</directory>
-			<outputDirectory>javadoc/apidocs</outputDirectory>
+			<outputDirectory>javadoc</outputDirectory>
 		</fileSet>
 		<!-- Include example sources -->
 		<fileSet>
@@ -70,7 +69,7 @@
 				<exclude>org.rxtx:rxtx-native:jar:*</exclude>
 				<exclude>com.digi.xbee:xbjlib:jar:*</exclude>
 			</excludes>
-			<outputDirectory>libraries</outputDirectory>
+			<outputDirectory>extra-libs</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<scope>runtime</scope>
 		</dependencySet>
@@ -89,7 +88,7 @@
 					<exclude>**/MANIFEST.MF</exclude>
 				</excludes>
 			</unpackOptions>
-			<outputDirectory>libraries/native</outputDirectory>
+			<outputDirectory>extra-libs/native</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
 			<scope>runtime</scope>
 		</dependencySet>

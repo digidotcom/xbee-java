@@ -26,7 +26,7 @@
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>
-		<!-- Add the dependecy to the native libraries of rxtx -->
+		<!-- Add the dependency to the native libraries of rxtx -->
 		<dependency>
 			<groupId>org.rxtx</groupId>
 			<artifactId>rxtx-native</artifactId>
@@ -47,6 +47,7 @@
 	</dependencies>
 	
 	<build>
+		<finalName>XBJL-${project.version}</finalName>
 		<directory>../target/${project.artifactId}</directory>
 		<!-- Generate the deliverable file  -->
 		<plugins>
@@ -60,7 +61,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>XBJL-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>src/main/assembly/assembly.xml</descriptor>
 							</descriptors>

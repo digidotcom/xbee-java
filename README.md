@@ -1,115 +1,58 @@
 XBee Java Library
 =================
 
-Introduction
-------------
-This project contains the source code of the XBee Java Library which allows
-to easily write Java applications for communicating with Digi International's
-[XBee](http://www.digi.com/xbee/) wireless radio modules in API mode.
+This project contains the source code of the XBee Java Library, an easy to use 
+API developed in Java that allows you to interact with Digi International's
+[XBee](http://www.digi.com/xbee/) radio frequency (RF) modules.
 
-The project includes the Java source code for the library and also multiple
-examples, also available in source code format, that show how to use the
-available APIs.
+The project includes the Java source code and unit tests for the library and 
+multiple examples, also available in source code format, that show how to use 
+the available APIs.
 
 The main features provided by the library are:
 
-- Feature 1
-- Feature 2
-- etc
+* Support for ZigBee, 802.15.4, DigiMesh and Point-to-Multipoint XBee devices.
+* Support for API and API Escaped operating modes.
+* Management of local (attached to the PC) and remote XBee device objects.
+* Discovery of remote XBee devices that are associated to the same network as 
+the local one.
+* Configuration of local and remote XBee devices:
+  * Configure common parameters with specific setters and getters.
+  * Configure any other parameter with generic methods.
+  * Execute AT commands.
+  * Apply configuration changes.
+  * Write configuration changes.
+  * Reset the device.
+* Transmission of data to all the XBee devices of the network or to a specific 
+one.
+* Reception of data from remote XBee devices:
+  * Data polling.
+  * Data reception callback.
+* Reception of network status changes related to the local XBee device.
+* IO lines management:
+  * Configure IO lines.
+  * Set IO line value.
+  * Read IO line value.
+  * Receive IO data samples from any remote XBee device of the network.
 
-This source code has been contributed by [Digi International](http://www.digi.com/) under the Mozilla
-Public License v2.0.
 
-Contact <missing@email.digi.com> to report bugs, request features or contribute
-code to this project.
+Start Here
+----------
+The best place to get started is the 
+[XBee Java Library documentation](http://confluence.digi.com/display/XBJLIB).
 
 
-Supported modules
+How to Contribute
 -----------------
-- Module A
-- Module B
-- Module C (through hole and SMT)
-- etc
-
-
-Requirements
-------------
-The following software components are required to use the XBee Java Library:
-
-- A computer running Windows, Mac OS X or Linux.
-- [Java Development Kit](http://www.oracle.com/technetwork/java/javase/downloads/index.html) version 6 or greater.
-- [RxTx](http://www.jcontrol.org/download/files/rxtx-2.1-7-bins-r2.zip) serial communication library.
-- [XCTU](http://www.digi.com/xctu), optional but highly recommended.
-
-To run the Unit Tests, the following additional software packages are also required:
-
-- [Power Mockito](http://dl.bintray.com/johanhaleby/generic/powermock-mockito-junit-1.5.5.zip) (tested with v1.5.5).
-- Mockito (tested with v1.9.5).
-- Java Assist (tested with v3.18.2).
-
-Note that by installing Power Mockito from the provided link it already includes Mockito and Java Assist.
-
-
-Repository structure
---------------------
-- src: contains the XBee Java Library source code.
-- test: contains the XBee Java Library unit tests.
-- examples: contains several sample applications using the XBee Java Library organized in categories.
-
-
-Installation
-------------
-Check out the project or download a zip file by clicking on the "Download ZIP" button. If you downloaded
-the zip file, uncompress it. In any case you will end with a directory called XBeeJavaLibrary-master,
-containing all the project files and directories.
-
-Download the rest of the Software components listed in the requirements section, if not already present
-in your computer.
-
-
-Creating, building and running an application
----------------------------------------------
-Create a Java project using your preferred development environment (Eclipse, NetBeans, ...).
-The next steps describe the process using Eclipse.
-
-- Start your Eclipse IDE and select a workspace location (by default "C:\Users\<username>\workspace"). 
-- Click on "File > New > Project..." and select "Java Project".
-- Enter the new project name, for example "XBeeJavaLibrary". 
-- Uncheck the "Use default location" checkbox and click the "Browse" button that is now enabled.
-  Navigate to the folder where you extracted the sources and click "OK". 
-- Click "Finish". Your project should now appear in the "Package Explorer" view at the left side of the IDE.
-- Right click on the project (XBeeJavaLibrary) and select "Properties...".
-- Add the RxTx jar file to the libraries build path and configure it to use the corresponding native 
-  libraries, for the OS you are using. For further information about how to add RxTx support to your 
-  project, refer to [missing link].
-- If you want to run the Unit Test framework included with the project, you also have to add the Mockito,
-  Power Mockito and Java Assist libraries to your project. Otherwise, exclude the test directory from the 
-  build path.
-  For further information about how to use the Unit Test framework included with the XBee Java Library 
-  project, refer to [missing link].
-
-To build the project, do the following:
-
-- From the Eclipse menu, select "Project > Build Project".
-
-To configure and run any of the application examples, follow these steps:
-
-- Read the Readme.txt file included in the directory of each example to modify the code as needed.
-- Once the code is completed, right click on the MainApp.java file and select "Run as > Java application".
-- The console should be automatically open and you will see there the application input/output. Follow the
-  information provided in the Readme.txt to verify the functionality.
-
-  
-Documentation
--------------
-Additional documentation can be found at [missing link].
+The contributing guidelines are in the 
+[CONTRIBUTING.md](https://github.com/digidotcom/XBeeJavaLibrary/blob/master/CONTRIBUTING.md) 
+document.
 
 
 License
 -------
-This software is open-source software. Copyright Digi International, 2014.
+Copyright 2014 Digi International Inc. This software is open-source software. 
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this file,
 You can obtain one at http://mozilla.org/MPL/2.0/.
-

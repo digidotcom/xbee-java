@@ -322,6 +322,20 @@ public class IOSample {
 	/**
 	 * Returns the digital values map.
 	 * 
+	 * <p>To verify if this sample contains a valid digital values, use the 
+	 * method {@code hasDigitalValues()}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasDigitalValues()) {
+	 *     HashMap<IOLine, IOValue> values = ioSample.getDigitalValues();
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
+	 * 
 	 * @return {@code HashMap} with the digital value of each configured IO 
 	 *         line.
 	 * 
@@ -336,6 +350,20 @@ public class IOSample {
 	
 	/**
 	 * Returns the digital value of the provided IO line.
+	 * 
+	 * <p>To verify if this sample contains a digital value for the given 
+	 * {@code IOLine}, use the method {@code hasDigitalValue(IOLine)}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasDigitalValue(IOLine.DIO0_AD0)) {
+	 *     IOValue value = ioSample.getDigitalValue(IOLine.DIO0_AD0);
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
 	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * 
@@ -396,6 +424,20 @@ public class IOSample {
 	/**
 	 * Returns the analog values map.
 	 * 
+	 * <p>To verify if this sample contains a valid analog values, use the 
+	 * method {@code hasAnalogValues()}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasAnalogValues()) {
+	 *     HashMap<IOLine, Integer> values = ioSample.getAnalogValues();
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
+	 * 
 	 * @return {@code HashMap} with the analog value of each configured IO 
 	 *         line.
 	 * 
@@ -410,6 +452,20 @@ public class IOSample {
 	
 	/**
 	 * Returns the analog value of the provided IO line.
+	 * 
+	 * <p>To verify if this sample contains an analog value for the given 
+	 * {@code IOLine}, use the method {@code hasAnalogValue(IOLine)}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasAnalogValue(IOLine.DIO0_AD0)) {
+	 *     Integer value = ioSample.getAnalogValue(IOLine.DIO0_AD0);
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
 	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * 
@@ -441,6 +497,20 @@ public class IOSample {
 	
 	/**
 	 * Returns the value of the power supply voltage.
+	 * 
+	 * <p>To verify if this sample contains the power supply voltage, use the 
+	 * method {@code hasPowerSupplyValue()}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasPowerSupplyValue()) {
+	 *     int value = ioSample.getPowerSupplyValue();
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
 	 * 
 	 * @return The value of the power supply voltage.
 	 * 

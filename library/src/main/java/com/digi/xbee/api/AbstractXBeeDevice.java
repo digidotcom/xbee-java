@@ -1709,8 +1709,12 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * <p>To know if the 'apply configuration changes' option is enabled, use 
 	 * the {@code isApplyConfigurationChangesEnabled()} method. And to 
-	 * enable/disable this feature the method 
+	 * enable/disable this feature, the method 
 	 * {@code enableApplyConfigurationChanges(boolean)}.</p>
+	 * 
+	 * <p>Applying changes does not imply the modifications will persist 
+	 * through subsequent resets. To do so, use the {@code writeChanges()} 
+	 * method.</p>
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the get Apply
@@ -1719,6 +1723,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #enableApplyConfigurationChanges(boolean)
 	 * @see #isApplyConfigurationChangesEnabled()
+	 * @see #setParameter(String, byte[])
+	 * @see #writeChanges()
 	 */
 	public void applyChanges() throws TimeoutException, XBeeException {
 		executeParameter("AC");
@@ -1862,6 +1868,21 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Sets the given parameter with the provided value in this XBee device.
 	 * 
+	 * <p>If the 'apply configuration changes' option is enabled in this device,
+	 * the configured value for the given parameter will be immediately applied, 
+	 * if not the method {@code applyChanges()} must be invoked to apply it.</p>
+	 * 
+	 * <p>Use:</p>
+	 * <ul>
+	 * <li>Method {@code isApplyConfigurationChangesEnabled()} to know 
+	 * if the 'apply configuration changes' option is enabled.</li>
+	 * <li>Method {@code enableApplyConfigurationChanges(boolean)} to enable or
+	 * disable this option.</li>
+	 * </ul>
+	 * 
+	 * <p>To make parameter modifications persist through subsequent resets use 
+	 * the {@code writeChanges()} method.</p>
+	 * 
 	 * @param parameter The name of the parameter to be set.
 	 * @param parameterValue The value of the parameter to set.
 	 * 
@@ -1871,8 +1892,12 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout setting the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #executeParameter(String)
+	 * @see #applyChanges()
+	 * @see #enableApplyConfigurationChanges(boolean)
+	 * @see #executeParameter(String) 
 	 * @see #getParameter(String)
+	 * @see #isApplyConfigurationChangesEnabled()
+	 * @see #writeChanges()
 	 */
 	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
 		if (parameterValue == null)
@@ -2186,10 +2211,23 @@ public abstract class AbstractXBeeDevice {
 	 * module reverts back to previously saved parameters the next time the 
 	 * module is powered-on.</p>
 	 * 
+	 * <p>Writing the parameter modifications does not mean those values are 
+	 * immediately applied, this depends on the status of the 'apply 
+	 * configuration changes' option. Use method 
+	 * {@code isApplyConfigurationChangesEnabled()} to get its status and 
+	 * {@code enableApplyConfigurationChanges(boolean)} to enable/disable the 
+	 * option. If it is disable method {@code applyChanges()} can be used in 
+	 * order to manually apply the changes.</p>
+	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout executing the write 
 	 *                          changes command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #applyChanges()
+	 * @see #enableApplyConfigurationChanges(boolean)
+	 * @see #isApplyConfigurationChangesEnabled()
+	 * @see #setParameter(String, byte[])
 	 */
 	public void writeChanges() throws TimeoutException, XBeeException {
 		executeParameter("WR");

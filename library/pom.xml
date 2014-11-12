@@ -29,7 +29,13 @@
 					<archive>
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
+						<manifestEntries>
+							<Built-By>${project.organization.name}</Built-By>
+							<Implementation-Title>${project.groupId}</Implementation-Title>
+							<Implementation-Vendor-Id>com.digi</Implementation-Vendor-Id>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>

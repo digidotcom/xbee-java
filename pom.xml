@@ -7,6 +7,7 @@
 	<packaging>pom</packaging>
 	<name>XBee Java Library Project</name>
 	<inceptionYear>2014</inceptionYear>
+	<url>https://github.com/digidotcom/XBeeJavaLibrary</url>
 	<organization>
 		<name>Digi International Inc.</name>
 		<url>http://www.digi.com</url>

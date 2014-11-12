@@ -14,8 +14,8 @@
 	</organization>
 	<licenses>
 		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<name>Mozilla Public License, Version 2.0</name>
+			<url>https://www.mozilla.org/MPL/2.0/index.txt</url>
 			<distribution>manual</distribution>
 		</license>
 	</licenses>
@@ -291,7 +291,7 @@
 			<id>digi-repo</id>
 			<name>Digi Releases Repository</name>
 			<layout>default</layout>
-			<url>http://ftp1.digi.com/support/temp/m-repo/</url>
+			<url>http://ftp1.digi.com/support/m-repo/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>

@@ -237,10 +237,24 @@
 			<activation>
 				<os>
 					<family>mac</family>
+					<arch>x86</arch>
 				</os>
 			</activation>
 			<properties>
-				<build.type>macosx</build.type>
+				<build.type>macosx_x86</build.type>
+			</properties>
+		</profile>
+		
+		<profile>
+			<id>macosx_x86_64</id>
+			<activation>
+				<os>
+					<family>mac</family>
+					<arch>x86_64</arch>
+				</os>
+			</activation>
+			<properties>
+				<build.type>macosx_x86_64</build.type>
 			</properties>
 		</profile>
 		

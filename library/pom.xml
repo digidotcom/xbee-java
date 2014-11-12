@@ -20,6 +20,19 @@
 		<directory>../target/library</directory>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
+			<!-- Manifest file -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 			<!-- Generate a package with the sources -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

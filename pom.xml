@@ -46,6 +46,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 		<maven-source-plugin.version>2.4</maven-source-plugin.version>
+		<maven-jar-plugin.version>2.5</maven-jar-plugin.version>
 		<javadoc.plugin.version>2.10.1</javadoc.plugin.version>
 		<rxtx.version>2.1.7</rxtx.version>
 		<slf4j-api.version>1.7.7</slf4j-api.version>

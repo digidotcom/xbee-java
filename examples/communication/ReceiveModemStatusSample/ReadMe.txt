@@ -1,9 +1,9 @@
   Introduction
   ------------
-  This is a sample Java application that shows how Modem Status packets (events 
-  related to the device and the network) are handled using the API.
+  This sample Java application shows how modem status packets (events related 
+  to the device and the network) are handled using the API.
   
-  The application prints the Modem Status events to the standard output when 
+  The application prints the modem status events to the standard output when 
   received.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 

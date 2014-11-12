@@ -1,14 +1,14 @@
   Introduction
   ------------
-  This is a sample Java application that shows how to configure a remote device
-  to send automatic IO samples and how to read them from the local module.
+  This sample Java application shows how to configure a remote device to send 
+  automatic IO samples and how to read them from the local module.
   
   The application configures two IO lines of the remote XBee device: one as 
   digital input (button) and the other as ADC, and enables periodic sampling 
-  and change detection. That is, the device will send a sample every 5 seconds 
-  containing the values of the two monitored lines and another sample every 
-  time the button is pressed or released, which will only contain the value of 
-  this digital line.
+  and change detection. The device sends a sample every five seconds containing
+  the values of the two monitored lines. It sends another sample every time the 
+  button is pressed or released, which only contains the value of this digital 
+  line.
   
   Then, the application registers a listener in the local device to receive and 
   handle all IO samples sent by the remote XBee module.

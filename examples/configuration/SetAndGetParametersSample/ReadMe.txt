@@ -1,13 +1,13 @@
   Introduction
   ------------
-  This is a sample Java application to show how to set and get parameters of 
-  an XBee device (can be either a local or a remote device). These methods 
-  are intended to be used when you need to set or get the value of a parameter 
-  that does not have its own getter and setter within the XBee device object.
+  This sample Java application shows how to set and get parameters of a local 
+  or remote XBee device. This method is intended to be used when you need to 
+  set or get the value of a parameter that does not have its own getter and 
+  setter within the XBee device object.
   
-  The application sets the value of 4 parameters with different value types: 
-  string, byte array and integer. Then it reads them from the device 
-  verifying the read values are the same as the values that were set.
+  The application sets the value of four parameters with different value types: 
+  string, byte array and integer. Then it reads them from the device to verify 
+  that the read values are the same as the values that were set.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, but it 
         can be applied to any other local or remote XBee device class.

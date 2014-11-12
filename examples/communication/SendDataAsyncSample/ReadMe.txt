@@ -1,13 +1,13 @@
   Introduction
   ------------
-  This is a sample Java application to show how to send data asynchronously from
-  the XBee device to another remote device on the same network using the XBee 
-  Java Library. Transmitting data asynchronously means the execution will not 
-  be blocked during the transmit request, but you will not be able to know if 
-  the data was sent successfully.
+  This sample Java application shows how to send data asynchronously from the 
+  XBee device to another remote device on the same network using the XBee Java 
+  Library. Transmitting data asynchronously means the execution will not be 
+  blocked during the transmit request, but you will not be able to determine 
+  if the data was sent successfully.
   
   The application sends data asynchronously to a remote XBee device on the 
-  network with a specific Node Identifier (name).
+  network with a specific node identifier (name).
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.

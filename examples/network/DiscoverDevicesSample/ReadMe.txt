@@ -1,12 +1,12 @@
   Introduction
   ------------
-  This is a sample Java application that demonstrates how to obtain the XBee 
-  network object from a local XBee device and discover the remote XBee devices 
-  that compose the network. The example adds a discovery listener, so the events 
+  This sample Java application demonstrates how to obtain the XBee network 
+  object from a local XBee device and discover the remote XBee devices that 
+  compose the network. The example adds a discovery listener, so the events 
   will be received by the callbacks provided by the listener object.
   
-  The remote XBee devices will be printed out as soon as they are found during 
-  the discovery.
+  The remote XBee devices are printed out as soon as they are found during the 
+  discovery.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, but it 
         can be applied to any other local XBee device class.

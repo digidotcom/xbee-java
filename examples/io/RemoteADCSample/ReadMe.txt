@@ -1,10 +1,10 @@
   Introduction
   ------------
-  This is a sample Java application that shows how to read XBee analog inputs 
-  of remote XBee devices.
+  This sample Java application shows how to read XBee analog inputs of remote 
+  XBee devices.
   
   The application configures an IO line of the remote XBee device as ADC. Then, 
-  periodically reads its value and prints it in the output console.
+  it periodically reads its value and prints it in the output console.
   
   NOTE: This example uses the generic remote XBee device (RemoteXBeeDevice) 
         class, but it can be applied to any other remote XBee device class.

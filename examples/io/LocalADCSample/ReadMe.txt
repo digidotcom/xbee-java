@@ -1,9 +1,9 @@
   Introduction
   ------------
-  This is a sample Java application that shows how to read XBee analog inputs 
-  of the device attached to the serial/USB port of your PC.
+  This sample Java application shows how to read XBee analog inputs of the 
+  device attached to the serial/USB port of your PC.
   
-  The application configures an IO line of the XBee device as ADC. Then, 
+  The application configures an IO line of the XBee device as ADC. Then, it 
   periodically reads its value and prints it in the output console.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 

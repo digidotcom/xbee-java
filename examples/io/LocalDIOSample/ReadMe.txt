@@ -1,14 +1,14 @@
   Introduction
   ------------
-  This is a sample Java application to show how to set and read XBee digital 
-  lines of the device attached to the serial/USB port of your PC.
+  This sample Java application shows how to set and read XBee digital lines of 
+  the device attached to the serial/USB port of your PC.
   
-  The application configures two IO lines of the XBee device, one as a digital
-  input (button) and the other as a digital output (LED). Then, the 
-  application reads the status of the input line periodically and updates 
-  the output to follow the input.
+  The application configures two IO lines of the XBee device, one as a digital 
+  input (button) and the other as a digital output (LED). Then, the application 
+  reads the status of the input line periodically and updates the output to 
+  follow the input.
   
-  While the push button is pressed the LED should be lighting.
+  While the push button is pressed, the LED should be lighting.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.

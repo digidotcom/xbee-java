@@ -1,14 +1,14 @@
   Introduction
   ------------
-  This is a sample Java application to show how to set and read XBee digital 
-  lines of remote devices.
+  This sample Java application shows how to set and read XBee digital lines of 
+  remote devices.
   
-  The application configures two IO lines of the XBee devices, one in the remote
-  device as a digital input (button) and the other in the local device as a 
-  digital output (LED). Then, the application reads the status of the input line 
-  periodically and updates the output to follow the input.
+  The application configures two IO lines of the XBee devices, one in the 
+  remote device as a digital input (button) and the other in the local device 
+  as a digital output (LED). Then, the application reads the status of the 
+  input line periodically and updates the output to follow the input.
   
-  While the push button is pressed the LED should be lighting.
+  While the push button is pressed, the LED should be lighting.
   
   NOTE: This example uses the generic remote XBee device (RemoteXBeeDevice) 
         class, but it can be applied to any other remote XBee device class.

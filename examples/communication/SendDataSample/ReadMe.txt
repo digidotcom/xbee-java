@@ -1,13 +1,13 @@
   Introduction
   ------------
-  This is a sample Java application to show how to send data from the XBee 
-  device to another remote device on the same network using the XBee Java 
-  Library. Data send in this example is performed using a reliable 
-  transmission method. The application will block during the transmission 
-  request, but you will be notified if there is any error during the process.
+  This sample Java application shows how to send data from the XBee device to 
+  another remote device on the same network using the XBee Java Library. In 
+  this example, data is sent using a reliable transmission method. The 
+  application will block during the transmission request, but you will be 
+  notified if there is any error during the process.
   
   The application sends data to a remote XBee device on the network with a 
-  specific Node Identifier (name).
+  specific node identifier (name).
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.

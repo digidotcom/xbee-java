@@ -1,10 +1,10 @@
   Introduction
   ------------
-  This is a sample Java application to show how data packets are received 
-  from another XBee device on the same network using a polling mechanism.
+  This sample Java application shows how data packets are received from another 
+  XBee device on the same network using a polling mechanism.
   
-  The application prints the data that was received to the standard output 
-  in ASCII and hexadecimal formats after the sender address.
+  The application prints the data that was received to the standard output in 
+  ASCII and hexadecimal formats after the sender address.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.

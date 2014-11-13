@@ -257,11 +257,15 @@ public class XBeePacketsQueue {
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
 		switch (packetType) {
 		case RECEIVE_PACKET:
-			if (((ReceivePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+			if (remoteXBeeDevice.get64BitAddress() != null && ((ReceivePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+				return true;
+			if (remoteXBeeDevice.get16BitAddress() != null && ((ReceivePacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
 				return true;
 			break;
 		case REMOTE_AT_COMMAND_RESPONSE:
-			if (((RemoteATCommandResponsePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+			if (remoteXBeeDevice.get64BitAddress() != null && ((RemoteATCommandResponsePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+				return true;
+			if (remoteXBeeDevice.get16BitAddress() != null && ((RemoteATCommandResponsePacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
 				return true;
 			break;
 		case RX_16:

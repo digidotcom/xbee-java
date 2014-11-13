@@ -38,7 +38,7 @@ import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({System.class})
+@PrepareForTest({System.class, XBeePacketsQueue.class})
 public class XBeePacketsQueueTest {
 
 	// Constants.
@@ -47,6 +47,8 @@ public class XBeePacketsQueueTest {
 	private final static String ADDRESS_64_1 = "0123456789ABCDEF";
 	private final static String ADDRESS_64_2 = "0123456701234567";
 	private final static String ADDRESS_64_3 = "0123012301230123";
+	private final static String ADDRESS_16_1 = "0123";
+	private final static String ADDRESS_16_2 = "4567";
 	private final static String METHOD_SLEEP = "sleep";
 	private final static String METHOD_IS_DATA_PACKET = "isDataPacket";
 	private final static String METHOD_ADDRESSES_MATCH = "addressesMatch";
@@ -57,6 +59,9 @@ public class XBeePacketsQueueTest {
 	private static XBee64BitAddress xbee64BitAddress1;
 	private static XBee64BitAddress xbee64BitAddress2;
 	private static XBee64BitAddress xbee64BitAddress3;
+	
+	private static XBee16BitAddress xbee16BitAddress1;
+	private static XBee16BitAddress xbee16BitAddress2;
 	
 	private static ReceivePacket mockedReceivePacket;
 	private static RemoteATCommandResponsePacket mockedRemoteATCommandPacket;
@@ -71,6 +76,10 @@ public class XBeePacketsQueueTest {
 		xbee64BitAddress1 = new XBee64BitAddress(ADDRESS_64_1);
 		xbee64BitAddress2 = new XBee64BitAddress(ADDRESS_64_2);
 		xbee64BitAddress3 = new XBee64BitAddress(ADDRESS_64_3);
+		
+		// Create a 16-bit address.
+		xbee16BitAddress1 = new XBee16BitAddress(ADDRESS_16_1);
+		xbee16BitAddress2 = new XBee16BitAddress(ADDRESS_16_2);
 		
 		// Create some dummy packets.
 		// ReceivePacket.
@@ -354,10 +363,12 @@ public class XBeePacketsQueueTest {
 		// When the sleep method is called, add 100ms to the currentMillis variable.
 		PowerMockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				currentMillis += 100;
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
 				return null;
 			}
-		}).when(xbeePacketsQueue, METHOD_SLEEP, 100);
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Request the first packet with 5s of timeout.
 		XBeePacket xbeePacket = xbeePacketsQueue.getFirstPacket(5000);
@@ -406,10 +417,12 @@ public class XBeePacketsQueueTest {
 		// When the sleep method is called, add 100ms to the currentMillis variable.
 		PowerMockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				currentMillis += 100;
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
 				return null;
 			}
-		}).when(xbeePacketsQueue, METHOD_SLEEP, 100);
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Request the first packet from our remote XBee device with 5s of timeout.
 		XBeePacket xbeePacket = xbeePacketsQueue.getFirstPacketFrom(mockedRemoteDevice, 5000);
@@ -448,10 +461,12 @@ public class XBeePacketsQueueTest {
 		// When the sleep method is called, add 100ms to the currentMillis variable.
 		PowerMockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				currentMillis += 100;
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
 				return null;
 			}
-		}).when(xbeePacketsQueue, METHOD_SLEEP, 100);
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Request the first data packet with 5s of timeout.
 		XBeePacket xbeePacket = xbeePacketsQueue.getFirstDataPacket(5000);
@@ -500,10 +515,12 @@ public class XBeePacketsQueueTest {
 		// When the sleep method is called, add 100ms to the currentMillis variable.
 		PowerMockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				currentMillis += 100;
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
 				return null;
 			}
-		}).when(xbeePacketsQueue, METHOD_SLEEP, 100);
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Request the first packet from our remote XBee device with 5s of timeout.
 		XBeePacket xbeePacket = xbeePacketsQueue.getFirstDataPacketFrom(mockedRemoteDevice, 5000);
@@ -634,7 +651,49 @@ public class XBeePacketsQueueTest {
 	 * successfully for packets with 16-bit address.</p>
 	 */
 	@Test
-	public void testAddressesMatch16BitAddress() {
-		// TODO: Write this test when the remote device includes the get16BitAddress() method.
+	public void testAddressesMatch16BitAddress() throws Exception {
+		ArrayList<XBeePacket> api16Packets = new ArrayList<XBeePacket>();
+		
+		// Create a mocked remote XBee device.
+		RemoteXBeeDevice mockedRemoteDevice = Mockito.mock(RemoteXBeeDevice.class);
+		Mockito.when(mockedRemoteDevice.get16BitAddress()).thenReturn(xbee16BitAddress1);
+		
+		// Fill the list of API packets.
+		api16Packets.add(mockedReceivePacket);
+		api16Packets.add(mockedRemoteATCommandPacket);
+		api16Packets.add(mockedRx16Packet);
+		api16Packets.add(mockedRxIO16Packet);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify the addresses match.
+		Mockito.when(mockedReceivePacket.get16bitSourceAddress()).thenReturn(xbee16BitAddress1);
+		Mockito.when(mockedRemoteATCommandPacket.get16bitSourceAddress()).thenReturn(xbee16BitAddress1);
+		Mockito.when(mockedRxIO16Packet.get16bitSourceAddress()).thenReturn(xbee16BitAddress1);
+		Mockito.when(mockedRx16Packet.get16bitSourceAddress()).thenReturn(xbee16BitAddress1);
+		for (XBeePacket packet:api16Packets)
+			assertTrue((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_ADDRESSES_MATCH, packet, mockedRemoteDevice));
+		
+		// Verify the addresses don't match.
+		Mockito.when(mockedReceivePacket.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
+		Mockito.when(mockedRemoteATCommandPacket.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
+		Mockito.when(mockedRxIO16Packet.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
+		Mockito.when(mockedRx16Packet.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
+		for (XBeePacket packet:api16Packets)
+			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_ADDRESSES_MATCH, packet, mockedRemoteDevice));
+	}
+	
+	/**
+	 * Helper method that changes the milliseconds to return when the System.currentMillis() 
+	 * method is invoked.
+	 * 
+	 * @param time The time to all to the milliseconds to return.
+	 */
+	public void changeMillisToReturn(int time) {
+		currentMillis += time;
+		
+		// Prepare the System class to return our fixed currentMillis variable when requested.
+		PowerMockito.when(System.currentTimeMillis()).thenReturn(currentMillis);
 	}
 }

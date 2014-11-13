@@ -217,21 +217,16 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		Mockito.doThrow(new XBeeException(error)).when(deviceMock).sendPacketAsync(Mockito.any(XBeePacket.class));
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		nd.startDiscoveryProcess(listeners);
-		long endBlock = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < TIMEOUT, is(equalTo(true)));
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
 			Thread.sleep(30);
 		}
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		assertThat("The discovery process should finish with the '" + error + "' error", listener.getFinishError(), is(equalTo(error)));
 	}
@@ -261,22 +256,17 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		Mockito.when(networkMock.addRemoteDevice(Mockito.any(RemoteXBeeDevice.class))).thenReturn(null);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		nd.startDiscoveryProcess(listeners);
-		long endBlock = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < TIMEOUT, is(equalTo(true)));
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
 			Thread.sleep(30);
 		}
-		long end = System.currentTimeMillis();
 		
 		String error = "Error adding device '0013A20040A6A0DB - Ni string' to the network.";
 		
-		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(0)));
 		assertThat("The discovery error should be " + error, listener.getErrors().get(0), is(equalTo(error)));
 	}
@@ -296,20 +286,15 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		listeners.add(listener);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		nd.startDiscoveryProcess(listeners);
-		long endBlock = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < TIMEOUT, is(equalTo(true)));
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
 			Thread.sleep(30);
 		}
-		long end = System.currentTimeMillis();
 		
-		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -347,20 +332,15 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		listeners.add(listener);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		nd.startDiscoveryProcess(listeners);
-		long endBlock = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < TIMEOUT, is(equalTo(true)));
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
 			Thread.sleep(30);
 		}
-		long end = System.currentTimeMillis();
 		
-		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
@@ -422,20 +402,15 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		listeners.add(listener);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		nd.startDiscoveryProcess(listeners);
-		long endBlock = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should not block", endBlock - start < TIMEOUT, is(equalTo(true)));
 		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
 		
 		while(!listener.isFinished()) {
 			Thread.sleep(30);
 		}
-		long end = System.currentTimeMillis();
 		
-		assertThat("The 'discoverDevices' process should finish after " + TIMEOUT + " ms", end - start < TIMEOUT + 150 /* buffer */, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		List<RemoteXBeeDevice> list = listener.getDiscoveredDevices();

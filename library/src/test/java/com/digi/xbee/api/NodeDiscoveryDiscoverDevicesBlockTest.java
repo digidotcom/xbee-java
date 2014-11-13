@@ -45,7 +45,6 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
-import com.digi.xbee.api.utils.ByteUtils;
 
 @PrepareForTest({XBeeDevice.class, NodeDiscovery.class})
 @RunWith(PowerMockRunner.class)
@@ -177,17 +176,13 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		String id = "id";
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		RemoteXBeeDevice remote = nd.discoverDevice(id);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevice' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered device should be null", remote, is(equalTo(null)));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -211,7 +206,6 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		String id = "id";
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x50};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
 				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"), 
@@ -222,12 +216,9 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		RemoteXBeeDevice remote = nd.discoverDevice(id);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevice' should not be blocked for " + deviceTimeout + " ms", end - start < deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered device should not be null", remote, is(not(equalTo(null))));
 		assertThat("The Node ID of the discovered device should be '" + id + "'", remote.getNodeID(), is(equalTo(id)));
 		
@@ -273,17 +264,13 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		list.add("id");
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered devices list should be empty", remotes.size(), is(equalTo(0)));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -309,7 +296,6 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		list.add(id);
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
@@ -320,12 +306,9 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		ndAnswers.add(packet);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
 		assertThat("The Node ID of the discovered device should be '" + id + "'", remotes.get(0).getNodeID(), is(equalTo(id)));
 		
@@ -352,7 +335,6 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		list.add(id);
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x05};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
@@ -372,12 +354,9 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		ndAnswers.add(packet);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -404,7 +383,6 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		list.add(nIds[1]);
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x05};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
@@ -424,12 +402,9 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		ndAnswers.add(packet);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -456,7 +431,6 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		list.add(id);
 		
 		byte[] deviceTimeoutByteArray = new byte[]{0x01};
-		long deviceTimeout = ByteUtils.byteArrayToLong(deviceTimeoutByteArray) * 100;
 		
 		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(deviceTimeoutByteArray);
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
@@ -467,12 +441,9 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		ndAnswers.add(packet);
 		
 		// Call the method under test.
-		long start = System.currentTimeMillis();
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
-		long end = System.currentTimeMillis();
 		
 		// Verify the result.
-		assertThat("The 'discoverDevices' should block for " + deviceTimeout + " ms", end - start > deviceTimeout, is(equalTo(true)));
 		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
 		assertThat("The Node ID of the discovered device should be '" + id + "'", remotes.get(0).getNodeID(), is(equalTo(id)));
 		

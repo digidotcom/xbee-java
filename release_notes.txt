@@ -2,7 +2,7 @@
  
                   Release Notes (PN 93000776)
                          Build 1.0.0
-                      12 November, 2014
+                      13 November, 2014
  
                  (c) 2014, Digi International
                      http://www.digi.com
@@ -35,7 +35,8 @@ that communicate with XBee modules.
 
 2.- Changes with respect to previous version:
    * Library features:
-     - Support for API and API Escaped operating modes.
+     - Support for API and API Escaped operating modes. Application 
+       Transparent (AT) operating mode is not supported by the library.
      - Management of local (attached to the PC) and remote XBee device objects.
      - Discovery of remote XBee devices that are associated to the same 
        network as the local one.
@@ -85,6 +86,5 @@ that communicate with XBee modules.
      - API Reference Manual.
 
 3.- Known issues and limitations:
-   * AT operating mode is not supported.
    * Serial ports cannot be found by the RxTx library in Linux machines 
      running a 64-bit JVM.

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.digi.xbee</groupId>
 	<artifactId>xbjlib-parent</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>XBee Java Library Project</name>
 	<inceptionYear>2014</inceptionYear>
@@ -46,8 +46,8 @@
 		<target.level>1.6</target.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
-		<maven-source-plugin.version>2.4</maven-source-plugin.version>
-		<maven-jar-plugin.version>2.5</maven-jar-plugin.version>
+		<maven.source.plugin.version>2.4</maven.source.plugin.version>
+		<maven.jar.plugin.version>2.5</maven.jar.plugin.version>
 		<javadoc.plugin.version>2.10.1</javadoc.plugin.version>
 		<rxtx.version>2.1.7</rxtx.version>
 		<slf4j-api.version>1.7.7</slf4j-api.version>
@@ -57,7 +57,7 @@
 		<junit.version>4.11</junit.version>
 		<mockito.version>1.10.8</mockito.version>
 		<powermock.version>1.5.6</powermock.version>
-		<maven.assembly.version>2.5</maven.assembly.version>
+		<maven.assembly.version>2.5.1</maven.assembly.version>
 		<exec.maven.version>1.3.2</exec.maven.version>
 		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
 		<assemblyId>Release</assemblyId>
@@ -71,6 +71,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven.compiler.plugin.version}</version>
 					<configuration>
 						<source>${source.level}</source>
 						<target>${target.level}</target>

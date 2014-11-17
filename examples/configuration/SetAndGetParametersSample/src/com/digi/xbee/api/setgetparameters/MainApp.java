@@ -11,8 +11,6 @@
  */
 package com.digi.xbee.api.setgetparameters;
 
-import java.util.Arrays;
-
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.utils.ByteUtils;
@@ -43,7 +41,7 @@ public class MainApp {
 	
 	private static final String PARAM_VALUE_NODE_ID = "Yoda";
 	
-	private static final byte[] PARAM_VALUE_PAN_ID = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34};
+	private static final byte[] PARAM_VALUE_PAN_ID = new byte[]{0x12, 0x34};
 	
 	private static final int PARAM_VALUE_DEST_ADDRESS_H = 0x00;
 	private static final int PARAM_VALUE_DEST_ADDRESS_L = 0xFFFF;
@@ -81,7 +79,7 @@ public class MainApp {
 				myDevice.close();
 				System.exit(1);
 			}
-			if (Arrays.equals(paramValueID, PARAM_VALUE_PAN_ID)) {
+			if (ByteUtils.byteArrayToLong(paramValueID) != ByteUtils.byteArrayToLong(PARAM_VALUE_PAN_ID)) {
 				System.out.println("ID parameter was not set correctly.");
 				myDevice.close();
 				System.exit(1);

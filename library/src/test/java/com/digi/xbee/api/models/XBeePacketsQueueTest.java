@@ -30,6 +30,7 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
@@ -51,6 +52,7 @@ public class XBeePacketsQueueTest {
 	private final static String ADDRESS_16_2 = "4567";
 	private final static String METHOD_SLEEP = "sleep";
 	private final static String METHOD_IS_DATA_PACKET = "isDataPacket";
+	private final static String METHOD_IS_EXPLICIT_DATA_PACKET = "isExplicitDataPacket";
 	private final static String METHOD_ADDRESSES_MATCH = "addressesMatch";
 	
 	// Variables.
@@ -69,6 +71,7 @@ public class XBeePacketsQueueTest {
 	private static RX16IOPacket mockedRxIO16Packet;
 	private static RX64Packet mockedRx64Packet;
 	private static RX16Packet mockedRx16Packet;
+	private static ExplicitRxIndicatorPacket mockedExplicitRxIndicatorPacket;
 	
 	@BeforeClass
 	public static void setupOnce() {
@@ -100,6 +103,9 @@ public class XBeePacketsQueueTest {
 		// RX16Packet.
 		mockedRx16Packet = Mockito.mock(RX16Packet.class);
 		Mockito.when(mockedRx16Packet.getFrameType()).thenReturn(APIFrameType.RX_16);
+		// ExplicitRxIndicatorPacket.
+		mockedExplicitRxIndicatorPacket = Mockito.mock(ExplicitRxIndicatorPacket.class);
+		Mockito.when(mockedExplicitRxIndicatorPacket.getFrameType()).thenReturn(APIFrameType.EXPLICIT_RX_INDICATOR);
 	}
 	
 	/**
@@ -250,9 +256,11 @@ public class XBeePacketsQueueTest {
 		Mockito.when(mockedRemoteATCommandPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
 		xbeePacketsQueue.addPacket(mockedRemoteATCommandPacket);
 		
-		// Add 2 dummy packets again.
-		for (int i = 0; i < 2; i ++)
-			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		// Add 2 additional packets from different senders.
+		Mockito.when(mockedRxIO64Packet.get64bitSourceAddress()).thenReturn(xbee64BitAddress2);
+		xbeePacketsQueue.addPacket(mockedRxIO64Packet);
+		Mockito.when(mockedExplicitRxIndicatorPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress3);
+		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
 		
 		// Request the first packet from the queue sent by the mocked remote device and 
 		// verify it is our 'xbeePacket'.
@@ -285,9 +293,9 @@ public class XBeePacketsQueueTest {
 		// Add a data packet.
 		xbeePacketsQueue.addPacket(mockedReceivePacket);
 		
-		// Add 2 dummy packets again.
-		for (int i = 0; i < 2; i ++)
-			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		// Add additional (non-data) packets.
+		xbeePacketsQueue.addPacket(mockedRxIO64Packet);
+		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
 		
 		// Request the first data packet from the queue and verify it is our 'dataPacket'.
 		assertEquals(mockedReceivePacket, xbeePacketsQueue.getFirstDataPacket(0));
@@ -324,9 +332,11 @@ public class XBeePacketsQueueTest {
 		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
 		xbeePacketsQueue.addPacket(mockedReceivePacket);
 		
-		// Add 2 dummy packets again.
-		for (int i = 0; i < 2; i ++)
-			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		// Add additional (non-data) packets from the same sender.
+		Mockito.when(mockedRxIO64Packet.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		xbeePacketsQueue.addPacket(mockedRxIO64Packet);
+		Mockito.when(mockedExplicitRxIndicatorPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
 		
 		// Request the first data packet from the queue sent by the mocked remote device and 
 		// verify it is our 'dataPacket'.
@@ -335,6 +345,85 @@ public class XBeePacketsQueueTest {
 		// Request another data packet from the queue sent by the mocked remote device, 
 		// verify it is null (there are no more data packets sent by that device).
 		assertNull(xbeePacketsQueue.getFirstDataPacketFrom(mockedRemoteDevice, 0));
+		
+		// Verify the queue length is 4.
+		assertEquals(4, xbeePacketsQueue.getCurrentSize());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addPacket(XBeePacket)} and 
+	 * {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstExplicitDataPacket(int)}.
+	 * 
+	 * <p>Verify that when requesting the first explicit data packet of the queue, it returns the first 
+	 * explicit data packet it finds or null if there is not any explicit data packet in the queue.</p>
+	 */
+	@Test
+	public void testGetFirstExplicitDataPacket() {
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = new XBeePacketsQueue(5);
+		
+		// Add 2 dummy packets.
+		for (int i = 0; i < 2; i ++)
+			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Add an explicit data packet.
+		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
+		
+		// Add a data packet.
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		
+		// Add a dummy packet again.
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Request the first explicit data packet from the queue and verify it is our explicit data packet.
+		assertEquals(mockedExplicitRxIndicatorPacket, xbeePacketsQueue.getFirstExplicitDataPacket(0));
+		
+		// Request another explicit data packet from the queue, verify it is null (there are no more 
+		// explicit data packets in the list).
+		assertNull(xbeePacketsQueue.getFirstExplicitDataPacket(0));
+		
+		// Verify the queue length is 4.
+		assertEquals(4, xbeePacketsQueue.getCurrentSize());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addPacket(XBeePacket)} and 
+	 * {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstExpicitDataPacketFrom(RemoteXBeeDevice, int)}.
+	 * 
+	 * <p>Verify that when requesting the first explicit data packet sent from a specific XBee device, the 
+	 * queue returns the first explicit data packet from that device it finds or null if there is not any 
+	 * explicit data packet sent by that device in the queue.</p>.
+	 */
+	@Test
+	public void testGetFirstExplicitDataPacketFrom() {
+		// Create a mocked remote XBee device.
+		RemoteXBeeDevice mockedRemoteDevice = Mockito.mock(RemoteXBeeDevice.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(xbee64BitAddress1);
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = new XBeePacketsQueue(5);
+		
+		// Add 2 dummy packets.
+		for (int i = 0; i < 2; i ++)
+			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Add an explicit data packet from the mocked 64-bit address.
+		Mockito.when(mockedExplicitRxIndicatorPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
+		
+		// Add a data packet from the mocked 64-bit address.
+		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		
+		// Add a packet again.
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Request the first explicit data packet from the queue sent by the mocked remote device and 
+		// verify it is our explicit data Packet.
+		assertEquals(mockedExplicitRxIndicatorPacket, xbeePacketsQueue.getFirstExplicitDataPacketFrom(mockedRemoteDevice, 0));
+		
+		// Request another explicit data packet from the queue sent by the mocked remote device, 
+		// verify it is null (there are no more explicit data packets sent by that device).
+		assertNull(xbeePacketsQueue.getFirstExplicitDataPacketFrom(mockedRemoteDevice, 0));
 		
 		// Verify the queue length is 4.
 		assertEquals(4, xbeePacketsQueue.getCurrentSize());
@@ -451,6 +540,9 @@ public class XBeePacketsQueueTest {
 		for (int i = 0; i < 3; i ++)
 			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
 		
+		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
+		xbeePacketsQueue.addPacket(mockedRxIO64Packet);
+		
 		// Get the current time.
 		currentMillis = System.currentTimeMillis();
 		
@@ -478,10 +570,10 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstPacketFrom(RemoteXBeeDevice, int)}.
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstDataPacketFrom(RemoteXBeeDevice, int)}.
 	 * 
 	 * <p>Verify that when requesting the first data packet of the queue sent by a specific remote 
-	 * XBee Device with a timeout greater than 0 and the queue does not have any packet sent by 
+	 * XBee Device with a timeout greater than 0 and the queue does not have any data packet sent by 
 	 * that device, the timeout elapses and a null data packet is received.</p>
 	 * 
 	 * @throws Exception 
@@ -522,11 +614,116 @@ public class XBeePacketsQueueTest {
 			}
 		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
 		
-		// Request the first packet from our remote XBee device with 5s of timeout.
+		// Request the first data packet from our remote XBee device with 5s of timeout.
 		XBeePacket xbeePacket = xbeePacketsQueue.getFirstDataPacketFrom(mockedRemoteDevice, 5000);
 		
-		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the packet 
-		// retrieved is null (there was not any packet from our remote XBee device in the queue).
+		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the data packet 
+		// retrieved is null (there was not any data packet from our remote XBee device in the queue).
+		PowerMockito.verifyPrivate(xbeePacketsQueue, Mockito.times(50)).invoke(METHOD_SLEEP, 100);
+		assertNull(xbeePacket);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstExplicitDataPacket(int)}.
+	 * 
+	 * <p>Verify that when requesting the first explicit data packet of the queue with a timeout greater than 
+	 * 0 and the queue does not have any explicit data packet, the timeout elapses and a null explicit data 
+	 * packet is received.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testGetFirstExplicitDataPacketTimeout() throws Exception {
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue(5));
+		
+		// Add some dummy packets (non explicit data packets).
+		for (int i = 0; i < 3; i ++)
+			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		xbeePacketsQueue.addPacket(mockedRx64Packet);
+		
+		// Get the current time.
+		currentMillis = System.currentTimeMillis();
+		
+		// Prepare the System class to return our fixed currentMillis variable when requested.
+		PowerMockito.mockStatic(System.class);
+		PowerMockito.when(System.currentTimeMillis()).thenReturn(currentMillis);
+		
+		// When the sleep method is called, add 100ms to the currentMillis variable.
+		PowerMockito.doAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) throws Exception {
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
+				return null;
+			}
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
+		
+		// Request the first explicit data packet with 5s of timeout.
+		XBeePacket xbeePacket = xbeePacketsQueue.getFirstExplicitDataPacket(5000);
+		
+		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the explicit data 
+		// packet retrieved is null (there was not any explicit data packet in the queue).
+		PowerMockito.verifyPrivate(xbeePacketsQueue, Mockito.times(50)).invoke(METHOD_SLEEP, 100);
+		assertNull(xbeePacket);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstExplicitDataPacketFrom(RemoteXBeeDevice, int)}.
+	 * 
+	 * <p>Verify that when requesting the first explicit data packet of the queue sent by a specific 
+	 * remote XBee Device with a timeout greater than 0 and the queue does not have any explicit data 
+	 * packet sent by that device, the timeout elapses and a null explicit data packet is received.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testGetFirstExplicitDataPacketFromTimeout() throws Exception {
+		// Create a mocked remote XBee device.
+		RemoteXBeeDevice mockedRemoteDevice = Mockito.mock(RemoteXBeeDevice.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(xbee64BitAddress1);
+		
+		// Configure 2 frames with the other 2 mocked addresses.
+		Mockito.when(mockedRemoteATCommandPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress2);
+		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress3);
+		
+		// Configure a non-explicit data packet with the address of the remote device.
+		Mockito.when(mockedRx64Packet.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue(5));
+		
+		// Fill the queue with some packets.
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		xbeePacketsQueue.addPacket(mockedRemoteATCommandPacket);
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		xbeePacketsQueue.addPacket(mockedRx64Packet);
+		
+		// Get the current time.
+		currentMillis = System.currentTimeMillis();
+		
+		// Prepare the System class to return our fixed currentMillis variable when requested.
+		PowerMockito.mockStatic(System.class);
+		PowerMockito.when(System.currentTimeMillis()).thenReturn(currentMillis);
+		
+		// When the sleep method is called, add 100ms to the currentMillis variable.
+		PowerMockito.doAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) throws Exception {
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
+				return null;
+			}
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
+		
+		// Request the first explicit data packet from our remote XBee device with 5s of timeout.
+		XBeePacket xbeePacket = xbeePacketsQueue.getFirstExplicitDataPacketFrom(mockedRemoteDevice, 5000);
+		
+		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the explicit data packet 
+		// retrieved is null (there was not any explicit data packet from our remote XBee device in the queue).
 		PowerMockito.verifyPrivate(xbeePacketsQueue, Mockito.times(50)).invoke(METHOD_SLEEP, 100);
 		assertNull(xbeePacket);
 	}
@@ -579,6 +776,57 @@ public class XBeePacketsQueueTest {
 		// Verify that packets contained in the non-data packets list are actually non-data packets.
 		for (XBeePacket packet:noDataPackets)
 			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IS_DATA_PACKET, packet));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#isExplicitDataPacket(XBeePacket)}.
+	 * 
+	 * <p>Verify that the {@code isExplicitDataPacket} method of the {@code XBeePacketsQueue} class works 
+	 * successfully for explicit data packets.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testIsExplicitDataPacketTrue() throws Exception {
+		ArrayList<XBeePacket> explicitDataPackets = new ArrayList<XBeePacket>();
+		
+		// Add an explicit data packet to the list.
+		explicitDataPackets.add(mockedExplicitRxIndicatorPacket);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify that packets contained in the explicit data packets list are actually explicit data packets.
+		for (XBeePacket packet:explicitDataPackets)
+			assertTrue((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IS_EXPLICIT_DATA_PACKET, packet));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#isExplicitDataPacket(XBeePacket)}.
+	 * 
+	 * <p>Verify that the {@code isExplicitDataPacket} method of the {@code XBeePacketsQueue} class works 
+	 * successfully for non-explicit data packets.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testIsExplicitDataPacketFalse() throws Exception {
+		ArrayList<XBeePacket> noExplicitDataPackets = new ArrayList<XBeePacket>();
+		
+		// Fill the list of no-explicit data packets.
+		noExplicitDataPackets.add(mockedRemoteATCommandPacket);
+		noExplicitDataPackets.add(mockedRxIO64Packet);
+		noExplicitDataPackets.add(mockedRxIO16Packet);
+		noExplicitDataPackets.add(mockedReceivePacket);
+		noExplicitDataPackets.add(mockedRx64Packet);
+		noExplicitDataPackets.add(mockedRx16Packet);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify that packets contained in the non-explicit data packets list are actually non-explicit data packets.
+		for (XBeePacket packet:noExplicitDataPackets)
+			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IS_EXPLICIT_DATA_PACKET, packet));
 	}
 	
 	/**

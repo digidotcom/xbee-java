@@ -39,6 +39,7 @@ public enum APIFrameType {
 	MODEM_STATUS (0x8A, "Modem Status"),
 	TRANSMIT_STATUS (0x8B, "Transmit Status"),
 	RECEIVE_PACKET (0x90, "Receive Packet"),
+	EXPLICIT_RX_INDICATOR (0x91, "Explicit RX Indicator"),
 	IO_DATA_SAMPLE_RX_INDICATOR (0x92, "IO Data Sample RX Indicator"),
 	REMOTE_AT_COMMAND_RESPONSE (0x97, "Remote Command Response"),
 	GENERIC (0xFF, "Generic");

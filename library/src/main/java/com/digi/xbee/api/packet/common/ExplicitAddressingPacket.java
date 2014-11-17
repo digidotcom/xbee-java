@@ -75,6 +75,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * @see com.digi.xbee.api.models.XBee16BitAddress#UNKNOWN_ADDRESS
  * @see com.digi.xbee.api.models.XBee64BitAddress#BROADCAST_ADDRESS
  * @see com.digi.xbee.api.models.XBee64BitAddress#COORDINATOR_ADDRESS
+ * @see com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
  */
 public class ExplicitAddressingPacket extends XBeeAPIPacket {
@@ -109,7 +110,7 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Parsed Explicit Addressing packet.
 	 * 
-	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TRANSMIT_REQUEST.getValue()} or
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.EXPLICIT_ADDRESSING_COMMAND_FRAME.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or 
@@ -261,7 +262,7 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 		this.broadcastRadius = broadcastRadius;
 		this.transmitOptions = transmitOptions;
 		this.rfData = rfData;
-		this.logger = LoggerFactory.getLogger(TransmitPacket.class);
+		this.logger = LoggerFactory.getLogger(ExplicitAddressingPacket.class);
 	}
 	
 	/*
@@ -270,22 +271,22 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 */
 	@Override
 	public byte[] getAPIPacketSpecificData() {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
-			os.write(destAddress64.getValue());
-			os.write(destAddress16.getValue());
-			os.write(sourceEndpoint);
-			os.write(destEndpoint);
-			os.write(clusterID);
-			os.write(profileID);
-			os.write(broadcastRadius);
-			os.write(transmitOptions);
+			data.write(destAddress64.getValue());
+			data.write(destAddress16.getValue());
+			data.write(sourceEndpoint);
+			data.write(destEndpoint);
+			data.write(clusterID);
+			data.write(profileID);
+			data.write(broadcastRadius);
+			data.write(transmitOptions);
 			if (rfData != null)
-				os.write(rfData);
+				data.write(rfData);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
-		return os.toByteArray();
+		return data.toByteArray();
 	}
 	
 	/*

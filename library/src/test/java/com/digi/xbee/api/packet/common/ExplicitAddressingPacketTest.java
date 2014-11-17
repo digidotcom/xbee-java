@@ -722,11 +722,11 @@ public class ExplicitAddressingPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
 	 * 
-	 * <p>Construct a new Explicit Addressing packet with an valid parameters 
+	 * <p>Construct a new Explicit Addressing packet with valid parameters 
 	 * and RF data.</p>
 	 */
 	@Test
-	public final void testCreateExplicitAddressingPacketValidwithData() {
+	public final void testCreateExplicitAddressingPacketValidWithData() {
 		// Setup the resources for the test.
 		int frameID = 0;
 		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
@@ -762,7 +762,7 @@ public class ExplicitAddressingPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
 	 * 
-	 * <p>Construct a new Explicit Addressing packet with an valid parameters 
+	 * <p>Construct a new Explicit Addressing packet with valid parameters 
 	 * without data.</p>
 	 */
 	@Test

@@ -23,6 +23,7 @@ import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.ExplicitAddressingPacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
@@ -317,6 +318,9 @@ public class XBeePacketParser {
 			break;
 		case RECEIVE_PACKET:
 			packet = ReceivePacket.createPacket(payload);
+			break;
+		case EXPLICIT_RX_INDICATOR:
+			packet = ExplicitRxIndicatorPacket.createPacket(payload);
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			packet = IODataSampleRxIndicatorPacket.createPacket(payload);

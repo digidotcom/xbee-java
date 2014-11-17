@@ -28,6 +28,7 @@ public enum APIFrameType {
 	AT_COMMAND (0x08, "AT Command"),
 	AT_COMMAND_QUEUE (0x09, "AT Command Queue"),
 	TRANSMIT_REQUEST (0x10, "Transmit Request"),
+	EXPLICIT_ADDRESSING_COMMAND_FRAME (0x11, "Explicit Addressing Command Frame"),
 	REMOTE_AT_COMMAND_REQUEST (0x17, "Remote AT Command Request"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),

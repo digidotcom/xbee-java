@@ -41,7 +41,7 @@ public class MainApp {
 	// TODO Replace with the baud rate of your local module.
 	private static final int BAUD_RATE = 9600;
 	
-	private static final String REMOTE_DEVICE_ID = "REMOTE";
+	private static final String REMOTE_NODE_IDENTIFIER = "REMOTE";
 	
 	private static final IOLine DIGITAL_LINE = IOLine.DIO3_AD3;
 	private static final IOLine ANALOG_LINE = IOLine.DIO2_AD2;
@@ -67,7 +67,7 @@ public class MainApp {
 			
 			// Obtain the remote XBee device from the XBee network.
 			XBeeNetwork xbeeNetwork = localDevice.getNetwork();
-			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDevice(REMOTE_DEVICE_ID);
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDevice(REMOTE_NODE_IDENTIFIER);
 			if (remoteDevice == null) {
 				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
 				localDevice.close();

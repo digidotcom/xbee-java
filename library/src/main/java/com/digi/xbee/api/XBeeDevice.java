@@ -1184,31 +1184,54 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			return null;
 		
 		// Obtain the source address and data from the packet.
-		RemoteXBeeDevice remoteDevice;
-		byte[] data;
+		RemoteXBeeDevice remoteDevice = null;
+		byte[] data = null;
 		
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
-		switch (packetType) {
-		case RECEIVE_PACKET:
-			remoteDevice = new RemoteXBeeDevice(this, ((ReceivePacket)xbeePacket).get64bitSourceAddress());
-			data = ((ReceivePacket)xbeePacket).getRFData();
-			break;
-		case RX_16:
-			remoteDevice = new RemoteRaw802Device(this, ((RX16Packet)xbeePacket).get16bitSourceAddress());
-			data = ((RX16Packet)xbeePacket).getRFData();
-			break;
-		case RX_64:
-			remoteDevice = new RemoteXBeeDevice(this, ((RX64Packet)xbeePacket).get64bitSourceAddress());
-			data = ((RX64Packet)xbeePacket).getRFData();
-			break;
-		default:
-			return null;
+		try {
+			switch (packetType) {
+			case RECEIVE_PACKET:
+				ReceivePacket receivePacket = (ReceivePacket)xbeePacket;
+				remoteDevice = getNetwork().getDevice(receivePacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					if (remoteXBeeDevice != null)
+						remoteDevice = remoteXBeeDevice;
+					else
+						remoteDevice = new RemoteXBeeDevice(this, receivePacket.get64bitSourceAddress());
+					getNetwork().addRemoteDevice(remoteDevice);
+				}
+				data = receivePacket.getRFData();
+				break;
+			case RX_16:
+				RX16Packet rx16Packet = (RX16Packet)xbeePacket;
+				remoteDevice = getNetwork().getDevice(rx16Packet.get16bitSourceAddress());
+				if (remoteDevice == null) {
+					if (remoteXBeeDevice != null)
+						remoteDevice = remoteXBeeDevice;
+					else
+						remoteDevice = new RemoteRaw802Device(this, rx16Packet.get16bitSourceAddress());
+					getNetwork().addRemoteDevice(remoteDevice);
+				}
+				data = rx16Packet.getRFData();
+				break;
+			case RX_64:
+				RX64Packet rx64Packet = (RX64Packet)xbeePacket;
+				remoteDevice = getNetwork().getDevice(rx64Packet.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					if (remoteXBeeDevice != null)
+						remoteDevice = remoteXBeeDevice;
+					else
+						remoteDevice = new RemoteXBeeDevice(this, rx64Packet.get64bitSourceAddress());
+					getNetwork().addRemoteDevice(remoteDevice);
+				}
+				data = rx64Packet.getRFData();
+				break;
+			default:
+				return null;
+			}
+		} catch (XBeeException e) {
+			logger.error(e.getMessage(), e);
 		}
-		
-		// TODO: The remote XBee device must be retrieved from the XBee Network 
-		// (contained in the xbeeDevice variable). If the network does not 
-		// contain such remote device, then it should be instantiated and added 
-		// there.
 		
 		// Create and return the XBee message.
 		return new XBeeMessage(remoteDevice, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());

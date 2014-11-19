@@ -17,6 +17,7 @@ import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -190,5 +191,23 @@ public class DigiPointDevice extends XBeeDevice {
 	protected ExplicitXBeeMessage readExplicitDataFrom(
 			RemoteXBeeDevice remoteXBeeDevice, int timeout) {
 		return super.readExplicitDataFrom(remoteXBeeDevice, timeout);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addExplicitDataListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)
+	 */
+	@Override
+	public void addExplicitDataListener(IExplicitDataReceiveListener listener) {
+		super.addExplicitDataListener(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeExplicitDataListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)
+	 */
+	@Override
+	public void removeExplicitDataListener(IExplicitDataReceiveListener listener) {
+		super.removeExplicitDataListener(listener);
 	}
 }

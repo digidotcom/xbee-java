@@ -34,6 +34,7 @@ import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
+import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
@@ -732,6 +733,51 @@ public abstract class AbstractXBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeModemStatusReceiveListener(listener);
+	}
+	
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new explicit data packets are received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Listener to be notified when new explicit data packets 
+	 *                 are received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #removeExplicitDataListener(IExplicitDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
+	 */
+	protected void addExplicitDataListener(IExplicitDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		if (dataReader == null)
+			return;
+		dataReader.addExplicitDataReceiveListener(listener);
+	}
+	
+	/**
+	 * Removes the provided listener from the list of explicit data receive 
+	 * listeners.
+	 * 
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #addExplicitDataListener(IExplicitDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
+	 */
+	protected void removeExplicitDataListener(IExplicitDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.removeExplicitDataReceiveListener(listener);
 	}
 	
 	/**

@@ -28,6 +28,7 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
+import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -38,6 +39,7 @@ import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
@@ -1148,7 +1150,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>If the provided remote XBee device is {@code null} the method returns 
 	 * the first data packet read from any remote device.
 	 * <br>
-	 * If it the remote device is not {@code null} the method returns the first 
+	 * If the remote device is not {@code null} the method returns the first 
 	 * data package read from the provided device.
 	 * </p>
 	 * 
@@ -1212,6 +1214,225 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		// Create and return the XBee message.
 		return new XBeeMessage(remoteDevice, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());
+	}
+	
+	/**
+	 * Reads new explicit data received by this XBee device during the 
+	 * configured receive timeout.
+	 * 
+	 * <p>This method blocks until new explicit data is received or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations, register a 
+	 * {@code IExplicitDataReceiveListener} using the method 
+	 * {@link #addExplicitDataListener(IExplicitDataReceiveListener)}.</p>
+	 * 
+	 * @return An {@code ExplicitXBeeMessage} object containing the explicit 
+	 *         data, the source address of the remote node that sent the data 
+	 *         and other values related to the transmission. {@code null} if 
+	 *         this did not receive new explicit data during the configured 
+	 *         receive timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #readExplicitData(int)
+	 * @see #readExplicitDataFrom(RemoteXBeeDevice)
+	 * @see #readExplicitDataFrom(RemoteXBeeDevice, int)
+	 * @see #setReceiveTimeout(int)
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
+	 */
+	protected ExplicitXBeeMessage readExplicitData() {
+		return readExplicitDataPacket(null, TIMEOUT_READ_PACKET);
+	}
+	
+	/**
+	 * Reads new explicit data received by this XBee device during the provided 
+	 * timeout.
+	 * 
+	 * <p>This method blocks until new explicit data is received or the 
+	 * provided timeout expires.</p>
+	 * 
+	 * <p>For non-blocking operations, register a 
+	 * {@code IExplicitDataReceiveListener} using the method 
+	 * {@link #addExplicitDataListener(IExplicitDataReceiveListener)}.</p>
+	 * 
+	 * @param timeout The time to wait for new explicit data in milliseconds.
+	 * 
+	 * @return An {@code ExplicitXBeeMessage} object containing the explicit 
+	 *         data, the source address of the remote node that sent the data 
+	 *         and other values related to the transmission. {@code null} if 
+	 *         this device did not receive new explicit data during 
+	 *         {@code timeout} milliseconds.
+	 * 
+	 * @throws IllegalArgumentException if {@code timeout < 0}.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @see #readExplicitData()
+	 * @see #readExplicitDataFrom(RemoteXBeeDevice)
+	 * @see #readExplicitDataFrom(RemoteXBeeDevice, int)
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
+	 */
+	protected ExplicitXBeeMessage readExplicitData(int timeout) {
+		if (timeout < 0)
+			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
+		
+		return readExplicitDataPacket(null, timeout);
+	}
+	
+	/**
+	 * Reads new explicit data received from the given remote XBee device 
+	 * during the configured received timeout.
+	 * 
+	 * <p>This method blocks until new explicit data from the provided remote 
+	 * XBee device is received or the configured receive timeout expires.</p>
+	 * 
+	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations, register a 
+	 * {@code IExplicitDataReceiveListener} using the method 
+	 * {@link #addExplicitDataListener(IExplicitDataReceiveListener)}.</p>
+	 * 
+	 * @param remoteXBeeDevice The remote device to read explicit data from.
+	 * 
+	 * @return An {@code ExplicitXBeeMessage} object containing the explicit 
+	 *         data, the source address of the remote node that sent the data 
+	 *         and other values related to the transmission. {@code null} if 
+	 *         this device did not receive new explicit data from the provided 
+	 *         remote XBee device during the configured receive timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null}.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #readExplicitData()
+	 * @see #readExplicitData(int)
+	 * @see #readExplicitDataFrom(RemoteXBeeDevice, int)
+	 * @see #setReceiveTimeout(int)
+	 * @see RemoteXBeeDevice
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
+	 */
+	protected ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
+		if (remoteXBeeDevice == null)
+			throw new NullPointerException("Remote XBee device cannot be null.");
+		
+		return readExplicitDataPacket(remoteXBeeDevice, TIMEOUT_READ_PACKET);
+	}
+	
+	/**
+	 * Reads new explicit data received from the given remote XBee device 
+	 * during the provided timeout.
+	 * 
+	 * <p>This method blocks until new explicit data from the provided remote 
+	 * XBee device is received or the given timeout expires.</p>
+	 * 
+	 * <p>For non-blocking operations, register a 
+	 * {@code IExplicitDataReceiveListener} using the method 
+	 * {@link #addExplicitDataListener(IExplicitDataReceiveListener)}.</p>
+	 * 
+	 * @param remoteXBeeDevice The remote device to read explicit data from.
+	 * @param timeout The time to wait for new explicit data in milliseconds.
+	 * 
+	 * @return An {@code ExplicitXBeeMessage} object containing the explicit 
+	 *         data, the source address of the remote node that sent the data 
+	 *         and other values related to the transmission. {@code null} if 
+	 *         this device did not receive new data from the provided remote 
+	 *         XBee device during {@code timeout} milliseconds.
+	 * 
+	 * @throws IllegalArgumentException if {@code timeout < 0}.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null}.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #readExplicitData()
+	 * @see #readExplicitData(int)
+	 * @see #readExplicitDataFrom(RemoteXBeeDevice)
+	 * @see #setReceiveTimeout(int)
+	 * @see RemoteXBeeDevice
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
+	 */
+	protected ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		if (remoteXBeeDevice == null)
+			throw new NullPointerException("Remote XBee device cannot be null.");
+		if (timeout < 0)
+			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
+		
+		return readExplicitDataPacket(remoteXBeeDevice, timeout);
+	}
+	
+	/**
+	 * Reads a new explicit data packet received by this XBee device during 
+	 * the provided timeout.
+	 * 
+	 * <p>This method blocks until new explicit data is received or the given 
+	 * timeout expires.</p>
+	 * 
+	 * <p>If the provided remote XBee device is {@code null} the method returns 
+	 * the first explicit data packet read from any remote device.
+	 * <br>
+	 * If the remote device is not {@code null} the method returns the first 
+	 * explicit data package read from the provided device.
+	 * </p>
+	 * 
+	 * @param remoteXBeeDevice The remote device to get an explicit data 
+	 *                         packet from. {@code null} to read an explicit 
+	 *                         data packet sent by any remote XBee device.
+	 * @param timeout The time to wait for an explicit data packet in 
+	 *                milliseconds.
+	 * 
+	 * @return An {@code XBeeMessage} received by this device, containing the 
+	 *         explicit data and the source address of the remote node that 
+	 *         sent the data. {@code null} if this device did not receive new 
+	 *         explicit data during {@code timeout} milliseconds.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @see RemoteXBeeDevice
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
+	 */
+	private ExplicitXBeeMessage readExplicitDataPacket(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		XBeePacketsQueue xbeePacketsQueue = dataReader.getXBeePacketsQueue();
+		XBeePacket xbeePacket = null;
+		
+		if (remoteXBeeDevice != null)
+			xbeePacket = xbeePacketsQueue.getFirstExplicitDataPacketFrom(remoteXBeeDevice, timeout);
+		else
+			xbeePacket = xbeePacketsQueue.getFirstExplicitDataPacket(timeout);
+		
+		if (xbeePacket == null)
+			return null;
+		
+		// Verify the packet is an explicit data packet.
+		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
+		if (packetType != APIFrameType.EXPLICIT_RX_INDICATOR)
+			return null;
+		
+		// Obtain the necessary data from the packet.
+		ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)xbeePacket;
+		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64bitSourceAddress());
+		if (remoteDevice == null) {
+			if (remoteXBeeDevice != null)
+				remoteDevice = remoteXBeeDevice;
+			else
+				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64bitSourceAddress());
+			getNetwork().addRemoteDevice(remoteDevice);
+		}
+		int sourceEndpoint = explicitDataPacket.getSourceEndpoint();
+		int destEndpoint = explicitDataPacket.getDestinationEndpoint();
+		byte[] clusterID = explicitDataPacket.getClusterID();
+		byte[] profileID = explicitDataPacket.getProfileID();
+		byte[] data = explicitDataPacket.getRFData();
+		
+		// Create and return the XBee message.
+		return new ExplicitXBeeMessage(remoteDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());
 	}
 	
 	/*

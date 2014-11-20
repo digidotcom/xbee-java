@@ -177,7 +177,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitData()
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitData() {
+	public ExplicitXBeeMessage readExplicitData() {
 		return super.readExplicitData();
 	}
 	
@@ -186,7 +186,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitData(int)
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitData(int timeout) {
+	public ExplicitXBeeMessage readExplicitData(int timeout) {
 		return super.readExplicitData(timeout);
 	}
 	
@@ -195,7 +195,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitDataFrom(com.digi.xbee.api.RemoteXBeeDevice)
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
+	public ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
 		return super.readExplicitDataFrom(remoteXBeeDevice);
 	}
 	
@@ -204,7 +204,7 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitDataFrom(com.digi.xbee.api.RemoteXBeeDevice, int)
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+	public ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
 		return super.readExplicitDataFrom(remoteXBeeDevice, timeout);
 	}
 	

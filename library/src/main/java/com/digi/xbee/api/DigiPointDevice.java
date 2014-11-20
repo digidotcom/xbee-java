@@ -152,7 +152,7 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#sendData(com.digi.xbee.api.models.XBee64BitAddress, com.digi.xbee.api.models.XBee16BitAddress, byte[])
 	 */
 	@Override
-	protected void sendData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
+	public void sendData(XBee64BitAddress address64Bit, XBee16BitAddress address16bit, byte[] data) throws TimeoutException, XBeeException {
 		super.sendData(address64Bit, address16bit, data);
 	}
 	
@@ -161,7 +161,7 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitData()
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitData() {
+	public ExplicitXBeeMessage readExplicitData() {
 		return super.readExplicitData();
 	}
 	
@@ -170,7 +170,7 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitData(int)
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitData(int timeout) {
+	public ExplicitXBeeMessage readExplicitData(int timeout) {
 		return super.readExplicitData(timeout);
 	}
 	
@@ -179,7 +179,7 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitDataFrom(com.digi.xbee.api.RemoteXBeeDevice)
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
+	public ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
 		return super.readExplicitDataFrom(remoteXBeeDevice);
 	}
 	
@@ -188,7 +188,7 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.XBeeDevice#readExplicitDataFrom(com.digi.xbee.api.RemoteXBeeDevice, int)
 	 */
 	@Override
-	protected ExplicitXBeeMessage readExplicitDataFrom(
+	public ExplicitXBeeMessage readExplicitDataFrom(
 			RemoteXBeeDevice remoteXBeeDevice, int timeout) {
 		return super.readExplicitDataFrom(remoteXBeeDevice, timeout);
 	}

@@ -2,7 +2,7 @@
  
                   Release Notes (PN 93000776)
                          Build 1.0.0
-                      13 November, 2014
+                      21 November, 2014
  
                  (c) 2014, Digi International
                      http://www.digi.com

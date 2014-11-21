@@ -26,6 +26,7 @@ import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
+import com.digi.xbee.api.models.APIOutputMode;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
@@ -1456,6 +1457,52 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		// Create and return the XBee message.
 		return new ExplicitXBeeMessage(remoteDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data, ((XBeeAPIPacket)xbeePacket).isBroadcast());
+	}
+	
+	/**
+	 * Configures the API output mode of the XBee device.
+	 * 
+	 * <p>The API output mode determines the format that the received data is 
+	 * output through the serial interface of the XBee device.</p>
+	 * 
+	 * @param apiOutputMode The API output mode to be set to the XBee device.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code apiOutputMode == null}
+	 * @throws TimeoutException if there is a timeout configuring the API 
+	 *                          output mode.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getAPIOutputMode()
+	 * @see APIOutputMode
+	 */
+	protected void setAPIOutputMode(APIOutputMode apiOutputMode) throws TimeoutException, XBeeException {
+		if (apiOutputMode == null)
+			throw new NullPointerException("API output mode cannot be null.");
+		
+		setParameter("AO", new byte[]{(byte)apiOutputMode.getValue()});
+	}
+	
+	/**
+	 * Returns the API output mode of the XBee device.
+	 * 
+	 * <p>The API output mode determines the format that the received data is 
+	 * output through the serial interface of the XBee device.</p>
+	 * 
+	 * @return The API output mode that the XBee device is configured with.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws TimeoutException if there is a timeout getting the API output 
+	 *                          mode from the device.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setAPIOutputMode(APIOutputMode)
+	 * @see APIOutputMode
+	 */
+	protected APIOutputMode getAPIOutputMode() throws TimeoutException, XBeeException {
+		byte[] apiOutputModeValue = getParameter("AO");
+		
+		return APIOutputMode.get(apiOutputModeValue[0]);
 	}
 	
 	/*

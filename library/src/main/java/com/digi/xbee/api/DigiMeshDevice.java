@@ -18,6 +18,7 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
+import com.digi.xbee.api.models.APIOutputMode;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -205,5 +206,23 @@ public class DigiMeshDevice extends XBeeDevice {
 	@Override
 	public void removeExplicitDataListener(IExplicitDataReceiveListener listener) {
 		super.removeExplicitDataListener(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#getAPIOutputMode()
+	 */
+	@Override
+	public APIOutputMode getAPIOutputMode() throws TimeoutException, XBeeException {
+		return super.getAPIOutputMode();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#setAPIOutputMode(com.digi.xbee.api.models.APIOutputMode)
+	 */
+	@Override
+	public void setAPIOutputMode(APIOutputMode apiOutputMode) throws TimeoutException, XBeeException {
+		super.setAPIOutputMode(apiOutputMode);
 	}
 }

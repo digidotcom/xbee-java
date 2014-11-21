@@ -23,6 +23,7 @@
 	<modules>
 		<module>library</module>
 		<module>distribution</module>
+		<module>examples/communication/ReceiveExplicitDataPollingSample</module>
 		<module>examples/communication/ReceiveModemStatusSample</module>
 		<module>examples/communication/ReceiveDataSample</module>
 		<module>examples/communication/ReceiveDataPollingSample</module>

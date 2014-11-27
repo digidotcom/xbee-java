@@ -157,8 +157,8 @@ public class IOSample {
 		digitalLSBMask = ioSamplePayload[2] & 0xFF;	// 1 1 1 1 1 1 1 1
 		// Combine the masks.
 		digitalMask = (digitalHSBMask << 8) + digitalLSBMask;
-		// Obtain the analog mask.                                              // Available analog IOs in 802.15.4
-		analogMask = ((ioSamplePayload[1] <<8) + ioSamplePayload[2]) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
+		// Obtain the analog mask.                                                          // Available analog IOs in 802.15.4
+		analogMask = ((ioSamplePayload[1] << 8) + (ioSamplePayload[2] & 0xFF)) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
 		
 		// Read the digital values (if any). There are 9 possible digital lines in 
 		// 802.15.4 protocol. The digital mask indicates if there is any digital 

@@ -217,9 +217,9 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				portIdentifier.removePortOwnershipListener(this);
 				synchronized (serialPort) {
 					serialPort.close();
-					serialPort = null;
 					connectionOpen = false;
 				}
+				serialPort = null;
 			} catch (Exception e) { }
 		}
 	}

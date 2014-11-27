@@ -498,4 +498,23 @@ public class ATCommandResponsePacketTest {
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
 		assertThat("AT Response is not the expected one", packetParams.get("Response"), is(equalTo(expectedATParameter)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a AT Command Response packet is a broadcast packet, never 
+	 * should be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "DL";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		byte[] parameter = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
 }

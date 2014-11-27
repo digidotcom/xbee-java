@@ -490,4 +490,43 @@ public class TX64PacketTest {
 		assertThat("Receive options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
 		assertThat("Data is not the expected", packetParams.get("RF data"), is(equalTo(expectedData)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if a TX 64 packet is a broadcast packet address when the 
+	 * destination address is not broadcast.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNonBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if a TX 64 packet is a broadcast packet address when the 
+	 * destination address is broadcast.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("FFFF");
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

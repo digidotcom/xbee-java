@@ -589,4 +589,25 @@ public class RemoteATCommandResponsePacketTest {
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
 		assertThat("AT Parameter is not the expected one", packetParams.get("Response"), is(equalTo(expectedATParameter)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Remote AT command response packet is a broadcast packet, 
+	 * never should be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		ATCommandStatus status = ATCommandStatus.OK;
+		String command = "DL";
+		byte[] parameter = new byte[]{0x6D, 0x79};
+		RemoteATCommandResponsePacket packet = new RemoteATCommandResponsePacket(frameID, source64Addr, source16Addr, command, status, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
 }

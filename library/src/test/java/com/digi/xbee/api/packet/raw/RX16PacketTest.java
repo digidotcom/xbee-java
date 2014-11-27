@@ -494,4 +494,61 @@ public class RX16PacketTest {
 		assertThat("Options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
 		assertThat("Received data is not the expected", packetParams.get("RF data"), is(equalTo(expectedReceivedData)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if a RX16 packet is a broadcast packet when broadcast options 
+	 * are not enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNonBroadcastOption() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x00;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16Packet packet = new RX16Packet(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if a RX16 packet is a broadcast packet when broadcast (bit 1 - 
+	 * Address broadcast) is enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionBit1Enabled() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x52; /* bit 1 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16Packet packet = new RX16Packet(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if a RX16 packet is a broadcast packet when broadcast (bit 2 - 
+	 * PAN broadcast) is enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionBit2Enabled() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x14; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16Packet packet = new RX16Packet(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

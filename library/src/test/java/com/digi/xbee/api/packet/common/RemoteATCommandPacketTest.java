@@ -767,4 +767,88 @@ public class RemoteATCommandPacketTest {
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
 		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(equalTo(expectedATParameter)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Remote AT Command packet is a broadcast packet address when 
+	 * 16-bit and a 64-bit destination addresses are not broadcast.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNon16BitAndNon64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 23;
+		String command = "DL";
+		byte[] parameter = new byte[]{0x6D, 0x79};
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Remote AT Command packet is a broadcast packet address when 
+	 * both destination addresses, 16-bit and 64-bit, are broadcast.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWith16BitAnd64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("FFFF");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "DL";
+		byte[] parameter = new byte[]{0x6D, 0x79};
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Remote AT Command packet is a broadcast packet address when 
+	 * the 16-bit destination address is not broadcast and 64-bit is.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNon16BitBroadcastAnd64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("FFFF");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("DEF1");
+		int options = 23;
+		String command = "DL";
+		byte[] parameter = new byte[]{0x6D, 0x79};
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Remote AT Command packet is a broadcast packet address when 
+	 * the 16-bit destination address is broadcast but 64-bit is not.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWith16BitBroadcastAndNon64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "DL";
+		byte[] parameter = new byte[]{0x6D, 0x79};
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

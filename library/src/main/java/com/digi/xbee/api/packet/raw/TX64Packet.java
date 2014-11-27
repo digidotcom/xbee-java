@@ -19,7 +19,6 @@ import java.util.LinkedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -167,9 +166,7 @@ public class TX64Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		if (get64bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS))
-			return true;
-		return false;
+		return get64bitDestinationAddress().equals(XBee64BitAddress.BROADCAST_ADDRESS);
 	}
 	
 	/**

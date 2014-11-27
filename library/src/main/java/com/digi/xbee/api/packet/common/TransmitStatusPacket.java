@@ -224,6 +224,15 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	
 	/*
 	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#isBroadcast()
+	 */
+	@Override
+	public boolean isBroadcast() {
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
 	 */
 	@Override

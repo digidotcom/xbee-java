@@ -473,4 +473,42 @@ public class ReceivePacketTest {
 		assertThat("Receive options are not the expected", packetParams.get("Receive options"), is(equalTo(expectedOptions)));
 		assertThat("Received data is not the expected", packetParams.get("RF data"), is(equalTo(expectedReceivedData)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an API Receive packet is a broadcast packet when broadcast 
+	 * options is not enabled.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNonBroadcastOption() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x19;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		ReceivePacket packet = new ReceivePacket(source64Addr, source16Addr, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ReceivePacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an API Receive packet is a broadcast packet when broadcast is 
+	 * enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionEnabled() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x8A; /* bit 1 */
+		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		IODataSampleRxIndicatorPacket packet = new IODataSampleRxIndicatorPacket(source64Addr, source16Addr, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

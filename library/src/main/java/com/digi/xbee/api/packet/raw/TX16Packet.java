@@ -166,9 +166,7 @@ public class TX16Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		if (get16bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS))
-			return true;
-		return false;
+		return get16bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS);
 	}
 	
 	/**

@@ -494,4 +494,61 @@ public class RX64PacketTest {
 		assertThat("Options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
 		assertThat("Received data is not the expected", packetParams.get("RF data"), is(equalTo(expectedReceivedData)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX64Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if an API RX64 packet is a broadcast packet when broadcast options 
+	 * are not enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNonBroadcastOption() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int rssi = 75;
+		int options = 0x18;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX64Packet packet = new RX64Packet(source64Addr, rssi, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX64Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if an API RX64 packet is a broadcast packet when broadcast (bit 1 
+	 * - Address broadcast) is enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionBit1Enabled() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int rssi = 75;
+		int options = 0xA2; /* bit 1 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX64Packet packet = new RX64Packet(source64Addr, rssi, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX64Packet#isBroadcast()}.
+	 * 
+	 * <p>Test if an API RX64 packet is a broadcast packet when broadcast (bit 2 
+	 * - PAN broadcast) is enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionBit2Enabled() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int rssi = 75;
+		int options = 0xCC; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX64Packet packet = new RX64Packet(source64Addr, rssi, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

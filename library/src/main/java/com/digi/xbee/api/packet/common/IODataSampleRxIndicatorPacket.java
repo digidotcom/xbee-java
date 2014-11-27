@@ -186,9 +186,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		if (ByteUtils.isBitEnabled(getReceiveOptions(), 1))
-			return true;
-		return false;
+		return ByteUtils.isBitEnabled(getReceiveOptions(), 1);
 	}
 	
 	/**

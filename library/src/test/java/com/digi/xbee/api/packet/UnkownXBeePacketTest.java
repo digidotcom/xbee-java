@@ -338,4 +338,20 @@ public class UnkownXBeePacketTest {
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
 		assertThat("RF Data is not the expected one", packetParams.get("RF Data"), is(equalTo(expectedData)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.UnknownXBeePacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an Unknown packet is a broadcast packet, never should be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		int apiID = 0x60;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		UnknownXBeePacket packet = new UnknownXBeePacket(apiID, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
 }

@@ -809,7 +809,7 @@ public abstract class AbstractXBeeDevice {
 				else if (answerPacket instanceof RemoteATCommandResponsePacket)
 					response = new ATCommandResponse(command, ((RemoteATCommandResponsePacket)answerPacket).getCommandValue(), ((RemoteATCommandResponsePacket)answerPacket).getStatus());
 				
-				if (response.getResponse() != null)
+				if (response != null && response.getResponse() != null)
 					logger.debug(toString() + "AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
 				else
 					logger.debug(toString() + "AT command response: null.");
@@ -1687,7 +1687,7 @@ public abstract class AbstractXBeeDevice {
 		
 		byte[] bitfield = getParameter("IC");
 		TreeSet<IOLine> lines = new TreeSet<IOLine>();
-		int mask = (bitfield[0] << 8) + bitfield[1];
+		int mask = (bitfield[0] << 8) + (bitfield[1] & 0xFF);
 		
 		for (int i = 0; i < 16; i++) {
 			if (ByteUtils.isBitEnabled(mask, i))

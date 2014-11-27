@@ -1231,6 +1231,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			}
 		} catch (XBeeException e) {
 			logger.error(e.getMessage(), e);
+			return null;
 		}
 		
 		// Create and return the XBee message.

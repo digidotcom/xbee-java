@@ -285,6 +285,7 @@ public class XBeeNetwork {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setDiscoveryTimeout(long)
+	 * @see DiscoveryOptions
 	 */
 	public void setDiscoveryOptions(Set<DiscoveryOptions> options) throws TimeoutException, XBeeException {
 		if (options == null)
@@ -430,7 +431,7 @@ public class XBeeNetwork {
 	 * 
 	 * @throws IllegalArgumentException if {@code address.equals(XBee16BitAddress.UNKNOWN_ADDRESS)}.
 	 * @throws NullPointerException if {@code address == null}.
-	 * @throws OperationNotSupportedException if the protocol of the local XBee device is DigiMesh.
+	 * @throws OperationNotSupportedException if the protocol of the local XBee device is DigiMesh or Point-to-Multipoint.
 	 */
 	public RemoteXBeeDevice getDevice(XBee16BitAddress address) throws OperationNotSupportedException {
 		if (localDevice.getXBeeProtocol() == XBeeProtocol.DIGI_MESH)
@@ -469,15 +470,19 @@ public class XBeeNetwork {
 	}
 	
 	/**
-	 * Adds a remote device to the network.
+	 * Adds the given remote device to the network. 
 	 * 
-	 * <p>This method will look for the 64-bit address. If it is not configured:
-	 * </p>
+	 * <p>Notice that this operation does not join the remote XBee device to the
+	 * network; it just tells the network that it contains that device. However, 
+	 * the device has only been added to the device list, and may not be 
+	 * physically in the same network.</p>
+	 * 
+	 * <p>The way of adding a device to the network is based on the 64-bit 
+	 * address. If it is not configured:</p>
 	 * 
 	 * <ul>
-	 * <li>For 802.15.4 devices, it will look for the 16-bit address.</li>
-	 * <li>For the rest will return {@code false} as the result of the addition.
-	 * </li>
+	 * <li>For 802.15.4 and ZigBee devices, it will use the 16-bit address.</li>
+	 * <li>For the rest will return {@code false} as the result of the addition.</li>
 	 * </ul>
 	 * 
 	 * @param remoteDevice The remote device to be added to the network.
@@ -488,6 +493,8 @@ public class XBeeNetwork {
 	 * @throws NullPointerException if {@code RemoteDevice == null}.
 	 * 
 	 * @see #addRemoteDevices(List)
+	 * @see #removeRemoteDevice(RemoteXBeeDevice)
+	 * @see RemoteXBeeDevice
 	 */
 	public RemoteXBeeDevice addRemoteDevice(RemoteXBeeDevice remoteDevice) {
 		if (remoteDevice == null)
@@ -575,13 +582,17 @@ public class XBeeNetwork {
 	/**
 	 * Adds the given list of remote devices to the network.
 	 * 
+	 * <p>Notice that this operation does not join the remote XBee devices to 
+	 * the network; it just tells the network that it contains those devices. 
+	 * However, the devices have only been added to the device list, and may 
+	 * not be physically in the same network.</p>
+	 * 
 	 * <p>The way of adding a device to the network is based on the 64-bit 
 	 * address. If it is not configured:</p>
 	 * 
 	 * <ul>
-	 * <li>For 802.15.4 devices, the 16-bit address will be used instead.</li>
-	 * <li>For the rest will return {@code false} as the result of the addition.
-	 * </li>
+	 * <li>For 802.15.4 and ZigBee devices, the 16-bit address will be used instead.</li>
+	 * <li>For the rest will return {@code false} as the result of the addition.</li>
 	 * </ul>
 	 * 
 	 * @param list The list of remote devices to be added to the network.
@@ -591,6 +602,7 @@ public class XBeeNetwork {
 	 * @throws NullPointerException if {@code list == null}.
 	 * 
 	 * @see #addRemoteDevice(RemoteXBeeDevice)
+	 * @see RemoteXBeeDevice
 	 */
 	public List<RemoteXBeeDevice> addRemoteDevices(List<RemoteXBeeDevice> list) {
 		if (list == null)
@@ -615,14 +627,23 @@ public class XBeeNetwork {
 	/**
 	 * Removes the given remote XBee device from the network.
 	 * 
+	 * <p>Notice that this operation does not remove the remote XBee device 
+	 * from the actual XBee network; it just tells the network object that it 
+	 * will no longer contain that device. However, next time a discovery is 
+	 * performed, it could be added again automatically.</p>
+	 * 
 	 * <p>This method will check for a device that matches the 64-bit address 
 	 * of the provided one, if found, that device will be removed from the 
-	 * corresponding list. In case the 64-bit address is null, it will look for 
-	 * the device in the 16-bit addresses list.</p>
+	 * corresponding list. In case the 64-bit address is not defined, it will 
+	 * use the 16-bit address for DigiMesh and ZigBee devices.</p>
 	 * 
 	 * @param remoteDevice The remote device to be removed from the network.
 	 * 
 	 * @throws NullPointerException if {@code RemoteDevice == null}.
+	 * 
+	 * @see #addRemoteDevice(RemoteXBeeDevice)
+	 * @see #clearDeviceList()
+	 * @see RemoteXBeeDevice
 	 */
 	public void removeRemoteDevice(RemoteXBeeDevice remoteDevice) {
 		if (remoteDevice == null)
@@ -682,6 +703,13 @@ public class XBeeNetwork {
 	 * Removes all the devices from this network. 
 	 * 
 	 * <p>The network will be empty after this call returns.</p>
+	 * 
+	 * <p>Notice that this does not imply removing the XBee devices from the 
+	 * actual XBee network; it just tells the object that the list should be 
+	 * empty now. Next time a discovery is performed, the list could be filled 
+	 * with the remote XBee devices found.</p>
+	 * 
+	 * @see #removeRemoteDevice(RemoteXBeeDevice)
 	 */
 	public void clearDeviceList() {
 		logger.debug("{}Clearing the network.", localDevice.toString());

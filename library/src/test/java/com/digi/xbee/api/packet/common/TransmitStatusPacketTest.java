@@ -441,4 +441,24 @@ public class TransmitStatusPacketTest {
 		assertThat("Delivery status is not the expected", packetParams.get("Delivery status"), is(equalTo(expectedTransmitStatus)));
 		assertThat("Discovery status not the expected", packetParams.get("Discovery status"), is(equalTo(expectedDiscoveryStatus)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Transmit status packet is a broadcast packet, never should 
+	 * be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 2;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		TransmitStatusPacket packet = new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
 }

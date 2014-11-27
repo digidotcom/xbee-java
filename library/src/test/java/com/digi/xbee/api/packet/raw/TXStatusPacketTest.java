@@ -300,4 +300,20 @@ public class TXStatusPacketTest {
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
 		assertThat("Delivery status is not the expected", packetParams.get("Status"), is(equalTo(expectedTransmitStatus)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a TX Status packet is a broadcast packet, never should be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
+		TXStatusPacket packet = new TXStatusPacket(frameID, transmitStatus);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
 }

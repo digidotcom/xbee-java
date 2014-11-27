@@ -173,10 +173,8 @@ public class RX64Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		if (ByteUtils.isBitEnabled(getReceiveOptions(), 1)
-				|| ByteUtils.isBitEnabled(getReceiveOptions(), 2))
-			return true;
-		return false;
+		return ByteUtils.isBitEnabled(getReceiveOptions(), 1)
+				|| ByteUtils.isBitEnabled(getReceiveOptions(), 2);
 	}
 	
 	/**

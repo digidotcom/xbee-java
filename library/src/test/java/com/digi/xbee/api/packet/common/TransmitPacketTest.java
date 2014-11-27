@@ -618,4 +618,88 @@ public class TransmitPacketTest {
 		assertThat("Receive options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
 		assertThat("Data is not the expected", packetParams.get("RF data"), is(equalTo(expectedData)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Transmit packet is a broadcast packet address when 16-bit 
+	 * and a 64-bit destination addresses are not broadcast.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNon16BitAndNon64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Transmit packet is a broadcast packet address when both 
+	 * destination addresses, 16-bit and 64-bit, are broadcast.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWith16BitAnd64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("FFFF");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Transmit packet is a broadcast packet address when the 
+	 * 16-bit destination address is not broadcast and 64-bit is.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNon16BitBroadcastAnd64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("FFFF");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Transmit packet is a broadcast packet address when the 
+	 * 16-bit destination address is broadcast but 64-bit is not.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWith16BitBroadcastAndNon64BitBroadcastDestinationAddress() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int broadcastRadious = 0;
+		int options = 40;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TransmitPacket packet = new TransmitPacket(frameID, dest64Addr, dest16Addr, broadcastRadious, options, data);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

@@ -223,9 +223,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * @return {@code true} if the packet is a broadcast packet, {@code false} 
 	 *         otherwise.
 	 */
-	public boolean isBroadcast() {
-		return false;
-	}
+	public abstract boolean isBroadcast();
 	
 	/**
 	 * Returns whether the given ID is the current frame ID.
@@ -240,9 +238,7 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	 * @see #setFrameID(int)
 	 */
 	public boolean checkFrameID(int id) {
-		if (needsAPIFrameID() && getFrameID() == id)
-			return true;
-		return false;
+		return needsAPIFrameID() && getFrameID() == id;
 	}
 	
 	/*

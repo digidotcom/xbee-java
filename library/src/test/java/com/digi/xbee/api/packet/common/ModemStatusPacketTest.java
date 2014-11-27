@@ -249,4 +249,19 @@ public class ModemStatusPacketTest {
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
 		assertThat("Modem Status is not the expected one", packetParams.get("Status"), is(equalTo(expectedModemStatus)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ModemStatusPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a Modem status packet is a broadcast packet, never should be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		ModemStatusEvent modemStatusEvent = ModemStatusEvent.STATUS_JOINED_NETWORK;
+		ModemStatusPacket packet = new ModemStatusPacket(modemStatusEvent);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
 }

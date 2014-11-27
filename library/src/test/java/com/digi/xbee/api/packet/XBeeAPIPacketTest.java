@@ -49,6 +49,11 @@ public class XBeeAPIPacketTest {
 		}
 		
 		@Override
+		public boolean isBroadcast() {
+			return false;
+		}
+		
+		@Override
 		protected LinkedHashMap<String, String> getAPIPacketParameters() {
 			return null;
 		}

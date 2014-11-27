@@ -555,4 +555,42 @@ public class IODataSampleRxIndicatorPacketTest {
 		assertThat(packetParams.get("Power supply value"), 
 				is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getPowerSupplyValue(), 2)))));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an API IO Data Sample RX Indicator packet is a broadcast 
+	 * packet when broadcast options is not enabled.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNonBroadcastOption() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x0D; /* bit 1 */
+		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		IODataSampleRxIndicatorPacket packet = new IODataSampleRxIndicatorPacket(source64Addr, source16Addr, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an API IO Data Sample RX Indicator packet is a broadcast 
+	 * packet when broadcast is enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionEnabled() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 0x46; /* bit 1 */
+		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		IODataSampleRxIndicatorPacket packet = new IODataSampleRxIndicatorPacket(source64Addr, source16Addr, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
 }

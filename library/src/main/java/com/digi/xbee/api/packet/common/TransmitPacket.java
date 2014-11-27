@@ -231,10 +231,8 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		if (get64bitDestinationAddress().equals(XBee64BitAddress.BROADCAST_ADDRESS) 
-				|| get16bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS))
-			return true;
-		return false;
+		return get64bitDestinationAddress().equals(XBee64BitAddress.BROADCAST_ADDRESS) 
+				|| get16bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS);
 	}
 	
 	/**

@@ -23,14 +23,14 @@
 	<modules>
 		<module>library</module>
 		<module>distribution</module>
-		<module>examples/communication/ReceiveExplicitDataPollingSample</module>
-		<module>examples/communication/ReceiveExplicitDataSample</module>
 		<module>examples/communication/ReceiveModemStatusSample</module>
 		<module>examples/communication/ReceiveDataSample</module>
 		<module>examples/communication/ReceiveDataPollingSample</module>
 		<module>examples/communication/SendBroadcastDataSample</module>
 		<module>examples/communication/SendDataAsyncSample</module>
 		<module>examples/communication/SendDataSample</module>
+		<module>examples/communication/explicit/ReceiveExplicitDataPollingSample</module>
+		<module>examples/communication/explicit/ReceiveExplicitDataSample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>

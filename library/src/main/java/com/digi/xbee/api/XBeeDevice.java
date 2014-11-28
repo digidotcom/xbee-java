@@ -36,6 +36,7 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.models.XBeePacketsQueue;
+import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
@@ -533,9 +534,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
@@ -594,9 +592,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
@@ -670,9 +665,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
@@ -738,9 +730,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
@@ -887,9 +876,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (profileID.length != 2)
 			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
@@ -968,9 +954,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (profileID.length != 2)
 			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
@@ -1029,15 +1012,13 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		case ZIGBEE:
 		case DIGI_POINT:
 			if (remoteXBeeDevice.get64BitAddress() != null && remoteXBeeDevice.get16BitAddress() != null)
-				sendData(remoteXBeeDevice.get64BitAddress(), remoteXBeeDevice.get16BitAddress(), data);
+				sendExplicitData(remoteXBeeDevice.get64BitAddress(), remoteXBeeDevice.get16BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
 			else
 				sendExplicitData(remoteXBeeDevice.get64BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
 			break;
-		case DIGI_MESH:
-			sendExplicitData(remoteXBeeDevice.get64BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
-			break;
 		case RAW_802_15_4:
-			throw new OperationNotSupportedException("802.15.4. protocol does not support explicit data transmission.");
+			throw new OperationNotSupportedException("802.15.4. protocol does not support explicit data transmissions.");
+		case DIGI_MESH:
 		default:
 			sendExplicitData(remoteXBeeDevice.get64BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
 		}
@@ -1079,6 +1060,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 */
 	protected void sendBroadcastExplicitData(int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID, 
 			byte[] data) throws TimeoutException, XBeeException {
+		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4)
+			throw new OperationNotSupportedException("802.15.4. protocol does not support explicit data transmissions.");
 		sendExplicitData(XBee64BitAddress.BROADCAST_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, data);
 	}
 	

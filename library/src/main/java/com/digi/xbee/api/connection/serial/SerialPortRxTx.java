@@ -212,17 +212,17 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
-		if (serialPort != null) {
-			try {
-				serialPort.notifyOnDataAvailable(false);
-				serialPort.removeEventListener();
-				portIdentifier.removePortOwnershipListener(this);
-				synchronized (lock) {
+		synchronized (lock) {
+			if (serialPort != null) {
+				try {
+					serialPort.notifyOnDataAvailable(false);
+					serialPort.removeEventListener();
+					portIdentifier.removePortOwnershipListener(this);
 					serialPort.close();
 					serialPort = null;
 					connectionOpen = false;
-				}
-			} catch (Exception e) { }
+				} catch (Exception e) { }
+			}
 		}
 	}
 	

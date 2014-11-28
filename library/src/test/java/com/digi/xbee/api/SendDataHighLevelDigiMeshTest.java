@@ -78,7 +78,7 @@ public class SendDataHighLevelDigiMeshTest {
 	 * @throws TimeoutException 
 	 */
 	@Test
-	public void testSendDataSuccess() throws TimeoutException, XBeeException {
+	public void testSendData64Success() throws TimeoutException, XBeeException {
 		// Do nothing when sending and checking any TransmitPacket packet.
 		Mockito.doNothing().when(digiMeshDevice).sendAndCheckXBeePacket(Mockito.any(TransmitPacket.class), Mockito.eq(false));
 		
@@ -98,7 +98,7 @@ public class SendDataHighLevelDigiMeshTest {
 	 * @throws TimeoutException 
 	 */
 	@Test
-	public void testSendDataAsyncSuccess() throws TimeoutException, XBeeException {
+	public void testSendDataAsync64Success() throws TimeoutException, XBeeException {
 		// Do nothing when sending and checking any TransmitPacket packet.
 		Mockito.doNothing().when(digiMeshDevice).sendAndCheckXBeePacket(Mockito.any(TransmitPacket.class), Mockito.eq(true));
 		
@@ -140,8 +140,8 @@ public class SendDataHighLevelDigiMeshTest {
 	 * @throws TimeoutException 
 	 */
 	@Test
-	public void testSendExplicitData6416Success() throws TimeoutException, XBeeException {
-		// Do nothing when sending and checking any TransmitPacket packet.
+	public void testSendExplicitData64Success() throws TimeoutException, XBeeException {
+		// Do nothing when sending and checking any ExplicitAddressingPacket packet.
 		Mockito.doNothing().when(digiMeshDevice).sendAndCheckXBeePacket(Mockito.any(ExplicitAddressingPacket.class), Mockito.eq(false));
 		
 		digiMeshDevice.sendExplicitData(XBEE_64BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
@@ -170,5 +170,47 @@ public class SendDataHighLevelDigiMeshTest {
 		// Verify the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called (64BitAddress must be the broadcast one).
 		Mockito.verify(digiMeshDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBee64BitAddress.BROADCAST_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.DigiMeshDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * 
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[]) method is 
+	 * called when executing the com.digi.xbee.api.DigiMeshDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[]) method.</p>
+	 * 
+	 * @throws XBeeException 
+	 * @throws TimeoutException 
+	 */
+	@Test
+	public void testSendExplicitDataAsyncRemoteDeviceSuccess() throws TimeoutException, XBeeException {
+		// Do nothing when the sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		Mockito.doNothing().when(digiMeshDevice).sendExplicitDataAsync(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
+				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+		
+		digiMeshDevice.sendExplicitDataAsync(mockedRemoteDigiMeshDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
+		
+		// Verify the sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		Mockito.verify(digiMeshDevice, Mockito.times(1)).sendExplicitDataAsync(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
+				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.DigiMeshDevice#sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[])}.
+	 * 
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is 
+	 * called when executing the com.digi.xbee.api.DigiMeshDevice#sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[]) method.</p>
+	 * 
+	 * @throws XBeeException 
+	 * @throws TimeoutException 
+	 */
+	@Test
+	public void testSendExplicitDataAsync64Success() throws TimeoutException, XBeeException {
+		// Do nothing when sending and checking any ExplicitAddressingPacket packet.
+		Mockito.doNothing().when(digiMeshDevice).sendAndCheckXBeePacket(Mockito.any(ExplicitAddressingPacket.class), Mockito.eq(true));
+		
+		digiMeshDevice.sendExplicitDataAsync(XBEE_64BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
+		
+		// Verify the sendAndCheckXBeePacket(XBeePacket, boolean) method was called.
+		Mockito.verify(digiMeshDevice, Mockito.times(1)).sendAndCheckXBeePacket(Mockito.eq(explicitAddressingPacket), Mockito.eq(true));
 	}
 }

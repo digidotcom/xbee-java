@@ -259,4 +259,24 @@ public class DigiPointDevice extends XBeeDevice {
 			byte[] data) throws TimeoutException, XBeeException {
 		super.sendBroadcastExplicitData(sourceEndpoint, destEndpoint, clusterID, profileID, data);
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(com.digi.xbee.api.RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendExplicitDataAsync(RemoteXBeeDevice xbeeDevice, int sourceEndpoint, int destEndpoint, byte[] clusterID,
+			byte[] profileID, byte[] data) throws XBeeException {
+		super.sendExplicitDataAsync(xbeeDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(com.digi.xbee.api.models.XBee64BitAddress, com.digi.xbee.api.models.XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendExplicitDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16Bit, int sourceEndpoint,
+			int destEndpoint, byte[] clusterID, byte[] profileID, byte[] data) throws XBeeException {
+		super.sendExplicitDataAsync(address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
 }

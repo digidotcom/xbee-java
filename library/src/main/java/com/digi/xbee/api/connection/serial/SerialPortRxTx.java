@@ -43,6 +43,8 @@ import com.digi.xbee.api.exceptions.PermissionDeniedException;
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
 	// Variables.
+	private final Object lock = new Object();
+	
 	private RXTXPort serialPort;
 	
 	private InputStream inputStream;
@@ -215,11 +217,11 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				serialPort.notifyOnDataAvailable(false);
 				serialPort.removeEventListener();
 				portIdentifier.removePortOwnershipListener(this);
-				synchronized (serialPort) {
+				synchronized (lock) {
 					serialPort.close();
+					serialPort = null;
 					connectionOpen = false;
 				}
-				serialPort = null;
 			} catch (Exception e) { }
 		}
 	}

@@ -219,7 +219,9 @@ public class XBeeNetwork {
 		if (isDiscoveryRunning())
 			throw new IllegalStateException("The discovery process is already running.");
 		
-		nodeDiscovery.startDiscoveryProcess(discoveryListeners);
+		synchronized (discoveryListeners) {
+			nodeDiscovery.startDiscoveryProcess(discoveryListeners);
+		}
 	}
 	
 	/**

@@ -38,10 +38,15 @@ public class ByteUtils {
 		if (inputStream == null)
 			throw new NullPointerException("Input stream cannot be null.");
 		if (numBytes < 0)
-			throw new IllegalArgumentException("Number of bytes to read must be great than 0.");
+			throw new IllegalArgumentException("Number of bytes to read must be greater than 0.");
 		
 		byte[] data = new byte[numBytes];
-		inputStream.read(data, 0, numBytes);
+		int len = inputStream.read(data, 0, numBytes);
+		if (len < numBytes) {
+			byte[] d = new byte[len];
+			System.arraycopy(data, 0, d, 0, len);
+			return d;
+		}
 		return data;
 	}
 	

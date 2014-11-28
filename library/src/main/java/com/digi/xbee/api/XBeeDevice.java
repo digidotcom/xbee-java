@@ -602,17 +602,19 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided data to the provided XBee device asynchronously.
+	 * Sends the provided data to the provided XBee device asynchronously 
+	 * choosing the optimal send method depending on the protocol of the local 
+	 * XBee device.
 	 * 
 	 * <p>Asynchronous transmissions do not wait for answer from the remote 
 	 * device or for transmit status packet.</p>
 	 * 
-	 * @param xbeeDevice The XBee device of the network that will receive the 
+	 * @param remoteXBeeDevice The XBee device of the network that will receive the 
 	 *                   data.
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
-	 * @throws NullPointerException if {@code xbeeDevice == null} or 
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or 
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any XBee related exception.
 	 * 
@@ -623,10 +625,31 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #sendDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
 	 * @see RemoteXBeeDevice
 	 */
-	public void sendDataAsync(RemoteXBeeDevice xbeeDevice, byte[] data) throws XBeeException {
-		if (xbeeDevice == null)
+	public void sendDataAsync(RemoteXBeeDevice remoteXBeeDevice, byte[] data) throws XBeeException {
+		if (remoteXBeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null");
-		sendDataAsync(xbeeDevice.get64BitAddress(), data);
+		
+		switch (getXBeeProtocol()) {
+		case ZIGBEE:
+		case DIGI_POINT:
+			if (remoteXBeeDevice.get64BitAddress() != null && remoteXBeeDevice.get16BitAddress() != null)
+				sendDataAsync(remoteXBeeDevice.get64BitAddress(), remoteXBeeDevice.get16BitAddress(), data);
+			else
+				sendDataAsync(remoteXBeeDevice.get64BitAddress(), data);
+			break;
+		case RAW_802_15_4:
+			if (this instanceof Raw802Device) {
+				if (remoteXBeeDevice.get64BitAddress() != null)
+					((Raw802Device)this).sendDataAsync(remoteXBeeDevice.get64BitAddress(), data);
+				else
+					((Raw802Device)this).sendDataAsync(remoteXBeeDevice.get16BitAddress(), data);
+			} else
+				sendDataAsync(remoteXBeeDevice.get64BitAddress(), data);
+			break;
+		case DIGI_MESH:
+		default:
+			sendDataAsync(remoteXBeeDevice.get64BitAddress(), data);
+		}
 	}
 	
 	/**
@@ -968,14 +991,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/**
 	 * Sends asynchronously the provided data in application layer mode to the 
-	 * provided XBee device. Application layer mode means that you need to 
-	 * specify the application layer fields to be sent with the data.
+	 * provided XBee device choosing the optimal send method depending on the 
+	 * protocol of the local XBee device. Application layer mode means that you 
+	 * need to specify the application layer fields to be sent with the data.
 	 * .
 	 * 
 	 * <p>Asynchronous transmissions do not wait for answer from the remote 
 	 * device or for transmit status packet.</p>
 	 * 
-	 * @param xbeeDevice The XBee device of the network that will receive the 
+	 * @param remoteXBeeDevice The XBee device of the network that will receive the 
 	 *                   data.
 	 * @param sourceEndpoint Source endpoint for the transmission.
 	 * @param destinationEndpoint Destination endpoint for the transmission.
@@ -990,7 +1014,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                                  if {@code clusterID.length != 2} or 
 	 *                                  if {@code profileID.length != 2}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
-	 * @throws NullPointerException if {@code xbeeDevice == null} or 
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or 
 	 *                              if {@code clusterID == null} or 
 	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
@@ -1003,11 +1027,25 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
 	 * @see RemoteXBeeDevice
 	 */
-	protected void sendExplicitDataAsync(RemoteXBeeDevice xbeeDevice, int sourceEndpoint, int destEndpoint, 
+	protected void sendExplicitDataAsync(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, 
 			byte[] clusterID, byte[] profileID, byte[] data) throws XBeeException {
-		if (xbeeDevice == null)
+		if (remoteXBeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null");
-		sendExplicitDataAsync(xbeeDevice.get64BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
+		
+		switch (getXBeeProtocol()) {
+		case ZIGBEE:
+		case DIGI_POINT:
+			if (remoteXBeeDevice.get64BitAddress() != null && remoteXBeeDevice.get16BitAddress() != null)
+				sendExplicitDataAsync(remoteXBeeDevice.get64BitAddress(), remoteXBeeDevice.get16BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
+			else
+				sendExplicitDataAsync(remoteXBeeDevice.get64BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
+			break;
+		case RAW_802_15_4:
+			throw new OperationNotSupportedException("802.15.4. protocol does not support explicit data transmissions.");
+		case DIGI_MESH:
+		default:
+			sendExplicitDataAsync(remoteXBeeDevice.get64BitAddress(), sourceEndpoint, destEndpoint, clusterID, profileID, data);
+		}
 	}
 	
 	/**

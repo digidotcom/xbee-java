@@ -81,7 +81,7 @@ public class SendDataHighLevelDigiPointTest {
 	 * @throws TimeoutException 
 	 */
 	@Test
-	public void testSendDataSuccess() throws TimeoutException, XBeeException {
+	public void testSendData6416Success() throws TimeoutException, XBeeException {
 		// Do nothing when sending and checking any TransmitPacket packet.
 		Mockito.doNothing().when(digiPointDevice).sendAndCheckXBeePacket(Mockito.any(TransmitPacket.class), Mockito.eq(false));
 		
@@ -101,7 +101,7 @@ public class SendDataHighLevelDigiPointTest {
 	 * @throws TimeoutException 
 	 */
 	@Test
-	public void testSendDataAsyncSuccess() throws TimeoutException, XBeeException {
+	public void testSendData6416AsyncSuccess() throws TimeoutException, XBeeException {
 		// Do nothing when sending and checking any TransmitPacket packet.
 		Mockito.doNothing().when(digiPointDevice).sendAndCheckXBeePacket(Mockito.any(TransmitPacket.class), Mockito.eq(true));
 		
@@ -186,14 +186,14 @@ public class SendDataHighLevelDigiPointTest {
 	 */
 	@Test
 	public void testSendExplicitDataAsyncRemoteDeviceSuccess() throws TimeoutException, XBeeException {
-		// Do nothing when the sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is called.
-		Mockito.doNothing().when(digiPointDevice).sendExplicitDataAsync(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
+		// Do nothing when the sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		Mockito.doNothing().when(digiPointDevice).sendExplicitDataAsync(Mockito.any(XBee64BitAddress.class), Mockito.any(XBee16BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
 				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
 		
 		digiPointDevice.sendExplicitDataAsync(mockedRemoteDigiPointDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called.
-		Mockito.verify(digiPointDevice, Mockito.times(1)).sendExplicitDataAsync(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
+		// Verify the sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		Mockito.verify(digiPointDevice, Mockito.times(1)).sendExplicitDataAsync(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(XBEE_16BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	

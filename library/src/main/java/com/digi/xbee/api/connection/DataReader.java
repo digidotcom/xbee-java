@@ -537,13 +537,15 @@ public class DataReader extends Thread {
 						public void run() {
 							// Synchronize the listener so it is not called 
 							// twice. That is, let the listener to finish its job.
-							synchronized (listener) {
-								if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
-									listener.packetReceived(packet);
-								else if (((XBeeAPIPacket)packet).needsAPIFrameID() && 
-										((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
-									listener.packetReceived(packet);
-									removeListeners.add(listener);
+							synchronized (packetReceiveListeners) {
+								synchronized (listener) {
+									if (packetReceiveListeners.get(listener) == ALL_FRAME_IDS)
+										listener.packetReceived(packet);
+									else if (((XBeeAPIPacket)packet).needsAPIFrameID() && 
+											((XBeeAPIPacket)packet).getFrameID() == packetReceiveListeners.get(listener)) {
+										listener.packetReceived(packet);
+										removeListeners.add(listener);
+									}
 								}
 							}
 						}

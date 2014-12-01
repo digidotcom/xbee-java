@@ -907,8 +907,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending explicit data asynchronously to {} [{} - {} - {} - {}] >> {}.", address, sourceEndpoint, destEndpoint, 
-				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending explicit data asynchronously to {} [{} - {} - {} - {}] >> {}.", address, HexUtils.integerToHexString(sourceEndpoint, 1), 
+				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.byteArrayToHexString(clusterID), 
+				HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
@@ -982,8 +983,10 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending explicit data asynchronously to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, sourceEndpoint, destEndpoint, 
-				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending explicit data asynchronously to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, 
+				HexUtils.integerToHexString(sourceEndpoint, 1), HexUtils.integerToHexString(destEndpoint, 1), 
+				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), 
+				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
@@ -1110,8 +1113,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending explicit data to {} [{} - {} - {} - {}] >> {}.", address, sourceEndpoint, destEndpoint, 
-				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending explicit data to {} [{} - {} - {} - {}] >> {}.", address, HexUtils.integerToHexString(sourceEndpoint, 1), 
+				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.byteArrayToHexString(clusterID), 
+				HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);
@@ -1188,8 +1192,10 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending explicit data to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, sourceEndpoint, 
-				destEndpoint, HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending explicit data to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, 
+				HexUtils.integerToHexString(sourceEndpoint, 1), HexUtils.integerToHexString(destEndpoint, 1), 
+				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), 
+				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);

@@ -31,6 +31,7 @@
 		<module>examples/communication/SendDataSample</module>
 		<module>examples/communication/explicit/ReceiveExplicitDataPollingSample</module>
 		<module>examples/communication/explicit/ReceiveExplicitDataSample</module>
+		<module>examples/communication/explicit/SendExplicitDataSample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>

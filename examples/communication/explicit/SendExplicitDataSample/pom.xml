@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.digi.xbee</groupId>
+		<artifactId>xbjlib-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../../../pom.xml</relativePath>
+	</parent>
+	<artifactId>send-explicit-data-sample</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Send Explicit Data Sample</name>
+
+	<properties>
+		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
+	</properties>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<directory>../../../target/examples/communication/SendExplicitDataSample</directory>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec.maven.version}</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-Djava.library.path=${project.build.directory}/../../../${rxtx.native.libs.dir}</argument>
+						<argument>-classpath</argument>
+						<!-- automatically creates the classpath using all project dependencies,
+							 also adding the project build directory -->
+						<classpath/>
+						<argument>com.digi.xbee.api.sendexplicitdata.MainApp</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.digi.xbee</groupId>
+			<artifactId>xbjlib</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+</project>

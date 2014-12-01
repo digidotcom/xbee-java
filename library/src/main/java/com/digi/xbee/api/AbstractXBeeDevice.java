@@ -1192,6 +1192,8 @@ public abstract class AbstractXBeeDevice {
 	 * @param asyncTransmission Determines whether the transmission must be 
 	 *                          asynchronous.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws TransmitException if {@code packet} is not an instance of 
 	 *                           {@code TransmitStatusPacket} or 
 	 *                           if {@code packet} is not an instance of 

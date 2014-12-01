@@ -245,13 +245,13 @@ public class RemoteATCommandPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
 	 * 
 	 * <p>Construct a new Remote AT Command packet but with a {@code null} 
 	 * 64-bit destination address. This must throw a {@code NullPointerException}.</p>
 	 */
 	@Test
-	public final void testCreateRemoteATCommandPacket64BitAddressNull() {
+	public final void testCreateRemoteATCommandPacket64BitAddressNullParameterString() {
 		// Setup the resources for the test.
 		int frameID = 0x01;
 		XBee64BitAddress dest64Addr = null;
@@ -271,10 +271,33 @@ public class RemoteATCommandPacketTest {
 	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
 	 * 
 	 * <p>Construct a new Remote AT Command packet but with a {@code null} 
+	 * 64-bit destination address. This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateRemoteATCommandPacket64BitAddressNullParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = null;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 23;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("64-bit destination address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
+	 * 
+	 * <p>Construct a new Remote AT Command packet but with a {@code null} 
 	 * 16-bit destination address. This must throw a {@code NullPointerException}.</p>
 	 */
 	@Test
-	public final void testCreateRemoteATCommandPacket16BitAddressNull() {
+	public final void testCreateRemoteATCommandPacket16BitAddressNullParameterString() {
 		// Setup the resources for the test.
 		int frameID = 0x01;
 		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
@@ -293,11 +316,34 @@ public class RemoteATCommandPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
 	 * 
+	 * <p>Construct a new Remote AT Command packet but with a {@code null} 
+	 * 16-bit destination address. This must throw a {@code NullPointerException}.</p>
+	 */
+	@Test
+	public final void testCreateRemoteATCommandPacket16BitAddressNullParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = null;
+		int options = 23;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("16-bit destination address cannot be null.")));
+		
+		// Call the method under test that should throw a NullPointerException.
+		new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
+	 * 
 	 * <p>Construct a new Remote AT Command packet but with a receive options 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
 	 */
 	@Test
-	public final void testCreateRemoteATCommandPacketReceiveOptionsBiggerThan255() {
+	public final void testCreateRemoteATCommandPacketReceiveOptionsBiggerThan255ParameterString() {
 		// Setup the resources for the test.
 		int frameID = 0x01;
 		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
@@ -316,11 +362,34 @@ public class RemoteATCommandPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
 	 * 
+	 * <p>Construct a new Remote AT Command packet but with a receive options 
+	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateRemoteATCommandPacketReceiveOptionsBiggerThan255ParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 621;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Options value must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
+	 * 
 	 * <p>Construct a new Remote AT Command packet but with a negative receive 
 	 * options. This must throw an {@code IllegalArgumentException}.</p>
 	 */
 	@Test
-	public final void testCreateRemoteATCommandPacketReceiveOptionsNegative() {
+	public final void testCreateRemoteATCommandPacketReceiveOptionsNegativeParameterString() {
 		// Setup the resources for the test.
 		int frameID = 0x01;
 		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
@@ -338,6 +407,29 @@ public class RemoteATCommandPacketTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
+	 * 
+	 * <p>Construct a new Remote AT Command packet but with a negative receive 
+	 * options. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateRemoteATCommandPacketReceiveOptionsNegativeParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = -8;
+		String command = "NI";
+		byte[] parameter = new byte[]{0x50, 0x61, 0x72, 0x61, 0x6D, 0x20, 0x76, 0x61, 0x6C, 0x75, 0x65};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Options value must be between 0 and 255.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameter);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
 	 * 
 	 * <p>Construct a new Remote AT Command packet but with a {@code null} 
 	 * command. This must throw a {@code NullPointerException}.</p>
@@ -429,7 +521,7 @@ public class RemoteATCommandPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
 	 * 
 	 * <p>Construct a new Remote AT Command packet but with an invalid frame ID 
 	 * with negative value. This must throw an {@code IllegalArgumentException}.</p>
@@ -475,7 +567,7 @@ public class RemoteATCommandPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
 	 * 
 	 * <p>Construct a new Remote AT Command packet but with an valid parameters 
 	 * but without parameter value ({@code null}).</p>
@@ -507,7 +599,7 @@ public class RemoteATCommandPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#RemoteATCommandPacket(int, XBee64BitAddress, XBee16BitAddress, int, String, String)}.
 	 * 
 	 * <p>Construct a new Remote AT Command packet but with an valid parameters 
 	 * but with a parameter value.</p>
@@ -850,5 +942,197 @@ public class RemoteATCommandPacketTest {
 		
 		// Call the method under test and verify the result.
 		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#setParameter(String)}.
+	 * 
+	 * <p>Test if a string parameter is properly configured.</p>
+	 */
+	@Test
+	public final void testSetParameterString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		String parameterToSet = "newNIValue";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, "");
+		
+		// Call the method under test.
+		packet.setParameter(parameterToSet);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be '" + parameterToSet + "'", 
+				packet.getParameterAsString(), is(equalTo(parameterToSet)));
+		assertThat("Configured parameter must be '" + parameterToSet + "'", 
+				packet.getParameter(), is(equalTo(parameterToSet.getBytes())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#setParameter(String)}.
+	 * 
+	 * <p>Test if a string parameter with {@code null} value is properly 
+	 * configured.</p>
+	 */
+	@Test
+	public final void testSetParameterStringNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, "");
+		
+		// Call the method under test.
+		packet.setParameter((String)null);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be 'null'", 
+				packet.getParameterAsString(), is(equalTo(null)));
+		assertThat("Configured parameter must be 'null'", 
+				packet.getParameter(), is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#setParameter(byte[])}.
+	 * 
+	 * <p>Test if a byte array parameter is properly configured.</p>
+	 */
+	@Test
+	public final void testSetParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		byte[] parameterToSet = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setParameter(parameterToSet);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be '" + new String(parameterToSet) + "'", 
+				packet.getParameter(), is(equalTo(parameterToSet)));
+		assertThat("Configured parameter must be '" + parameterToSet + "'", 
+				packet.getParameterAsString(), is(equalTo(new String(parameterToSet))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#setParameter(byte[])}.
+	 * 
+	 * <p>Test if a byte array parameter with {@code null} value is properly 
+	 * configured.</p>
+	 */
+	@Test
+	public final void testSetParameterByteArrayNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setParameter((byte[])null);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be 'null'", packet.getParameter(), is(equalTo(null)));
+		assertThat("Configured parameter must be 'null'", packet.getParameterAsString(), is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#getParameterAsString()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameterAsString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		String parameterToSet = "newNIValue";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameterToSet);
+		
+		// Call the method under test.
+		String value = packet.getParameterAsString();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be '" + parameterToSet + "'", value, is(equalTo(parameterToSet)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#getParameterAsString()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameterAsStringNullValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, (String)null);
+		
+		// Call the method under test.
+		String value = packet.getParameterAsString();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be 'null'", value, is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#getParameter()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameter() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		String parameterToSet = "newNIValue";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, parameterToSet);
+		
+		// Call the method under test.
+		byte[] value = packet.getParameter();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be '" + parameterToSet + "'", value, is(equalTo(parameterToSet.getBytes())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.RemoteATCommandPacket#getParameter()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameterNullValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("FFFF");
+		int options = 23;
+		String command = "NI";
+		RemoteATCommandPacket packet = new RemoteATCommandPacket(frameID, dest64Addr, dest16Addr, options, command, (byte[])null);
+		
+		// Call the method under test.
+		byte[] value = packet.getParameter();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be 'null'", value, is(equalTo(null)));
 	}
 }

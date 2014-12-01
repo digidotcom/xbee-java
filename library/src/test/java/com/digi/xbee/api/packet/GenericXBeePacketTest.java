@@ -103,6 +103,28 @@ public class GenericXBeePacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#createPacket(byte[])}.
 	 * 
+	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
+	 * the payload does not start with the right frame type 
+	 * ({@code APIFrameType.GENERIC}).</p>
+	 */
+	@Test
+	public final void testCreatePacketInvalidFrameType() {
+		// Setup the resources for the test.
+		int frameType = 0x13;
+		
+		byte[] payload = new byte[1];
+		payload[0] = (byte)frameType;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Payload is not a Generic packet.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		GenericXBeePacket.createPacket(payload);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#createPacket(byte[])}.
+	 * 
 	 * <p>A valid API Generic packet with the provided options.</p>
 	 */
 	@Test

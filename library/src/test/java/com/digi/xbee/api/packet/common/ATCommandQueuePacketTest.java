@@ -609,4 +609,172 @@ public class ATCommandQueuePacketTest {
 		// Call the method under test and verify the result.
 		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#setParameter(String)}.
+	 * 
+	 * <p>Test if a string parameter is properly configured.</p>
+	 */
+	@Test
+	public final void testSetParameterString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameterToSet = "newNIValue";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, "");
+		
+		// Call the method under test.
+		packet.setParameter(parameterToSet);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be '" + parameterToSet + "'", 
+				packet.getParameterAsString(), is(equalTo(parameterToSet)));
+		assertThat("Configured parameter must be '" + parameterToSet + "'", 
+				packet.getParameter(), is(equalTo(parameterToSet.getBytes())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#setParameter(String)}.
+	 * 
+	 * <p>Test if a string parameter with {@code null} value is properly 
+	 * configured.</p>
+	 */
+	@Test
+	public final void testSetParameterStringNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, "");
+		
+		// Call the method under test.
+		packet.setParameter((String)null);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be 'null'", 
+				packet.getParameterAsString(), is(equalTo(null)));
+		assertThat("Configured parameter must be 'null'", 
+				packet.getParameter(), is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#setParameter(byte[])}.
+	 * 
+	 * <p>Test if a byte array parameter is properly configured.</p>
+	 */
+	@Test
+	public final void testSetParameterByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		byte[] parameterToSet = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setParameter(parameterToSet);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be '" + new String(parameterToSet) + "'", 
+				packet.getParameter(), is(equalTo(parameterToSet)));
+		assertThat("Configured parameter must be '" + parameterToSet + "'", 
+				packet.getParameterAsString(), is(equalTo(new String(parameterToSet))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#setParameter(byte[])}.
+	 * 
+	 * <p>Test if a byte array parameter with {@code null} value is properly 
+	 * configured.</p>
+	 */
+	@Test
+	public final void testSetParameterByteArrayNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setParameter((byte[])null);
+		
+		// Verify the result.
+		assertThat("Configured parameter must be 'null'", packet.getParameter(), is(equalTo(null)));
+		assertThat("Configured parameter must be 'null'", packet.getParameterAsString(), is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#getParameterAsString()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameterAsString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameterToSet = "newNIValue";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, parameterToSet);
+		
+		// Call the method under test.
+		String value = packet.getParameterAsString();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be '" + parameterToSet + "'", value, is(equalTo(parameterToSet)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#getParameterAsString()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameterAsStringNullValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, (String)null);
+		
+		// Call the method under test.
+		String value = packet.getParameterAsString();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be 'null'", value, is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#getParameter()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameter() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		String parameterToSet = "newNIValue";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, parameterToSet);
+		
+		// Call the method under test.
+		byte[] value = packet.getParameter();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be '" + parameterToSet + "'", value, is(equalTo(parameterToSet.getBytes())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandQueuePacket#getParameter()}.
+	 * 
+	 * <p>Test if a configured parameter is properly returned.</p>
+	 */
+	@Test
+	public final void testGetParameterNullValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandQueuePacket packet = new ATCommandQueuePacket(frameID, command, (byte[])null);
+		
+		// Call the method under test.
+		byte[] value = packet.getParameter();
+		
+		// Verify the result.
+		assertThat("Returned parameter must be 'null'", value, is(equalTo(null)));
+	}
 }

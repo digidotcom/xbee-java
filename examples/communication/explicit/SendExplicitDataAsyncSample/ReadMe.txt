@@ -1,14 +1,14 @@
   Introduction
   ------------
   This sample Java application shows how to send data in application layer 
-  (explicit) format asynchronously to a remote XBee device on the same network 
-  as the local one using the XBee Java Library. Transmitting data 
+  (explicit) format asynchronously to a remote ZigBee device on the same 
+  network as the local one using the XBee Java Library. Transmitting data 
   asynchronously means the execution will not be blocked during the transmit 
   request, but you will not be able to determine if the data was sent 
   successfully.
   
   The application sends data in application layer (explicit) format to a remote 
-  XBee device on the network with a specific node identifier (name).
+  ZigBee device on the network with a specific node identifier (name).
   
   NOTE: This example uses the ZigBee device (ZigBeeDevice) class, but it can 
         be applied to any other protocol specific device class that supports 
@@ -20,7 +20,7 @@
     * com.digi.xbee.api.sendexplicitdata.MainApp.java:
       Main application class. It instantiates a ZigBee device, establishes a 
       serial connection with it and sends the explicit data to the specified 
-      XBee device. Finally it prints out the result of the sent operation.
+      ZigBee device. Finally it prints out the result of the sent operation.
 
 
   Requirements
@@ -43,7 +43,7 @@
              
           1) Launch the XCTU application.
              
-          2) Add the remote XBee module to the XCTU, specifying it's port 
+          2) Add the remote ZigBee module to the XCTU, specifying it's port 
              settings.
              
           3) Once the module is added, open the 'Configuration' working mode, 
@@ -71,7 +71,7 @@
   Running the example
   -------------------
   First, build the application. Then, you need to setup XCTU to see the data 
-  received by the remote XBee device in explicit format. Follow these steps to 
+  received by the remote ZigBee device in explicit format. Follow these steps to 
   do so:
   
     1) Launch the XCTU application.
@@ -86,13 +86,13 @@
   that happens, a line with the result of the operation is printed to the 
   standard output:
        
-    Sending data to 0013A20040XXXXXX [0xA0 - 0xA1 - 0x1554 - 0xC105] >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
+    Sending data asynchronously to 0013A20040XXXXXX [A0 - A1 - 1554 - C105] >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
     
      - Where 0013A20040XXXXXX is the 64-bit address of the remote ZigBee device 
        whose Node Identifier is 'REMOTE'.
        
   Verify that in the XCTU console a new Explicit Rx Indicator frame has been 
-  received by the remote XBee device. Select it and review the details, some 
+  received by the remote ZigBee device. Select it and review the details, some 
   of the details will be similar to:
        
     - Start delimiter:         7E

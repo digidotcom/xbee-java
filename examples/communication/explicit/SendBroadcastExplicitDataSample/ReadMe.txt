@@ -1,14 +1,10 @@
   Introduction
   ------------
   This sample Java application shows how to send data in application layer 
-  (explicit) format to a remote ZigBee device on the same network as the local 
-  one using the XBee Java Library. In this example, explicit data is sent using 
-  a reliable transmission method. The application will block during the 
-  transmission request, but you will be notified if there is any error during 
-  the process.
-  
-  The application sends data in application layer (explicit) format to a remote 
-  ZigBee device on the network with a specific node identifier (name).
+  (explicit) format to all remote devices on the same network (broadcast) as 
+  the local one using the XBee Java Library. The application will block during 
+  the transmission request, but you will be notified if there is any error 
+  during the process.
   
   NOTE: This example uses the ZigBee device (ZigBeeDevice) class, but it can 
         be applied to any other protocol specific device class that supports 
@@ -17,10 +13,11 @@
 
   Files
   -----
-    * com.digi.xbee.api.sendexplicitdata.MainApp.java:
-      Main application class. It instantiates an ZigBee device, establishes a 
-      serial connection with it and sends the explicit data to the specified 
-      ZigBee device. Finally it prints out the result of the sent operation.
+    * com.digi.xbee.api.sendbroadcastexplicitdata.MainApp.java:
+      Main application class. It instantiates a ZigBee device, establishes a 
+      serial connection with it and sends a broadcast transmission of the data 
+      in explicit format. Finally it prints out the result of the sent 
+      operation.
 
 
   Requirements
@@ -37,8 +34,7 @@
     1) Plug the ZigBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
        
-    2) Configure the remote ZigBee device with the Node Identifier used by the 
-       example to communicate with it and to receive data in application layer 
+    2) Configure the remote ZigBee devices to receive data in application layer 
        (explicit) format. To do so follow these steps:
              
           1) Launch the XCTU application.
@@ -47,14 +43,7 @@
              settings.
              
           3) Once the module is added, open the 'Configuration' working mode, 
-             look for the 'NI' setting and configure it with 'REMOTE' 
-             (without quotes).
-             
-             Notice that by default the 'NI' setting has a blank space 
-             configured, make sure that there is not a blank space before the 
-             'REMOTE' text.
-             
-          4) Look for the 'AO' setting and configure it with '1' (without 
+             look for the 'AO' setting and configure it with '1' (without 
              quotes)
        
     3) Ensure that the modules are in API mode and on the same network.
@@ -71,8 +60,8 @@
   Running the example
   -------------------
   First, build the application. Then, you need to setup XCTU to see the data 
-  received by the remote ZigBee device in explicit format. Follow these steps to 
-  do so:
+  received by the remote ZigBee device in explicit format, in this case it will 
+  be broadcast data. Follow these steps to do so:
   
     1) Launch the XCTU application.
        
@@ -82,21 +71,17 @@
        so you can see the data when it is received.
   
   Finally, launch the sample application, data in explicit format is sent to 
-  the configured remote ZigBee device whose Node Identifier is 'REMOTE'. When 
-  that happens, a line with the result of the operation is printed to the 
-  standard output:
+  all the remote modules of the network. When that happens, a line with the 
+  result of the operation is printed to the standard output:
        
-    Sending data to 0013A20040XXXXXX [A0 - A1 - 1554 - C105] >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
-    
-     - Where 0013A20040XXXXXX is the 64-bit address of the remote ZigBee device 
-       whose Node Identifier is 'REMOTE'.
+    Sending broadcast data [A0 - A1 - 1554 - C105] >> 48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21 | Hello XBee World!... Success
        
   Verify that in the XCTU console a new Explicit Rx Indicator frame has been 
   received by the remote ZigBee device. Select it and review the details, some 
   of the details will be similar to:
        
     - Start delimiter:         7E
-    - Length:                  00 1D
+    - Length:                  00 23
     - Frame type:              91
     - 64-bit source address:   The XBee sender's 64-bit address.
     - 16-bit source address:   The XBee sender's 16-bit address.
@@ -104,7 +89,7 @@
     - Destination endpoint:    A1
     - Cluster ID:              15 54
     - Profile ID:              C1 05
-    - Receive options:         01
-    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 21
-                               Hello XBee!
+    - Receive options:         02
+    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21
+                               Hello XBee World!
        

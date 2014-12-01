@@ -49,8 +49,7 @@
   
     1) Launch the XCTU application.
        
-    2) Add the receiver (local) XBee module to the XCTU, specifying its port 
-       settings.
+    2) Add the receiver XBee module to the XCTU, specifying its port settings.
        
     3) Once the module is added, change to the 'Consoles' working mode and 
        open the serial connection so you can see the data when it is received.

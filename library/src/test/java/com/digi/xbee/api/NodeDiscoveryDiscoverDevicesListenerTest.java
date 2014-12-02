@@ -167,7 +167,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when the 
 	 * list of listeners is null.</p>
@@ -182,7 +182,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * <p>An {@code InterfaceNotOpenException} exception must be thrown when 
 	 * the local device connection is not open.</p>
@@ -200,7 +200,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * <p>The discovery process must finish with error if the device cannot send
 	 * the {@code ND} command.</p>
@@ -232,7 +232,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * <p>The {@code discoveryError} method of the listener must be called when
 	 * a discovered device cannot be added to the network.</p>
@@ -247,7 +247,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		
 		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
 				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"),
-				"Ni string", new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49);
+				"Ni string", new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49, false);
 		ndAnswers.add(packet);
 		
 		DiscoveryListener listener = new DiscoveryListener();
@@ -272,7 +272,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -311,7 +311,212 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
+	 * 
+	 * <p>One packet received from a DigiMesh device.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public final void testDiscoverDevicesOneDigiMeshDevice() throws Exception {
+		// Setup the resources for the test.
+		XBeeProtocol protocol = XBeeProtocol.DIGI_MESH;
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
+		PowerMockito.when(deviceMock.getParameter("SM")).thenReturn(new byte[]{0x00}); // Not sleeping device
+		
+		// Do not wait so much time for DigiMesh devices
+		PowerMockito.doReturn(100L).when(nd, "calculateTimeout", Mockito.anyListOf(IDiscoveryListener.class));
+		
+		XBee64BitAddress addr64 = new XBee64BitAddress("0013A20040A6A0DB");
+		XBee16BitAddress addr16 = new XBee16BitAddress("FFFE");
+		String id = "Ni string";
+		
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+				addr16, addr64,
+				id, new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49, false);
+		ndAnswers.add(packet);
+		
+		DiscoveryListener listener = new DiscoveryListener();
+		listeners.add(listener);
+		
+		// Call the method under test.
+		nd.startDiscoveryProcess(listeners);
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
+		
+		while(!listener.isFinished()) {
+			Thread.sleep(30);
+		}
+		
+		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
+		
+		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
+		
+		assertThat("Discovered device must not be null", remoteDevice, is(not(nullValue())));
+		assertThat("Remote device protocol must be " + protocol.getDescription(), remoteDevice.getXBeeProtocol(), is(equalTo(protocol)));
+		assertThat(remoteDevice instanceof RemoteDigiMeshDevice, is(equalTo(true)));
+		
+		assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo(id)));
+		assertThat("Remote device 64-bit address is not right", remoteDevice.get64BitAddress(), 
+					is(equalTo(addr64)));
+		assertThat("Remote device 16-bit address is not right", ((RemoteDigiMeshDevice)remoteDevice).get16BitAddress(), 
+				is(equalTo(addr16)));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, listeners, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.eq(listeners), Mockito.any(RemoteXBeeDevice.class));
+		
+		List<RemoteXBeeDevice> ndInternalDeviceList = Whitebox.<List<RemoteXBeeDevice>> getInternalState(nd, DEVICE_LIST);
+		assertThat("Internal Node Discovery list must be empty", ndInternalDeviceList.size(), is(equalTo(0)));
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(remoteDevice);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
+	 * 
+	 * <p>One packet received from a DigiPoint device.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public final void testDiscoverDevicesOneDigiPointDevice() throws Exception {
+		// Setup the resources for the test.
+		XBeeProtocol protocol = XBeeProtocol.DIGI_POINT;
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
+		
+		// Do not wait so much time for DigiPoint devices
+		PowerMockito.doReturn(100L).when(nd, "calculateTimeout", Mockito.anyListOf(IDiscoveryListener.class));
+		
+		XBee64BitAddress addr64 = new XBee64BitAddress("0013A20040A6A0DB");
+		XBee16BitAddress addr16 = new XBee16BitAddress("FFFE");
+		String id = "Ni string";
+		
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+				addr16, addr64,
+				id, new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49, false);
+		ndAnswers.add(packet);
+		
+		DiscoveryListener listener = new DiscoveryListener();
+		listeners.add(listener);
+		
+		// Call the method under test.
+		nd.startDiscoveryProcess(listeners);
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
+		
+		while(!listener.isFinished()) {
+			Thread.sleep(30);
+		}
+		
+		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
+		
+		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
+		
+		assertThat("Discovered device must not be null", remoteDevice, is(not(nullValue())));
+		assertThat("Remote device protocol must be " + protocol.getDescription(), remoteDevice.getXBeeProtocol(), is(equalTo(protocol)));
+		assertThat(remoteDevice instanceof RemoteDigiPointDevice, is(equalTo(true)));
+		
+		assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo(id)));
+		assertThat("Remote device 64-bit address is not right", remoteDevice.get64BitAddress(), 
+					is(equalTo(addr64)));
+		assertThat("Remote device 16-bit address is not right", ((RemoteDigiPointDevice)remoteDevice).get16BitAddress(), 
+				is(equalTo(addr16)));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, listeners, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock));
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.eq(listeners), Mockito.any(RemoteXBeeDevice.class));
+		
+		List<RemoteXBeeDevice> ndInternalDeviceList = Whitebox.<List<RemoteXBeeDevice>> getInternalState(nd, DEVICE_LIST);
+		assertThat("Internal Node Discovery list must be empty", ndInternalDeviceList.size(), is(equalTo(0)));
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(remoteDevice);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
+	 * 
+	 * <p>One packet received from a 802.15.4 device.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public final void testDiscoverDevicesOneRaw802Device() throws Exception {
+		// Setup the resources for the test.
+		XBeeProtocol protocol = XBeeProtocol.RAW_802_15_4;
+		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
+		
+		XBee64BitAddress addr64 = new XBee64BitAddress("0013A20040A6A0DB");
+		XBee16BitAddress addr16 = new XBee16BitAddress("5690");
+		String id = "Ni string";
+		
+		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
+				addr16, addr64,
+				id, new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49, true);
+		ndAnswers.add(packet);
+		ndAnswers.add(new ATCommandResponsePacket(1, 
+				ATCommandStatus.OK, "ND", new byte[0])); // End packet for 802.15.4
+		
+		DiscoveryListener listener = new DiscoveryListener();
+		listeners.add(listener);
+		
+		// Call the method under test.
+		nd.startDiscoveryProcess(listeners);
+		
+		// Verify the result.
+		assertThat("The 'discoverDevices' should be running", listener.isFinished(), is(equalTo(false)));
+		
+		while(!listener.isFinished()) {
+			Thread.sleep(30);
+		}
+		
+		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), 
+				is(equalTo(ndAnswers.size() - 1 /* Remove the end packet */)));
+		
+		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
+		
+		assertThat("Discovered device must not be null", remoteDevice, is(not(nullValue())));
+		assertThat("Remote device protocol must be " + protocol.getDescription(), remoteDevice.getXBeeProtocol(), is(equalTo(protocol)));
+		assertThat(remoteDevice instanceof RemoteRaw802Device, is(equalTo(true)));
+		
+		assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo(id)));
+		assertThat("Remote device 64-bit address is not right", remoteDevice.get64BitAddress(), 
+					is(equalTo(addr64)));
+		assertThat("Remote device 16-bit address is not right", ((RemoteRaw802Device)remoteDevice).get16BitAddress(), 
+				is(equalTo(addr16)));
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
+		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
+		Mockito.verify(deviceMock, Mockito.times(1)).removePacketListener(packetListener);
+		
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(DISCOVER_DEVICES_API_METHOD, listeners, null);
+		PowerMockito.verifyPrivate(nd, Mockito.times(2)).invoke(PARSE_DISCOVERY_API_DATA_METHOD, Mockito.any(byte[].class), Mockito.eq(deviceMock)); /* One for the packet and the other for the end packet */
+		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(NOTIFY_DEVICE_DISCOVERED, Mockito.eq(listeners), Mockito.any(RemoteXBeeDevice.class));
+		
+		List<RemoteXBeeDevice> ndInternalDeviceList = Whitebox.<List<RemoteXBeeDevice>> getInternalState(nd, DEVICE_LIST);
+		assertThat("Internal Node Discovery list must be empty", ndInternalDeviceList.size(), is(equalTo(0)));
+		
+		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(remoteDevice);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * <p>One packet received from a ZigBee device.</p>
 	 * 
@@ -323,9 +528,13 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		XBeeProtocol protocol = XBeeProtocol.ZIGBEE;
 		PowerMockito.when(deviceMock.getXBeeProtocol()).thenReturn(protocol);
 		
+		XBee64BitAddress addr64 = new XBee64BitAddress("0013A20040A6A0DB");
+		XBee16BitAddress addr16 = new XBee16BitAddress("0000");
+		String id = "Ni string";
+		
 		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
-				new XBee16BitAddress("0000"), new XBee64BitAddress("0013A20040A6A0DB"),
-				"Ni string", new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49);
+				addr16, addr64,
+				id, new XBee16BitAddress("FFFE"), (byte)0x00 /* coordinator */, (byte)0x49, false);
 		ndAnswers.add(packet);
 		
 		DiscoveryListener listener = new DiscoveryListener();
@@ -349,11 +558,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		assertThat("Remote device protocol must be " + protocol.getDescription(), remoteDevice.getXBeeProtocol(), is(equalTo(protocol)));
 		assertThat(remoteDevice instanceof RemoteZigBeeDevice, is(equalTo(true)));
 		
-		assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo("Ni string")));
+		assertThat("Remote device Node ID is not right", remoteDevice.getNodeID(), is(equalTo(id)));
 		assertThat("Remote device 64-bit address is not right", remoteDevice.get64BitAddress(), 
-					is(equalTo(new XBee64BitAddress("0013A20040A6A0DB"))));
+					is(equalTo(addr64)));
 		assertThat("Remote device 16-bit address is not right", ((RemoteZigBeeDevice)remoteDevice).get16BitAddress(), 
-				is(equalTo(new XBee16BitAddress("0000"))));
+				is(equalTo(addr16)));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
@@ -368,10 +577,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		
 		Mockito.verify(networkMock, Mockito.never()).addRemoteDevices(Mockito.anyListOf(RemoteXBeeDevice.class));
 		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(Mockito.any(RemoteXBeeDevice.class));
+		Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(remoteDevice);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(ArrayList)}.
+	 * Test method for {@link com.digi.xbee.api.NodeDiscovery#startDiscoveryProcess(List)}.
 	 * 
 	 * <p>Two packets received from a ZigBee device.</p>
 	 * 
@@ -392,10 +602,10 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		String[] nIds = new String[]{"Ni string 1", "Ni string 2"};
 		
 		ATCommandResponsePacket packet = createPacket(1, ATCommandStatus.OK, 
-				addr16[0], macs[0], nIds[0], parentAddr[0], (byte)0x00 /* coordinator */, (byte)0x49);
+				addr16[0], macs[0], nIds[0], parentAddr[0], (byte)0x00 /* coordinator */, (byte)0x49, false);
 		ndAnswers.add(packet);
 		packet = createPacket(1, ATCommandStatus.OK, 
-				addr16[1], macs[1], nIds[1], parentAddr[1], (byte)0x01 /* router */, (byte)0x67);
+				addr16[1], macs[1], nIds[1], parentAddr[1], (byte)0x01 /* router */, (byte)0x67, false);
 		ndAnswers.add(packet);
 		
 		DiscoveryListener listener = new DiscoveryListener();
@@ -427,6 +637,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 					is(equalTo(macs[i])));
 			assertThat("Remote device 16-bit address is not right", ((RemoteZigBeeDevice)remoteDevice).get16BitAddress(), 
 				is(equalTo(addr16[i])));
+			Mockito.verify(networkMock, Mockito.times(1)).addRemoteDevice(remoteDevice);
 		}
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -455,11 +666,12 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 	 * @param parentAddr
 	 * @param role
 	 * @param rssi
+	 * @param raw802Packet
 	 * @return
 	 */
 	private ATCommandResponsePacket createPacket(int frameId, ATCommandStatus status, 
 			XBee16BitAddress addr16, XBee64BitAddress addr64, String ni, XBee16BitAddress parentAddr, 
-			byte role, byte rssi) {
+			byte role, byte rssi, boolean raw802Packet) {
 		byte[] value = new byte[2 /* 16-bit addr */ + 8 /* 64-bit addr */ + ni.length() + 1 
 		                        + 2 /* parent addr */ + 1 /* role */ + 1 /* status */ + 2 /* profile */ 
 		                        + 2 /* manufacturer */ + 4 /* DD */ + 1 /* rssi */];
@@ -470,16 +682,20 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		
 		System.arraycopy(addr16.getValue(), 0, value, 0, 2);
 		System.arraycopy(addr64.getValue(), 0, value, 2, 8);
-		System.arraycopy(ni.getBytes(), 0, value, 10, ni.length());
-		value[10 + ni.length()] = 0x00;
-		System.arraycopy(parentAddr.getValue(), 0, value, 11 + ni.length(), 2);
-		value[13 + ni.length()] = role;
-		value[14 + ni.length()] = 0x00;
-		System.arraycopy(profile, 0, value, 15 + ni.length(), 2);
-		System.arraycopy(manufacturer, 0, value, 17 + ni.length(), 2);
-		System.arraycopy(dd, 0, value, 19 + ni.length(), 4);
-		value[13 + ni.length()] = rssi;
-		
+		if (raw802Packet) {
+			value[10] = rssi;
+			System.arraycopy(ni.getBytes(), 0, value, 11, ni.length());
+		} else {
+			System.arraycopy(ni.getBytes(), 0, value, 10, ni.length());
+			value[10 + ni.length()] = 0x00;
+			System.arraycopy(parentAddr.getValue(), 0, value, 11 + ni.length(), 2);
+			value[13 + ni.length()] = role;
+			value[14 + ni.length()] = 0x00;
+			System.arraycopy(profile, 0, value, 15 + ni.length(), 2);
+			System.arraycopy(manufacturer, 0, value, 17 + ni.length(), 2);
+			System.arraycopy(dd, 0, value, 19 + ni.length(), 4);
+			value[23 + ni.length()] = rssi;
+		}
 		return new ATCommandResponsePacket(frameId, status, "ND", value);
 	}
 	

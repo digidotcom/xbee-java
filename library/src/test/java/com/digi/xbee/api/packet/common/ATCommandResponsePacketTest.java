@@ -431,7 +431,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()) + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
@@ -458,7 +458,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()) + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter) + " (" + new String(parameter) + ")";
 		
 		// Call the method under test.
@@ -486,7 +486,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()) + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter);
 		
 		// Call the method under test.

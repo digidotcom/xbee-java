@@ -28,10 +28,10 @@ public enum ATCommandStatus {
 	INVALID_COMMAND (2, "Invalid command"), 
 	INVALID_PARAMETER (3, "Invalid parameter"),
 	TX_FAILURE (4, "TX failure"),
-	UNKNOWN (64, "Unknown status");
+	UNKNOWN (255, "Unknown status");
 	
 	// Variables
-	private final int id;
+	private int id;
 	
 	private final String description;
 	
@@ -80,9 +80,11 @@ public enum ATCommandStatus {
 	 * @return The {@code ATCommandStatus} associated to the given ID.
 	 */
 	public static ATCommandStatus get(int id) {
-		if (lookupTable.get(id) == null)
-			return UNKNOWN;
-		return lookupTable.get(id);
+		ATCommandStatus status = lookupTable.get(id % 16);
+		if (status == null)
+			status = UNKNOWN;
+		status.id = id;
+		return status;
 	}
 	
 	/*

@@ -20,8 +20,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.RemoteDigiMeshDevice;
+import com.digi.xbee.api.RemoteDigiPointDevice;
 import com.digi.xbee.api.RemoteRaw802Device;
 import com.digi.xbee.api.RemoteXBeeDevice;
+import com.digi.xbee.api.RemoteZigBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
@@ -34,6 +37,8 @@ import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
@@ -392,67 +397,37 @@ public class DataReader extends Thread {
 		if (apiType == null)
 			return;
 		
-		XBeeNetwork network = xbeeDevice.getNetwork();
-		RemoteXBeeDevice remoteDevice = null;
-		byte[] data = null;
-		
 		try {
+			// Obtain the remote device from the packet.
+			RemoteXBeeDevice remoteDevice = getRemoteXBeeDeviceFromPacket(apiPacket);
+			byte[] data = null;
+			
 			switch(apiType) {
 			case RECEIVE_PACKET:
 				ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-				remoteDevice = network.getDevice(receivePacket.get64bitSourceAddress());
-				if (remoteDevice == null) {
-					remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
-					network.addRemoteDevice(remoteDevice);
-				}
 				data = receivePacket.getRFData();
 				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 				break;
 			case RX_64:
 				RX64Packet rx64Packet = (RX64Packet)apiPacket;
-				remoteDevice = network.getDevice(rx64Packet.get64bitSourceAddress());
-				if (remoteDevice == null) {
-					remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
-					network.addRemoteDevice(remoteDevice);
-				}
 				data = rx64Packet.getRFData();
 				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 				break;
 			case RX_16:
 				RX16Packet rx16Packet = (RX16Packet)apiPacket;
-				remoteDevice = network.getDevice(rx16Packet.get16bitSourceAddress());
-				if (remoteDevice == null) {
-					remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
-					network.addRemoteDevice(remoteDevice);
-				}
 				data = rx16Packet.getRFData();
 				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
 				break;
 			case IO_DATA_SAMPLE_RX_INDICATOR:
 				IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
-				remoteDevice = network.getDevice(ioSamplePacket.get64bitSourceAddress());
-				if (remoteDevice == null) {
-					remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
-					network.addRemoteDevice(remoteDevice);
-				}
 				notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
 				break;
 			case RX_IO_64:
 				RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-				remoteDevice = network.getDevice(rx64IOPacket.get64bitSourceAddress());
-				if (remoteDevice == null) {
-					remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
-					network.addRemoteDevice(remoteDevice);
-				}
 				notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
 				break;
 			case RX_IO_16:
 				RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-				remoteDevice = network.getDevice(rx16IOPacket.get16bitSourceAddress());
-				if (remoteDevice == null) {
-					remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
-					network.addRemoteDevice(remoteDevice);
-				}
 				notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
 				break;
 			case MODEM_STATUS:
@@ -461,9 +436,145 @@ public class DataReader extends Thread {
 			default:
 				break;
 			}
+			
 		} catch (XBeeException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * Returns the remote XBee device from where the given package was sent 
+	 * from.
+	 * 
+	 * <p><b>This is for internal use only.</b></p>
+	 * 
+	 * <p>If the package does not contain information about the source, this 
+	 * method returns {@code null} (for example, {@code ModemStatusPacket}).</p>
+	 * 
+	 * <p>First the device that sent the provided package is looked in the 
+	 * network of the local XBee device. If the remote device is not in the 
+	 * network, it is automatically added only if the packet contains 
+	 * information about the origin of the package.</p>
+	 * 
+	 * @param packet The packet sent from the remote device.
+	 * 
+	 * @return The remote XBee device that sends the given packet. It may be 
+	 *         {@code null} if the packet is not a known frame (see 
+	 *         {@link APIFrameType}) or if it does not contain information of 
+	 *         the source device.
+	 * 
+	 * @throws NullPointerException if {@code packet == null}
+	 * @throws XBeeException if any error occur while adding the device to the 
+	 *                       network.
+	 */
+	public RemoteXBeeDevice getRemoteXBeeDeviceFromPacket(XBeeAPIPacket packet) throws XBeeException {
+		if (packet == null)
+			throw new NullPointerException("XBee API packet cannot be null.");
+			
+		XBeeAPIPacket apiPacket = (XBeeAPIPacket)packet;
+		APIFrameType apiType = apiPacket.getFrameType();
+		if (apiType == null)
+			return null;
+		
+		RemoteXBeeDevice remoteDevice = null;
+		XBee64BitAddress addr64 = null;
+		XBee16BitAddress addr16 = null;
+		
+		XBeeNetwork network = xbeeDevice.getNetwork();
+		
+		switch(apiType) {
+		case RECEIVE_PACKET:
+			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
+			addr64 = receivePacket.get64bitSourceAddress();
+			addr16 = receivePacket.get16bitSourceAddress();
+			remoteDevice = network.getDevice(addr64);
+			break;
+		case RX_64:
+			RX64Packet rx64Packet = (RX64Packet)apiPacket;
+			addr64 = rx64Packet.get64bitSourceAddress();
+			remoteDevice = network.getDevice(addr64);
+			break;
+		case RX_16:
+			RX16Packet rx16Packet = (RX16Packet)apiPacket;
+			addr64 = XBee64BitAddress.UNKNOWN_ADDRESS;
+			addr16 = rx16Packet.get16bitSourceAddress();
+			remoteDevice = network.getDevice(addr16);
+			break;
+		case IO_DATA_SAMPLE_RX_INDICATOR:
+			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+			addr64 = ioSamplePacket.get64bitSourceAddress();
+			addr16 = ioSamplePacket.get16bitSourceAddress();
+			remoteDevice = network.getDevice(addr64);
+			break;
+		case RX_IO_64:
+			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+			addr64 = rx64IOPacket.get64bitSourceAddress();
+			remoteDevice = network.getDevice(addr64);
+			break;
+		case RX_IO_16:
+			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+			addr64 = XBee64BitAddress.UNKNOWN_ADDRESS;
+			addr16 = rx16IOPacket.get16bitSourceAddress();
+			remoteDevice = network.getDevice(addr16);
+			break;
+		default:
+			// Rest of the types are considered not to contain information 
+			// about the origin of the packet.
+			return remoteDevice;
+		}
+		
+		// If the origin is not in the network, add it.
+		if (remoteDevice == null) {
+			remoteDevice = createRemoteXBeeDevice(addr64, addr16, null);
+			network.addRemoteDevice(remoteDevice);
+		}
+		
+		return remoteDevice;
+	}
+	
+	/**
+	 * Creates a new remote XBee device with the provided 64-bit address, 
+	 * 16-bit address, node identifier and the XBee device that is using this 
+	 * data reader as the connection interface for the remote device.
+	 * 
+	 * The new XBee device will be a {@code RemoteDigiMeshDevice}, 
+	 * a {@code RemoteDigiPointDevice}, a {@code RemoteRaw802Device} or a 
+	 * {@code RemoteZigBeeDevice} depending on the protocol of the local XBee 
+	 * device. If the protocol cannot be determined or is unknown a 
+	 * {@code RemoteXBeeDevice} will be created instead.
+	 * 
+	 * @param addr64 The 64-bit address of the new remote device. It cannot be 
+	 *               {@code null}.
+	 * @param addr16 The 16-bit address of the new remote device. It may be 
+	 *               {@code null}.
+	 * @param ni The node identifier of the new remote device. It may be 
+	 *           {@code null}.
+	 * 
+	 * @return a new remote XBee device with the given parameters.
+	 */
+	private RemoteXBeeDevice createRemoteXBeeDevice(XBee64BitAddress addr64, 
+			XBee16BitAddress addr16, String ni) {
+		RemoteXBeeDevice device = null;
+		
+		switch (xbeeDevice.getXBeeProtocol()) {
+		case ZIGBEE:
+			device = new RemoteZigBeeDevice(xbeeDevice, addr64, addr16, ni);
+			break;
+		case DIGI_MESH:
+			device = new RemoteDigiMeshDevice(xbeeDevice, addr64, ni);
+			break;
+		case DIGI_POINT:
+			device = new RemoteDigiPointDevice(xbeeDevice, addr64, ni);
+			break;
+		case RAW_802_15_4:
+			device = new RemoteRaw802Device(xbeeDevice, addr64, addr16, ni);
+			break;
+		default:
+			device = new RemoteXBeeDevice(xbeeDevice, addr64, addr16, ni);
+			break;
+		}
+		
+		return device;
 	}
 	
 	/**

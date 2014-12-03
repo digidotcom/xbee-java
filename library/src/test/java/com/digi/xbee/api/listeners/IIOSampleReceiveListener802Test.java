@@ -37,6 +37,7 @@ import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
@@ -97,6 +98,7 @@ public class IIOSampleReceiveListener802Test {
 		
 		// Mock the XBee device.
 		xbeeDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		Mockito.when(xbeeDevice.getNetwork()).thenReturn(network);
 	}
 	

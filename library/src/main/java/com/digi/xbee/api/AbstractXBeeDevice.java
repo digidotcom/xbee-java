@@ -532,7 +532,9 @@ public abstract class AbstractXBeeDevice {
 		// TODO Should be allow to update a local from a remote or viceversa?? Maybe 
 		// this must be in the Local/Remote device class(es) and not here... 
 		
-		this.nodeID = device.getNodeID();
+		// Only update the Node Identifier if the provided is not null.
+		if (device.getNodeID() != null)
+			this.nodeID = device.getNodeID();
 		
 		// Only update the 64-bit address if the original is null or unknown.
 		XBee64BitAddress addr64 = device.get64BitAddress();

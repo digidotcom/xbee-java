@@ -22,13 +22,13 @@
 			</includes>
 		</fileSet>
 		<!-- Include the library sources jars -->
-		<fileSet>
+		<!-- <fileSet>
 			<directory>${project.build.directory}/../library</directory>
 			<includes>
 				<include>*-sources.jar</include>
 			</includes>
 			<outputDirectory>src</outputDirectory>
-		</fileSet>
+		</fileSet>-->
 		<!-- Include the library sources -->
 		<fileSet>
 			<directory>${project.basedir}/../library/src/main/java</directory>

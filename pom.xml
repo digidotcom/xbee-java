@@ -50,7 +50,7 @@
 		<maven.jar.plugin.version>2.5</maven.jar.plugin.version>
 		<maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
 		<javadoc.plugin.version>2.10.1</javadoc.plugin.version>
-		<rxtx.version>2.1.7</rxtx.version>
+		<rxtx.version>2.2</rxtx.version>
 		<slf4j-api.version>1.7.7</slf4j-api.version>
 		<slf4j-jdk1.4.version>1.7.7</slf4j-jdk1.4.version>
 		<slf4j-simple.version>1.7.7</slf4j-simple.version>
@@ -194,19 +194,6 @@
 			</properties>
 		</profile>
 		
-		<profile>
-			<id>win32-amd64</id>
-			<activation>
-				<os>
-					<family>windows</family>
-					<arch>amd64</arch>
-				</os>
-			</activation>
-			<properties>
-				<build.type>win32_x86_64</build.type>
-			</properties>
-		</profile>
-		
 		<!-- Linux -->
 		<profile>
 			<id>linux-x86</id>
@@ -234,84 +221,19 @@
 			</properties>
 		</profile>
 		
-		<profile>
-			<id>linux-amd64</id>
-			<activation>
-				<os>
-					<name>linux</name>
-					<arch>amd64</arch>
-				</os>
-			</activation>
-			<properties>
-				<build.type>linux_x86_64</build.type>
-			</properties>
-		</profile>
-		
-		<profile>
-			<id>linux-ia64</id>
-			<activation>
-				<os>
-					<name>linux</name>
-					<arch>ia64</arch>
-				</os>
-			</activation>
-			<properties>
-				<build.type>linux_ia64</build.type>
-			</properties>
-		</profile>
-		
 		<!-- Mac -->
 		<profile>
 			<id>macosx</id>
 			<activation>
 				<os>
 					<family>mac</family>
-					<arch>x86</arch>
 				</os>
 			</activation>
 			<properties>
-				<build.type>macosx_x86</build.type>
+				<build.type>macosx</build.type>
 			</properties>
 		</profile>
 		
-		<profile>
-			<id>macosx_x86_64</id>
-			<activation>
-				<os>
-					<family>mac</family>
-					<arch>x86_64</arch>
-				</os>
-			</activation>
-			<properties>
-				<build.type>macosx_x86_64</build.type>
-			</properties>
-		</profile>
-		
-		<!-- Solaris -->
-		<profile>
-			<id>solaris-sparc</id>
-			<activation>
-				<os>
-					<name>solaris</name>
-					<arch>sparc</arch>
-				</os>
-			</activation>
-			<properties>
-				<build.type>solaris_sparc</build.type>
-			</properties>
-		</profile>
-		<profile>
-			<id>solaris-sparc64</id>
-			<activation>
-				<os>
-					<name>solaris</name>
-					<arch>sparc64</arch>
-				</os>
-			</activation>
-			<properties>
-				<build.type>solaris_sparc64</build.type>
-			</properties>
-		</profile>
 	</profiles>
 	
 	<!-- Repositories -->

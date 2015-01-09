@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -345,8 +345,10 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			
 			ATCommandResponse response = sendATCommand(new ATCommand("AP"));
 			if (response.getResponse() != null && response.getResponse().length > 0) {
-				if (response.getResponse()[0] != OperatingMode.API.getID())
+				if (response.getResponse()[0] != OperatingMode.API.getID()) {
 					operatingMode = OperatingMode.API_ESCAPE;
+					dataReader.setXBeeReaderMode(operatingMode);
+				}
 				logger.debug(toString() + "Using {}.", operatingMode.getName());
 				return operatingMode;
 			}

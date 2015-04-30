@@ -93,7 +93,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	@Override
 	public byte[] getAPIPacketSpecificData() {
 		byte[] data = new byte[1];
-		data[0] = (byte)(modemStatusEvent.getId() & 0xFF);
+		data[0] = (byte)(modemStatusEvent.getID() & 0xFF);
 		return data;
 	}
 	
@@ -131,7 +131,7 @@ public class ModemStatusPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(modemStatusEvent.getId(), 1)) + " (" + modemStatusEvent.getDescription() + ")");
+		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(modemStatusEvent.getID(), 1)) + " (" + modemStatusEvent.getDescription() + ")");
 		return parameters;
 	}
 }

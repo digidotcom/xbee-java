@@ -214,14 +214,12 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		}
 		synchronized (lock) {
 			if (serialPort != null) {
-				try {
-					serialPort.notifyOnDataAvailable(false);
-					serialPort.removeEventListener();
-					portIdentifier.removePortOwnershipListener(this);
-					serialPort.close();
-					serialPort = null;
-					connectionOpen = false;
-				} catch (Exception e) { }
+				serialPort.notifyOnDataAvailable(false);
+				serialPort.removeEventListener();
+				portIdentifier.removePortOwnershipListener(this);
+				serialPort.close();
+				serialPort = null;
+				connectionOpen = false;
 			}
 		}
 	}
@@ -242,7 +240,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 				// Serial device has been disconnected.
 				close();
 				synchronized (this) {
-					this.notify();
+					this.notifyAll();
 				}
 				break;
 			}
@@ -250,12 +248,14 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			try {
 				if (getInputStream().available() > 0) {
 					synchronized (this) {
-						this.notify();
+						this.notifyAll();
 					}
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -389,6 +389,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
 			onSerialOwnershipRequested(null);
 			break;
+		default:
+			break;
 		}
 	}
 	
@@ -405,7 +407,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 			StackTraceElement[] elems = e.getStackTrace();
 			String requester = elems[elems.length - 4].getClassName();
 			synchronized (this) {
-				this.notify();
+				this.notifyAll();
 			}
 			close();
 			String myPackage = this.getClass().getPackage().getName();

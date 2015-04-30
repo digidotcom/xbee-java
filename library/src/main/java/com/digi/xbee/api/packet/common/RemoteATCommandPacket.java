@@ -24,8 +24,8 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * This class represents a Remote AT Command Request packet. Packet is built
@@ -111,7 +111,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		index = index + 1;
 		
 		// 2 bytes of AT command.
-		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		String command = StringUtils.byteArrayToString(new byte[]{payload[index], payload[index + 1]});
 		index = index + 2;
 		
 		// Get data.
@@ -167,7 +167,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		this.transmitOptions = transmitOptions;
 		this.command = command;
 		if (parameter != null)
-			this.parameter = parameter.getBytes();
+			this.parameter = StringUtils.stringToByteArray(parameter);
 		this.logger = LoggerFactory.getLogger(RemoteATCommandPacket.class);
 	}
 	
@@ -229,7 +229,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 			data.write(destAddress64.getValue());
 			data.write(destAddress16.getValue());
 			data.write(transmitOptions);
-			data.write(ByteUtils.stringToByteArray(command));
+			data.write(StringUtils.stringToByteArray(command));
 			if (parameter != null)
 				data.write(parameter);
 		} catch (IOException e) {
@@ -308,7 +308,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		if (parameter == null)
 			this.parameter = null;
 		else
-			this.parameter = parameter.getBytes();
+			this.parameter = StringUtils.stringToByteArray(parameter);
 	}
 	
 	/**
@@ -338,7 +338,7 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	public String getParameterAsString() {
 		if (parameter == null)
 			return null;
-		return new String(parameter);
+		return StringUtils.byteArrayToString(parameter);
 	}
 	
 	/*
@@ -351,10 +351,10 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		parameters.put("64-bit dest. address", HexUtils.prettyHexString(destAddress64.toString()));
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Command options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
-		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
+		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(StringUtils.stringToByteArray(command))) + " (" + command + ")");
 		if (parameter != null) {
 			if (ATStringCommands.get(command) != null)
-				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + " (" + new String(parameter) + ")");
+				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + " (" + StringUtils.byteArrayToString(parameter) + ")");
 			else
 				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)));
 		}

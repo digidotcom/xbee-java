@@ -103,7 +103,7 @@ public class HexUtils {
 		if (parameter == null)
 			throw new NullPointerException("Parameter cannot be null.");
 		
-		byte[] byteArray = parameter.getBytes();
+		byte[] byteArray = StringUtils.stringToByteArray(parameter);
 		for (int i = 0; i < byteArray.length; i++){
 			if (!((byteArray[i] >= '0') && (byteArray[i] <= '9')))
 				return true;
@@ -121,15 +121,15 @@ public class HexUtils {
 	 */
 	public static String integerToHexString(int value, int minBytes) {
 		byte[] intAsByteArray = ByteUtils.intToByteArray(value);
-		String intAsHexString = "";
+		StringBuilder intAsHexString = new StringBuilder();
 		boolean numberFound = false;
 		for (int i = 0; i < intAsByteArray.length; i++) {
 			if (intAsByteArray[i] == 0x00 && !numberFound && intAsByteArray.length - i > minBytes)
 				continue;
-			intAsHexString += HexUtils.byteArrayToHexString(new byte[] {(byte)(intAsByteArray[i] & 0xFF)});
+			intAsHexString.append(HexUtils.byteArrayToHexString(new byte[] {(byte)(intAsByteArray[i] & 0xFF)}));
 			numberFound = true;
 		}
-		return intAsHexString;
+		return intAsHexString.toString();
 	}
 	
 	/**
@@ -148,13 +148,13 @@ public class HexUtils {
 		if (hexString == null)
 			throw new NullPointerException("Hexadecimal string cannot be null.");
 		
-		String prettyHexString = "";
+		StringBuilder prettyHexString = new StringBuilder();
 		if (hexString.length() % 2 != 0)
 			hexString = "0" + hexString;
 		int iterations = hexString.length() / 2;
 		for (int i = 0; i < iterations; i++)
-			prettyHexString += hexString.substring(2 * i, 2 * i + 2) + " ";
-		return prettyHexString.trim();
+			prettyHexString.append(hexString.substring(2 * i, 2 * i + 2) + " ");
+		return prettyHexString.toString().trim();
 	}
 	
 	/**

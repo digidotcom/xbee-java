@@ -39,7 +39,7 @@ public enum ATCommandStatus {
 	
 	static {
 		for (ATCommandStatus at:values())
-			lookupTable.put(at.getId(), at);
+			lookupTable.put(at.getID(), at);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public enum ATCommandStatus {
 	 * 
 	 * @return The AT Command Status ID.
 	 */
-	public int getId() {
+	public int getID() {
 		return id;
 	}
 	

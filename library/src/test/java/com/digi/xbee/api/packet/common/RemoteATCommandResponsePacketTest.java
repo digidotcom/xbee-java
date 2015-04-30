@@ -117,7 +117,7 @@ public class RemoteATCommandResponsePacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		
 		byte[] payload = new byte[12 + atCommand.length];
 		payload[0] = (byte)frameType;
@@ -147,7 +147,7 @@ public class RemoteATCommandResponsePacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
 		byte[] payload = new byte[12 + atCommand.length + data.length];
@@ -179,7 +179,7 @@ public class RemoteATCommandResponsePacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		
 		byte[] payload = new byte[13 + atCommand.length];
 		payload[0] = (byte)frameType;
@@ -198,7 +198,7 @@ public class RemoteATCommandResponsePacketTest {
 		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
 		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
-		assertThat("Returned status is not the expected one", packet.getStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getStatus().getID(), is(equalTo(status)));
 		assertThat("Returned value is not the expected one", packet.getCommandValue(), is(nullValue()));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -218,7 +218,7 @@ public class RemoteATCommandResponsePacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		byte[] value = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
 		byte[] payload = new byte[13 + atCommand.length + value.length];
@@ -239,7 +239,7 @@ public class RemoteATCommandResponsePacketTest {
 		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
 		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
-		assertThat("Returned status is not the expected one", packet.getStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getStatus().getID(), is(equalTo(status)));
 		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(equalTo(value)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -471,7 +471,7 @@ public class RemoteATCommandResponsePacketTest {
 		System.arraycopy(source64Addr.getValue(), 0, expectedData, 1, source64Addr.getValue().length);
 		System.arraycopy(source16Addr.getValue(), 0, expectedData, 9, source16Addr.getValue().length);
 		System.arraycopy(command.getBytes(), 0, expectedData, 11, command.length());
-		expectedData[13] = (byte)status.getId();
+		expectedData[13] = (byte)status.getID();
 		
 		// Call the method under test.
 		byte[] data = packet.getAPIData();
@@ -502,7 +502,7 @@ public class RemoteATCommandResponsePacketTest {
 		System.arraycopy(source64Addr.getValue(), 0, expectedData, 1, source64Addr.getValue().length);
 		System.arraycopy(source16Addr.getValue(), 0, expectedData, 9, source16Addr.getValue().length);
 		System.arraycopy(command.getBytes(), 0, expectedData, 11, command.length());
-		expectedData[13] = (byte)status.getId();
+		expectedData[13] = (byte)status.getID();
 		System.arraycopy(parameter, 0, expectedData, 12 + command.length(), parameter.length);
 		
 		// Call the method under test.
@@ -530,7 +530,7 @@ public class RemoteATCommandResponsePacketTest {
 		
 		String expectedDest64Addr = HexUtils.prettyHexString(source64Addr.getValue());
 		String expectedDest16Addr = HexUtils.prettyHexString(source16Addr.getValue());
-		String expectedStatus = HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")";
+		String expectedStatus = HexUtils.prettyHexString(HexUtils.integerToHexString(status.getID(), 1)) + " (" + status.getDescription() + ")";
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
 		
 		// Call the method under test.
@@ -563,7 +563,7 @@ public class RemoteATCommandResponsePacketTest {
 		
 		String expectedDest64Addr = HexUtils.prettyHexString(source64Addr.getValue());
 		String expectedDest16Addr = HexUtils.prettyHexString(source16Addr.getValue());
-		String expectedStatus = HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")";
+		String expectedStatus = HexUtils.prettyHexString(HexUtils.integerToHexString(status.getID(), 1)) + " (" + status.getDescription() + ")";
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter) + " (" + new String(parameter) + ")";
 		
@@ -597,7 +597,7 @@ public class RemoteATCommandResponsePacketTest {
 		
 		String expectedDest64Addr = HexUtils.prettyHexString(source64Addr.getValue());
 		String expectedDest16Addr = HexUtils.prettyHexString(source16Addr.getValue());
-		String expectedStatus = HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")";
+		String expectedStatus = HexUtils.prettyHexString(HexUtils.integerToHexString(status.getID(), 1)) + " (" + status.getDescription() + ")";
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter);
 		

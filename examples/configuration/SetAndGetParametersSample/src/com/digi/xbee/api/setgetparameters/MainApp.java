@@ -14,6 +14,7 @@ package com.digi.xbee.api.setgetparameters;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.utils.ByteUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * XBee Java Library Set and Get parameters sample application.
@@ -62,7 +63,7 @@ public class MainApp {
 			myDevice.open();
 			
 			// Set parameters.
-			myDevice.setParameter(PARAM_NODE_ID, PARAM_VALUE_NODE_ID.getBytes());
+			myDevice.setParameter(PARAM_NODE_ID, StringUtils.stringToByteArray(PARAM_VALUE_NODE_ID));
 			myDevice.setParameter(PARAM_PAN_ID, PARAM_VALUE_PAN_ID);
 			myDevice.setParameter(PARAM_DEST_ADDRESS_H, ByteUtils.intToByteArray(PARAM_VALUE_DEST_ADDRESS_H));
 			myDevice.setParameter(PARAM_DEST_ADDRESS_L, ByteUtils.intToByteArray(PARAM_VALUE_DEST_ADDRESS_L));
@@ -74,7 +75,7 @@ public class MainApp {
 			byte[] paramValueDL = myDevice.getParameter(PARAM_DEST_ADDRESS_L);
 			
 			// Compare the read parameter values with the values that were set.
-			if (!new String(paramValueNI).equals(PARAM_VALUE_NODE_ID)) {
+			if (!StringUtils.byteArrayToString(paramValueNI).equals(PARAM_VALUE_NODE_ID)) {
 				System.out.println("NI parameter was not set correctly.");
 				myDevice.close();
 				System.exit(1);

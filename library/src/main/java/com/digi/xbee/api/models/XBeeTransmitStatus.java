@@ -52,7 +52,7 @@ public enum XBeeTransmitStatus {
 	
 	static {
 		for (XBeeTransmitStatus ts:values())
-			lookupTable.put(ts.getId(), ts);
+			lookupTable.put(ts.getID(), ts);
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public enum XBeeTransmitStatus {
 	 * 
 	 * @return XBee transmit status ID.
 	 */
-	public int getId() {
+	public int getID() {
 		return id;
 	}
 	

@@ -113,7 +113,7 @@ public class ATCommandResponsePacketTest {
 		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
 		//int frameID = 0xE7;
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		
 		byte[] payload = new byte[2 + atCommand.length];
 		payload[0] = (byte)frameType;
@@ -139,7 +139,7 @@ public class ATCommandResponsePacketTest {
 		// Setup the resources for the test.
 		int frameID = 0xE7;
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
 		byte[] payload = new byte[2 + atCommand.length + data.length];
@@ -167,7 +167,7 @@ public class ATCommandResponsePacketTest {
 		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
 		int frameID = 0xE7;
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		
 		byte[] payload = new byte[3 + atCommand.length];
 		payload[0] = (byte)frameType;
@@ -182,7 +182,7 @@ public class ATCommandResponsePacketTest {
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
-		assertThat("Returned status is not the expected one", packet.getStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getStatus().getID(), is(equalTo(status)));
 		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(nullValue()));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -200,7 +200,7 @@ public class ATCommandResponsePacketTest {
 		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
 		int frameID = 0xE7;
 		byte[] atCommand = "NI".getBytes();
-		int status = ATCommandStatus.OK.getId();
+		int status = ATCommandStatus.OK.getID();
 		byte[] value = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
 		byte[] payload = new byte[3 + atCommand.length + value.length];
@@ -217,7 +217,7 @@ public class ATCommandResponsePacketTest {
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
-		assertThat("Returned status is not the expected one", packet.getStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getStatus().getID(), is(equalTo(status)));
 		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(equalTo(value)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -379,7 +379,7 @@ public class ATCommandResponsePacketTest {
 		byte[] expectedData = new byte[expectedLength];
 		expectedData[0] = (byte)frameID;
 		System.arraycopy(command.getBytes(), 0, expectedData, 1, command.length());
-		expectedData[1 + command.length()] = (byte)status.getId();
+		expectedData[1 + command.length()] = (byte)status.getID();
 		
 		// Call the method under test.
 		byte[] data = packet.getAPIData();
@@ -406,7 +406,7 @@ public class ATCommandResponsePacketTest {
 		byte[] expectedData = new byte[expectedLength];
 		expectedData[0] = (byte)frameID;
 		System.arraycopy(command.getBytes(), 0, expectedData, 1, command.length());
-		expectedData[1 + command.length()] = (byte)status.getId();
+		expectedData[1 + command.length()] = (byte)status.getID();
 		System.arraycopy(parameter, 0, expectedData, 2 + command.length(), parameter.length);
 		
 		// Call the method under test.
@@ -431,7 +431,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getID()).toUpperCase() + " (" + status.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
@@ -458,7 +458,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getID()).toUpperCase() + " (" + status.getDescription() + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter) + " (" + new String(parameter) + ")";
 		
 		// Call the method under test.
@@ -486,7 +486,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getID()).toUpperCase() + " (" + status.getDescription() + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter);
 		
 		// Call the method under test.

@@ -35,7 +35,7 @@ import com.digi.xbee.api.listeners.IDiscoveryListener;
 public class XBeeNetworkDiscoverDevicesListenerTest {
 
 	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	private ExpectedException exception = ExpectedException.none();
 	
 	// Variables.
 	private XBeeNetwork network;

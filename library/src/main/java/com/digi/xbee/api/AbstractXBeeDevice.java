@@ -65,6 +65,7 @@ import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * This class provides common functionality for all XBee devices.
@@ -375,7 +376,7 @@ public abstract class AbstractXBeeDevice {
 		}
 		// Get the Node ID.
 		response = getParameter("NI");
-		nodeID = new String(response);
+		nodeID = StringUtils.byteArrayToString(response);
 		
 		// Get the hardware version.
 		if (hardwareVersion == null) {
@@ -487,7 +488,7 @@ public abstract class AbstractXBeeDevice {
 		if (nodeID.length() > 20)
 			throw new IllegalArgumentException("Node ID length must be less than 21.");
 		
-		setParameter("NI", nodeID.getBytes());
+		setParameter("NI", StringUtils.stringToByteArray(nodeID));
 		
 		this.nodeID = nodeID;
 	}
@@ -1769,7 +1770,7 @@ public abstract class AbstractXBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		// Try to build an IO Sample from the sample payload.
-		byte[] samplePayload = null;
+		byte[] samplePayload;
 		IOSample ioSample;
 		
 		// The response to the IS command in local 802.15.4 devices is empty, 

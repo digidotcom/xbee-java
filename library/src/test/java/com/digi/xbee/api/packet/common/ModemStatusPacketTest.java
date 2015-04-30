@@ -136,7 +136,7 @@ public class ModemStatusPacketTest {
 		
 		byte[] payload = new byte[2];
 		payload[0] = (byte)frameType;
-		payload[1] = (byte)modemStatusEvent.getId();
+		payload[1] = (byte)modemStatusEvent.getID();
 		
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Payload is not a Modem Status packet.")));
@@ -158,7 +158,7 @@ public class ModemStatusPacketTest {
 		
 		byte[] payload = new byte[2];
 		payload[0] = (byte)frameType;
-		payload[1] = (byte)modemStatusEvent.getId();
+		payload[1] = (byte)modemStatusEvent.getID();
 		
 		// Call the method under test.
 		ModemStatusPacket packet = ModemStatusPacket.createPacket(payload);
@@ -220,7 +220,7 @@ public class ModemStatusPacketTest {
 		
 		int expectedLength = 1 /* Modem status */;
 		byte[] expectedData = new byte[expectedLength];
-		expectedData[0] = (byte)modemStatusEvent.getId();
+		expectedData[0] = (byte)modemStatusEvent.getID();
 		
 		// Call the method under test.
 		byte[] data = packet.getAPIData();
@@ -240,7 +240,7 @@ public class ModemStatusPacketTest {
 		ModemStatusEvent modemStatusEvent = ModemStatusEvent.STATUS_JOINED_NETWORK;
 		ModemStatusPacket packet = new ModemStatusPacket(modemStatusEvent);
 		
-		String expectedModemStatus = HexUtils.integerToHexString(modemStatusEvent.getId(), 1) + " (" + modemStatusEvent.getDescription() + ")";
+		String expectedModemStatus = HexUtils.integerToHexString(modemStatusEvent.getID(), 1) + " (" + modemStatusEvent.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();

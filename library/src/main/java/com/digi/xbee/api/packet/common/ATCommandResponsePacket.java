@@ -23,6 +23,7 @@ import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 import com.digi.xbee.api.models.ATStringCommands;
 
 /**
@@ -91,7 +92,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		index = index + 1;
 		
 		// 2 bytes of AT command, starting at 2nd byte.
-		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		String command = StringUtils.byteArrayToString(new byte[]{payload[index], payload[index + 1]});
 		index = index + 2;
 		
 		// Status byte.
@@ -148,8 +149,8 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(command.getBytes());
-			os.write(status.getId());
+			os.write(StringUtils.stringToByteArray(command));
+			os.write(status.getID());
 			if (commandValue != null)
 				os.write(commandValue);
 		} catch (IOException e) {
@@ -196,7 +197,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		if (commandValue == null)
 			this.commandValue = null;
 		else
-			this.commandValue = commandValue.getBytes();
+			this.commandValue = StringUtils.stringToByteArray(commandValue);
 	}
 	
 	/**
@@ -226,7 +227,7 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	public String getCommandValueAsString() {
 		if (commandValue == null)
 			return null;
-		return new String(commandValue);
+		return StringUtils.byteArrayToString(commandValue);
 	}
 	
 	/*
@@ -245,11 +246,11 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
-		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")");
+		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(StringUtils.stringToByteArray(command))) + " (" + command + ")");
+		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getID(), 1)) + " (" + status.getDescription() + ")");
 		if (commandValue != null) {
 			if (ATStringCommands.get(command) != null)
-				parameters.put("Response", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(commandValue)) + " (" + new String(commandValue) + ")");
+				parameters.put("Response", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(commandValue)) + " (" + StringUtils.byteArrayToString(commandValue) + ")");
 			else
 				parameters.put("Response", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(commandValue)));
 		}

@@ -11,6 +11,8 @@
  */
 package com.digi.xbee.api.models;
 
+import com.digi.xbee.api.utils.StringUtils;
+
 /**
  * This class represents the response of an AT Command sent by the connected 
  * XBee device or by a remote device after executing an AT Command.
@@ -133,7 +135,7 @@ public class ATCommandResponse {
 	public String getResponseString() {
 		if (response == null)
 			return null;
-		return new String(response);
+		return StringUtils.byteArrayToString(response);
 	}
 	
 	/**

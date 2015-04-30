@@ -16,6 +16,7 @@ import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * XBee Java Library Send Data sample application.
@@ -49,7 +50,7 @@ public class MainApp {
 		System.out.println(" +--------------------------------------+\n");
 		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
-		byte[] dataToSend = DATA_TO_SEND.getBytes();
+		byte[] dataToSend = StringUtils.stringToByteArray(DATA_TO_SEND);
 		
 		try {
 			myDevice.open();
@@ -64,7 +65,7 @@ public class MainApp {
 			
 			System.out.format("Sending data to %s >> %s | %s... ", remoteDevice.get64BitAddress(), 
 					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
-					new String(dataToSend));
+					StringUtils.byteArrayToString(dataToSend));
 			
 			myDevice.sendData(remoteDevice, dataToSend);
 			

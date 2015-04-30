@@ -14,6 +14,7 @@ package com.digi.xbee.api.packet;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.models.SpecialByte;
@@ -176,11 +177,12 @@ public abstract class XBeePacket {
 	 * @return Pretty String representing the packet.
 	 */
 	public String toPrettyString() {
-		String value = "Packet: " + toString() + "\n";
+		StringBuilder value = new StringBuilder();
+		value.append("Packet: " + toString() + "\n");
 		LinkedHashMap<String, String> parameters = getParameters();
-		for (String parameter:parameters.keySet())
-			value = value + parameter + ": " + parameters.get(parameter) + "\n";
-		return value;
+		for (Map.Entry<String, String> parameter:parameters.entrySet())
+			value.append(parameter.getKey() + ": " + parameter.getValue() + "\n");
+		return value.toString();
 	}
 	
 	/**

@@ -54,7 +54,7 @@ public enum ModemStatusEvent {
 	
 	static {
 		for (ModemStatusEvent at:values())
-			lookupTable.put(at.getId(), at);
+			lookupTable.put(at.getID(), at);
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public enum ModemStatusEvent {
 	 * 
 	 * @return The modem status ID.
 	 */
-	public int getId() {
+	public int getID() {
 		return id;
 	}
 	

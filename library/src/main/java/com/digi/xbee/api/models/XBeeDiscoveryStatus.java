@@ -39,7 +39,7 @@ public enum XBeeDiscoveryStatus {
 	
 	static {
 		for (XBeeDiscoveryStatus at:values())
-			lookupTable.put(at.getId(), at);
+			lookupTable.put(at.getID(), at);
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public enum XBeeDiscoveryStatus {
 	 * 
 	 * @return The discovery status ID.
 	 */
-	public int getId() {
+	public int getID() {
 		return id;
 	}
 	

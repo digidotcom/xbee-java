@@ -11,6 +11,8 @@
  */
 package com.digi.xbee.api.models;
 
+import com.digi.xbee.api.utils.StringUtils;
+
 /**
  * This class represents an AT command used to read or set different properties 
  * of the XBee device.
@@ -57,7 +59,7 @@ public class ATCommand {
 	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommand(String command, String parameter) {
-		this(command, parameter == null ? null : parameter.getBytes());
+		this(command, parameter == null ? null : StringUtils.stringToByteArray(parameter));
 	}
 	
 	/**
@@ -111,7 +113,7 @@ public class ATCommand {
 	public String getParameterString() {
 		if (parameter == null)
 			return null;
-		return new String(parameter);
+		return StringUtils.byteArrayToString(parameter);
 	}
 	
 	/**
@@ -120,7 +122,7 @@ public class ATCommand {
 	 * @param parameter The AT command parameter as string.
 	 */
 	public void setParameter(String parameter) {
-		this.parameter = parameter.getBytes();
+		this.parameter = StringUtils.stringToByteArray(parameter);
 	}
 	
 	/**

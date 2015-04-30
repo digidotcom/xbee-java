@@ -12,6 +12,7 @@
 package com.digi.xbee.api.models;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * This class represents an XBee message containing the remote XBee device the 
@@ -95,7 +96,7 @@ public class XBeeMessage {
 	 * @return The data of the message in string format.
 	 */
 	public String getDataString() {
-		return new String(data);
+		return StringUtils.byteArrayToString(data);
 	}
 	
 	/**

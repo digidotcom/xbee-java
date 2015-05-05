@@ -2,11 +2,28 @@ package com.digi.xbee.api.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 public class StringUtils {
 	
 	// Constants.
 	private final static String UTF8_CHARSET = "UTF-8";
+	
+	/**
+	 * Transforms the given string to upper case format.
+	 * 
+	 * @param source String to transform to upper case.
+	 * 
+	 * @return The given string in upper case.
+	 * 
+	 * @throws NullPointerException if {@code source == null}.
+	 */
+	public static String stringToUpperCase(String source) {
+		if (source == null)
+			throw new NullPointerException("String cannot be null.");
+		
+		return source.toUpperCase(new Locale(UTF8_CHARSET));
+	}
 	
 	/**
 	 * Transforms the given string to the corresponding byte array.

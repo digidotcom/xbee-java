@@ -744,10 +744,12 @@ public class XBeeNetwork {
 		
 		switch (device.getXBeeProtocol()) {
 		case RAW_802_15_4:
-			address = ((RemoteRaw802Device)device).get16BitAddress();
+			if (device instanceof RemoteRaw802Device)
+				address = ((RemoteRaw802Device)device).get16BitAddress();
 			break;
 		case ZIGBEE:
-			address = ((RemoteZigBeeDevice)device).get16BitAddress();
+			if (device instanceof RemoteZigBeeDevice)
+				address = ((RemoteZigBeeDevice)device).get16BitAddress();
 			break;
 		default:
 			// TODO should we allow this operation for general remote devices?

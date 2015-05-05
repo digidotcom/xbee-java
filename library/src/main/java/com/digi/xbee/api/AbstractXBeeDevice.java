@@ -1053,16 +1053,20 @@ public abstract class AbstractXBeeDevice {
 						if (sentAPIPacket.getFrameType() == APIFrameType.AT_COMMAND) {
 							if (receivedAPIPacket.getFrameType() != APIFrameType.AT_COMMAND_RESPONSE)
 								return;
-							if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
-								return;
+							if (sentAPIPacket instanceof ATCommandPacket && receivedPacket instanceof ATCommandResponsePacket) {
+								if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
+									return;
+							}
 						}
 						// If the packet sent is a remote AT command, verify that the received one is a remote AT command response and 
 						// the command matches in both packets.
 						if (sentAPIPacket.getFrameType() == APIFrameType.REMOTE_AT_COMMAND_REQUEST) {
 							if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_AT_COMMAND_RESPONSE)
 								return;
-							if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
-								return;
+							if (sentAPIPacket instanceof RemoteATCommandPacket && receivedPacket instanceof RemoteATCommandResponsePacket) {
+								if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
+									return;
+							}
 						}
 					}
 					
@@ -1071,7 +1075,7 @@ public abstract class AbstractXBeeDevice {
 					if (!isSamePacket(sentPacket, receivedPacket)) {
 						responseList.add(receivedPacket);
 						synchronized (responseList) {
-							responseList.notify();
+							responseList.notifyAll();
 						}
 					}
 				}
@@ -1837,13 +1841,16 @@ public abstract class AbstractXBeeDevice {
 			// Save the packet value (IO sample payload)
 			switch (((XBeeAPIPacket)receivedPacket).getFrameType()) {
 			case IO_DATA_SAMPLE_RX_INDICATOR:
-				ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getRFData();
+				if (receivedPacket instanceof IODataSampleRxIndicatorPacket)
+					ioPacketPayload = ((IODataSampleRxIndicatorPacket)receivedPacket).getRFData();
 				break;
 			case RX_IO_16:
-				ioPacketPayload = ((RX16IOPacket)receivedPacket).getRFData();
+				if (receivedPacket instanceof RX16IOPacket)
+					ioPacketPayload = ((RX16IOPacket)receivedPacket).getRFData();
 				break;
 			case RX_IO_64:
-				ioPacketPayload = ((RX64IOPacket)receivedPacket).getRFData();
+				if (receivedPacket instanceof RX64IOPacket)
+					ioPacketPayload = ((RX64IOPacket)receivedPacket).getRFData();
 				break;
 			default:
 				return;
@@ -1853,7 +1860,7 @@ public abstract class AbstractXBeeDevice {
 			
 			// Continue execution by notifying the lock object.
 			synchronized (ioLock) {
-				ioLock.notify();
+				ioLock.notifyAll();
 			}
 		}
 	};

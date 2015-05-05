@@ -129,7 +129,10 @@ public class TX64Packet extends XBeeAPIPacket {
 		this.frameID = frameID;
 		this.destAddress64 = destAddress64;
 		this.transmitOptions = transmitOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(TX64Packet.class);
 	}
 
@@ -197,7 +200,10 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 	}
 	
 	/**
@@ -206,7 +212,9 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @return RF data to send.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData != null)
+			return rfData.clone();
+		return null;
 	}
 	
 	/*

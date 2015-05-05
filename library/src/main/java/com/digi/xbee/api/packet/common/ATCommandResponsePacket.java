@@ -137,7 +137,10 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 		this.frameID = frameID;
 		this.status = status;
 		this.command = command;
-		this.commandValue = commandValue;
+		if (commandValue != null)
+			this.commandValue = commandValue.clone();
+		else
+			this.commandValue = null;
 		this.logger = LoggerFactory.getLogger(ATCommandResponsePacket.class);
 	}
 	
@@ -206,7 +209,10 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @param commandValue The AT command response value.
 	 */
 	public void setCommandValue(byte[] commandValue) {
-		this.commandValue = commandValue;
+		if (commandValue != null)
+			this.commandValue = commandValue.clone();
+		else
+			this.commandValue = null;
 	}
 	
 	/**
@@ -215,7 +221,9 @@ public class ATCommandResponsePacket extends XBeeAPIPacket {
 	 * @return The AT command response value.
 	 */
 	public byte[] getCommandValue() {
-		return commandValue;
+		if (commandValue != null)
+			return commandValue.clone();
+		return null;
 	}
 	
 	/**

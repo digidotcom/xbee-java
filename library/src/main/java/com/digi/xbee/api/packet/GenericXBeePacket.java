@@ -79,7 +79,10 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	 */
 	public GenericXBeePacket(byte[] rfData) {
 		super(APIFrameType.GENERIC);
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(GenericXBeePacket.class);
 	}
 	
@@ -114,7 +117,10 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	 * @param rfData The new XBee RF Data.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 	}
 	
 	/**
@@ -123,7 +129,9 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	 * @return The RF Data.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData != null)
+			return rfData.clone();
+		return null;
 	}
 	
 	/*

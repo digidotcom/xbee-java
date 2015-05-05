@@ -134,7 +134,10 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		
 		this.frameID = frameID;
 		this.command = command;
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 		this.logger = LoggerFactory.getLogger(ATCommandPacket.class);
 	}
 	
@@ -191,7 +194,10 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @param parameter The AT command parameter.
 	 */
 	public void setParameter(byte[] parameter) {
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 	}
 	
 	/**
@@ -200,7 +206,9 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @return The AT command parameter.
 	 */
 	public byte[] getParameter() {
-		return parameter;
+		if (parameter != null)
+			return parameter.clone();
+		return null;
 	}
 	
 	/**

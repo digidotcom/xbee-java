@@ -82,7 +82,10 @@ public class ATCommand {
 			throw new IllegalArgumentException("Command lenght must be 2.");
 		
 		this.command = command;
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 	}
 	
 	/**
@@ -101,7 +104,9 @@ public class ATCommand {
 	 *         have a parameter.
 	 */
 	public byte[] getParameter() {
-		return parameter;
+		if (parameter != null)
+			return parameter.clone();
+		return null;
 	}
 	
 	/**
@@ -131,6 +136,9 @@ public class ATCommand {
 	 * @param parameter The AT command parameter as byte array.
 	 */
 	public void setParameter(byte[] parameter) {
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 	}
 }

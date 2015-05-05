@@ -43,7 +43,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	// Variables.
 	private final XBee16BitAddress sourceAddress16;
 	
-	private final IOSample ioSample;
+	private IOSample ioSample;
 	
 	private final int rssi;
 	private final int receiveOptions;
@@ -136,11 +136,13 @@ public class RX16IOPacket extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData;
-		if (rfData != null)
+		if (rfData != null) {
+			this.rfData = rfData.clone();
 			ioSample = new IOSample(rfData);
-		else
+		} else {
+			this.rfData = null;
 			ioSample = null;
+		}
 		this.logger = LoggerFactory.getLogger(RX16IOPacket.class);
 	}
 	
@@ -231,7 +233,14 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 * @param rfData Received RF data.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData != null) {
+			this.rfData = rfData.clone();
+			this.ioSample = new IOSample(this.rfData);
+		} else {
+			this.rfData = null;
+			this.ioSample = null;
+		}
+		
 	}
 	
 	/**
@@ -240,7 +249,9 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 * @return Received RF data.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData != null)
+			return rfData.clone();
+		return null;
 	}
 	
 	/*

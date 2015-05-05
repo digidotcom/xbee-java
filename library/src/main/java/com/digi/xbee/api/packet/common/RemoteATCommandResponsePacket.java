@@ -168,7 +168,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.command = command;
 		this.status = status;
-		this.commandValue = commandValue;
+		if (commandValue != null)
+			this.commandValue = commandValue.clone();
+		else
+			this.commandValue = null;
 		this.logger = LoggerFactory.getLogger(RemoteATCommandResponsePacket.class);
 	}
 	
@@ -261,7 +264,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @param commandValue The AT command response value.
 	 */
 	public void setCommandValue(byte[] commandValue) {
-		this.commandValue = commandValue;
+		if (commandValue != null)
+			this.commandValue = commandValue.clone();
+		else
+			this.commandValue = null;
 	}
 	
 	/**
@@ -270,7 +276,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @return The AT command response value.
 	 */
 	public byte[] getCommandValue() {
-		return commandValue;
+		if (commandValue != null)
+			return commandValue.clone();
+		return null;
 	}
 	
 	/**

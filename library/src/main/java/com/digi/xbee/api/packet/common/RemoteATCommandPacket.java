@@ -214,7 +214,10 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 		this.destAddress16 = destAddress16;
 		this.transmitOptions = transmitOptions;
 		this.command = command;
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 		this.logger = LoggerFactory.getLogger(RemoteATCommandPacket.class);
 	}
 	
@@ -317,7 +320,10 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * @param parameter The AT command parameter.
 	 */
 	public void setParameter(byte[] parameter) {
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 	}
 	
 	/**
@@ -326,7 +332,9 @@ public class RemoteATCommandPacket extends XBeeAPIPacket {
 	 * @return The AT command parameter.
 	 */
 	public byte[] getParameter() {
-		return parameter;
+		if (parameter != null)
+			return parameter.clone();
+		return null;
 	}
 	
 	/**

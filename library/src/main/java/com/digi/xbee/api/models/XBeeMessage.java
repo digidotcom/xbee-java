@@ -66,7 +66,7 @@ public class XBeeMessage {
 			throw new NullPointerException("Data cannot be null.");
 		
 		this.remoteXBeeDevice = remoteXBeeDevice;
-		this.data = data;
+		this.data = data.clone();
 		this.isBroadcast = isBroadcast;
 	}
 	
@@ -87,7 +87,7 @@ public class XBeeMessage {
 	 * @return A byte array containing the data of the message.
 	 */
 	public byte[] getData() {
-		return data;
+		return data.clone();
 	}
 	
 	/**

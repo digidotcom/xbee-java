@@ -80,7 +80,10 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 */
 	public UnknownXBeePacket(int apiIDValue, byte[] rfData) {
 		super(apiIDValue);
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(UnknownXBeePacket.class);
 	}
 	
@@ -115,7 +118,10 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 * @param rfData The new XBee RF Data.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 	}
 	
 	/**
@@ -124,7 +130,9 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 * @return The RF Data.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData != null)
+			return rfData.clone();
+		return null;
 	}
 	
 	/*

@@ -101,7 +101,10 @@ public class ATCommandResponse {
 			throw new NullPointerException("Status cannot be null.");
 		
 		this.command = command;
-		this.response = response;
+		if (response != null)
+			this.response = response.clone();
+		else
+			this.response = null;
 		this.status = status;
 	}
 	
@@ -123,7 +126,9 @@ public class ATCommandResponse {
 	 *         {@code null} if there is not response data.
 	 */
 	public byte[] getResponse() {
-		return response;
+		if (response != null)
+			return response.clone();
+		return null;
 	}
 	
 	/**

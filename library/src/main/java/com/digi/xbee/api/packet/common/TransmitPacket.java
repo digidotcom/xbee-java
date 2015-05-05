@@ -192,7 +192,10 @@ public class TransmitPacket extends XBeeAPIPacket {
 		this.destAddress16 = destAddress16;
 		this.broadcastRadius = broadcastRadius;
 		this.transmitOptions = transmitOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(TransmitPacket.class);
 	}
 
@@ -283,7 +286,10 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 	}
 	
 	/**
@@ -292,7 +298,9 @@ public class TransmitPacket extends XBeeAPIPacket {
 	 * @return RF Data to send.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData != null)
+			return rfData.clone();
+		return null;
 	}
 	
 	/*

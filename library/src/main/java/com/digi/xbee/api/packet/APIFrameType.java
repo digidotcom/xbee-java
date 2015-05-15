@@ -23,6 +23,7 @@ import com.digi.xbee.api.utils.HexUtils;
 public enum APIFrameType {
 
 	// Enumeration elements.
+	UNKNOWN (-1, "Unknown packet"),
 	TX_64 (0x00, "TX (Transmit) Request 64-bit address"),
 	TX_16 (0x01, "TX (Transmit) Request 16-bit address"),
 	AT_COMMAND (0x08, "AT Command"),
@@ -71,11 +72,13 @@ public enum APIFrameType {
 	 * 
 	 * @param value ID value to retrieve {@code APIFrameType}.
 	 * 
-	 * @return The {@code APIFrameType} for the given ID value, {@code null} if 
-	 *         it does not exist.
+	 * @return The {@code APIFrameType} for the given ID value, {@code #UNKNOWN}
+	 *         if it does not supported.
 	 */
 	public static APIFrameType get(int value) {
 		APIFrameType type = lookupTable.get(value);
+		if (type == null)
+			return UNKNOWN;
 		return type; 
 	}
 	

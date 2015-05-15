@@ -321,8 +321,11 @@ public class XBeePacketParser {
 			packet = RemoteATCommandResponsePacket.createPacket(payload);
 			break;
 		case GENERIC:
-		default:
 			packet = GenericXBeePacket.createPacket(payload);
+			break;
+		case UNKNOWN:
+		default:
+			packet = UnknownXBeePacket.createPacket(payload);
 		}
 		return packet;
 	}

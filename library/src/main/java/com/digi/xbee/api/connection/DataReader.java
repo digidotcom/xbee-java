@@ -473,7 +473,7 @@ public class DataReader extends Thread {
 			
 		XBeeAPIPacket apiPacket = (XBeeAPIPacket)packet;
 		APIFrameType apiType = apiPacket.getFrameType();
-		if (apiType == null)
+		if (apiType == null || apiType == APIFrameType.UNKNOWN)
 			return null;
 		
 		RemoteXBeeDevice remoteDevice = null;

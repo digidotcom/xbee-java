@@ -91,6 +91,9 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	/**
 	 * Returns the XBee packet frame type.
 	 * 
+	 * If {@code APIFrameType#UNKNOWN} is returned, the real value of the frame
+	 * type is returned by {@code #getFrameTypeValue()}.
+	 * 
 	 * @return The XBee packet frame type.
 	 * 
 	 * @see APIFrameType

@@ -18,7 +18,7 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		<directory>../../../target/examples/communication/SendExplicitDataSample</directory>
+		<directory>../../../target/examples/communication/explicit/SendExplicitDataSample</directory>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

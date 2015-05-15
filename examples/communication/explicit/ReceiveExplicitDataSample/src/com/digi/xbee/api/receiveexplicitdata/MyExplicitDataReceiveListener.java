@@ -12,7 +12,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * {@link IExplicitDataReceiveListener} interface, and is notified when new 
  * data in explicit format for the module is received.</p>
  * 
- * @see IExolicitDataReceiveListener
+ * @see IExplicitDataReceiveListener
  *
  */
 public class MyExplicitDataReceiveListener implements IExplicitDataReceiveListener {

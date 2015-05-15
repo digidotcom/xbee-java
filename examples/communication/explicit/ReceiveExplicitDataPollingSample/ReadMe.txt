@@ -44,8 +44,8 @@
        
     4) Set the port and baud rate of the receiver ZigBee radio in the MainApp 
        class.
-       If you configured the modules in the previous step with the XCTU, you 
-       will see the port number and baud rate in the 'Port' label of the device 
+       If you configured the modules in the previous step with XCTU, you will 
+       see the port number and baud rate in the 'Port' label of the device 
        on the left view.
 
 
@@ -57,7 +57,7 @@
   
     1) Launch the XCTU application.
        
-    2) Add the sender (remote) ZigBee module to the XCTU, specifying its port 
+    2) Add the sender (remote) ZigBee module to XCTU, specifying its port 
        settings.
        
     3) Once the module is added, change to the 'Consoles' working mode and 

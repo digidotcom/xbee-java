@@ -18,7 +18,8 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * XBee Java Library Send Broadcast Explicit Data sample application.
  * 
- * <p>This example sends explicit data to all remote devices on the same network.</p>
+ * <p>This example sends explicit data to all remote devices on the same 
+ * network.</p>
  * 
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>
@@ -35,7 +36,7 @@ public class MainApp {
 	private static final String DATA_TO_SEND = "Hello XBee World!";
 	
 	private static final int SOURCE_ENDPOINT = 0xA0;
-	private static final int DESTIANTION_ENDPOINT = 0xA1;
+	private static final int DESTINATION_ENDPOINT = 0xA1;
 	
 	private static final byte[] CLUSTER_ID = new byte[]{(byte)0x15, (byte)0x54};
 	private static final byte[] PROFILE_ID = new byte[]{(byte)0xC1, (byte)0x05};
@@ -58,13 +59,13 @@ public class MainApp {
 			
 			System.out.format("Sending broadcast data [%s %s %s %s] >> '%s' | %s... ",
 					HexUtils.integerToHexString(SOURCE_ENDPOINT, 1), 
-					HexUtils.integerToHexString(DESTIANTION_ENDPOINT, 1), 
+					HexUtils.integerToHexString(DESTINATION_ENDPOINT, 1), 
 					HexUtils.byteArrayToHexString(CLUSTER_ID), 
 					HexUtils.byteArrayToHexString(PROFILE_ID), 
 					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
 					new String(dataToSend));
 			
-			myDevice.sendBroadcastExplicitData(SOURCE_ENDPOINT, DESTIANTION_ENDPOINT, CLUSTER_ID, PROFILE_ID, dataToSend);
+			myDevice.sendBroadcastExplicitData(SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, dataToSend);
 			
 			System.out.println("Success");
 			

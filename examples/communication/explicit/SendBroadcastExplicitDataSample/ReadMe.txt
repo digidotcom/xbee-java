@@ -39,8 +39,7 @@
              
           1) Launch the XCTU application.
              
-          2) Add the remote ZigBee module to the XCTU, specifying it's port 
-             settings.
+          2) Add the remote ZigBee module to XCTU, specifying its port settings.
              
           3) Once the module is added, open the 'Configuration' working mode, 
              look for the 'AO' setting and configure it with '1' (without 
@@ -52,8 +51,8 @@
        
     4) Set the port and baud rate of the sender (local) ZigBee radio in the 
        MainApp class.
-       If you configured the modules in the previous step with the XCTU, you 
-       will see the port number and baud rate in the 'Port' label of the device 
+       If you configured the modules in the previous step with XCTU, you will 
+       see the port number and baud rate in the 'Port' label of the device 
        on the left view.
 
 
@@ -65,7 +64,7 @@
   
     1) Launch the XCTU application.
        
-    2) Add the remote ZigBee module to the XCTU, specifying it's port settings.
+    2) Add the remote ZigBee module to XCTU, specifying its port settings.
        
     3) Switch to the 'Consoles' working mode and open the serial connection 
        so you can see the data when it is received.

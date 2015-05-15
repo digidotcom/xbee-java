@@ -18,6 +18,9 @@
     * com.digi.xbee.api.receiveexplicitdata.MainApp.java:
       Main application class. It instantiates a ZigBee device and establishes a 
       serial connection with it.
+      
+    * com.digi.xbee.api.receiveexplicitdata.MyExplicitDataReceiveListener:
+      Class that handles the received data packets in explicit format.
 
 
   Requirements
@@ -44,8 +47,8 @@
        
     4) Set the port and baud rate of the receiver ZigBee radio in the MainApp 
        class.
-       If you configured the modules in the previous step with the XCTU, you 
-       will see the port number and baud rate in the 'Port' label of the device 
+       If you configured the modules in the previous step with XCTU, you will 
+       see the port number and baud rate in the 'Port' label of the device 
        on the left view.
 
 
@@ -57,7 +60,7 @@
   
     1) Launch the XCTU application.
        
-    2) Add the sender (remote) ZigBee module to the XCTU, specifying its port 
+    2) Add the sender (remote) ZigBee module to XCTU, specifying its port 
        settings.
        
     3) Once the module is added, change to the 'Consoles' working mode and 

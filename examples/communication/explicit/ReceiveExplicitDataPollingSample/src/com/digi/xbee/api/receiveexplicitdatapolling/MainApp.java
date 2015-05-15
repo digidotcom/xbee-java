@@ -21,8 +21,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * XBee Java Library Receive Explicit Data polling sample application.
  * 
  * <p>This example configures a ZigBee device to read data in application layer 
- * (explicit) mode and reads data it from the ZigBee device using the polling 
- * mechanism.</p>
+ * (explicit) mode from the ZigBee device using the polling mechanism.</p>
  * 
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>

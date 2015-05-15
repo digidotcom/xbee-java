@@ -6,19 +6,17 @@
   blocked during the transmit request, but you will not be able to determine 
   if the data was sent successfully.
   
-  The application sends data in application layer (explicit) format 
-  asynchronously to a remote XBee device on the network with a specific node 
-  identifier (name).
+  The application sends data asynchronously to a remote XBee device on the 
+  network with a specific node identifier (name).
   
-  NOTE: This example uses the ZigBee device (ZigBeeDevice) class, but it can 
-        be applied to any other protocol specific device class that supports 
-        sending data in explicit format.
+  NOTE: This example uses the generic XBee device (XBeeDevice) class, 
+        but it can be applied to any other local XBee device class.
 
 
   Files
   -----
-    * com.digi.xbee.api.sendexplicitdataasync.MainApp.java:
-      Main application class. It instantiates a ZigBee device, establishes a 
+    * com.digi.xbee.api.senddataasync.MainApp.java:
+      Main application class. It instantiates an XBee device, establishes a 
       serial connection with it and sends the data to the specified XBee device. 
       Finally it prints out the result of the sent operation.
 
@@ -27,23 +25,22 @@
   ------------
   To run this example you will need:
   
-    * At least two ZigBee radios in API mode and their corresponding carrier 
+    * At least two XBee radios in API mode and their corresponding carrier 
       board (XBIB or equivalent).
     * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
   -------------
-    1) Plug the ZigBee radios into the XBee adapters and connect them to your
+    1) Plug the XBee radios into the XBee adapters and connect them to your
        computer's USB or serial ports.
        
-    2) Configure the remote ZigBee device with the Node Identifier used by the 
-       example to communicate with it and to receive data in application layer 
-       (explicit) format. To do so follow these steps:
+    2) Configure the remote XBee device with the Node Identifier used by the 
+       example to communicate with it. To do so follow these steps:
              
           1) Launch the XCTU application.
              
-          2) Add the remote XBee module to the XCTU, specifying it's port 
+          2) Add the remote XBee module to XCTU, specifying it's port 
              settings.
              
           3) Once the module is added, open the 'Configuration' working mode, 
@@ -53,18 +50,15 @@
              Notice that by default the 'NI' setting has a blank space 
              configured, make sure that there is not a blank space before the 
              'REMOTE' text.
-             
-          4) Look for the 'AO' setting and configure it with '1' (without 
-             quotes)
        
     3) Ensure that the modules are in API mode and on the same network.
        For further information on how to perform this task, read the 
        'Configuring Your XBee Modules' topic of the Getting Started guide.
        
-    4) Set the port and baud rate of the sender (local) ZigBee radio in the 
+    4) Set the port and baud rate of the sender (local) XBee radio in the 
        MainApp class.
-       If you configured the modules in the previous step with the XCTU, you 
-       will see the port number and baud rate in the 'Port' label of the device 
+       If you configured the modules in the previous step with XCTU, you will 
+       see the port number and baud rate in the 'Port' label of the device 
        on the left view.
 
 
@@ -75,35 +69,28 @@
   
     1) Launch the XCTU application.
        
-    2) Add the remote ZigBee module to the XCTU, specifying it's port settings.
+    2) Add the remote XBee module to XCTU, specifying it's port settings.
        
     3) Switch to the 'Consoles' working mode and open the serial connection 
        so you can see the data when it is received.
           
-  Finally, launch the sample application, data in explicit format is sent 
-  asynchronously to the configured remote ZigBee device whose Node Identifier 
-  is 'REMOTE'. When that happens, a line with the result of the operation is 
-  printed to the standard output:
+  Finally, launch the sample application, some data is sent to the configured 
+  remote XBee device whose Node Identifier is 'REMOTE'. When that happens, a 
+  line with the result of the operation is printed to the standard output:
        
-    Sending data asynchronously [0xA0 - 0xA1 - 0x1554 - 0xC105] >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
+    Sending data to 0013A20040XXXXXX >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
     
-     - Where 0013A20040XXXXXX is the 64-bit address of the remote ZigBee device 
+     - Where 0013A20040XXXXXX is the 64-bit address of the remote XBee device 
        whose Node Identifier is 'REMOTE'.
        
-  Verify that in the XCTU console a new Explicit Rx Indicator frame has been 
-  received by the remote XBee device. Select it and review the details, some 
-  of the details will be similar to:
+  Verify that in the XCTU console a new RX frame has been received by the 
+  remote XBee device. Select it and review the details, some of the details 
+  will be similar to:
        
     - Start delimiter:         7E
-    - Length:                  00 1D
-    - Frame type:              91
+    - Length:                  Depends on the XBee protocol.
+    - Frame type:              Depends on the XBee protocol.
     - 64-bit source address:   The XBee sender's 64-bit address.
-    - 16-bit source address:   The XBee sender's 16-bit address.
-    - Source endpoint:         A0
-    - Destination endpoint:    A1
-    - Cluster ID:              15 54
-    - Profile ID:              C1 05
-    - Receive options:         01
     - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 21
                                Hello XBee!
        

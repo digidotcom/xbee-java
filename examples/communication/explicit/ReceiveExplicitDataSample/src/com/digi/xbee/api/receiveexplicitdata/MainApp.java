@@ -19,8 +19,8 @@ import com.digi.xbee.api.models.APIOutputMode;
  * XBee Java Library Receive Explicit Data sample application.
  * 
  * <p>This example configures a ZigBee device to read data in application layer 
- * (explicit) mode and reads data it from the ZigBee device using a callback 
- * that is executed when new data in explicit format is received.</p>
+ * (explicit) mode from the ZigBee device using a callback that is executed when
+ * new data in explicit format is received.</p>
  * 
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>

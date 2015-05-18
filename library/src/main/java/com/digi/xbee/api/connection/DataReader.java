@@ -323,7 +323,7 @@ public class DataReader extends Thread {
 	 * @param listener Listener to be notified when new explicit data packets 
 	 *                 are received.
 	 * 
-	 * @see #removeExplicitDataReceiveListener(IModemStatusReceiveListener)
+	 * @see #removeExplicitDataReceiveListener(IExplicitDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
 	 */
 	public void addExplicitDataReceiveListener(IExplicitDataReceiveListener listener) {
@@ -812,8 +812,8 @@ public class DataReader extends Thread {
 	 * explicit data packet has been received in form of an 
 	 * {@code ExplicitXBeeMessage}.
 	 *
-	 * @param xbeeMessage The XBee message to be sent to subscribed XBee data
-	 *                    listeners.
+	 * @param explicitXBeeMessage The XBee message to be sent to subscribed 
+	 *                            XBee data listeners.
 	 * 
 	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
 	 */

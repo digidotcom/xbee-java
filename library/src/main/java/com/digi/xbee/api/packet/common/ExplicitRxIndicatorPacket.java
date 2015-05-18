@@ -147,12 +147,12 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * @param sourceAddress16 16-bit address of the sender device.
 	 * @param sourceEndpoint Endpoint of the source that initiated the 
 	 *                       transmission.
-	 * @param destinationEndpoint Endpoint of the destination the message was 
-	 *                            addressed to.
+	 * @param destEndpoint Endpoint of the destination the message was 
+	 *                     addressed to.
 	 * @param clusterID Cluster ID the packet was addressed to.
 	 * @param profileID Profile ID the packet was addressed to.
 	 * @param receiveOptions BitField of receive options.
-	 * @param receivedData Received RF data.
+	 * @param rfData Received RF data.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
 	 *                                  if {@code sourceEndpoint > 255} or 

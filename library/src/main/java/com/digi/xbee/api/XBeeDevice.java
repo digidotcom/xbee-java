@@ -861,7 +861,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @param address The 64-bit address of the XBee that will receive the data.
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.
@@ -879,11 +879,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendExplicitData(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	protected void sendExplicitDataAsync(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, byte[] clusterID, 
@@ -933,7 +933,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                     {@code XBee16BitAddress.UNKNOWN_ADDRESS} must be 
 	 *                     used.
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.
@@ -952,11 +952,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendExplicitData(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[])
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
@@ -1006,7 +1006,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param remoteXBeeDevice The XBee device of the network that will receive 
 	 *                         the data.
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.
@@ -1024,11 +1024,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendExplicitData(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
 	 * @see RemoteXBeeDevice
 	 */
 	protected void sendExplicitDataAsync(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, 
@@ -1066,7 +1066,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @param address The 64-bit address of the XBee that will receive the data.
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.
@@ -1086,9 +1086,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendExplicitData(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, byte[])
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	protected void sendExplicitData(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, byte[] clusterID, 
@@ -1141,7 +1141,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *                     {@code XBee16BitAddress.UNKNOWN_ADDRESS} must be 
 	 *                     used.
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.
@@ -1161,9 +1161,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
 	 * @see #setReceiveTimeout(int)
-	 * @see #sendExplicitData(RemoteXBeeDevice, byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, byte[])
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
@@ -1217,7 +1217,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param remoteXBeeDevice The XBee device of the network that will receive 
 	 *                         the explicit data.
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.
@@ -1237,6 +1237,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
 	 * @see #setReceiveTimeout(int)
 	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
@@ -1273,7 +1275,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param sourceEndpoint Source endpoint for the transmission.
-	 * @param destinationEndpoint Destination endpoint for the transmission.
+	 * @param destEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
 	 * @param profileID Profile ID used in the transmission.
 	 * @param data Byte array containing the data to be sent.

@@ -503,9 +503,9 @@ public class DataReader extends Thread {
 				break;
 			case EXPLICIT_RX_INDICATOR:
 				ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)apiPacket;
-				remoteDevice = network.getDevice(explicitDataPacket.get16bitSourceAddress());
+				remoteDevice = network.getDevice(explicitDataPacket.get16BitSourceAddress());
 				if (remoteDevice == null) {
-					remoteDevice = new RemoteXBeeDevice(xbeeDevice, explicitDataPacket.get64bitSourceAddress());
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, explicitDataPacket.get64BitSourceAddress());
 					network.addRemoteDevice(remoteDevice);
 				}
 				int sourceEndpoint = explicitDataPacket.getSourceEndpoint();
@@ -701,7 +701,7 @@ public class DataReader extends Thread {
 	 * @param xbeeMessage The XBee message to be sent to subscribed XBee data
 	 *                    listeners.
 	 * 
-	 * @see com.digi.xbee.api.models.XBeeMessage
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
 	 */
 	private void notifyExplicitDataReceived(final ExplicitXBeeMessage explicitXBeeMessage) {
 		if (explicitXBeeMessage.isBroadcast())

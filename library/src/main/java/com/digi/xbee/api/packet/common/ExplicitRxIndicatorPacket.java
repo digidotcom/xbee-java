@@ -256,7 +256,7 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public XBee64BitAddress get64bitSourceAddress() {
+	public XBee64BitAddress get64BitSourceAddress() {
 		return sourceAddress64;
 	}
 	
@@ -267,7 +267,7 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
-	public XBee16BitAddress get16bitSourceAddress() {
+	public XBee16BitAddress get16BitSourceAddress() {
 		return sourceAddress16;
 	}
 	

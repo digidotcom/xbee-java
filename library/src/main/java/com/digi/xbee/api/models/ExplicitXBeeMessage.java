@@ -40,7 +40,7 @@ public class ExplicitXBeeMessage extends XBeeMessage {
 	 *                         (device that sent the message)
 	 * @param sourceEndpoint Endpoint of the source that initiated the 
 	 *                       transmission.
-	 * @param destinationEndpoint Endpoint of the destination the message was 
+	 * @param destEndpoint Endpoint of the destination the message was 
 	 *                            addressed to.
 	 * @param clusterID Cluster ID the packet was addressed to.
 	 * @param profileID Profile ID the packet was addressed to.
@@ -71,7 +71,7 @@ public class ExplicitXBeeMessage extends XBeeMessage {
 	 *                         (device that sent the message)
 	 * @param sourceEndpoint Endpoint of the source that initiated the 
 	 *                       transmission.
-	 * @param destinationEndpoint Endpoint of the destination the message was 
+	 * @param destEndpoint Endpoint of the destination the message was 
 	 *                            addressed to.
 	 * @param clusterID Cluster ID the packet was addressed to.
 	 * @param profileID Profile ID the packet was addressed to.

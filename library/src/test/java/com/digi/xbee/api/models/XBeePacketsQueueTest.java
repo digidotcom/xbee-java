@@ -259,7 +259,7 @@ public class XBeePacketsQueueTest {
 		// Add 2 additional packets from different senders.
 		Mockito.when(mockedRxIO64Packet.get64bitSourceAddress()).thenReturn(xbee64BitAddress2);
 		xbeePacketsQueue.addPacket(mockedRxIO64Packet);
-		Mockito.when(mockedExplicitRxIndicatorPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress3);
+		Mockito.when(mockedExplicitRxIndicatorPacket.get64BitSourceAddress()).thenReturn(xbee64BitAddress3);
 		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
 		
 		// Request the first packet from the queue sent by the mocked remote device and 
@@ -335,7 +335,7 @@ public class XBeePacketsQueueTest {
 		// Add additional (non-data) packets from the same sender.
 		Mockito.when(mockedRxIO64Packet.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
 		xbeePacketsQueue.addPacket(mockedRxIO64Packet);
-		Mockito.when(mockedExplicitRxIndicatorPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		Mockito.when(mockedExplicitRxIndicatorPacket.get64BitSourceAddress()).thenReturn(xbee64BitAddress1);
 		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
 		
 		// Request the first data packet from the queue sent by the mocked remote device and 
@@ -407,7 +407,7 @@ public class XBeePacketsQueueTest {
 			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
 		
 		// Add an explicit data packet from the mocked 64-bit address.
-		Mockito.when(mockedExplicitRxIndicatorPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		Mockito.when(mockedExplicitRxIndicatorPacket.get64BitSourceAddress()).thenReturn(xbee64BitAddress1);
 		xbeePacketsQueue.addPacket(mockedExplicitRxIndicatorPacket);
 		
 		// Add a data packet from the mocked 64-bit address.

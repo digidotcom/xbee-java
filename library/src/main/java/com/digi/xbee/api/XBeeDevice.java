@@ -659,7 +659,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
@@ -714,7 +714,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
@@ -773,7 +773,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
@@ -831,7 +831,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error transmit status arrives or 
 	 * the configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param data Byte array containing the data to be sent.
@@ -997,13 +997,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * provided XBee device choosing the optimal send method depending on the 
 	 * protocol of the local XBee device. Application layer mode means that you 
 	 * need to specify the application layer fields to be sent with the data.
-	 * .
 	 * 
 	 * <p>Asynchronous transmissions do not wait for answer from the remote 
 	 * device or for transmit status packet.</p>
 	 * 
-	 * @param remoteXBeeDevice The XBee device of the network that will receive the 
-	 *                   data.
+	 * @param remoteXBeeDevice The XBee device of the network that will receive 
+	 *                         the data.
 	 * @param sourceEndpoint Source endpoint for the transmission.
 	 * @param destinationEndpoint Destination endpoint for the transmission.
 	 * @param clusterID Cluster ID used in the transmission.
@@ -1060,7 +1059,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param address The 64-bit address of the XBee that will receive the data.
@@ -1130,7 +1129,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param address64Bit The 64-bit address of the XBee that will receive the 
@@ -1210,7 +1209,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param remoteXBeeDevice The XBee device of the network that will receive 
@@ -1268,7 +1267,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <p>This method blocks till a success or error transmit status arrives or 
 	 * the configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param sourceEndpoint Source endpoint for the transmission.
@@ -1360,7 +1359,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * Sends the given XBee packet synchronously and blocks until the response 
 	 * is received or the configured receive timeout expires.
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>Use {@code sendXBeePacketAsync(XBeePacket)} or 
@@ -1477,12 +1476,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/**
 	 * Reads new data received by this XBee device during the configured 
-	 * received timeout.
+	 * receive timeout.
 	 * 
 	 * <p>This method blocks until new data is received or the configured 
 	 * receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations, register a {@code IDataReceiveListener} 
@@ -1539,12 +1538,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/**
 	 * Reads new data received from the given remote XBee device during the 
-	 * configured received timeout.
+	 * configured receive timeout.
 	 * 
 	 * <p>This method blocks until new data from the provided remote XBee 
 	 * device is received or the configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations, register a {@code IDataReceiveListener} 
@@ -1782,12 +1781,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	
 	/**
 	 * Reads new explicit data received from the given remote XBee device 
-	 * during the configured received timeout.
+	 * during the configured receive timeout.
 	 * 
 	 * <p>This method blocks until new explicit data from the provided remote 
 	 * XBee device is received or the configured receive timeout expires.</p>
 	 * 
-	 * <p>The received timeout is configured using the {@code setReceiveTimeout}
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations, register a 
@@ -1914,12 +1913,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		// Obtain the necessary data from the packet.
 		ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)xbeePacket;
-		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64bitSourceAddress());
+		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64BitSourceAddress());
 		if (remoteDevice == null) {
 			if (remoteXBeeDevice != null)
 				remoteDevice = remoteXBeeDevice;
 			else
-				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64bitSourceAddress());
+				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64BitSourceAddress());
 			getNetwork().addRemoteDevice(remoteDevice);
 		}
 		int sourceEndpoint = explicitDataPacket.getSourceEndpoint();
@@ -1941,7 +1940,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param apiOutputMode The API output mode to be set to the XBee device.
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
-	 * @throws NullPointerException if {@code apiOutputMode == null}
+	 * @throws NullPointerException if {@code apiOutputMode == null}.
 	 * @throws TimeoutException if there is a timeout configuring the API 
 	 *                          output mode.
 	 * @throws XBeeException if there is any other XBee related exception.

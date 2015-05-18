@@ -365,7 +365,7 @@ public class XBeePacketsQueue {
 				return true;
 			break;
 		case EXPLICIT_RX_INDICATOR:
-			if (((ExplicitRxIndicatorPacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+			if (((ExplicitRxIndicatorPacket)xbeePacket).get64BitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
 			break;
 		default:
@@ -413,12 +413,7 @@ public class XBeePacketsQueue {
 		if (!(xbeePacket instanceof XBeeAPIPacket))
 			return false;
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
-		switch (packetType) {
-			case EXPLICIT_RX_INDICATOR:
-				return true;
-			default:
-				return false;
-		}
+		return packetType == APIFrameType.EXPLICIT_RX_INDICATOR;
 	}
 	
 	/**

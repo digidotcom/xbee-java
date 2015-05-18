@@ -22,6 +22,8 @@ import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.ExplicitAddressingPacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
@@ -284,6 +286,9 @@ public class XBeePacketParser {
 		case TRANSMIT_REQUEST:
 			packet = TransmitPacket.createPacket(payload);
 			break;
+		case EXPLICIT_ADDRESSING_COMMAND_FRAME:
+			packet = ExplicitAddressingPacket.createPacket(payload);
+			break;
 		case REMOTE_AT_COMMAND_REQUEST:
 			packet = RemoteATCommandPacket.createPacket(payload);
 			break;
@@ -313,6 +318,9 @@ public class XBeePacketParser {
 			break;
 		case RECEIVE_PACKET:
 			packet = ReceivePacket.createPacket(payload);
+			break;
+		case EXPLICIT_RX_INDICATOR:
+			packet = ExplicitRxIndicatorPacket.createPacket(payload);
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			packet = IODataSampleRxIndicatorPacket.createPacket(payload);

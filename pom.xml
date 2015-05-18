@@ -29,6 +29,11 @@
 		<module>examples/communication/SendBroadcastDataSample</module>
 		<module>examples/communication/SendDataAsyncSample</module>
 		<module>examples/communication/SendDataSample</module>
+		<module>examples/communication/explicit/ReceiveExplicitDataPollingSample</module>
+		<module>examples/communication/explicit/ReceiveExplicitDataSample</module>
+		<module>examples/communication/explicit/SendBroadcastExplicitDataSample</module>
+		<module>examples/communication/explicit/SendExplicitDataAsyncSample</module>
+		<module>examples/communication/explicit/SendExplicitDataSample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>

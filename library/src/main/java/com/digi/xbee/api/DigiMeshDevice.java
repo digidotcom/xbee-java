@@ -17,6 +17,9 @@ import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
+import com.digi.xbee.api.models.APIOutputMode;
+import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
@@ -148,5 +151,128 @@ public class DigiMeshDevice extends XBeeDevice {
 	@Override
 	public void sendData(XBee64BitAddress address, byte[] data) throws TimeoutException, XBeeException {
 		super.sendData(address, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#readExplicitData()
+	 */
+	@Override
+	public ExplicitXBeeMessage readExplicitData() {
+		return super.readExplicitData();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#readExplicitData(int)
+	 */
+	@Override
+	public ExplicitXBeeMessage readExplicitData(int timeout) {
+		return super.readExplicitData(timeout);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#readExplicitDataFrom(com.digi.xbee.api.RemoteXBeeDevice)
+	 */
+	@Override
+	public ExplicitXBeeMessage readExplicitDataFrom(RemoteXBeeDevice remoteXBeeDevice) {
+		return super.readExplicitDataFrom(remoteXBeeDevice);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#readExplicitDataFrom(com.digi.xbee.api.RemoteXBeeDevice, int)
+	 */
+	@Override
+	public ExplicitXBeeMessage readExplicitDataFrom(
+			RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		return super.readExplicitDataFrom(remoteXBeeDevice, timeout);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addExplicitDataListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)
+	 */
+	@Override
+	public void addExplicitDataListener(IExplicitDataReceiveListener listener) {
+		super.addExplicitDataListener(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeExplicitDataListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)
+	 */
+	@Override
+	public void removeExplicitDataListener(IExplicitDataReceiveListener listener) {
+		super.removeExplicitDataListener(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#getAPIOutputMode()
+	 */
+	@Override
+	public APIOutputMode getAPIOutputMode() throws TimeoutException, XBeeException {
+		return super.getAPIOutputMode();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#setAPIOutputMode(com.digi.xbee.api.models.APIOutputMode)
+	 */
+	@Override
+	public void setAPIOutputMode(APIOutputMode apiOutputMode) throws TimeoutException, XBeeException {
+		super.setAPIOutputMode(apiOutputMode);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendExplicitData(com.digi.xbee.api.RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendExplicitData(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, byte[] clusterID,
+			byte[] profileID, byte[] data) throws TimeoutException, XBeeException {
+		super.sendExplicitData(remoteXBeeDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendExplicitData(com.digi.xbee.api.models.XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendExplicitData(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, byte[] clusterID,
+			byte[] profileID, byte[] data) throws TimeoutException, XBeeException {
+		super.sendExplicitData(address, sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendBroadcastExplicitData(int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendBroadcastExplicitData(int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID, 
+			byte[] data) throws TimeoutException, XBeeException {
+		super.sendBroadcastExplicitData(sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(com.digi.xbee.api.RemoteXBeeDevice, int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendExplicitDataAsync(RemoteXBeeDevice xbeeDevice, int sourceEndpoint, int destEndpoint, byte[] clusterID,
+			byte[] profileID, byte[] data) throws XBeeException {
+		super.sendExplicitDataAsync(xbeeDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(com.digi.xbee.api.models.XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 */
+	@Override
+	public void sendExplicitDataAsync(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, byte[] clusterID,
+			byte[] profileID, byte[] data) throws XBeeException {
+		super.sendExplicitDataAsync(address, sourceEndpoint, destEndpoint, clusterID, profileID, data);
 	}
 }

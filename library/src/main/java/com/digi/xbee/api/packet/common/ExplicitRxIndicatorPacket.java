@@ -1,0 +1,357 @@
+/**
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
+package com.digi.xbee.api.packet.common;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.packet.XBeeAPIPacket;
+import com.digi.xbee.api.utils.ByteUtils;
+import com.digi.xbee.api.utils.HexUtils;
+
+/**
+ * This class represents an Explicit RX Indicator packet. Packet is 
+ * built using the parameters of the constructor or providing a valid API 
+ * payload.
+ * 
+ * <p>When the modem receives an RF packet it is sent out the UART using this 
+ * message type (when AO=1).</p>
+ * 
+ * <p>This packet is received when external devices send explicit addressing 
+ * packets to this module.</p>
+ * 
+ * <p>Among received data, some options can also be received indicating 
+ * transmission parameters.</p> 
+ * 
+ * @see com.digi.xbee.api.models.XBeeReceiveOptions
+ * @see com.digi.xbee.api.packet.common.ExplicitAddressingPacket
+ * @see com.digi.xbee.api.packet.XBeeAPIPacket
+ */
+public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
+
+	// Constants
+	private static final int MIN_API_PAYLOAD_LENGTH = 18; // 1 (Frame type)  + 8 (64-bit address) + 2 (16-bit address) + 1 (source endpoint) + 1 (destination endpoint) + 2 (cluster ID) + 2 (profile ID) + 1 (receive options)
+	
+	// Variables
+	private final XBee64BitAddress sourceAddress64;
+	
+	private final XBee16BitAddress sourceAddress16;
+	
+	private final int sourceEndpoint;
+	private final int destEndpoint;
+	private final int receiveOptions;
+	
+	private final byte[] clusterID;
+	private final byte[] profileID;
+	private byte[] rfData;
+	
+	private Logger logger;
+	
+	/**
+	 * Creates a new {@code ExplicitRxIndicatorPacket} object from the given 
+	 * payload.
+	 * 
+	 * @param payload The API frame payload. It must start with the frame type 
+	 *                corresponding to an Explicit RX Indicator packet 
+	 *                ({@code 0x91}).
+	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 * 
+	 * @return Parsed Explicit RX Indicator packet.
+	 * 
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.EXPLICIT_RX_INDICATOR.getValue()} or
+	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
+	 *                                  if {@code sourceEndpoint < 0} or 
+	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code destEndpoint < 0} or 
+	 *                                  if {@code destEndpoint > 255} or 
+	 *                                  if {@code clusterID.length != 2} or 
+	 *                                  if {@code profileID.length != 2} or 
+	 *                                  if {@code transmitOptions < 0} or
+	 *                                  if {@code transmitOptions > 255}.
+	 * @throws NullPointerException if {@code payload == null}.
+	 */
+	public static ExplicitRxIndicatorPacket createPacket(byte[] payload) {
+		if (payload == null)
+			throw new NullPointerException("Explicit Rx Indicator packet payload cannot be null.");
+		
+		// 1 (Frame type) + 8 (64-bit address) + 2 (16-bit address) + 1 (source endpoint) + 1 (destination endpoint) + 2 (cluster ID) + 2 (profile ID) + 1 (receive options)
+		if (payload.length < MIN_API_PAYLOAD_LENGTH)
+			throw new IllegalArgumentException("Incomplete Explicit Rx Indicator packet.");
+		
+		if ((payload[0] & 0xFF) != APIFrameType.EXPLICIT_RX_INDICATOR.getValue())
+			throw new IllegalArgumentException("Payload is not an Explicit Rx Indicator packet.");
+		
+		// payload[0] is the frame type.
+		int index = 1;
+		
+		// 8 bytes of 64-bit address.
+		XBee64BitAddress destAddress64 = new XBee64BitAddress(Arrays.copyOfRange(payload, index, index + 8));
+		index = index + 8;
+		
+		// 2 bytes of 16-bit address.
+		XBee16BitAddress destAddress16 = new XBee16BitAddress(payload[index] & 0xFF, payload[index + 1] & 0xFF);
+		index = index + 2;
+		
+		// Source endpoint byte.
+		int sourceEndpoint = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Destination endpoint byte.
+		int destEndpoint = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// 2 bytes of cluster ID.
+		byte[] clusterID = new byte[2];
+		System.arraycopy(payload, index, clusterID, 0, 2);
+		index = index + 2;
+		
+		// 2 bytes of profile ID.
+		byte[] profileID = new byte[2];
+		System.arraycopy(payload, index, profileID, 0, 2);
+		index = index + 2;
+		
+		// Receive options byte.
+		int receiveOptions = payload[index] & 0xFF;
+		index = index + 1;
+		
+		// Get RF data.
+		byte[] rfData = null;
+		if (index < payload.length)
+			rfData = Arrays.copyOfRange(payload, index, payload.length);
+		
+		return new ExplicitRxIndicatorPacket(destAddress64, destAddress16, sourceEndpoint, destEndpoint, clusterID, profileID, receiveOptions, rfData);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code ExplicitRxIndicatorPacket} 
+	 * object with the given parameters.
+	 * 
+	 * @param sourceAddress64 64-bit address of the sender device.
+	 * @param sourceAddress16 16-bit address of the sender device.
+	 * @param sourceEndpoint Endpoint of the source that initiated the 
+	 *                       transmission.
+	 * @param destinationEndpoint Endpoint of the destination the message was 
+	 *                            addressed to.
+	 * @param clusterID Cluster ID the packet was addressed to.
+	 * @param profileID Profile ID the packet was addressed to.
+	 * @param receiveOptions BitField of receive options.
+	 * @param receivedData Received RF data.
+	 * 
+	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
+	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code destEndpoint < 0} or 
+	 *                                  if {@code destEndpoint > 255} or 
+	 *                                  if {@code clusterID.length != 2} or 
+	 *                                  if {@code profileID.length != 2} or 
+	 *                                  if {@code receiveOptions < 0} or
+	 *                                  if {@code receiveOptions > 255}.
+	 * @throws NullPointerException if {@code sourceAddress64 == null} or 
+	 *                              if {@code sourceAddress16 == null} or 
+	 *                              if {@code clusterID == null} or
+	 *                              if {@code profileID == null}.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
+	 */
+	public ExplicitRxIndicatorPacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, 
+			int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID,
+			int receiveOptions, byte[] rfData){
+		super(APIFrameType.EXPLICIT_RX_INDICATOR);
+		
+		if (sourceAddress64 == null)
+			throw new NullPointerException("64-bit source address cannot be null.");
+		if (sourceAddress16 == null)
+			throw new NullPointerException("16-bit source address cannot be null.");
+		if (clusterID == null)
+			throw new NullPointerException("Cluster ID cannot be null.");
+		if (profileID == null)
+			throw new NullPointerException("Profile ID cannot be null.");
+		if (sourceEndpoint < 0 || sourceEndpoint > 255)
+			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
+		if (destEndpoint < 0 || destEndpoint > 255)
+			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
+		if (clusterID.length != 2)
+			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
+		if (profileID.length != 2)
+			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (receiveOptions < 0 || receiveOptions > 255)
+			throw new IllegalArgumentException("Receive options must be between 0 and 255.");
+		
+		this.sourceAddress64 = sourceAddress64;
+		this.sourceAddress16 = sourceAddress16;
+		this.sourceEndpoint = sourceEndpoint;
+		this.destEndpoint = destEndpoint;
+		this.clusterID = clusterID;
+		this.profileID = profileID;
+		this.receiveOptions = receiveOptions;
+		this.rfData = rfData;
+		this.logger = LoggerFactory.getLogger(ExplicitRxIndicatorPacket.class);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketSpecificData()
+	 */
+	@Override
+	public byte[] getAPIPacketSpecificData() {
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		try {
+			data.write(sourceAddress64.getValue());
+			data.write(sourceAddress16.getValue());
+			data.write(sourceEndpoint);
+			data.write(destEndpoint);
+			data.write(clusterID);
+			data.write(profileID);
+			data.write(receiveOptions);
+			if (rfData != null)
+				data.write(rfData);
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return data.toByteArray();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#needsAPIFrameID()
+	 */
+	@Override
+	public boolean needsAPIFrameID() {
+		return false;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#isBroadcast()
+	 */
+	@Override
+	public boolean isBroadcast() {
+		if (ByteUtils.isBitEnabled(getReceiveOptions(), 1))
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Returns the 64 bit sender/source address.
+	 * 
+	 * @return The 64 bit sender/source address.
+	 * 
+	 * @see com.digi.xbee.api.models.XBee64BitAddress
+	 */
+	public XBee64BitAddress get64BitSourceAddress() {
+		return sourceAddress64;
+	}
+	
+	/**
+	 * Returns the 16 bit sender/source address.
+	 * 
+	 * @return The 16 bit sender/source address.
+	 * 
+	 * @see com.digi.xbee.api.models.XBee16BitAddress
+	 */
+	public XBee16BitAddress get16BitSourceAddress() {
+		return sourceAddress16;
+	}
+	
+	/**
+	 * Returns the source endpoint of the transmission.
+	 * 
+	 * @return The source endpoint of the transmission.
+	 */
+	public int getSourceEndpoint() {
+		return sourceEndpoint;
+	}
+	
+	/**
+	 * Returns the destination endpoint of the transmission.
+	 * 
+	 * @return The destination endpoint of the transmission.
+	 */
+	public int getDestinationEndpoint() {
+		return destEndpoint;
+	}
+	
+	/**
+	 * Returns the cluster ID used in the transmission.
+	 * 
+	 * @return The cluster ID used in the transmission.
+	 */
+	public byte[] getClusterID() {
+		return clusterID;
+	}
+	
+	/**
+	 * Returns the profile ID used in the transmission.
+	 * 
+	 * @return The profile ID used in the transmission.
+	 */
+	public byte[] getProfileID() {
+		return profileID;
+	}
+	
+	/**
+	 * Returns the receive options bitfield.
+	 * 
+	 * @return The receive options bitfield.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
+	 */
+	public int getReceiveOptions() {
+		return receiveOptions;
+	}
+	
+	/**
+	 * Sets the received RF data.
+	 * 
+	 * @param rfData Received RF data.
+	 */
+	public void setRFData(byte[] rfData) {
+		this.rfData = rfData;
+	}
+	
+	/**
+	 * Returns the received RF data.
+	 * 
+	 * @return Received RF data.
+	 */
+	public byte[] getRFData() {
+		return rfData;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#getAPIPacketParameters()
+	 */
+	@Override
+	public LinkedHashMap<String, String> getAPIPacketParameters() {
+		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
+		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
+		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
+		parameters.put("Source endpoint", HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1)));
+		parameters.put("Dest. endpoint", HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1)));
+		parameters.put("Cluster ID", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID)));
+		parameters.put("Profile ID", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID)));
+		parameters.put("Receive options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
+		if (rfData != null)
+			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
+		return parameters;
+	}
+}

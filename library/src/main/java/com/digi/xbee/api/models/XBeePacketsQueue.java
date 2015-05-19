@@ -48,6 +48,8 @@ public class XBeePacketsQueue {
 	
 	private LinkedList<XBeePacket> packetsList;
 	
+	private Object lock = new Object();
+	
 	/**
 	 * Class constructor. Instantiates a new object of type 
 	 * {@code XBeePacketsQueue}.
@@ -81,9 +83,11 @@ public class XBeePacketsQueue {
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	public void addPacket(XBeePacket xbeePacket) {
-		if (packetsList.size() == maxLength)
-			packetsList.removeFirst();
-		packetsList.add(xbeePacket);
+		synchronized (lock) {
+			if (packetsList.size() == maxLength)
+				packetsList.removeFirst();
+			packetsList.add(xbeePacket);
+		}
 	}
 	
 	/**
@@ -114,8 +118,11 @@ public class XBeePacketsQueue {
 				xbeePacket = getFirstPacket(0);
 			}
 			return xbeePacket;
-		} else if (!packetsList.isEmpty())
-			return packetsList.pop();
+		} 
+		synchronized (lock) {
+			if (!packetsList.isEmpty())
+				return packetsList.pop();
+		}
 		return null;
 	}
 	
@@ -151,10 +158,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (addressesMatch(xbeePacket, remoteXBeeDevice))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (addressesMatch(xbeePacket, remoteXBeeDevice))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -185,10 +194,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (isDataPacket(xbeePacket))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isDataPacket(xbeePacket))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -228,10 +239,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (isDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -263,10 +276,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (isExplicitDataPacket(xbeePacket))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isExplicitDataPacket(xbeePacket))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -307,10 +322,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (isExplicitDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isExplicitDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;

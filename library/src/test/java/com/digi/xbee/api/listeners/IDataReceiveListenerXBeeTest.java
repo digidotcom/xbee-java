@@ -33,11 +33,13 @@ import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 
 @RunWith(PowerMockRunner.class)
@@ -59,6 +61,7 @@ public class IDataReceiveListenerXBeeTest {
 	private MyReceiveListener receiveDataListener;
 	
 	private static ReceivePacket receivePacket;
+	private static ExplicitRxIndicatorPacket explicitPacket;
 	private static ATCommandResponsePacket invalidPacket;
 	
 	private static RemoteXBeeDevice remoteXBeeDevice;
@@ -73,6 +76,14 @@ public class IDataReceiveListenerXBeeTest {
 		Mockito.when(receivePacket.getRFData()).thenReturn(RECEIVED_DATA_BYTES);
 		Mockito.when(receivePacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		Mockito.when(receivePacket.isBroadcast()).thenReturn(false);
+		
+		// Mock the Explicit RX Indicator Packet.
+		explicitPacket = Mockito.mock(ExplicitRxIndicatorPacket.class);
+		Mockito.when(explicitPacket.getFrameType()).thenReturn(APIFrameType.EXPLICIT_RX_INDICATOR);
+		Mockito.when(explicitPacket.getRFData()).thenReturn(RECEIVED_DATA_BYTES);
+		Mockito.when(explicitPacket.get64BitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(explicitPacket.get16BitSourceAddress()).thenReturn(XBee16BitAddress.UNKNOWN_ADDRESS);
+		Mockito.when(explicitPacket.isBroadcast()).thenReturn(false);
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);
@@ -237,6 +248,83 @@ public class IDataReceiveListenerXBeeTest {
 		assertFalse(receiveDataListener.isBroadcast());
 	}
 	
+	/**
+	 * Test method for {@link com.digi.xbee.api.listeners.IDataReceiveListener#dataReceived(XBeeMessage)} and
+	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * 
+	 * <p>Verify that, when subscribed to receive data and an Explicit Receive data packet for Digi transmissions
+	 * is received, the callback of the listener is executed.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testExplicitDataReceiveSubscribedReceive() throws Exception {
+		// Whenever a new remote XBee device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteXBeeDevice.class).withAnyArguments().thenReturn(remoteXBeeDevice);
+		
+		// The packet is an explicit data packet.
+		Mockito.when(explicitPacket.getSourceEndpoint()).thenReturn(ExplicitRxIndicatorPacket.DATA_ENDPOINT);
+		Mockito.when(explicitPacket.getDestinationEndpoint()).thenReturn(ExplicitRxIndicatorPacket.DATA_ENDPOINT);
+		Mockito.when(explicitPacket.getClusterID()).thenReturn(ExplicitRxIndicatorPacket.DATA_CLUSTER);
+		Mockito.when(explicitPacket.getProfileID()).thenReturn(ExplicitRxIndicatorPacket.DIGI_PROFILE);
+		
+		// Subscribe to listen for data.
+		dataReader.addDataReceiveListener(receiveDataListener);
+		
+		// Fire the private packetReceived method of the dataReader with an ExplicitRxIndicatorPacket.
+		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, explicitPacket);
+		
+		// Verify that the notifyDataReceived private method was called.
+		PowerMockito.verifyPrivate(dataReader, Mockito.times(1)).invoke(NOTIFY_DATA_RECEIVED_METHOD, 
+				Mockito.any(XBeeMessage.class));
+		
+		// Verify that the dataReceived method of the listener was executed one time.
+		Mockito.verify(receiveDataListener, Mockito.times(1)).dataReceived(Mockito.any(XBeeMessage.class));
+		
+		// All the parameters of our listener should be correct.
+		assertEquals(XBEE_64BIT_ADDRESS, receiveDataListener.get64BitAddress());
+		assertArrayEquals(RECEIVED_DATA_BYTES, receiveDataListener.getData());
+		assertFalse(receiveDataListener.isBroadcast());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.listeners.IDataReceiveListener#dataReceived(XBeeMessage)} and
+	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * 
+	 * <p>Verify that, when subscribed to receive data and an Explicit Receive packet is received, the 
+	 * callback of the listener is not executed.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testExplicitDataReceiveSubscribedInvalid() throws Exception {
+		// Whenever a new remote XBee device needs to be instantiated, return the mocked one.
+		PowerMockito.whenNew(RemoteXBeeDevice.class).withAnyArguments().thenReturn(remoteXBeeDevice);
+		
+		// The packet is not an explicit data packet.
+		Mockito.when(explicitPacket.getSourceEndpoint()).thenReturn(0x1A);
+		Mockito.when(explicitPacket.getDestinationEndpoint()).thenReturn(0x1B);
+		Mockito.when(explicitPacket.getClusterID()).thenReturn(new byte[]{0x10, 0x10});
+		Mockito.when(explicitPacket.getProfileID()).thenReturn(new byte[]{0x35, 0x0B});
+		
+		// Subscribe to listen for data.
+		dataReader.addDataReceiveListener(receiveDataListener);
+		
+		// Fire the private packetReceived method of the dataReader with an ExplicitRxIndicatorPacket.
+		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, explicitPacket);
+		
+		// Verify that the notifyDataReceived private method was not called.
+		PowerMockito.verifyPrivate(dataReader, Mockito.never()).invoke(NOTIFY_DATA_RECEIVED_METHOD, 
+				Mockito.any(XBeeMessage.class));
+		
+		// Verify that the callback of the listener was not executed
+		Mockito.verify(receiveDataListener, Mockito.never()).dataReceived(Mockito.any(XBeeMessage.class));
+		
+		// All the parameters of our listener should be empty.
+		assertNull(receiveDataListener.get64BitAddress());
+		assertNull(receiveDataListener.getData());
+		assertFalse(receiveDataListener.isBroadcast());
+	}
 	
 	/**
 	 * This method directly notifies the IDataReceiveListeners of the dataReader instance that new 

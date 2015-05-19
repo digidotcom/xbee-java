@@ -13,6 +13,7 @@ package com.digi.xbee.api.connection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -483,7 +484,20 @@ public class DataReader extends Thread {
 				byte[] clusterID = explicitDataPacket.getClusterID();
 				byte[] profileID = explicitDataPacket.getProfileID();
 				data = explicitDataPacket.getRFData();
+				// If this is an explicit packet for data transmissions in the Digi profile, 
+				// notify also the data listener and add a Receive packet to the queue.
+				if (sourceEndpoint == ExplicitRxIndicatorPacket.DATA_ENDPOINT && 
+						destEndpoint == ExplicitRxIndicatorPacket.DATA_ENDPOINT &&
+						Arrays.equals(clusterID, ExplicitRxIndicatorPacket.DATA_CLUSTER) && 
+						Arrays.equals(profileID, ExplicitRxIndicatorPacket.DIGI_PROFILE)) {
+					notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+					xbeePacketsQueue.addPacket(new ReceivePacket(explicitDataPacket.get64BitSourceAddress(), 
+							explicitDataPacket.get16BitSourceAddress(), 
+							explicitDataPacket.getReceiveOptions(), 
+							explicitDataPacket.getRFData()));
+				}
 				notifyExplicitDataReceived(new ExplicitXBeeMessage(remoteDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data, explicitDataPacket.isBroadcast()));
+				break;
 			default:
 				break;
 			}

@@ -49,6 +49,10 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	// Constants
 	private static final int MIN_API_PAYLOAD_LENGTH = 18; // 1 (Frame type)  + 8 (64-bit address) + 2 (16-bit address) + 1 (source endpoint) + 1 (destination endpoint) + 2 (cluster ID) + 2 (profile ID) + 1 (receive options)
 	
+	public static final int DATA_ENDPOINT = 0xE8;
+	public static final byte[] DATA_CLUSTER = new byte[]{0x00, 0x11};
+	public static final byte[] DIGI_PROFILE = new byte[]{(byte) 0xC1, 0x05};
+	
 	// Variables
 	private final XBee64BitAddress sourceAddress64;
 	

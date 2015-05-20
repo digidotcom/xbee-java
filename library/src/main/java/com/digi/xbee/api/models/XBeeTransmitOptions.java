@@ -79,6 +79,13 @@ public class XBeeTransmitOptions {
 	public static final int ENABLE_UNICAST_TRACE_ROUTE = 0x04;
 	
 	/**
+	 * Enables multicast transmission request (value: {@value}).
+	 * 
+	 * <p>Only valid for ZigBee XBee protocol.</p>
+	 */
+	public static final int ENABLE_MULTICAST = 0x08;
+	
+	/**
 	 * Enables APS encryption, only if {@code EE=1} (value: {@value}).
 	 * 
 	 * <p>Enabling APS encryption decreases the maximum number of RF payload 

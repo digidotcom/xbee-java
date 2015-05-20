@@ -33,9 +33,9 @@ public final class XBee64BitAddress {
 	 */
 	public static final XBee64BitAddress BROADCAST_ADDRESS = new XBee64BitAddress("FFFF");
 	/**
-	 * 64-bit unknown address (value: 000000000000FFFE).
+	 * 64-bit unknown address (value: FFFFFFFFFFFFFFFF).
 	 */
-	public static final XBee64BitAddress UNKNOWN_ADDRESS = new XBee64BitAddress("FFFE");
+	public static final XBee64BitAddress UNKNOWN_ADDRESS = new XBee64BitAddress("FFFFFFFFFFFFFFFF");
 	
 	private static final String DEVICE_ID_SEPARATOR = "-";
 	private static final String DEVICE_ID_MAC_SEPARATOR = "FF";

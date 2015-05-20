@@ -34,6 +34,8 @@ import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
+import com.digi.xbee.api.packet.common.ExplicitAddressingPacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
@@ -864,7 +866,7 @@ public class XBeePacketParserFromInputStreamTest {
 	
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Tx (Transmit) request 64-bits API byte array must result in a 
 	 * valid API packet of the right type.</p>
@@ -899,7 +901,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Tx (Transmit) request 16-bits API byte array must result in a 
 	 * valid API packet of the right type.</p>
@@ -934,7 +936,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid AT Command API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -969,7 +971,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid AT Command Queue API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1004,7 +1006,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Transmit request API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1039,7 +1041,43 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
+	 * 
+	 * <p>A valid Explicit Addressing Command API byte array must result in a 
+	 * valid API packet of the right type.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketExplicitAddressingCommandFrame() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteData = {(byte)APIFrameType.EXPLICIT_ADDRESSING_COMMAND_FRAME.getValue(), 0x01, 
+				0x00, 0x13, (byte)0xA2, 0x00, 0x40, (byte)0xAD, 0x15, 0x64, (byte)0xFF, (byte)0xFE, (byte)0xE8, (byte)0xE8, 
+				0x00, 0x11, (byte)0xC1, 0x05, 0x00, 0x00, 0x42, 0x79, 0x65};
+		byte[] byteArray = new byte[byteData.length + 4];
+		byteArray[0] = 0x7E;
+		byteArray[1] = 0x00;
+		byteArray[2] = 0x17;
+		System.arraycopy(byteData, 0, byteArray, 3, byteData.length);
+		// Checksum.
+		byteArray[byteArray.length - 1] = 0x0E;
+		// Real package: {7E 00 17 11 01 00 13 A2 00 40 AD 15 64 FF FE E8 E8 00 11 C1 05 00 00 42 79 65 0E};
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray, 1, byteArray.length - 1);
+		
+		// Call the method under test.
+		XBeePacket packet = packetParser.parsePacket(inputStream, OperatingMode.API);
+		
+		// Verify the result.
+		assertThat("Packet must be a Explicit Addressing packet", packet, is(instanceOf(ExplicitAddressingPacket.class)));
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(byteData.length)));
+		// Do not use this since the data is always API and never API_ESCAPE.
+		//assertThat("Returned data array is not the expected one", packet.getPacketData(), is(equalTo(byteData)));
+		
+		assertThat("Generated API array from packet is not the expected one", packet.generateByteArray(), is(equalTo(byteArray)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Remote AT Command API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1074,7 +1112,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Rx (Receive) 64-bit API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1109,7 +1147,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Rx (Receive) 16-bit API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1144,7 +1182,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid IO Data Sample RX 64-bit API byte array must result in a valid 
 	 * API packet of the right type.</p>
@@ -1179,7 +1217,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid IO Data Sample Rx (Receive) 16-bit API byte array must result 
 	 * in a valid API packet of the right type.</p>
@@ -1214,7 +1252,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid AT Command Response API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1249,7 +1287,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Transmit Status API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1284,7 +1322,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Modem Status API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1319,7 +1357,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Transmit Status API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1354,7 +1392,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Receive Packet API byte array must result in a valid 
 	 * API packet of the right type.</p>
@@ -1389,7 +1427,43 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
+	 * 
+	 * <p>A valid Explicit Rx Indicator API byte array must result in a valid 
+	 * API packet of the right type.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketExplicitRxIndicatorFrame() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteData = {(byte)APIFrameType.EXPLICIT_RX_INDICATOR.getValue(), 
+				0x00, 0x13, (byte)0xA2, 0x00, 0x40, (byte)0xAD, 0x15, 0x64, (byte)0xFF, (byte)0xFE, (byte)0xE8, (byte)0xE8, 
+				0x00, 0x11, (byte)0xC1, 0x05, 0x01, 0x42, 0x79, 0x65};
+		byte[] byteArray = new byte[byteData.length + 4];
+		byteArray[0] = 0x7E;
+		byteArray[1] = 0x00;
+		byteArray[2] = 0x15;
+		System.arraycopy(byteData, 0, byteArray, 3, byteData.length);
+		// Checksum.
+		byteArray[byteArray.length - 1] = (byte)0x8E;
+		// Real package: {7E 00 15 91 00 13 A2 00 40 AD 15 64 FF FE E8 E8 00 11 C1 05 01 42 79 65 8E};
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray, 1, byteArray.length - 1);
+		
+		// Call the method under test.
+		XBeePacket packet = packetParser.parsePacket(inputStream, OperatingMode.API);
+		
+		// Verify the result.
+		assertThat("Packet must be a Explicit Rx Indicator packet", packet, is(instanceOf(ExplicitRxIndicatorPacket.class)));
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(byteData.length)));
+		// Do not use this since the data is always API and never API_ESCAPE.
+		//assertThat("Returned data array is not the expected one", packet.getPacketData(), is(equalTo(byteData)));
+		
+		assertThat("Generated API array from packet is not the expected one", packet.generateByteArray(), is(equalTo(byteArray)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid IO Data Sample Rx Indicator API byte array must result in a valid 
 	 * API packet of the right type.</p>
@@ -1424,7 +1498,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Remote AT Command Response API byte array must result in a valid API packet 
 	 * of the right type.</p>
@@ -1459,7 +1533,7 @@ public class XBeePacketParserFromInputStreamTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(java.io.InputStream, OperatingMode)}.
 	 * 
 	 * <p>A valid Generic API byte array must result in a valid API packet 
 	 * of the right type.</p>

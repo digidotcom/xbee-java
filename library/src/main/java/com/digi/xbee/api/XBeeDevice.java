@@ -16,6 +16,7 @@ import java.io.IOException;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
@@ -221,7 +222,11 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		}
 		
 		// Read the device info (obtain its parameters and protocol).
-		readDeviceInfo();
+		try {
+			readDeviceInfo();
+		} catch (ATCommandException e) {
+			throw new XBeeException("Error reading device information.", e);
+		}
 	}
 	
 	/**

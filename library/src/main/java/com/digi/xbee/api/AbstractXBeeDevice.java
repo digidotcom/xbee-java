@@ -341,12 +341,13 @@ public abstract class AbstractXBeeDevice {
 	 * <li>Hardware version if it is not initialized.</li>
 	 * <li>Firmware version.</li>
 	 * <li>XBee device protocol.</li>
-	 * <li>16-bit address (not for DigiMesh modules).</li>
+	 * <li>16-bit address (not for DigiMesh/DigiPoint modules).</li>
 	 * </ul>
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout reading the parameters.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if there is any error trying to read the device information or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #get16BitAddress()
 	 * @see #get64BitAddress()
@@ -387,13 +388,26 @@ public abstract class AbstractXBeeDevice {
 		response = getParameter("VR");
 		firmwareVersion = HexUtils.byteArrayToHexString(response);
 		
+		// Original value of the protocol.
+		XBeeProtocol origProtocol = getXBeeProtocol();
+		
 		// Obtain the device protocol.
 		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
 		
+		if (origProtocol != XBeeProtocol.UNKNOWN
+				&& origProtocol != xbeeProtocol) {
+			throw new XBeeException("Error reading device information: "
+					+ "Your module seems to be " + xbeeProtocol 
+					+ " and NOT " + origProtocol + ". Check if you are using" 
+					+ " the appropriate device class.");
+		}
+		
 		// Get the 16-bit address. This must be done after obtaining the protocol because 
 		// DigiMesh and Point-to-Multipoint protocols don't have 16-bit addresses.
-		if (getXBeeProtocol() != XBeeProtocol.DIGI_MESH 
-				&& getXBeeProtocol() != XBeeProtocol.DIGI_POINT) {
+		XBeeProtocol protocol = getXBeeProtocol();
+		if (protocol != XBeeProtocol.DIGI_MESH 
+				&& protocol != XBeeProtocol.DIGI_POINT
+				&& protocol != XBeeProtocol.UNKNOWN) {
 			response = getParameter("MY");
 			xbee16BitAddress = new XBee16BitAddress(response);
 		}
@@ -1940,7 +1954,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code parameter == null} or 
 	 *                              if {@code parameterValue == null}.
 	 * @throws TimeoutException if there is a timeout setting the parameter.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if {@code parameterValue} is not supported or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #applyChanges()
 	 * @see #enableApplyConfigurationChanges(boolean)
@@ -1966,7 +1982,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout getting the parameter value.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #executeParameter(String)
 	 * @see #setParameter(String, byte[])
@@ -1991,7 +2008,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout executing the parameter.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #getParameter(String)
 	 * @see #setParameter(String, byte[])
@@ -2013,7 +2031,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout executing the parameter.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if {@code parameterValue} is not supported or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #getParameter(String)
 	 * @see #executeParameter(String)

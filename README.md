@@ -35,6 +35,8 @@ device.
   * Set IO line value.
   * Read IO line value.
   * Receive IO data samples from any remote XBee device on the network.
+* Support for explicit frames and application layer fields (Source endpoint, 
+Destination endpoint, Profile ID, and Cluster ID).
 
 
 Start Here
@@ -52,7 +54,7 @@ document.
 
 License
 -------
-This software is open-source software. Copyright Digi International, 2014. 
+This software is open-source software. Copyright Digi International, 2014-2015. 
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this file,

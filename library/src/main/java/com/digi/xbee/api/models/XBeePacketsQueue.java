@@ -94,7 +94,9 @@ public class XBeePacketsQueue {
 	 * Clears the list of packets.
 	 */
 	public void clearQueue() {
-		packetsList.clear();
+		synchronized (lock) {
+			packetsList.clear();
+		}
 	}
 	
 	/**
@@ -460,6 +462,8 @@ public class XBeePacketsQueue {
 	 * @return The current size of the XBee packets queue.
 	 */
 	public int getCurrentSize() {
-		return packetsList.size();
+		synchronized (lock) {
+			return packetsList.size();
+		}
 	}
 }

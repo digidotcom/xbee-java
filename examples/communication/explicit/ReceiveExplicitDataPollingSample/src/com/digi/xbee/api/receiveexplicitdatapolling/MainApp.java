@@ -61,11 +61,10 @@ public class MainApp {
 				System.out.format("From %s >> %s | %s%n", explicitXBeeMessage.getDevice().get64BitAddress(), 
 						HexUtils.prettyHexString(HexUtils.byteArrayToHexString(explicitXBeeMessage.getData())), 
 						new String(explicitXBeeMessage.getData()));
-				System.out.println(" - Source endpoint: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getSourceEndpoint(), 1));
-				System.out.println(" - Destination endpoint: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getDestinationEndpoint(), 1));
-				System.out.println(" - Cluster ID: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getClusterID(), 2));
-				System.out.println(" - Profile ID: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getProfileID(), 2));
-				System.out.println("");
+				System.out.format(" - Source endpoint: 0x%02X%n", explicitXBeeMessage.getSourceEndpoint());
+				System.out.format(" - Destination endpoint: 0x%02X%n", explicitXBeeMessage.getDestinationEndpoint());
+				System.out.format(" - Cluster ID: 0x%04X%n", explicitXBeeMessage.getClusterID());
+				System.out.format(" - Profile ID: 0x%04X%n%n",explicitXBeeMessage.getProfileID());
 			}
 		}
 	}

@@ -73,7 +73,7 @@
   all the remote modules of the network. When that happens, a line with the 
   result of the operation is printed to the standard output:
        
-    Sending broadcast data [A0 - A1 - 1554 - C105] >> 48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21 | Hello XBee World!... Success
+    Sending broadcast data [A0 - A1 - 1554 - 1234] >> 48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21 | Hello XBee World!... Success
        
   Verify that in the XCTU console a new Explicit Rx Indicator frame has been 
   received by the remote ZigBee device. Select it and review the details, some 
@@ -87,7 +87,7 @@
     - Source endpoint:         A0
     - Destination endpoint:    A1
     - Cluster ID:              15 54
-    - Profile ID:              C1 05
+    - Profile ID:              12 34
     - Receive options:         02
     - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21
                                Hello XBee World!

@@ -35,10 +35,11 @@ public class MainApp {
 	
 	private static final String DATA_TO_SEND = "Hello XBee World!";
 	
+	// Examples of endpoints, cluster ID and profile ID.
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
 	private static final int CLUSTER_ID = 0x1554;
-	private static final int PROFILE_ID = 0xC105;
+	private static final int PROFILE_ID = 0x1234;
 	
 	/**
 	 * Application main method.

@@ -85,7 +85,7 @@
   that happens, a line with the result of the operation is printed to the 
   standard output:
        
-    Sending data asynchronously to 0013A20040XXXXXX [A0 - A1 - 1554 - C105] >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
+    Sending data asynchronously to 0013A20040XXXXXX [A0 - A1 - 1554 - 1234] >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success
     
      - Where 0013A20040XXXXXX is the 64-bit address of the remote ZigBee device 
        whose Node Identifier is 'REMOTE'.
@@ -102,7 +102,7 @@
     - Source endpoint:         A0
     - Destination endpoint:    A1
     - Cluster ID:              15 54
-    - Profile ID:              C1 05
+    - Profile ID:              12 34
     - Receive options:         01
     - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 21
                                Hello XBee!

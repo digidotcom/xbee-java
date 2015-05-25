@@ -49,11 +49,11 @@ public class IExplicitDataReceiveListenerTest {
 	
 	private static final String RECEIVED_DATA = "data";
 	private static final byte[] RECEIVED_DATA_BYTES = RECEIVED_DATA.getBytes();
-	private static final byte[] RECEIVED_CLUSTER_ID = new byte[]{0x15, 0x54};
-	private static final byte[] RECEIVED_PROFILE_ID = new byte[]{(byte) 0xC1, 0x05};
 	
 	private static final int RECEIVED_SOURCE_ENDPOINT = 0xA0;
 	private static final int RECEIVED_DESTINATION_ENDPOINT = 0xA1;
+	private static final int RECEIVED_CLUSTER_ID = 0x1554;
+	private static final int RECEIVED_PROFILE_ID = 0xC105;
 	
 	private static final String PACKET_RECEIVED_METHOD = "packetReceived";
 	private static final String NOTIFY_EXPLICIT_DATA_RECEIVED_METHOD = "notifyExplicitDataReceived";
@@ -135,8 +135,8 @@ public class IExplicitDataReceiveListenerTest {
 		assertEquals(XBEE_64BIT_ADDRESS, explicitDataReceiveListener.get64BitAddress());
 		assertEquals(RECEIVED_SOURCE_ENDPOINT, explicitDataReceiveListener.getSourceEndpoint());
 		assertEquals(RECEIVED_DESTINATION_ENDPOINT, explicitDataReceiveListener.getDestinationEndpoint());
-		assertArrayEquals(RECEIVED_CLUSTER_ID, explicitDataReceiveListener.getClusterID());
-		assertArrayEquals(RECEIVED_PROFILE_ID, explicitDataReceiveListener.getProfileID());
+		assertEquals(RECEIVED_CLUSTER_ID, explicitDataReceiveListener.getClusterID());
+		assertEquals(RECEIVED_PROFILE_ID, explicitDataReceiveListener.getProfileID());
 		assertArrayEquals(RECEIVED_DATA_BYTES, explicitDataReceiveListener.getData());
 		assertFalse(explicitDataReceiveListener.isBroadcast());
 	}
@@ -157,8 +157,8 @@ public class IExplicitDataReceiveListenerTest {
 		assertEquals(XBEE_64BIT_ADDRESS, explicitDataReceiveListener.get64BitAddress());
 		assertEquals(RECEIVED_SOURCE_ENDPOINT, explicitDataReceiveListener.getSourceEndpoint());
 		assertEquals(RECEIVED_DESTINATION_ENDPOINT, explicitDataReceiveListener.getDestinationEndpoint());
-		assertArrayEquals(RECEIVED_CLUSTER_ID, explicitDataReceiveListener.getClusterID());
-		assertArrayEquals(RECEIVED_PROFILE_ID, explicitDataReceiveListener.getProfileID());
+		assertEquals(RECEIVED_CLUSTER_ID, explicitDataReceiveListener.getClusterID());
+		assertEquals(RECEIVED_PROFILE_ID, explicitDataReceiveListener.getProfileID());
 		assertArrayEquals(RECEIVED_DATA_BYTES, explicitDataReceiveListener.getData());
 		assertTrue(explicitDataReceiveListener.isBroadcast());
 	}
@@ -189,8 +189,8 @@ public class IExplicitDataReceiveListenerTest {
 		assertNull(explicitDataReceiveListener.get64BitAddress());
 		assertEquals(-1, explicitDataReceiveListener.getSourceEndpoint());
 		assertEquals(-1, explicitDataReceiveListener.getDestinationEndpoint());
-		assertNull(explicitDataReceiveListener.getClusterID());
-		assertNull(explicitDataReceiveListener.getProfileID());
+		assertEquals(-1, explicitDataReceiveListener.getClusterID());
+		assertEquals(-1, explicitDataReceiveListener.getProfileID());
 		assertNull(explicitDataReceiveListener.getData());
 		assertFalse(explicitDataReceiveListener.isBroadcast());
 	}
@@ -226,8 +226,8 @@ public class IExplicitDataReceiveListenerTest {
 		assertEquals(XBEE_64BIT_ADDRESS, explicitDataReceiveListener.get64BitAddress());
 		assertEquals(RECEIVED_SOURCE_ENDPOINT, explicitDataReceiveListener.getSourceEndpoint());
 		assertEquals(RECEIVED_DESTINATION_ENDPOINT, explicitDataReceiveListener.getDestinationEndpoint());
-		assertArrayEquals(RECEIVED_CLUSTER_ID, explicitDataReceiveListener.getClusterID());
-		assertArrayEquals(RECEIVED_PROFILE_ID, explicitDataReceiveListener.getProfileID());
+		assertEquals(RECEIVED_CLUSTER_ID, explicitDataReceiveListener.getClusterID());
+		assertEquals(RECEIVED_PROFILE_ID, explicitDataReceiveListener.getProfileID());
 		assertArrayEquals(RECEIVED_DATA_BYTES, explicitDataReceiveListener.getData());
 		assertFalse(explicitDataReceiveListener.isBroadcast());
 	}
@@ -260,8 +260,8 @@ public class IExplicitDataReceiveListenerTest {
 		assertNull(explicitDataReceiveListener.get64BitAddress());
 		assertEquals(-1, explicitDataReceiveListener.getSourceEndpoint());
 		assertEquals(-1, explicitDataReceiveListener.getDestinationEndpoint());
-		assertNull(explicitDataReceiveListener.getClusterID());
-		assertNull(explicitDataReceiveListener.getProfileID());
+		assertEquals(-1, explicitDataReceiveListener.getClusterID());
+		assertEquals(-1, explicitDataReceiveListener.getProfileID());
 		assertNull(explicitDataReceiveListener.getData());
 		assertFalse(explicitDataReceiveListener.isBroadcast());
 	}
@@ -290,11 +290,11 @@ public class IExplicitDataReceiveListenerTest {
 		
 		// Variables.
 		private byte[] data = null;
-		private byte[] clusterID = null;
-		private byte[] profileID = null;
 		
 		private int sourceEndpoint = -1;
 		private int destEndpoint = -1;
+		private int clusterID = -1;
+		private int profileID = -1;
 		
 		private XBee64BitAddress address64 = null;
 		
@@ -347,7 +347,7 @@ public class IExplicitDataReceiveListenerTest {
 		 * 
 		 * @return The cluster ID the packet was addressed to.
 		 */
-		public byte[] getClusterID() {
+		public int getClusterID() {
 			return clusterID;
 		}
 		
@@ -356,7 +356,7 @@ public class IExplicitDataReceiveListenerTest {
 		 * 
 		 * @return The profile ID the packet was addressed to.
 		 */
-		public byte[] getProfileID() {
+		public int getProfileID() {
 			return profileID;
 		}
 		

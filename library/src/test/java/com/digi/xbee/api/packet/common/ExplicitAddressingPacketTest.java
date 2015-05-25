@@ -106,7 +106,7 @@ public class ExplicitAddressingPacketTest {
 	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#createPacket(byte[])}.
 	 * 
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
-	 * parsing a byte array shorter than the needed one is provided.</p>
+ 	 * parsing a byte array shorter than the needed one is provided.</p>
 	 */
 	@Test
 	public final void testCreatePacketPayloadShorterThanNeeded() {
@@ -117,8 +117,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15}; // Invalid Cluster ID.
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x15; // Invalid Cluster ID.
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		
@@ -129,8 +129,9 @@ public class ExplicitAddressingPacketTest {
 		System.arraycopy(dest16Addr.getValue(), 0, payload, 10, dest16Addr.getValue().length);
 		payload[12] = (byte)sourceEndpoint;
 		payload[13] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 14, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 15, profileID.length);
+		payload[14] = (byte)clusterID;
+		payload[15] = (byte)(profileID >> 8);
+		payload[16] = (byte)profileID;
 		payload[17] = (byte)broadcastRadius;
 		payload[18] = (byte)options;
 		
@@ -144,7 +145,7 @@ public class ExplicitAddressingPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#createPacket(byte[])}.
 	 * 
-	 * <p>An {@code IllegalArgumentException} exception must be thrown when 
+	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array not including the Frame type.</p>
 	 */
 	@Test
@@ -155,8 +156,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -167,8 +168,10 @@ public class ExplicitAddressingPacketTest {
 		System.arraycopy(dest16Addr.getValue(), 0, payload, 9, dest16Addr.getValue().length);
 		payload[11] = (byte)sourceEndpoint;
 		payload[12] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 13, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 15, profileID.length);
+		payload[13] = (byte)(clusterID >> 8);
+		payload[14] = (byte)clusterID;
+		payload[15] = (byte)(profileID >> 8);
+		payload[16] = (byte)profileID;
 		payload[17] = (byte)broadcastRadius;
 		payload[18] = (byte)options;
 		System.arraycopy(data, 0, payload, 19, data.length);
@@ -195,8 +198,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		
@@ -207,8 +210,10 @@ public class ExplicitAddressingPacketTest {
 		System.arraycopy(dest16Addr.getValue(), 0, payload, 10, dest16Addr.getValue().length);
 		payload[12] = (byte)sourceEndpoint;
 		payload[13] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 14, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 16, profileID.length);
+		payload[14] = (byte)(clusterID >> 8);
+		payload[15] = (byte)clusterID;
+		payload[16] = (byte)(profileID >> 8);
+		payload[17] = (byte)profileID;
 		payload[18] = (byte)broadcastRadius;
 		payload[19] = (byte)options;
 		
@@ -246,8 +251,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -259,8 +264,10 @@ public class ExplicitAddressingPacketTest {
 		System.arraycopy(dest16Addr.getValue(), 0, payload, 10, dest16Addr.getValue().length);
 		payload[12] = (byte)sourceEndpoint;
 		payload[13] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 14, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 16, profileID.length);
+		payload[14] = (byte)(clusterID >> 8);
+		payload[15] = (byte)clusterID;
+		payload[16] = (byte)(profileID >> 8);
+		payload[17] = (byte)profileID;
 		payload[18] = (byte)broadcastRadius;
 		payload[19] = (byte)options;
 		System.arraycopy(data, 0, payload, 20, data.length);
@@ -285,7 +292,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a {@code null} 
 	 * 64-bit destination address. This must throw a {@code NullPointerException}.</p>
@@ -298,8 +305,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -312,7 +319,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a {@code null} 
 	 * 16-bit destination address. This must throw a {@code NullPointerException}.</p>
@@ -325,8 +332,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = null;
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -339,61 +346,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Addressing packet but with a {@code null} 
-	 * Cluster ID. This must throw a {@code NullPointerException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitAddressingPacketClusterIDNull() {
-		// Setup the resources for the test.
-		int frameID = 0x01;
-		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = null;
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
-		int broadcastRadius = 0;
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Cluster ID cannot be null.")));
-		
-		// Call the method under test that should throw a NullPointerException.
-		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Addressing packet but with a {@code null} 
-	 * Profile ID. This must throw a {@code NullPointerException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitAddressingPacketProfileIDNull() {
-		// Setup the resources for the test.
-		int frameID = 0x01;
-		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = null;
-		int broadcastRadius = 0;
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Profile ID cannot be null.")));
-		
-		// Call the method under test that should throw a NullPointerException.
-		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a source endpoint 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -406,8 +359,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 748;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -420,7 +373,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a negative source 
 	 * endpoint bigger than 255. This must throw an 
@@ -434,8 +387,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = -149;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -448,7 +401,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a dest. endpoint 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -461,8 +414,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 748;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -475,7 +428,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a negative dest. 
 	 * endpoint. This must throw an {@code IllegalArgumentException}.</p>
@@ -488,8 +441,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = -149;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -502,7 +455,115 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Addressing packet but with the cluster ID 
+	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitAddressingPacketClusterIDBiggerThan65535() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = 0x65536;
+		int profileID = 0xC105;
+		int broadcastRadius = 0;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Cluster ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Addressing packet but with a negative cluster 
+	 * ID. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitAddressingPacketClusterIDNegative() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = -20;
+		int profileID = 0xC105;
+		int broadcastRadius = 0;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Cluster ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Addressing packet but with the profile ID 
+	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitAddressingPacketProfileIDBiggerThan65535() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = 0x1554;
+		int profileID = 65536;
+		int broadcastRadius = 0;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Profile ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Addressing packet but with a negative profile 
+	 * ID. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitAddressingPacketProfileIDNegative() {
+		// Setup the resources for the test.
+		int frameID = 0x01;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = 0x1554;
+		int profileID = -5;
+		int broadcastRadius = 0;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Profile ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a broadcast 
 	 * radius bigger than 255. This must throw an 
@@ -516,8 +577,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = 815;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -530,7 +591,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a negative 
 	 * broadcast radius. This must throw an {@code IllegalArgumentException}.</p>
@@ -543,8 +604,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int broadcastRadius = -238;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -557,7 +618,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with transmit options 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -570,8 +631,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 324;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -584,7 +645,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with negative 
 	 * transmit options. This must throw an {@code IllegalArgumentException}.</p>
@@ -597,8 +658,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = -153;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -611,61 +672,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Addressing packet but with a cluster ID 
-	 * with invalid length. This must throw an {@code IllegalArgumentException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitAddressingPacketClusterIDInvalidLength() {
-		// Setup the resources for the test.
-		int frameID = 0x01;
-		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54, 0x34};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
-		int broadcastRadius = 0;
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Cluster ID length must be 2 bytes.")));
-		
-		// Call the method under test that should throw an IllegalArgumentException.
-		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Addressing packet but with a profile ID 
-	 * with invalid length. This must throw an {@code IllegalArgumentException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitAddressingPacketProfileIDInvalidLength() {
-		// Setup the resources for the test.
-		int frameID = 0x01;
-		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1};
-		int broadcastRadius = 0;
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Profile ID length must be 2 bytes.")));
-		
-		// Call the method under test that should throw an IllegalArgumentException.
-		new ExplicitAddressingPacket(frameID, dest64Addr, dest16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, broadcastRadius, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with an invalid frame 
 	 * ID, bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -678,8 +685,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -693,7 +700,7 @@ public class ExplicitAddressingPacketTest {
 	
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet but with a negative frame 
 	 * ID. This must throw an {@code IllegalArgumentException}.</p>
@@ -706,8 +713,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -720,7 +727,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet with valid parameters 
 	 * and RF data.</p>
@@ -733,8 +740,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -760,7 +767,7 @@ public class ExplicitAddressingPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitAddressingPacket#ExplicitAddressingPacket(int, XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Addressing packet with valid parameters 
 	 * without data.</p>
@@ -773,8 +780,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] data = null;
@@ -812,8 +819,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] rfData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -826,8 +833,10 @@ public class ExplicitAddressingPacketTest {
 		System.arraycopy(dest16Addr.getValue(), 0, expectedData, 9, dest16Addr.getValue().length);
 		expectedData[11] = (byte)sourceEndpoint;
 		expectedData[12] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, expectedData, 13, clusterID.length);
-		System.arraycopy(profileID, 0, expectedData, 15, profileID.length);
+		expectedData[13] = (byte)(clusterID >> 8);
+		expectedData[14] = (byte)clusterID;
+		expectedData[15] = (byte)(profileID >> 8);
+		expectedData[16] = (byte)profileID;
 		expectedData[17] = (byte)broadcastRadius;
 		expectedData[18] = (byte)options;
 		System.arraycopy(rfData, 0, expectedData, 19, rfData.length);
@@ -852,8 +861,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] rfData = null;
@@ -866,8 +875,10 @@ public class ExplicitAddressingPacketTest {
 		System.arraycopy(dest16Addr.getValue(), 0, expectedData, 9, dest16Addr.getValue().length);
 		expectedData[11] = (byte)sourceEndpoint;
 		expectedData[12] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, expectedData, 13, clusterID.length);
-		System.arraycopy(profileID, 0, expectedData, 15, profileID.length);
+		expectedData[13] = (byte)(clusterID >> 8);
+		expectedData[14] = (byte)clusterID;
+		expectedData[15] = (byte)(profileID >> 8);
+		expectedData[16] = (byte)profileID;
 		expectedData[17] = (byte)broadcastRadius;
 		expectedData[18] = (byte)options;
 		
@@ -891,8 +902,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] rfData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
@@ -903,8 +914,8 @@ public class ExplicitAddressingPacketTest {
 		String expectedDest16Addr = HexUtils.prettyHexString(dest16Addr.getValue());
 		String expectedSourceEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1));
 		String expectedDestEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1));
-		String expectedClusterID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID));
-		String expectedProfileID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID));
+		String expectedClusterID = HexUtils.prettyHexString(HexUtils.integerToHexString(clusterID, 2));
+		String expectedProfileID = HexUtils.prettyHexString(HexUtils.integerToHexString(profileID, 2));
 		String expectedBroadcastRadius = HexUtils.prettyHexString(HexUtils.integerToHexString(broadcastRadius, 1)) + " (" + broadcastRadius + ")";;
 		String expectedOptions = HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1));
 		String expectedRFData = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData));
@@ -939,8 +950,8 @@ public class ExplicitAddressingPacketTest {
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
 		int broadcastRadius = 0;
 		int options = 0x06;
 		byte[] rfData = null;
@@ -951,8 +962,8 @@ public class ExplicitAddressingPacketTest {
 		String expectedDest16Addr = HexUtils.prettyHexString(dest16Addr.getValue());
 		String expectedSourceEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1));
 		String expectedDestEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1));
-		String expectedClusterID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID));
-		String expectedProfileID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID));
+		String expectedClusterID = HexUtils.prettyHexString(HexUtils.integerToHexString(clusterID, 2));
+		String expectedProfileID = HexUtils.prettyHexString(HexUtils.integerToHexString(profileID, 2));
 		String expectedBroadcastRadius = HexUtils.prettyHexString(HexUtils.integerToHexString(broadcastRadius, 1)) + " (" + broadcastRadius + ")";;
 		String expectedOptions = HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1));
 		

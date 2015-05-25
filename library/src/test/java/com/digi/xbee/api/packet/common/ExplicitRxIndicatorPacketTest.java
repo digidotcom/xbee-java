@@ -116,8 +116,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15}; // Invalid Cluster ID.
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x15; // Invalid Cluster ID.
+		int profileID = 0xC105;
 		int options = 0x06;
 		
 		byte[] payload = new byte[17];
@@ -126,8 +126,9 @@ public class ExplicitRxIndicatorPacketTest {
 		System.arraycopy(source16Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
 		payload[11] = (byte)sourceEndpoint;
 		payload[12] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 13, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 14, profileID.length);
+		payload[13] = (byte)clusterID;
+		payload[14] = (byte)(profileID >> 8);
+		payload[15] = (byte)profileID;
 		payload[16] = (byte)options;
 		
 		exception.expect(IllegalArgumentException.class);
@@ -150,8 +151,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -160,8 +161,10 @@ public class ExplicitRxIndicatorPacketTest {
 		System.arraycopy(source16Addr.getValue(), 0, payload, 8, source16Addr.getValue().length);
 		payload[10] = (byte)sourceEndpoint;
 		payload[11] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 12, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 14, profileID.length);
+		payload[12] = (byte)(clusterID >> 8);
+		payload[13] = (byte)clusterID;
+		payload[14] = (byte)(profileID >> 8);
+		payload[15] = (byte)profileID;
 		payload[16] = (byte)options;
 		System.arraycopy(data, 0, payload, 17, data.length);
 		
@@ -186,8 +189,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		
 		byte[] payload = new byte[18];
@@ -196,8 +199,10 @@ public class ExplicitRxIndicatorPacketTest {
 		System.arraycopy(source16Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
 		payload[11] = (byte)sourceEndpoint;
 		payload[12] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 13, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 15, profileID.length);
+		payload[13] = (byte)(clusterID >> 8);
+		payload[14] = (byte)clusterID;
+		payload[15] = (byte)(profileID >> 8);
+		payload[16] = (byte)profileID;
 		payload[17] = (byte)options;
 		
 		// Call the method under test.
@@ -231,8 +236,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -242,8 +247,10 @@ public class ExplicitRxIndicatorPacketTest {
 		System.arraycopy(source16Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
 		payload[11] = (byte)sourceEndpoint;
 		payload[12] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, payload, 13, clusterID.length);
-		System.arraycopy(profileID, 0, payload, 15, profileID.length);
+		payload[13] = (byte)(clusterID >> 8);
+		payload[14] = (byte)clusterID;
+		payload[15] = (byte)(profileID >> 8);
+		payload[16] = (byte)profileID;
 		payload[17] = (byte)options;
 		System.arraycopy(data, 0, payload, 18, data.length);
 		
@@ -265,7 +272,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with a {@code null} 
 	 * 64-bit source address. This must throw a {@code NullPointerException}.</p>
@@ -277,8 +284,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -290,7 +297,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with a {@code null} 
 	 * 16-bit source address. This must throw a {@code NullPointerException}.</p>
@@ -302,8 +309,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = null;
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -315,57 +322,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Rx Indicator packet but with a {@code null} 
-	 * Cluster ID. This must throw a {@code NullPointerException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitRxIndicatorPacketClusterIDNull() {
-		// Setup the resources for the test.
-		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = null;
-		byte[] profileID = new byte[]{(byte) 0xC1, 0x05};
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Cluster ID cannot be null.")));
-		
-		// Call the method under test that should throw a NullPointerException.
-		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Rx Indicator packet but with a {@code null} 
-	 * Profile ID. This must throw a {@code NullPointerException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitRxIndicatorPacketProfileIDNull() {
-		// Setup the resources for the test.
-		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID = null;
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Profile ID cannot be null.")));
-		
-		// Call the method under test that should throw a NullPointerException.
-		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with a source endpoint 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -377,8 +334,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 748;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -390,7 +347,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with a negative source 
 	 * endpoint bigger than 255. This must throw an 
@@ -403,8 +360,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = -149;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -416,7 +373,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with a dest. endpoint 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -428,8 +385,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 748;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -441,7 +398,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with a negative dest. 
 	 * endpoint. This must throw an {@code IllegalArgumentException}.</p>
@@ -453,8 +410,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = -149;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -466,7 +423,107 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Rx Indicator packet but with a cluster ID 
+	 * bigger than 65535. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitRxIndicatorPacketClusterIDBiggerThan65535() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = 65536;
+		int profileID = 0xC105;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Cluster ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Rx Indicator packet but with a negative 
+	 * cluster ID. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitRxIndicatorPacketClusterIDNegative() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = -2;
+		int profileID = 0xC105;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Cluster ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Rx Indicator packet but with a profile ID 
+	 * bigger than 65535. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitRxIndicatorPacketProfileIDBiggerThan65535() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = 0x1554;
+		int profileID = 65536;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Profile ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Construct a new Explicit Rx Indicator packet but with a negative 
+	 * profile ID. This must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateExplicitRxIndicatorPacketProfileIDNegative() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA0;
+		int clusterID = 0x1554;
+		int profileID = -1;
+		int options = 0x06;
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Profile ID must be between 0 and 65535.")));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with receive options 
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -478,8 +535,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 324;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -491,7 +548,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet but with negative 
 	 * receive options. This must throw an {@code IllegalArgumentException}.</p>
@@ -503,8 +560,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = -153;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -516,57 +573,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Rx Indicator packet but with a cluster ID 
-	 * with invalid length. This must throw an {@code IllegalArgumentException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitRxIndicatorPacketClusterIDInvalidLength() {
-		// Setup the resources for the test.
-		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54, 0x34};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Cluster ID length must be 2 bytes.")));
-		
-		// Call the method under test that should throw an IllegalArgumentException.
-		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
-	 * 
-	 * <p>Construct a new Explicit Rx Indicator packet but with a profile ID 
-	 * with invalid length. This must throw an {@code IllegalArgumentException}.</p>
-	 */
-	@Test
-	public final void testCreateExplicitRxIndicatorPacketProfileIDInvalidLength() {
-		// Setup the resources for the test.
-		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
-		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
-		int sourceEndpoint = 0xA0;
-		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1};
-		int options = 0x06;
-		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
-		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Profile ID length must be 2 bytes.")));
-		
-		// Call the method under test that should throw an IllegalArgumentException.
-		new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, data);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet with valid parameters 
 	 * and RF data.</p>
@@ -578,8 +585,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
@@ -602,7 +609,7 @@ public class ExplicitRxIndicatorPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#ExplicitRxIndicatorPacket(XBee64BitAddress, XBee16BitAddress, int, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Construct a new Explicit Rx Indicator packet with valid parameters 
 	 * without data.</p>
@@ -614,8 +621,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] data = null;
 		
@@ -649,8 +656,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] rfData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
@@ -661,8 +668,10 @@ public class ExplicitRxIndicatorPacketTest {
 		System.arraycopy(source16Addr.getValue(), 0, expectedData, 8, source16Addr.getValue().length);
 		expectedData[10] = (byte)sourceEndpoint;
 		expectedData[11] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, expectedData, 12, clusterID.length);
-		System.arraycopy(profileID, 0, expectedData, 14, profileID.length);
+		expectedData[12] = (byte)(clusterID >> 8);
+		expectedData[13] = (byte)clusterID;
+		expectedData[14] = (byte)(profileID >> 8);
+		expectedData[15] = (byte)profileID;
 		expectedData[16] = (byte)options;
 		System.arraycopy(rfData, 0, expectedData, 17, rfData.length);
 		
@@ -685,8 +694,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] rfData = null;
 		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
@@ -697,8 +706,10 @@ public class ExplicitRxIndicatorPacketTest {
 		System.arraycopy(source16Addr.getValue(), 0, expectedData, 8, source16Addr.getValue().length);
 		expectedData[10] = (byte)sourceEndpoint;
 		expectedData[11] = (byte)destEndpoint;
-		System.arraycopy(clusterID, 0, expectedData, 12, clusterID.length);
-		System.arraycopy(profileID, 0, expectedData, 14, profileID.length);
+		expectedData[12] = (byte)(clusterID >> 8);
+		expectedData[13] = (byte)clusterID;
+		expectedData[14] = (byte)(profileID >> 8);
+		expectedData[15] = (byte)profileID;
 		expectedData[16] = (byte)options;
 		
 		// Call the method under test.
@@ -720,8 +731,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] rfData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
@@ -730,8 +741,8 @@ public class ExplicitRxIndicatorPacketTest {
 		String expectedsource16Addr = HexUtils.prettyHexString(source16Addr.getValue());
 		String expectedSourceEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1));
 		String expectedDestEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1));
-		String expectedClusterID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID));
-		String expectedProfileID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID));
+		String expectedClusterID = HexUtils.prettyHexString(HexUtils.integerToHexString(clusterID, 2));
+		String expectedProfileID = HexUtils.prettyHexString(HexUtils.integerToHexString(profileID, 2));
 		String expectedOptions = HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1));
 		String expectedRFData = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData));
 		
@@ -762,8 +773,8 @@ public class ExplicitRxIndicatorPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
 		int sourceEndpoint = 0xA0;
 		int destEndpoint = 0xA1;
-		byte[] clusterID = new byte[]{0x15, 0x54};
-		byte[] profileID =  new byte[]{(byte) 0xC1, 0x05};
+		int clusterID = 0x1554;
+		int profileID = 0xC105;
 		int options = 0x06;
 		byte[] rfData = null;
 		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
@@ -772,8 +783,8 @@ public class ExplicitRxIndicatorPacketTest {
 		String expectedsource16Addr = HexUtils.prettyHexString(source16Addr.getValue());
 		String expectedSourceEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1));
 		String expectedDestEndpoint = HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1));
-		String expectedClusterID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID));
-		String expectedProfileID = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID));
+		String expectedClusterID = HexUtils.prettyHexString(HexUtils.integerToHexString(clusterID, 2));
+		String expectedProfileID = HexUtils.prettyHexString(HexUtils.integerToHexString(profileID, 2));
 		String expectedOptions = HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1));
 		
 		// Call the method under test.

@@ -37,9 +37,8 @@ public class MainApp {
 	
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
-	
-	private static final byte[] CLUSTER_ID = new byte[]{(byte)0x15, (byte)0x54};
-	private static final byte[] PROFILE_ID = new byte[]{(byte)0xC1, (byte)0x05};
+	private static final int CLUSTER_ID = 0x1554;
+	private static final int PROFILE_ID = 0xC105;
 	
 	/**
 	 * Application main method.
@@ -60,8 +59,8 @@ public class MainApp {
 			System.out.format("Sending broadcast data [%s %s %s %s] >> '%s' | %s... ",
 					HexUtils.integerToHexString(SOURCE_ENDPOINT, 1), 
 					HexUtils.integerToHexString(DESTINATION_ENDPOINT, 1), 
-					HexUtils.byteArrayToHexString(CLUSTER_ID), 
-					HexUtils.byteArrayToHexString(PROFILE_ID), 
+					HexUtils.integerToHexString(CLUSTER_ID, 2), 
+					HexUtils.integerToHexString(PROFILE_ID, 2), 
 					HexUtils.prettyHexString(HexUtils.byteArrayToHexString(dataToSend)), 
 					new String(dataToSend));
 			

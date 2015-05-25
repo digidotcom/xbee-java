@@ -88,13 +88,13 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	
 	private final XBee16BitAddress destAddress16;
 	
-	private final int sourceEndpoint;
-	private final int destEndpoint;
 	private final int broadcastRadius;
 	private final int transmitOptions;
 	
-	private final byte[] clusterID;
-	private final byte[] profileID;
+	private final int sourceEndpoint;
+	private final int destEndpoint;
+	private final int clusterID;
+	private final int profileID;
 	private byte[] rfData;
 	
 	private Logger logger;
@@ -118,8 +118,10 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 *                                  if {@code sourceEndpoint > 255} or 
 	 *                                  if {@code destEndpoint < 0} or 
 	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 65535} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 65535} or 
 	 *                                  if {@code broadcastRadius < 0} or
 	 *                                  if {@code broadcastRadius > 255} or
 	 *                                  if {@code transmitOptions < 0} or
@@ -161,16 +163,14 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 		index = index + 1;
 		
 		// 2 bytes of cluster ID.
-		byte[] clusterID = new byte[2];
-		System.arraycopy(payload, index, clusterID, 0, 2);
+		int clusterID = (payload[index] & 0xFF) << 8 | payload[index + 1] & 0xFF;
 		index = index + 2;
 		
 		// 2 bytes of profile ID.
-		byte[] profileID = new byte[2];
-		System.arraycopy(payload, index, profileID, 0, 2);
+		int profileID = (payload[index] & 0xFF) << 8 | payload[index + 1] & 0xFF;
 		index = index + 2;
 		
-		// Broadcast radious byte.
+		// Broadcast radius byte.
 		int broadcastRadius = payload[index] & 0xFF;
 		index = index + 1;
 		
@@ -209,23 +209,23 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 *                                  if {@code sourceEndpoint > 255} or 
 	 *                                  if {@code destEndpoint < 0} or 
 	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 65535} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 65535} or 
 	 *                                  if {@code broadcastRadius < 0} or
 	 *                                  if {@code broadcastRadius > 255} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
 	 * @throws NullPointerException if {@code destAddress64 == null} or 
-	 *                              if {@code destAddress16 == null} or 
-	 *                              if {@code clusterID == null} or
-	 *                              if {@code profileID == null}.
+	 *                              if {@code destAddress16 == null}.
 	 * 
 	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public ExplicitAddressingPacket(int frameID, XBee64BitAddress destAddress64, XBee16BitAddress destAddress16,
-			int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID, int broadcastRadius,
+			int sourceEndpoint, int destEndpoint, int clusterID, int profileID, int broadcastRadius,
 			int transmitOptions, byte[] rfData) {
 		super(APIFrameType.EXPLICIT_ADDRESSING_COMMAND_FRAME);
 		
@@ -233,20 +233,16 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 			throw new NullPointerException("64-bit destination address cannot be null.");
 		if (destAddress16 == null)
 			throw new NullPointerException("16-bit destination address cannot be null.");
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException("Frame ID must be between 0 and 255.");
 		if (sourceEndpoint < 0 || sourceEndpoint > 255)
 			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
 		if (destEndpoint < 0 || destEndpoint > 255)
 			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (clusterID < 0 || clusterID > 65535)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 65535.");
+		if (profileID < 0 || profileID > 65535)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 65535.");
 		if (broadcastRadius < 0 || broadcastRadius > 255)
 			throw new IllegalArgumentException("Broadcast radius must be between 0 and 255.");
 		if (transmitOptions < 0 || transmitOptions > 255)
@@ -277,7 +273,9 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 			data.write(destAddress16.getValue());
 			data.write(sourceEndpoint);
 			data.write(destEndpoint);
+			data.write(clusterID >> 8);
 			data.write(clusterID);
+			data.write(profileID >> 8);
 			data.write(profileID);
 			data.write(broadcastRadius);
 			data.write(transmitOptions);
@@ -355,7 +353,7 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The cluster ID used in the transmission.
 	 */
-	public byte[] getClusterID() {
+	public int getClusterID() {
 		return clusterID;
 	}
 	
@@ -364,7 +362,7 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The profile ID used in the transmission.
 	 */
-	public byte[] getProfileID() {
+	public int getProfileID() {
 		return profileID;
 	}
 	
@@ -418,8 +416,8 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
 		parameters.put("Source endpoint", HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1)));
 		parameters.put("Dest. endpoint", HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1)));
-		parameters.put("Cluster ID", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID)));
-		parameters.put("Profile ID", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID)));
+		parameters.put("Cluster ID", HexUtils.prettyHexString(HexUtils.integerToHexString(clusterID, 2)));
+		parameters.put("Profile ID", HexUtils.prettyHexString(HexUtils.integerToHexString(profileID, 2)));
 		parameters.put("Broadcast radius", HexUtils.prettyHexString(HexUtils.integerToHexString(broadcastRadius, 1)) + " (" + broadcastRadius + ")");
 		parameters.put("Transmit options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
 		if (rfData != null)

@@ -304,8 +304,8 @@ public class IDataReceiveListenerXBeeTest {
 		// The packet is not an explicit data packet.
 		Mockito.when(explicitPacket.getSourceEndpoint()).thenReturn(0x1A);
 		Mockito.when(explicitPacket.getDestinationEndpoint()).thenReturn(0x1B);
-		Mockito.when(explicitPacket.getClusterID()).thenReturn(new byte[]{0x10, 0x10});
-		Mockito.when(explicitPacket.getProfileID()).thenReturn(new byte[]{0x35, 0x0B});
+		Mockito.when(explicitPacket.getClusterID()).thenReturn(0x1010);
+		Mockito.when(explicitPacket.getProfileID()).thenReturn(0x350B);
 		
 		// Subscribe to listen for data.
 		dataReader.addDataReceiveListener(receiveDataListener);

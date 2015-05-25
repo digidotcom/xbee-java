@@ -30,11 +30,10 @@ public class SendExplicitDataRemoteDeviceTest {
 	private static final XBee16BitAddress XBEE_16BIT_ADDRESS = new XBee16BitAddress("0123");
 	private static final XBee64BitAddress XBEE_64BIT_ADDRESS = new XBee64BitAddress("0123456789ABCDEF");
 	
-	private static final byte[] CLUSTER_ID = new byte[]{0x15, 0x54};
-	private static final byte[] PROFILE_ID = new byte[]{(byte) 0xC1, 0x05};
-	
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
+	private static final int CLUSTER_ID = 0x1554;
+	private static final int PROFILE_ID = 0xC105;
 	
 	private static final String DATA = "data";
 	
@@ -57,7 +56,7 @@ public class SendExplicitDataRemoteDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data cannot be sent if the remote XBee device is {@code null}.</p>
 	 * 
@@ -70,7 +69,7 @@ public class SendExplicitDataRemoteDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data can be sent if the protocol of the XBee device is ZigBee and the remote 
 	 * device has the 64-bit and 16-bit addresses correctly configured.</p>
@@ -82,19 +81,19 @@ public class SendExplicitDataRemoteDeviceTest {
 	public void testSendExplicitDataZigBee6416() throws TimeoutException, XBeeException {
 		// Setup the protocol of the XBee device to be ZigBee.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
-		// Do nothing when the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(xbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.any(XBee16BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		
 		xbeeDevice.sendExplicitData(mockedRemoteDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(xbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(XBEE_16BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data can be sent if the protocol of the XBee device is ZigBee and the remote 
 	 * device only has the 64-bit address correctly configured.</p>
@@ -106,21 +105,21 @@ public class SendExplicitDataRemoteDeviceTest {
 	public void testSendExplicitDataZigBee64() throws TimeoutException, XBeeException {
 		// Setup the protocol of the XBee device to be ZigBee.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
-		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(xbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		// Return a null 16-bit address in the remote XBee device when asked.
 		Mockito.doReturn(null).when(mockedRemoteDevice).get16BitAddress();
 		
 		xbeeDevice.sendExplicitData(mockedRemoteDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(xbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), Mockito.eq(DESTINATION_ENDPOINT), 
 				Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data can be sent if the protocol of the XBee device is Point-to-Multipoint and 
 	 * the remote device has the 64-bit and 16-bit addresses correctly configured.</p>
@@ -132,19 +131,19 @@ public class SendExplicitDataRemoteDeviceTest {
 	public void testSendExplicitDataDigiPoint6416() throws TimeoutException, XBeeException {
 		// Setup the protocol of the XBee device to be Point-to-Multipoint.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.DIGI_POINT);
-		// Do nothing when the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(xbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.any(XBee16BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		
 		xbeeDevice.sendExplicitData(mockedRemoteDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(xbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(XBEE_16BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data can be sent if the protocol of the XBee device is Point-to-Multipoint and 
 	 * the remote device only has the 64-bit address correctly configured.</p>
@@ -156,21 +155,21 @@ public class SendExplicitDataRemoteDeviceTest {
 	public void testSendExplicitDataDigiPoint64() throws TimeoutException, XBeeException {
 		// Setup the protocol of the XBee device to be Point-to-Multipoint.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.DIGI_POINT);
-		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(xbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		// Return a null 16-bit address in the remote XBee device when asked.
 		Mockito.doReturn(null).when(mockedRemoteDevice).get16BitAddress();
 		
 		xbeeDevice.sendExplicitData(mockedRemoteDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(xbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), Mockito.eq(DESTINATION_ENDPOINT), 
 				Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data cannot be sent if the protocol of the XBee device is 802.15.4.</p>
 	 * 
@@ -186,7 +185,7 @@ public class SendExplicitDataRemoteDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that explicit data can be sent if the protocol of the XBee device is DigiMesh.</p>
 	 * 
@@ -197,13 +196,13 @@ public class SendExplicitDataRemoteDeviceTest {
 	public void testSendExplicitDataDigiMesh() throws TimeoutException, XBeeException {
 		// Setup the protocol of the XBee device to be DigiMesh.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.DIGI_MESH);
-		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(xbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		
 		xbeeDevice.sendExplicitData(mockedRemoteDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(xbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), Mockito.eq(DESTINATION_ENDPOINT), 
 				Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}

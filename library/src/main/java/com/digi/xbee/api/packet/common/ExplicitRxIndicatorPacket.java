@@ -50,8 +50,8 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	private static final int MIN_API_PAYLOAD_LENGTH = 18; // 1 (Frame type)  + 8 (64-bit address) + 2 (16-bit address) + 1 (source endpoint) + 1 (destination endpoint) + 2 (cluster ID) + 2 (profile ID) + 1 (receive options)
 	
 	public static final int DATA_ENDPOINT = 0xE8;
-	public static final byte[] DATA_CLUSTER = new byte[]{0x00, 0x11};
-	public static final byte[] DIGI_PROFILE = new byte[]{(byte) 0xC1, 0x05};
+	public static final int DATA_CLUSTER = 0x0011;
+	public static final int DIGI_PROFILE = 0xC105;
 	
 	// Variables
 	private final XBee64BitAddress sourceAddress64;
@@ -60,10 +60,10 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	
 	private final int sourceEndpoint;
 	private final int destEndpoint;
+	private final int clusterID;
+	private final int profileID;
 	private final int receiveOptions;
 	
-	private final byte[] clusterID;
-	private final byte[] profileID;
 	private byte[] rfData;
 	
 	private Logger logger;
@@ -85,8 +85,10 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 *                                  if {@code sourceEndpoint > 255} or 
 	 *                                  if {@code destEndpoint < 0} or 
 	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 65535} or
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 65535} or
 	 *                                  if {@code transmitOptions < 0} or
 	 *                                  if {@code transmitOptions > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
@@ -122,13 +124,11 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 		index = index + 1;
 		
 		// 2 bytes of cluster ID.
-		byte[] clusterID = new byte[2];
-		System.arraycopy(payload, index, clusterID, 0, 2);
+		int clusterID = (payload[index] & 0xFF) << 8 | payload[index + 1] & 0xFF;
 		index = index + 2;
 		
 		// 2 bytes of profile ID.
-		byte[] profileID = new byte[2];
-		System.arraycopy(payload, index, profileID, 0, 2);
+		int profileID = (payload[index] & 0xFF) << 8 | payload[index + 1] & 0xFF;
 		index = index + 2;
 		
 		// Receive options byte.
@@ -162,21 +162,21 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 *                                  if {@code sourceEndpoint > 255} or 
 	 *                                  if {@code destEndpoint < 0} or 
 	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 65535} or
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 65535} or
 	 *                                  if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress64 == null} or 
-	 *                              if {@code sourceAddress16 == null} or 
-	 *                              if {@code clusterID == null} or
-	 *                              if {@code profileID == null}.
+	 *                              if {@code sourceAddress16 == null}.
 	 * 
 	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	public ExplicitRxIndicatorPacket(XBee64BitAddress sourceAddress64, XBee16BitAddress sourceAddress16, 
-			int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID,
+			int sourceEndpoint, int destEndpoint, int clusterID, int profileID,
 			int receiveOptions, byte[] rfData){
 		super(APIFrameType.EXPLICIT_RX_INDICATOR);
 		
@@ -184,18 +184,14 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 			throw new NullPointerException("64-bit source address cannot be null.");
 		if (sourceAddress16 == null)
 			throw new NullPointerException("16-bit source address cannot be null.");
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
 		if (sourceEndpoint < 0 || sourceEndpoint > 255)
 			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
 		if (destEndpoint < 0 || destEndpoint > 255)
 			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (clusterID < 0 || clusterID > 65535)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 65535.");
+		if (profileID < 0 || profileID > 65535)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 65535.");
 		if (receiveOptions < 0 || receiveOptions > 255)
 			throw new IllegalArgumentException("Receive options must be between 0 and 255.");
 		
@@ -222,7 +218,9 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 			data.write(sourceAddress16.getValue());
 			data.write(sourceEndpoint);
 			data.write(destEndpoint);
+			data.write(clusterID >> 8);
 			data.write(clusterID);
+			data.write(profileID >> 8);
 			data.write(profileID);
 			data.write(receiveOptions);
 			if (rfData != null)
@@ -298,7 +296,7 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The cluster ID used in the transmission.
 	 */
-	public byte[] getClusterID() {
+	public int getClusterID() {
 		return clusterID;
 	}
 	
@@ -307,7 +305,7 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The profile ID used in the transmission.
 	 */
-	public byte[] getProfileID() {
+	public int getProfileID() {
 		return profileID;
 	}
 	
@@ -351,8 +349,8 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("Source endpoint", HexUtils.prettyHexString(HexUtils.integerToHexString(sourceEndpoint, 1)));
 		parameters.put("Dest. endpoint", HexUtils.prettyHexString(HexUtils.integerToHexString(destEndpoint, 1)));
-		parameters.put("Cluster ID", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(clusterID)));
-		parameters.put("Profile ID", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(profileID)));
+		parameters.put("Cluster ID", HexUtils.prettyHexString(HexUtils.integerToHexString(clusterID, 2)));
+		parameters.put("Profile ID", HexUtils.prettyHexString(HexUtils.integerToHexString(profileID, 2)));
 		parameters.put("Receive options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
 		if (rfData != null)
 			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));

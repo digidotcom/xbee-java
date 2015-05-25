@@ -36,11 +36,10 @@ public class SendMulticastDataAsyncTest {
 	// Constants.
 	private static final XBee16BitAddress XBEE_16BIT_ADDRESS = new XBee16BitAddress("0123");
 	
-	private static final byte[] CLUSTER_ID = new byte[]{0x15, 0x54};
-	private static final byte[] PROFILE_ID = new byte[]{(byte) 0xC1, 0x05};
-	
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
+	private static final int CLUSTER_ID = 0x1554;
+	private static final int PROFILE_ID = 0xC105;
 	
 	private static final String DATA = "data";
 	
@@ -62,7 +61,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the 16-bit address is {@code null}.</p>
 	 * 
@@ -75,7 +74,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the source endpoint is negative.</p>
 	 * 
@@ -88,7 +87,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the source endpoint is greater than 255.</p>
 	 * 
@@ -101,7 +100,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the source endpoint is negative.</p>
 	 * 
@@ -114,7 +113,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the source endpoint is greater than 255.</p>
 	 * 
@@ -127,59 +126,59 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that multicast data async cannot be sent if the cluster ID is {@code null}.</p>
-	 * 
-	 * @throws XBeeException 
-	 * @throws TimeoutException 
-	 */
-	@Test(expected=NullPointerException.class)
-	public void testSendMulticastDataAsyncClusterIDNull() throws TimeoutException, XBeeException {
-		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, null, PROFILE_ID, DATA.getBytes());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
-	 * 
-	 * <p>Verify that multicast data async cannot be sent if the cluster ID has an invalid length.</p>
+	 * <p>Verify that explicit data cannot be sent if the cluster ID is negative.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void testSendMulticastDataAsyncClusterIDInvalidLength() throws TimeoutException, XBeeException {
-		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, new byte[]{0x12}, PROFILE_ID, DATA.getBytes());
+	public void testSendExplicitDataClusterIDNegative() throws TimeoutException, XBeeException {
+		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, -20, PROFILE_ID, DATA.getBytes());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that multicast data async cannot be sent if the profile ID is {@code null}.</p>
-	 * 
-	 * @throws XBeeException 
-	 * @throws TimeoutException 
-	 */
-	@Test(expected=NullPointerException.class)
-	public void testSendMulticastDataAsyncProfileIDNull() throws TimeoutException, XBeeException {
-		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, null, DATA.getBytes());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
-	 * 
-	 * <p>Verify that multicast data async cannot be sent if the profile ID has an invalid length.</p>
+	 * <p>Verify that explicit data cannot be sent if the cluster ID is greater than 65535.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void testSendMulticastDataAsyncProfileIDInvalidLength() throws TimeoutException, XBeeException {
-		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, new byte[]{0x12}, DATA.getBytes());
+	public void testSendExplicitDataClusterIDGreater() throws TimeoutException, XBeeException {
+		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, 65536, PROFILE_ID, DATA.getBytes());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Verify that explicit data cannot be sent if the profile ID is negative.</p>
+	 * 
+	 * @throws XBeeException 
+	 * @throws TimeoutException 
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testSendExplicitDataProfileIDNegative() throws TimeoutException, XBeeException {
+		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, -15, DATA.getBytes());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Verify that explicit data cannot be sent if the cluster ID is greater than 65535.</p>
+	 * 
+	 * @throws XBeeException 
+	 * @throws TimeoutException 
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testSendExplicitDataProfileIDGreater() throws TimeoutException, XBeeException {
+		zigBeeDevice.sendMulticastDataAsync(XBEE_16BIT_ADDRESS, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, 65536, DATA.getBytes());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the data is {@code null}.</p>
 	 * 
@@ -192,7 +191,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the device is not open.</p>
 	 * 
@@ -208,7 +207,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the device has an invalid operating mode.</p>
 	 * 
@@ -224,7 +223,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if there is a timeout sending and checking the Explicit Addressing packet.</p>
 	 * 
@@ -240,7 +239,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if there is a transmit exception when sending and checking the Explicit 
 	 * Addressing packet.</p>
@@ -257,7 +256,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if there is an IO error when sending and checking the Explicit 
 	 * Addressing packet.</p>
@@ -274,7 +273,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async cannot be sent if the sender is a remote XBee device.</p>
 	 * 
@@ -290,7 +289,7 @@ public class SendMulticastDataAsyncTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendMulticastDataAsync(XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that multicast data async is sent successfully if there is not any error when sending and checking the Explicit 
 	 * Addressing packet.</p>

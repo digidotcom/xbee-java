@@ -24,11 +24,10 @@ public class ExplicitXBeeMessageTest {
 	// Constants.
 	private final static String DATA = "Data";
 	
-	private static final byte[] CLUSTER_ID = new byte[]{0x15, 0x54};
-	private static final byte[] PROFILE_ID = new byte[]{(byte) 0xC1, 0x05};
-	
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
+	private static final int CLUSTER_ID = 0x1554;
+	private static final int PROFILE_ID = 0xC105;
 	
 	// Variables.
 	private static RemoteXBeeDevice remoteXBeeDevice;
@@ -39,7 +38,7 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the remote XBee device is null.</p>
 	 */
@@ -49,7 +48,7 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the source endpoint is negative.</p>
 	 */
@@ -59,7 +58,7 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the source endpoint is greater than 255.</p>
 	 */
@@ -69,7 +68,7 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the source endpoint is negative.</p>
 	 */
@@ -79,7 +78,7 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the source endpoint is greater than 255.</p>
 	 */
@@ -89,47 +88,47 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the cluster ID is null.</p>
-	 */
-	@Test(expected=NullPointerException.class)
-	public void testCreateClusterIDNull() {
-		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, null, PROFILE_ID, DATA.getBytes());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
-	 * 
-	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the cluster ID has an invalid length.</p>
+	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the cluster ID is negative.</p>
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void testCreateClusterIDInvalidLength() {
-		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, new byte[]{0x12}, PROFILE_ID, DATA.getBytes());
+	public void testCreateClusterIDNegative() {
+		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, -20, PROFILE_ID, DATA.getBytes());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the profile ID is null.</p>
-	 */
-	@Test(expected=NullPointerException.class)
-	public void testCreateProfileIDNull() {
-		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, null, DATA.getBytes());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
-	 * 
-	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the profile ID has an invalid length.</p>
+	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the cluster ID is greater than 65535.</p>
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void testCreateProfileIDInvalidLength() {
-		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, new byte[]{0x12}, DATA.getBytes());
+	public void testCreateClusterIDGreater() {
+		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, 65536, PROFILE_ID, DATA.getBytes());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the profile ID is negative.</p>
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testCreateProfileIDNegative() {
+		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, -15, DATA.getBytes());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
+	 * 
+	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the cluster ID is greater than 65535.</p>
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testCreateProfileIDGreater() {
+		new ExplicitXBeeMessage(remoteXBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, 65536, DATA.getBytes());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
 	 * <p>Verify that the {@code ExplicitXBeeMessage} cannot be created if the data is null.</p>
 	 */
@@ -139,7 +138,7 @@ public class ExplicitXBeeMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[], boolean)}, 
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[], boolean)}, 
 	 * {@link com.digi.xbee.api.models.ExplicitXBeeMessage#getDevice()},
 	 * {@link com.digi.xbee.api.models.ExplicitXBeeMessage#getSourceEndpoint()},
 	 * {@link com.digi.xbee.api.models.ExplicitXBeeMessage#getDestinationEndpoint()},
@@ -159,15 +158,15 @@ public class ExplicitXBeeMessageTest {
 		assertEquals(remoteXBeeDevice, explicitXBeeMessage.getDevice());
 		assertEquals(SOURCE_ENDPOINT, explicitXBeeMessage.getSourceEndpoint());
 		assertEquals(DESTINATION_ENDPOINT, explicitXBeeMessage.getDestinationEndpoint());
-		assertArrayEquals(CLUSTER_ID, explicitXBeeMessage.getClusterID());
-		assertArrayEquals(PROFILE_ID, explicitXBeeMessage.getProfileID());
+		assertEquals(CLUSTER_ID, explicitXBeeMessage.getClusterID());
+		assertEquals(PROFILE_ID, explicitXBeeMessage.getProfileID());
 		assertArrayEquals(DATA.getBytes(), explicitXBeeMessage.getData());
 		assertEquals(DATA, explicitXBeeMessage.getDataString());
 		assertFalse(explicitXBeeMessage.isBroadcast());
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, byte[], byte[], byte[], boolean)}, 
+	 * Test method for {@link com.digi.xbee.api.models.ExplicitXBeeMessage#ExplicitXBeeMessage(RemoteXBeeDevice, int, int, int, int, byte[], boolean)}, 
 	 * {@link com.digi.xbee.api.models.ExplicitXBeeMessage#getDevice()},
 	 * {@link com.digi.xbee.api.models.ExplicitXBeeMessage#getSourceEndpoint()},
 	 * {@link com.digi.xbee.api.models.ExplicitXBeeMessage#getDestinationEndpoint()},
@@ -187,8 +186,8 @@ public class ExplicitXBeeMessageTest {
 		assertEquals(remoteXBeeDevice, explicitXBeeMessage.getDevice());
 		assertEquals(SOURCE_ENDPOINT, explicitXBeeMessage.getSourceEndpoint());
 		assertEquals(DESTINATION_ENDPOINT, explicitXBeeMessage.getDestinationEndpoint());
-		assertArrayEquals(CLUSTER_ID, explicitXBeeMessage.getClusterID());
-		assertArrayEquals(PROFILE_ID, explicitXBeeMessage.getProfileID());
+		assertEquals(CLUSTER_ID, explicitXBeeMessage.getClusterID());
+		assertEquals(PROFILE_ID, explicitXBeeMessage.getProfileID());
 		assertArrayEquals(DATA.getBytes(), explicitXBeeMessage.getData());
 		assertEquals(DATA, explicitXBeeMessage.getDataString());
 		assertTrue(explicitXBeeMessage.isBroadcast());

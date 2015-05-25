@@ -872,51 +872,47 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code address == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	protected void sendExplicitDataAsync(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, byte[] clusterID, 
-			byte[] profileID, byte[] data) throws XBeeException {
+	protected void sendExplicitDataAsync(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, int clusterID, 
+			int profileID, byte[] data) throws XBeeException {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null");
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null.");
-		if (sourceEndpoint < 0 || sourceEndpoint > 255)
-			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
-		if (destEndpoint < 0 || destEndpoint > 255)
-			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (sourceEndpoint < 0 || sourceEndpoint > 0xFF)
+			throw new IllegalArgumentException("Source endpoint must be between 0 and 0xFF.");
+		if (destEndpoint < 0 || destEndpoint > 0xFF)
+			throw new IllegalArgumentException("Destination endpoint must be between 0 and 0xFF.");
+		if (clusterID < 0 || clusterID > 0xFFFF)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 0xFFFF.");
+		if (profileID < 0 || profileID > 0xFFFF)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 0xFFFF.");
 		
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
 		logger.debug(toString() + "Sending explicit data asynchronously to {} [{} - {} - {} - {}] >> {}.", address, HexUtils.integerToHexString(sourceEndpoint, 1), 
-				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.byteArrayToHexString(clusterID), 
-				HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
+				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.integerToHexString(clusterID, 2), 
+				HexUtils.integerToHexString(profileID, 2), HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
@@ -944,47 +940,43 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code address64Bit == null} or 
 	 *                              if {@code address16Bit == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitDataAsync(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, int, int, int, int, byte[])
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	protected void sendExplicitDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16Bit, int sourceEndpoint, 
-			int destEndpoint, byte[] clusterID, byte[] profileID, byte[] data) throws XBeeException {
+			int destEndpoint, int clusterID, int profileID, byte[] data) throws XBeeException {
 		if (address64Bit == null)
 			throw new NullPointerException("64-bit address cannot be null.");
 		if (address16Bit == null)
 			throw new NullPointerException("16-bit address cannot be null.");
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null.");
-		if (sourceEndpoint < 0 || sourceEndpoint > 255)
-			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
-		if (destEndpoint < 0 || destEndpoint > 255)
-			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (sourceEndpoint < 0 || sourceEndpoint > 0xFF)
+			throw new IllegalArgumentException("Source endpoint must be between 0 and 0xFF.");
+		if (destEndpoint < 0 || destEndpoint > 0xFF)
+			throw new IllegalArgumentException("Destination endpoint must be between 0 and 0xFF.");
+		if (clusterID < 0 || clusterID > 0xFFFF)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 0xFFFF.");
+		if (profileID < 0 || profileID > 0xFFFF)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 0xFFFF.");
 		
 		// Check if device is remote.
 		if (isRemote())
@@ -992,7 +984,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		logger.debug(toString() + "Sending explicit data asynchronously to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, 
 				HexUtils.integerToHexString(sourceEndpoint, 1), HexUtils.integerToHexString(destEndpoint, 1), 
-				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), 
+				HexUtils.integerToHexString(clusterID, 2), HexUtils.integerToHexString(profileID, 2), 
 				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
@@ -1017,27 +1009,27 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
 	 * @see RemoteXBeeDevice
 	 */
 	protected void sendExplicitDataAsync(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, 
-			byte[] clusterID, byte[] profileID, byte[] data) throws XBeeException {
+			int clusterID, int profileID, byte[] data) throws XBeeException {
 		if (remoteXBeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null");
 		
@@ -1077,51 +1069,47 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code address == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
 	 * @see #setReceiveTimeout(int)
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	protected void sendExplicitData(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, byte[] clusterID, 
-			byte[] profileID, byte[] data) throws TimeoutException, XBeeException {
+	protected void sendExplicitData(XBee64BitAddress address, int sourceEndpoint, int destEndpoint, int clusterID, 
+			int profileID, byte[] data) throws TimeoutException, XBeeException {
 		if (address == null)
 			throw new NullPointerException("Address cannot be null");
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null.");
-		if (sourceEndpoint < 0 || sourceEndpoint > 255)
-			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
-		if (destEndpoint < 0 || destEndpoint > 255)
-			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (sourceEndpoint < 0 || sourceEndpoint > 0xFF)
+			throw new IllegalArgumentException("Source endpoint must be between 0 and 0xFF.");
+		if (destEndpoint < 0 || destEndpoint > 0xFF)
+			throw new IllegalArgumentException("Destination endpoint must be between 0 and 0xFF.");
+		if (clusterID < 0 || clusterID > 0xFFFF)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 0xFFFF.");
+		if (profileID < 0 || profileID > 0xFFFF)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 0xFFFF.");
 		
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
 		logger.debug(toString() + "Sending explicit data to {} [{} - {} - {} - {}] >> {}.", address, HexUtils.integerToHexString(sourceEndpoint, 1), 
-				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.byteArrayToHexString(clusterID), 
-				HexUtils.byteArrayToHexString(profileID), HexUtils.prettyHexString(data));
+				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.integerToHexString(clusterID, 2), 
+				HexUtils.integerToHexString(profileID, 2), HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);
@@ -1152,47 +1140,43 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code address == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, int, int, byte[])
 	 * @see #setReceiveTimeout(int)
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
 	protected void sendExplicitData(XBee64BitAddress address64Bit, XBee16BitAddress address16Bit, int sourceEndpoint, int destEndpoint, 
-			byte[] clusterID, byte[] profileID, byte[] data) throws TimeoutException, XBeeException {
+			int clusterID, int profileID, byte[] data) throws TimeoutException, XBeeException {
 		// Verify the parameters are not null, if they are null, throw an exception.
 		if (address64Bit == null)
 			throw new NullPointerException("64-bit address cannot be null");
 		if (address16Bit == null)
 			throw new NullPointerException("16-bit address cannot be null");
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null.");
-		if (sourceEndpoint < 0 || sourceEndpoint > 255)
-			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
-		if (destEndpoint < 0 || destEndpoint > 255)
-			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (sourceEndpoint < 0 || sourceEndpoint > 0xFF)
+			throw new IllegalArgumentException("Source endpoint must be between 0 and 0xFF.");
+		if (destEndpoint < 0 || destEndpoint > 0xFF)
+			throw new IllegalArgumentException("Destination endpoint must be between 0 and 0xFF.");
+		if (clusterID < 0 || clusterID > 0xFFFF)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 0xFFFF.");
+		if (profileID < 0 || profileID > 0xFFFF)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 0xFFFF.");
 		
 		// Check if device is remote.
 		if (isRemote())
@@ -1200,7 +1184,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		logger.debug(toString() + "Sending explicit data to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, 
 				HexUtils.integerToHexString(sourceEndpoint, 1), HexUtils.integerToHexString(destEndpoint, 1), 
-				HexUtils.byteArrayToHexString(clusterID), HexUtils.byteArrayToHexString(profileID), 
+				HexUtils.integerToHexString(clusterID, 2), HexUtils.integerToHexString(profileID, 2), 
 				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
@@ -1228,27 +1212,27 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[])
-	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, int, int, int, int, byte[])
+	 * @see #sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])
 	 * @see #setReceiveTimeout(int)
 	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
-	protected void sendExplicitData(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, byte[] clusterID, 
-			byte[] profileID, byte[] data) throws TimeoutException, XBeeException {
+	protected void sendExplicitData(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, int clusterID, 
+			int profileID, byte[] data) throws TimeoutException, XBeeException {
 		if (remoteXBeeDevice == null)
 			throw new NullPointerException("Remote XBee device cannot be null.");
 		
@@ -1286,15 +1270,15 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Byte array containing the data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null} or 
 	 *                              if {@code data == null}.
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
@@ -1302,7 +1286,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #getReceiveTimeout()
 	 * @see #setReceiveTimeout(int)
 	 */
-	protected void sendBroadcastExplicitData(int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID, 
+	protected void sendBroadcastExplicitData(int sourceEndpoint, int destEndpoint, int clusterID, int profileID, 
 			byte[] data) throws TimeoutException, XBeeException {
 		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4)
 			throw new OperationNotSupportedException("802.15.4. protocol does not support explicit data transmissions.");
@@ -1922,8 +1906,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		}
 		int sourceEndpoint = explicitDataPacket.getSourceEndpoint();
 		int destEndpoint = explicitDataPacket.getDestinationEndpoint();
-		byte[] clusterID = explicitDataPacket.getClusterID();
-		byte[] profileID = explicitDataPacket.getProfileID();
+		int clusterID = explicitDataPacket.getClusterID();
+		int profileID = explicitDataPacket.getProfileID();
 		byte[] data = explicitDataPacket.getRFData();
 		
 		// Create and return the XBee message.

@@ -27,8 +27,8 @@ public class MyExplicitDataReceiveListener implements IExplicitDataReceiveListen
 				new String(explicitXBeeMessage.getData()));
 		System.out.println(" - Source endpoint: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getSourceEndpoint(), 1));
 		System.out.println(" - Destination endpoint: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getDestinationEndpoint(), 1));
-		System.out.println(" - Cluster ID: 0x" + HexUtils.byteArrayToHexString(explicitXBeeMessage.getClusterID()));
-		System.out.println(" - Profile ID: 0x" + HexUtils.byteArrayToHexString(explicitXBeeMessage.getProfileID()));
+		System.out.println(" - Cluster ID: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getClusterID(), 2));
+		System.out.println(" - Profile ID: 0x" + HexUtils.integerToHexString(explicitXBeeMessage.getProfileID(), 2));
 		System.out.println("");
 	}
 }

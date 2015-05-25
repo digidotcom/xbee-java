@@ -35,11 +35,10 @@ public class SendDataHighLevelZigBeeTest {
 	private static final XBee64BitAddress XBEE_64BIT_ADDRESS = new XBee64BitAddress("0123456789ABCDEF");
 	private static final XBee16BitAddress XBEE_16BIT_ADDRESS = new XBee16BitAddress("0123");
 	
-	private static final byte[] CLUSTER_ID = new byte[]{0x15, 0x54};
-	private static final byte[] PROFILE_ID = new byte[]{(byte) 0xC1, 0x05};
-	
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
+	private static final int CLUSTER_ID = 0x1554;
+	private static final int PROFILE_ID = 0xC105;
 	
 	private static final String DATA = "data";
 	
@@ -112,32 +111,32 @@ public class SendDataHighLevelZigBeeTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[]) method is 
-	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, byte[], byte[], byte[]) method.</p>
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[]) method is 
+	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitData(RemoteXBeeDevice, int, int, int, int, byte[]) method.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
 	 */
 	@Test
 	public void testSendExplicitDataRemoteDeviceSuccess() throws TimeoutException, XBeeException {
-		// Do nothing when the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(zigbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.any(XBee16BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		
 		zigbeeDevice.sendExplicitData(mockedRemoteZigBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(zigbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(XBEE_16BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is 
-	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method.</p>
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method is 
+	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitData(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
@@ -154,54 +153,54 @@ public class SendDataHighLevelZigBeeTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendBroadcastExplicitData(int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendBroadcastExplicitData(int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendBroadcastExplicitData(int, int, byte[], byte[], byte[]) method is 
-	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendBroadcastExplicitData(int, int, byte[], byte[], byte[]) method.</p>
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendBroadcastExplicitData(int, int, int, int, byte[]) method is 
+	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendBroadcastExplicitData(int, int, int, int, byte[]) method.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
 	 */
 	@Test
 	public void testSendBroadcastExplicitDataSuccess() throws TimeoutException, XBeeException {
-		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(zigbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		
 		zigbeeDevice.sendBroadcastExplicitData(SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) method was called (64BitAddress must be the broadcast one).
+		// Verify the sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) method was called (64BitAddress must be the broadcast one).
 		Mockito.verify(zigbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBee64BitAddress.BROADCAST_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[]) method is 
-	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, byte[], byte[], byte[]) method.</p>
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, int, int, byte[]) method is 
+	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(RemoteXBeeDevice, int, int, int, int, byte[]) method.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
 	 */
 	@Test
 	public void testSendExplicitDataAsyncRemoteDeviceSuccess() throws TimeoutException, XBeeException {
-		// Do nothing when the sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is called.
+		// Do nothing when the sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method is called.
 		Mockito.doNothing().when(zigbeeDevice).sendExplicitDataAsync(Mockito.any(XBee64BitAddress.class), Mockito.any(XBee16BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 		
 		zigbeeDevice.sendExplicitDataAsync(mockedRemoteZigBeeDevice, SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify the sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method was called.
+		// Verify the sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method was called.
 		Mockito.verify(zigbeeDevice, Mockito.times(1)).sendExplicitDataAsync(Mockito.eq(XBEE_64BIT_ADDRESS), Mockito.eq(XBEE_16BIT_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[])}.
+	 * Test method for {@link com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[])}.
 	 * 
-	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method is 
-	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, byte[], byte[], byte[]) method.</p>
+	 * <p>Verify that the super com.digi.xbee.api.XBeeDevice#sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method is 
+	 * called when executing the com.digi.xbee.api.ZigBeeDevice#sendExplicitDataAsync(XBee64BitAddress, XBee16BitAddress, int, int, int, int, byte[]) method.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 

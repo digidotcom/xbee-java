@@ -24,11 +24,10 @@ import com.digi.xbee.api.models.XBeeProtocol;
 public class SendBroadcastExplicitDataTest {
 	
 	// Constants.
-	private static final byte[] CLUSTER_ID = new byte[]{0x15, 0x54};
-	private static final byte[] PROFILE_ID = new byte[]{(byte) 0xC1, 0x05};
-	
 	private static final int SOURCE_ENDPOINT = 0xA0;
 	private static final int DESTINATION_ENDPOINT = 0xA1;
+	private static final int CLUSTER_ID = 0x1554;
+	private static final int PROFILE_ID = 0xC105;
 	
 	private static final String DATA = "data";
 	
@@ -63,11 +62,11 @@ public class SendBroadcastExplicitDataTest {
 	public void testSendBroadcastExplicitDataSuccess() throws Exception {
 		// Do nothing when the sendData(XBee64BitAddress, byte[]) method is called.
 		Mockito.doNothing().when(xbeeDevice).sendExplicitData(Mockito.any(XBee64BitAddress.class), Mockito.anyInt(), Mockito.anyInt(), 
-				Mockito.any(byte[].class), Mockito.any(byte[].class), Mockito.any(byte[].class));
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.any(byte[].class));
 				
 		xbeeDevice.sendBroadcastExplicitData(SOURCE_ENDPOINT, DESTINATION_ENDPOINT, CLUSTER_ID, PROFILE_ID, DATA.getBytes());
 		
-		// Verify that the method sendExplicitData(XBee64BitAddress, int, int, byte[], byte[], byte[]) was called with a BROADCAST_ADDRESS.
+		// Verify that the method sendExplicitData(XBee64BitAddress, int, int, int, int, byte[]) was called with a BROADCAST_ADDRESS.
 		Mockito.verify(xbeeDevice, Mockito.times(1)).sendExplicitData(Mockito.eq(XBee64BitAddress.BROADCAST_ADDRESS), Mockito.eq(SOURCE_ENDPOINT), 
 				Mockito.eq(DESTINATION_ENDPOINT), Mockito.eq(CLUSTER_ID), Mockito.eq(PROFILE_ID), Mockito.eq(DATA.getBytes()));
 	}

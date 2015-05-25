@@ -26,11 +26,10 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 public class ExplicitXBeeMessage extends XBeeMessage {
 
 	// Variables.
-	private final byte[] clusterID;
-	private final byte[] profileID;
-	
 	private final int sourceEndpoint;
 	private final int destEndpoint;
+	private final int clusterID;
+	private final int profileID;
 	
 	/**
 	 * Class constructor. Instantiates a new object of type 
@@ -47,19 +46,19 @@ public class ExplicitXBeeMessage extends XBeeMessage {
 	 * @param data Byte array containing the data of the message.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or
-	 *                              if {@code data == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null}.
+	 *                              if {@code data == null}.
 	 * 
 	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
-	public ExplicitXBeeMessage(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID, byte[] data) {
+	public ExplicitXBeeMessage(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, int clusterID, int profileID, byte[] data) {
 		this(remoteXBeeDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data, false);
 	}
 	
@@ -79,33 +78,29 @@ public class ExplicitXBeeMessage extends XBeeMessage {
 	 * @param isBroadcast Indicates if the message was received via broadcast.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourceEndpoint < 0} or 
-	 *                                  if {@code sourceEndpoint > 255} or 
+	 *                                  if {@code sourceEndpoint > 0xFF} or 
 	 *                                  if {@code destEndpoint < 0} or 
-	 *                                  if {@code destEndpoint > 255} or 
-	 *                                  if {@code clusterID.length != 2} or 
-	 *                                  if {@code profileID.length != 2}.
+	 *                                  if {@code destEndpoint > 0xFF} or 
+	 *                                  if {@code clusterID < 0} or 
+	 *                                  if {@code clusterID > 0xFFFF} or 
+	 *                                  if {@code profileID < 0} or 
+	 *                                  if {@code profileID > 0xFFFF}.
 	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or
-	 *                              if {@code data == null} or 
-	 *                              if {@code clusterID == null} or 
-	 *                              if {@code profileID == null}.
+	 *                              if {@code data == null}.
 	 * 
 	 * @see com.digi.xbee.api.RemoteXBeeDevice
 	 */
-	public ExplicitXBeeMessage(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, byte[] clusterID, byte[] profileID, byte[] data, boolean isBroadcast) {
+	public ExplicitXBeeMessage(RemoteXBeeDevice remoteXBeeDevice, int sourceEndpoint, int destEndpoint, int clusterID, int profileID, byte[] data, boolean isBroadcast) {
 		super(remoteXBeeDevice, data, isBroadcast);
 		
-		if (clusterID == null)
-			throw new NullPointerException("Cluster ID cannot be null.");
-		if (profileID == null)
-			throw new NullPointerException("Profile ID cannot be null.");
-		if (sourceEndpoint < 0 || sourceEndpoint > 255)
-			throw new IllegalArgumentException("Source endpoint must be between 0 and 255.");
-		if (destEndpoint < 0 || destEndpoint > 255)
-			throw new IllegalArgumentException("Destination endpoint must be between 0 and 255.");
-		if (clusterID.length != 2)
-			throw new IllegalArgumentException("Cluster ID length must be 2 bytes.");
-		if (profileID.length != 2)
-			throw new IllegalArgumentException("Profile ID length must be 2 bytes.");
+		if (sourceEndpoint < 0 || sourceEndpoint > 0xFF)
+			throw new IllegalArgumentException("Source endpoint must be between 0 and 0xFF.");
+		if (destEndpoint < 0 || destEndpoint > 0xFF)
+			throw new IllegalArgumentException("Destination endpoint must be between 0 and 0xFF.");
+		if (clusterID < 0 || clusterID > 0xFFFF)
+			throw new IllegalArgumentException("Cluster ID must be between 0 and 0xFF.");
+		if (profileID < 0 || profileID > 0xFFFF)
+			throw new IllegalArgumentException("Profile ID must be between 0 and 0xFF.");
 		
 		this.sourceEndpoint = sourceEndpoint;
 		this.destEndpoint = destEndpoint;
@@ -136,7 +131,7 @@ public class ExplicitXBeeMessage extends XBeeMessage {
 	 * 
 	 * @return The cluster ID the packet was addressed to.
 	 */
-	public byte[] getClusterID() {
+	public int getClusterID() {
 		return clusterID;
 	}
 	
@@ -145,7 +140,7 @@ public class ExplicitXBeeMessage extends XBeeMessage {
 	 * 
 	 * @return The profile ID the packet was addressed to.
 	 */
-	public byte[] getProfileID() {
+	public int getProfileID() {
 		return profileID;
 	}
 }

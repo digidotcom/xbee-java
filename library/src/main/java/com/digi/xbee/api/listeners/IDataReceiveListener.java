@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -24,9 +24,9 @@ public interface IDataReceiveListener {
 	 * Called when data is received from a remote node of the network.
 	 * 
 	 * @param xbeeMessage An {@code XBeeMessage} object containing the data,
-	 *                    the address of the {@code RemoteXBeeDevice} that sent
-	 *                    the data and a flag indicating whether the data was 
-	 *                    sent via broadcast or not.
+	 *                    the {@code RemoteXBeeDevice} that sent the data and 
+	 *                    a flag indicating whether the data was sent via 
+	 *                    broadcast or not.
 	 * 
 	 * @see com.digi.xbee.api.models.XBeeMessage
 	 * @see com.digi.xbee.api.RemoteXBeeDevice

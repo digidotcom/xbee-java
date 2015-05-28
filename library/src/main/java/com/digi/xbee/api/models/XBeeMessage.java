@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -37,7 +37,7 @@ public class XBeeMessage {
 	 * @param remoteXBeeDevice The remote XBee device the message belongs to.
 	 * @param data Byte array containing the data of the message.
 	 * 
-	 * @throws NullPointerException if {@code address == null} or
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or
 	 *                              if {@code data == null}.
 	 * 
 	 * @see com.digi.xbee.api.RemoteXBeeDevice
@@ -54,7 +54,7 @@ public class XBeeMessage {
 	 * @param data Byte array containing the data of the message.
 	 * @param isBroadcast Indicates if the message was received via broadcast.
 	 * 
-	 * @throws NullPointerException if {@code xbeeAddress == null} or
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null} or
 	 *                              if {@code data == null}.
 	 * 
 	 * @see com.digi.xbee.api.RemoteXBeeDevice

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -11,14 +11,21 @@
  */
 package com.digi.xbee.api;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.ATCommandException;
@@ -31,10 +38,12 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
 
+@PrepareForTest({XBeeProtocol.class})
+@RunWith(PowerMockRunner.class)
 public class Remote802DeviceReadInfo16BitTest {
 
 	// Constants.
-	private static final String MAC_ADDRESS = "0123";
+	private static final String NETWORK_ADDRESS = "0123";
 	
 	private static final String PARAMETER_SH = "SH";
 	private static final String PARAMETER_SL = "SL";
@@ -50,20 +59,42 @@ public class Remote802DeviceReadInfo16BitTest {
 	private static final byte[] RESPONSE_VR = new byte[]{0x45, 0x67};                                         // 0x4567
 	private static final byte[] RESPONSE_MY = new byte[]{0x76, 0x54};                                         // 0x7654
 	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
 	// Variables.
 	private RemoteRaw802Device remote802Device;
+	private RemoteDigiMeshDevice remoteDmDevice;
+	private RemoteDigiPointDevice remoteDpDevice;
+	private RemoteZigBeeDevice remoteZbDevice;
 	
 	@Before
 	public void setup() throws Exception {
+		SerialPortRxTx mockPort = Mockito.mock(SerialPortRxTx.class);
+		
 		// Mock the local XBee device necessary to instantiate a remote one.
 		XBeeDevice localXBeeDevice = Mockito.mock(XBeeDevice.class);
-		Mockito.when(localXBeeDevice.getConnectionInterface()).thenReturn(Mockito.mock(SerialPortRxTx.class));
+		Mockito.when(localXBeeDevice.getConnectionInterface()).thenReturn(mockPort);
 		Mockito.when(localXBeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		
-		XBee16BitAddress remoteAddress = new XBee16BitAddress(MAC_ADDRESS);
+		DigiMeshDevice localDMDevice = Mockito.mock(DigiMeshDevice.class);
+		Mockito.when(localDMDevice.getConnectionInterface()).thenReturn(mockPort);
+		
+		ZigBeeDevice localZBDevice = Mockito.mock(ZigBeeDevice.class);
+		Mockito.when(localZBDevice.getConnectionInterface()).thenReturn(mockPort);
+		
+		DigiPointDevice localDPDevice = Mockito.mock(DigiPointDevice.class);
+		Mockito.when(localDPDevice.getConnectionInterface()).thenReturn(mockPort);
+		
+		XBee16BitAddress remoteAddress = new XBee16BitAddress(NETWORK_ADDRESS);
+		
+		XBee64BitAddress fake64BitAddress = new XBee64BitAddress(NETWORK_ADDRESS);
 		
 		// Instantiate a RemoteXBeeDevice object with basic parameters.
 		remote802Device = PowerMockito.spy(new RemoteRaw802Device(localXBeeDevice, remoteAddress));
+		remoteDmDevice = PowerMockito.spy(new RemoteDigiMeshDevice(localDMDevice, fake64BitAddress));
+		remoteDpDevice = PowerMockito.spy(new RemoteDigiPointDevice(localDPDevice, fake64BitAddress));
+		remoteZbDevice = PowerMockito.spy(new RemoteZigBeeDevice(localZBDevice, fake64BitAddress));
 	}
 	
 	/**
@@ -356,6 +387,11 @@ public class Remote802DeviceReadInfo16BitTest {
 	 */
 	@Test(expected=TimeoutException.class)
 	public void testReadDeviceInfoErrorMYTimeout() throws XBeeException, IOException {
+		XBeeProtocol protocol = XBeeProtocol.RAW_802_15_4;
+		
+		// Return that the protocol of the device is 802.15.4.
+		Mockito.when(remote802Device.getXBeeProtocol()).thenReturn(protocol);
+		
 		// Return a valid response when requesting the SH parameter value.
 		Mockito.doReturn(RESPONSE_SH).when(remote802Device).getParameter(PARAMETER_SH);
 		
@@ -374,8 +410,144 @@ public class Remote802DeviceReadInfo16BitTest {
 		// Throw a timeout exception when requesting the MY parameter value.
 		Mockito.doThrow(new TimeoutException()).when(remote802Device).getParameter(PARAMETER_MY);
 		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(protocol);
+		
 		// Initialize the device.
 		remote802Device.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a 802.15.4 local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidDigiMeshClassFor802Device() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.RAW_802_15_4;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + remoteDmDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(remoteDmDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(remoteDmDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(remoteDmDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(remoteDmDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(remoteDmDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		remoteDmDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a 802.15.4 local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidZigBeeClassFor802Device() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.RAW_802_15_4;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + remoteZbDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(remoteZbDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(remoteZbDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(remoteZbDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(remoteZbDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(remoteZbDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		remoteZbDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.RemoteRaw802Device#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a 802.15.4 local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidDigiPointClassFor802Device() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.RAW_802_15_4;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + remoteDpDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(remoteDpDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(remoteDpDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(remoteDpDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(remoteDpDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(remoteDpDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		remoteDpDevice.readDeviceInfo();
 	}
 	
 	/**
@@ -390,6 +562,11 @@ public class Remote802DeviceReadInfo16BitTest {
 	 */
 	@Test(expected=ATCommandException.class)
 	public void testReadDeviceInfoErrorMYInvalidAnswer() throws XBeeException, IOException {
+		XBeeProtocol protocol = XBeeProtocol.RAW_802_15_4;
+		
+		// Return that the protocol of the device is 802.15.4.
+		Mockito.when(remote802Device.getXBeeProtocol()).thenReturn(protocol);
+		
 		// Return a valid response when requesting the SH parameter value.
 		Mockito.doReturn(RESPONSE_SH).when(remote802Device).getParameter(PARAMETER_SH);
 		
@@ -408,6 +585,10 @@ public class Remote802DeviceReadInfo16BitTest {
 		// Throw an AT command exception when requesting the MY parameter value.
 		Mockito.doThrow(new ATCommandException(null)).when(remote802Device).getParameter(PARAMETER_MY);
 		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(protocol);
+		
 		// Initialize the device.
 		remote802Device.readDeviceInfo();
 	}
@@ -422,6 +603,11 @@ public class Remote802DeviceReadInfo16BitTest {
 	 */
 	@Test
 	public void testReadDeviceInfoSuccess() throws XBeeException, IOException {
+		XBeeProtocol protocol = XBeeProtocol.RAW_802_15_4;
+		
+		// Return that the protocol of the device is 802.15.4.
+		Mockito.when(remote802Device.getXBeeProtocol()).thenReturn(protocol);
+		
 		// Return a valid response when requesting the SH parameter value.
 		Mockito.doReturn(RESPONSE_SH).when(remote802Device).getParameter(PARAMETER_SH);
 		
@@ -439,6 +625,10 @@ public class Remote802DeviceReadInfo16BitTest {
 		
 		// Return a valid response when requesting the VR parameter value.
 		Mockito.doReturn(RESPONSE_MY).when(remote802Device).getParameter(PARAMETER_MY);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(protocol);
 		
 		// Initialize the device.
 		remote802Device.readDeviceInfo();

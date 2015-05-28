@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -342,12 +342,12 @@ public class XBeeNetwork {
 		
 		// Look in the 64-bit map.
 		for (RemoteXBeeDevice remote : remotesBy64BitAddr.values()) {
-			if (remote.getNodeID().equals(id))
+			if (id.equals(remote.getNodeID()))
 				devices.add(remote);
 		}
 		// Look in the 16-bit map.
 		for (RemoteXBeeDevice remote : remotesBy16BitAddr.values()) {
-			if (remote.getNodeID().equals(id))
+			if (id.equals(remote.getNodeID()))
 				devices.add(remote);
 		}
 		// Return the list.
@@ -381,12 +381,12 @@ public class XBeeNetwork {
 		
 		// Look in the 64-bit map.
 		for (RemoteXBeeDevice remote : remotesBy64BitAddr.values()) {
-			if (remote.getNodeID().equals(id))
+			if (id.equals(remote.getNodeID()))
 				return remote;
 		}
 		// Look in the 16-bit map.
 		for (RemoteXBeeDevice remote : remotesBy16BitAddr.values()) {
-			if (remote.getNodeID().equals(id))
+			if (id.equals(remote.getNodeID()))
 				return remote;
 		}
 		// The given ID is not in the network.

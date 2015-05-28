@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -90,6 +90,9 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 	
 	/**
 	 * Returns the XBee packet frame type.
+	 * 
+	 * If {@code APIFrameType#UNKNOWN} is returned, the real value of the frame
+	 * type is returned by {@code #getFrameTypeValue()}.
 	 * 
 	 * @return The XBee packet frame type.
 	 * 

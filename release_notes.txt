@@ -1,10 +1,10 @@
                       XBee Java Library
  
                   Release Notes (PN 93000776)
-                         Build 1.0.1
-                      10 December, 2014
+                         Build 1.1.0
+                        25 May, 2015
  
-                 (c) 2014, Digi International
+              (c) 2014-2015, Digi International
                      http://www.digi.com
  
 Introduction
@@ -15,10 +15,24 @@ Library, which allows customers to easily develop Java applications
 that communicate with XBee modules.
 
 
+ XBee Java Library v1.1.0, May 2015
+----------------------------------------------------------------------
+ 1. Changes with respect to previous version:
+     * Added support for explicit frames and application layer fields 
+       (Source endpoint, Destination endpoint, Profile ID, and Cluster ID).
+     * Added five examples that demonstrate the new functionality of the API:
+        * Receive explicit data example.
+        * Receive explicit data polling example.
+        * Send explicit data example.
+        * Send explicit data asynchronously example.
+        * Send broadcast explicit data example.
+     * Minor cosmetic bug fixes.
+
  XBee Java Library v1.0.1, December 2014
 ----------------------------------------------------------------------
 1. Changes with respect to previous version:
-    * Included RxTx 2.2 libraries. This allows the use of the library in linux on 64 bit JVM.
+    * Included RxTx 2.2 libraries. This allows the use of the library in Linux 
+      on 64 bit JVM.
     * Added third party license agreements to the README.md file.
     * Minor cosmetic bug fixes.
 

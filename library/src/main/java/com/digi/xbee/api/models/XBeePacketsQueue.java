@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -17,6 +17,7 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
@@ -46,6 +47,8 @@ public class XBeePacketsQueue {
 	private int maxLength = DEFAULT_MAX_LENGTH;
 	
 	private LinkedList<XBeePacket> packetsList;
+	
+	private Object lock = new Object();
 	
 	/**
 	 * Class constructor. Instantiates a new object of type 
@@ -80,16 +83,20 @@ public class XBeePacketsQueue {
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 */
 	public void addPacket(XBeePacket xbeePacket) {
-		if (packetsList.size() == maxLength)
-			packetsList.removeFirst();
-		packetsList.add(xbeePacket);
+		synchronized (lock) {
+			if (packetsList.size() == maxLength)
+				packetsList.removeFirst();
+			packetsList.add(xbeePacket);
+		}
 	}
 	
 	/**
 	 * Clears the list of packets.
 	 */
 	public void clearQueue() {
-		packetsList.clear();
+		synchronized (lock) {
+			packetsList.clear();
+		}
 	}
 	
 	/**
@@ -113,8 +120,11 @@ public class XBeePacketsQueue {
 				xbeePacket = getFirstPacket(0);
 			}
 			return xbeePacket;
-		} else if (!packetsList.isEmpty())
-			return packetsList.pop();
+		} 
+		synchronized (lock) {
+			if (!packetsList.isEmpty())
+				return packetsList.pop();
+		}
 		return null;
 	}
 	
@@ -150,10 +160,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (addressesMatch(xbeePacket, remoteXBeeDevice))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (addressesMatch(xbeePacket, remoteXBeeDevice))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -184,10 +196,12 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (isDataPacket(xbeePacket))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isDataPacket(xbeePacket))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -227,10 +241,95 @@ public class XBeePacketsQueue {
 			}
 			return xbeePacket;
 		} else {
-			for (int i = 0; i < packetsList.size(); i++) {
-				XBeePacket xbeePacket = packetsList.get(i);
-				if (isDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
-					return packetsList.remove(i);
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
+						return packetsList.remove(i);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the first explicit data packet from the queue waiting up to the 
+	 * specified timeout if necessary for an XBee explicit data packet to 
+	 * become available. {@code null} if the queue is empty or there is not 
+	 * any explicit data packet inside.
+	 * 
+	 * @param timeout The time in milliseconds to wait for an XBee explicit 
+	 *                data packet to become available. 0 to return immediately.
+	 * 
+	 * @return The first explicit data packet from the queue, {@code null} if 
+	 *         it is empty or no data packets are contained in the queue.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket
+	 */
+	public XBeePacket getFirstExplicitDataPacket(int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstExplicitDataPacket(0);
+			// Wait for a timeout or until an explicit data XBee packet is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstExplicitDataPacket(0);
+			}
+			return xbeePacket;
+		} else {
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isExplicitDataPacket(xbeePacket))
+						return packetsList.remove(i);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the first explicit data packet from the queue whose 64-bit 
+	 * source address matches the address of the provided remote XBee device.
+	 * 
+	 * <p>The methods waits up to the specified timeout if necessary for an 
+	 * XBee explicit data packet to become available. {@code null} if the 
+	 * queue is empty or there is not any XBee explicit data packet sent by 
+	 * the provided remote XBee device.</p>
+	 * 
+	 * @param remoteXBeeDevice The XBee device containing the 64-bit address 
+	 *                         to look for in the list of packets.
+	 * @param timeout The time in milliseconds to wait for an XBee explicit 
+	 *                data packet from the specified remote XBee device to 
+	 *                become available. 0 to return immediately.
+	 * 
+	 * @return The first XBee explicit data packet whose its 64-bit address 
+	 *         matches the address of the provided remote XBee device. 
+	 *         {@code null} if no explicit data packets from the specified 
+	 *         XBee device are found in the queue.
+	 * 
+	 * @see com.digi.xbee.api.RemoteXBeeDevice
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket
+	 */
+	public XBeePacket getFirstExplicitDataPacketFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstExplicitDataPacketFrom(remoteXBeeDevice, 0);
+			// Wait for a timeout or until an XBee explicit data packet from remoteXBeeDevice is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstExplicitDataPacketFrom(remoteXBeeDevice, 0);
+			}
+			return xbeePacket;
+		} else {
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isExplicitDataPacket(xbeePacket) && addressesMatch(xbeePacket, remoteXBeeDevice))
+						return packetsList.remove(i);
+				}
 			}
 		}
 		return null;
@@ -284,6 +383,10 @@ public class XBeePacketsQueue {
 			if (((RX64IOPacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
 			break;
+		case EXPLICIT_RX_INDICATOR:
+			if (((ExplicitRxIndicatorPacket)xbeePacket).get64BitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+				return true;
+			break;
 		default:
 			return false;
 		}
@@ -315,6 +418,24 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
+	 * Returns whether or not the given XBee packet is an explicit data packet.
+	 * 
+	 * @param xbeePacket The XBee packet to check if is an explicit data packet.
+	 * 
+	 * @return {@code true} if the XBee packet is an explicit data packet, 
+	 *         {@code false} otherwise.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket
+	 */
+	private boolean isExplicitDataPacket(XBeePacket xbeePacket) {
+		if (!(xbeePacket instanceof XBeeAPIPacket))
+			return false;
+		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
+		return packetType == APIFrameType.EXPLICIT_RX_INDICATOR;
+	}
+	
+	/**
 	 * Sleeps the thread for the given number of milliseconds.
 	 * 
 	 * @param milliseconds The number of milliseconds that the thread should 
@@ -341,6 +462,8 @@ public class XBeePacketsQueue {
 	 * @return The current size of the XBee packets queue.
 	 */
 	public int getCurrentSize() {
-		return packetsList.size();
+		synchronized (lock) {
+			return packetsList.size();
+		}
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -49,6 +49,7 @@ public class XBeeNetworkGetTest {
 	private RemoteXBeeDevice remoteDevice1;
 	private RemoteXBeeDevice remoteDevice2;
 	private RemoteXBeeDevice remoteDevice3;
+	private RemoteXBeeDevice remoteDeviceUNI;
 	
 	@Before
 	public void setUp() {
@@ -72,12 +73,17 @@ public class XBeeNetworkGetTest {
 		Mockito.when(remoteDevice2.get64BitAddress()).thenReturn(XBee64BitAddress.UNKNOWN_ADDRESS);
 		Mockito.when(remoteDevice2.get16BitAddress()).thenReturn(new XBee16BitAddress("1111"));
 		
-		
 		// Mock the remote device 3.
 		remoteDevice3 = Mockito.mock(RemoteXBeeDevice.class);
 		Mockito.when(remoteDevice3.getXBeeProtocol()).thenReturn(XBeeProtocol.UNKNOWN);
 		Mockito.when(remoteDevice3.getNodeID()).thenReturn("id2");
 		Mockito.when(remoteDevice3.get64BitAddress()).thenReturn(new XBee64BitAddress("23456789ABCDEF01"));
+		
+		// Mock the remote device with unknown (null) id.
+		remoteDeviceUNI = Mockito.mock(RemoteXBeeDevice.class);
+		Mockito.when(remoteDeviceUNI.getXBeeProtocol()).thenReturn(XBeeProtocol.UNKNOWN);
+		Mockito.when(remoteDeviceUNI.getNodeID()).thenReturn(null);
+		Mockito.when(remoteDeviceUNI.get64BitAddress()).thenReturn(new XBee64BitAddress("23456789ABCDEF89"));
 	}
 	
 	/**
@@ -178,6 +184,25 @@ public class XBeeNetworkGetTest {
 		RemoteXBeeDevice found = network.getDevice(NODE_ID);
 		
 		assertEquals(remoteDevice2, found);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#getDevice(String)}.
+	 * 
+	 * <p>Verify that if the network contains a remote device with the provided 
+	 * node identifier, it is returned successfully although it contains devices
+	 * with unknown NI.</p>
+	 */
+	@Test
+	public void testGetDeviceWithDevicesWithUnknownID() {
+		// Add two remote devices to the network.
+		network.addRemoteDevice(remoteDeviceUNI);
+		network.addRemoteDevice(remoteDevice1);
+		
+		// Call the method under test.
+		RemoteXBeeDevice found = network.getDevice(NODE_ID);
+		
+		assertEquals(remoteDevice1, found);
 	}
 	
 	/**

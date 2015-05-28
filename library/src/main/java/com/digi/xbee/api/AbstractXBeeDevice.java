@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -34,6 +34,7 @@ import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
+import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
@@ -341,12 +342,13 @@ public abstract class AbstractXBeeDevice {
 	 * <li>Hardware version if it is not initialized.</li>
 	 * <li>Firmware version.</li>
 	 * <li>XBee device protocol.</li>
-	 * <li>16-bit address (not for DigiMesh modules).</li>
+	 * <li>16-bit address (not for DigiMesh/DigiPoint modules).</li>
 	 * </ul>
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout reading the parameters.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if there is any error trying to read the device information or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #get16BitAddress()
 	 * @see #get64BitAddress()
@@ -387,13 +389,26 @@ public abstract class AbstractXBeeDevice {
 		response = getParameter("VR");
 		firmwareVersion = HexUtils.byteArrayToHexString(response);
 		
+		// Original value of the protocol.
+		XBeeProtocol origProtocol = getXBeeProtocol();
+		
 		// Obtain the device protocol.
 		xbeeProtocol = XBeeProtocol.determineProtocol(hardwareVersion, firmwareVersion);
 		
+		if (origProtocol != XBeeProtocol.UNKNOWN
+				&& origProtocol != xbeeProtocol) {
+			throw new XBeeException("Error reading device information: "
+					+ "Your module seems to be " + xbeeProtocol 
+					+ " and NOT " + origProtocol + ". Check if you are using" 
+					+ " the appropriate device class.");
+		}
+		
 		// Get the 16-bit address. This must be done after obtaining the protocol because 
 		// DigiMesh and Point-to-Multipoint protocols don't have 16-bit addresses.
-		if (getXBeeProtocol() != XBeeProtocol.DIGI_MESH 
-				&& getXBeeProtocol() != XBeeProtocol.DIGI_POINT) {
+		XBeeProtocol protocol = getXBeeProtocol();
+		if (protocol != XBeeProtocol.DIGI_MESH 
+				&& protocol != XBeeProtocol.DIGI_POINT
+				&& protocol != XBeeProtocol.UNKNOWN) {
 			response = getParameter("MY");
 			xbee16BitAddress = new XBee16BitAddress(response);
 		}
@@ -735,6 +750,51 @@ public abstract class AbstractXBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeModemStatusReceiveListener(listener);
+	}
+	
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new explicit data packets are received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Listener to be notified when new explicit data packets 
+	 *                 are received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #removeExplicitDataListener(IExplicitDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
+	 */
+	protected void addExplicitDataListener(IExplicitDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		if (dataReader == null)
+			return;
+		dataReader.addExplicitDataReceiveListener(listener);
+	}
+	
+	/**
+	 * Removes the provided listener from the list of explicit data receive 
+	 * listeners.
+	 * 
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #addExplicitDataListener(IExplicitDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
+	 */
+	protected void removeExplicitDataListener(IExplicitDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		if (dataReader == null)
+			return;
+		dataReader.removeExplicitDataReceiveListener(listener);
 	}
 	
 	/**
@@ -1153,6 +1213,8 @@ public abstract class AbstractXBeeDevice {
 	 * @param asyncTransmission Determines whether the transmission must be 
 	 *                          asynchronous.
 	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code packet == null}.
 	 * @throws TransmitException if {@code packet} is not an instance of 
 	 *                           {@code TransmitStatusPacket} or 
 	 *                           if {@code packet} is not an instance of 
@@ -1900,7 +1962,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws NullPointerException if {@code parameter == null} or 
 	 *                              if {@code parameterValue == null}.
 	 * @throws TimeoutException if there is a timeout setting the parameter.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if {@code parameterValue} is not supported or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #applyChanges()
 	 * @see #enableApplyConfigurationChanges(boolean)
@@ -1926,7 +1990,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout getting the parameter value.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #executeParameter(String)
 	 * @see #setParameter(String, byte[])
@@ -1951,7 +2016,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout executing the parameter.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #getParameter(String)
 	 * @see #setParameter(String, byte[])
@@ -1973,7 +2039,9 @@ public abstract class AbstractXBeeDevice {
 	 * @throws IllegalArgumentException if {@code parameter.length() != 2}.
 	 * @throws NullPointerException if {@code parameter == null}.
 	 * @throws TimeoutException if there is a timeout executing the parameter.
-	 * @throws XBeeException if there is any other XBee related exception.
+	 * @throws XBeeException if {@code parameter} is not supported by the module or
+	 *                       if {@code parameterValue} is not supported or
+	 *                       if there is any other XBee related exception.
 	 * 
 	 * @see #getParameter(String)
 	 * @see #executeParameter(String)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -30,10 +30,12 @@ import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOSample;
+import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
+import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
@@ -45,6 +47,7 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
+import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
@@ -80,6 +83,7 @@ public class DataReader extends Thread {
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
 	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
 	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<IModemStatusReceiveListener>();
+	private ArrayList<IExplicitDataReceiveListener> explicitDataReceiveListeners = new ArrayList<IExplicitDataReceiveListener>();
 	
 	private Logger logger;
 	
@@ -310,6 +314,44 @@ public class DataReader extends Thread {
 		}
 	}
 	
+	/**
+	 * Adds the given explicit data receive listener to the list of listeners 
+	 * that will be notified when an explicit data packet is received.
+	 * 
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new explicit data packets 
+	 *                 are received.
+	 * 
+	 * @see #removeExplicitDataReceiveListener(IExplicitDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
+	 */
+	public void addExplicitDataReceiveListener(IExplicitDataReceiveListener listener) {
+		synchronized (explicitDataReceiveListeners) {
+			if (!explicitDataReceiveListeners.contains(listener))
+				explicitDataReceiveListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given explicit data receive listener from the list of 
+	 * explicit data receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Explicit data receive listener to remove from the list.
+	 * 
+	 * @see #addExplicitDataReceiveListener(IExplicitDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
+	 */
+	public void removeExplicitDataReceiveListener(IExplicitDataReceiveListener listener) {
+		synchronized (explicitDataReceiveListeners) {
+			if (explicitDataReceiveListeners.contains(listener))
+				explicitDataReceiveListeners.remove(listener);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -428,6 +470,28 @@ public class DataReader extends Thread {
 			case MODEM_STATUS:
 				ModemStatusPacket modemStatusPacket = (ModemStatusPacket)apiPacket;
 				notifyModemStatusReceived(modemStatusPacket.getStatus());
+				break;
+			case EXPLICIT_RX_INDICATOR:
+				ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)apiPacket;
+				int sourceEndpoint = explicitDataPacket.getSourceEndpoint();
+				int destEndpoint = explicitDataPacket.getDestinationEndpoint();
+				int clusterID = explicitDataPacket.getClusterID();
+				int profileID = explicitDataPacket.getProfileID();
+				data = explicitDataPacket.getRFData();
+				// If this is an explicit packet for data transmissions in the Digi profile, 
+				// notify also the data listener and add a Receive packet to the queue.
+				if (sourceEndpoint == ExplicitRxIndicatorPacket.DATA_ENDPOINT && 
+						destEndpoint == ExplicitRxIndicatorPacket.DATA_ENDPOINT &&
+						clusterID == ExplicitRxIndicatorPacket.DATA_CLUSTER && 
+						profileID == ExplicitRxIndicatorPacket.DIGI_PROFILE) {
+					notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+					xbeePacketsQueue.addPacket(new ReceivePacket(explicitDataPacket.get64BitSourceAddress(), 
+							explicitDataPacket.get16BitSourceAddress(), 
+							explicitDataPacket.getReceiveOptions(), 
+							explicitDataPacket.getRFData()));
+				}
+				notifyExplicitDataReceived(new ExplicitXBeeMessage(remoteDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data, explicitDataPacket.isBroadcast()));
+				break;
 			default:
 				break;
 			}
@@ -468,7 +532,7 @@ public class DataReader extends Thread {
 			
 		XBeeAPIPacket apiPacket = (XBeeAPIPacket)packet;
 		APIFrameType apiType = apiPacket.getFrameType();
-		if (apiType == null)
+		if (apiType == null || apiType == APIFrameType.UNKNOWN)
 			return null;
 		
 		RemoteXBeeDevice remoteDevice = null;
@@ -523,6 +587,12 @@ public class DataReader extends Thread {
 				addr16 = rx16IOPacket.get16bitSourceAddress();
 				remoteDevice = network.getDevice(addr16);
 			}
+			break;
+		case EXPLICIT_RX_INDICATOR:
+			ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)apiPacket;
+			addr64 = explicitDataPacket.get64BitSourceAddress();
+			addr16 = explicitDataPacket.get16BitSourceAddress();
+			remoteDevice = network.getDevice(addr64);
 			break;
 		default:
 			// Rest of the types are considered not to contain information 
@@ -746,6 +816,51 @@ public class DataReader extends Thread {
 							// twice. That is, let the listener to finish its job.
 							synchronized (listener) {
 								listener.modemStatusEventReceived(modemStatusEvent);
+							}
+						}
+					});
+				}
+				executor.shutdown();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed explicit data receive listeners that a new XBee 
+	 * explicit data packet has been received in form of an 
+	 * {@code ExplicitXBeeMessage}.
+	 *
+	 * @param explicitXBeeMessage The XBee message to be sent to subscribed 
+	 *                            XBee data listeners.
+	 * 
+	 * @see com.digi.xbee.api.models.ExplicitXBeeMessage
+	 */
+	private void notifyExplicitDataReceived(final ExplicitXBeeMessage explicitXBeeMessage) {
+		if (explicitXBeeMessage.isBroadcast())
+			logger.info(connectionInterface.toString() + 
+					"Broadcast explicit data received from {} >> {}.", explicitXBeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(explicitXBeeMessage.getData()));
+		else
+			logger.info(connectionInterface.toString() + 
+					"Explicit data received from {} >> {}.", explicitXBeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(explicitXBeeMessage.getData()));
+		
+		try {
+			synchronized (explicitDataReceiveListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						explicitDataReceiveListeners.size()));
+				for (final IExplicitDataReceiveListener listener:explicitDataReceiveListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							/* Synchronize the listener so it is not called 
+							 twice. That is, let the listener to finish its job. */
+							synchronized (listener) {
+								listener.explicitDataReceived(explicitXBeeMessage);
 							}
 						}
 					});

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -170,6 +170,29 @@ public class XBeeAPIPacketTest {
 		// Call the method under test that should throw a IllegalArgumentException.
 		new TestXBeeAPIPacket(frameType);
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#XBeeAPIPacket(int)}.
+	 * 
+	 * <p>Construct a new XBee API packet with a non-supported frame type.</p>
+	 */
+	@Test
+	public final void testCreateXBeeAPIPacketNotSupportedFrameType() {
+		// Setup the resources for the test.
+		int frameTypeValue = 0xFE;
+		
+		int expectedLength = 1 /* Frame type */;
+		
+		// Call the method under test.
+		TestXBeeAPIPacket packet = new TestXBeeAPIPacket(frameTypeValue);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned frame type is not the expected one", packet.getFrameType(), is(equalTo(APIFrameType.UNKNOWN)));
+		assertThat("Returned frame type value is not the expected one", packet.getFrameTypeValue(), is(equalTo(frameTypeValue)));
+		assertThat("Returned frame type value is not the expected one", packet.getFrameID(), is(equalTo(XBeeAPIPacket.NO_FRAME_ID)));
+	}
+	
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#XBeeAPIPacket(int)}.

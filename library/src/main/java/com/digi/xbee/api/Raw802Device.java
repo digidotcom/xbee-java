@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -180,9 +180,6 @@ public class Raw802Device extends XBeeDevice {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");
@@ -240,9 +237,6 @@ public class Raw802Device extends XBeeDevice {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null");
 		
-		// Check connection.
-		if (!connectionInterface.isOpen())
-			throw new InterfaceNotOpenException();
 		// Check if device is remote.
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send data to a remote device from a remote device.");

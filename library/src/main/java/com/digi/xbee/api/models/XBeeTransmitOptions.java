@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -77,6 +77,13 @@ public class XBeeTransmitOptions {
 	 * <p>Only valid for DigiMesh 868/900 protocol.</p>
 	 */
 	public static final int ENABLE_UNICAST_TRACE_ROUTE = 0x04;
+	
+	/**
+	 * Enables multicast transmission request (value: {@value}).
+	 * 
+	 * <p>Only valid for ZigBee XBee protocol.</p>
+	 */
+	public static final int ENABLE_MULTICAST = 0x08;
 	
 	/**
 	 * Enables APS encryption, only if {@code EE=1} (value: {@value}).

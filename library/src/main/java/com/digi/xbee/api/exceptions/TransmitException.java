@@ -24,7 +24,7 @@ public class TransmitException extends CommunicationException {
 
 	// Constants.
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_MESSAGE = "There was a problem transmiting the XBee API packet.";
+	private static final String DEFAULT_MESSAGE = "There was a problem transmitting the XBee API packet.";
 	
 	// Variables.
 	private final XBeeTransmitStatus transmitStatus;

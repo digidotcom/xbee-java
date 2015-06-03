@@ -13,6 +13,7 @@ package com.digi.xbee.api.packet;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import com.digi.xbee.api.exceptions.InvalidPacketException;
@@ -32,6 +33,8 @@ import com.digi.xbee.api.utils.HexUtils;
  */
 public abstract class XBeePacket {
 
+	private static final int HASH_SEED = 23;
+	
 	// Variables.
 	private XBeeChecksum checksum;
 	
@@ -160,6 +163,33 @@ public abstract class XBeePacket {
 	 *         values.
 	 */
 	protected abstract LinkedHashMap<String, String> getPacketParameters();
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof XBeePacket))
+			return false;
+		XBeePacket packet = (XBeePacket)obj;
+		
+		return Arrays.equals(packet.generateByteArray(), generateByteArray());
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		int hash = HASH_SEED;
+		
+		byte [] array = generateByteArray();
+		for (byte b: array)
+			hash = 31 * (hash + b);
+		return hash;
+	}
 	
 	/*
 	 * (non-Javadoc)

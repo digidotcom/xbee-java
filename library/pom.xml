@@ -78,7 +78,7 @@
 					<stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
 					<windowtitle>${project.name}</windowtitle>
 					<doctitle>${project.name}</doctitle>
-					<bottom>&amp;copy; Copyright ${project.inceptionYear}&#x2013;{currentYear} &lt;a href=&quot;{organizationURL}&quot; target=&quot;_blank&quot;&gt;{organizationName}&lt;/a&gt; All rights reserved.</bottom>
+					<bottom>&amp;copy; Copyright ${project.inceptionYear} &#45; {currentYear} &lt;a href=&quot;{organizationURL}&quot; target=&quot;_blank&quot;&gt;{organizationName}&lt;/a&gt; All rights reserved.</bottom>
 					<footer>&lt;em&gt;${project.name} ${project.version}&lt;br&gt;${maven.build.timestamp}&lt;/em&gt;</footer>
 					<linksource>true</linksource>
 					<keywords>true</keywords>

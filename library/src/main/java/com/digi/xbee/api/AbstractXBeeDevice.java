@@ -1142,7 +1142,7 @@ public abstract class AbstractXBeeDevice {
 					
 					// Verify that the sent packet is not the received one! This can happen when the echo mode is enabled in the 
 					// serial port.
-					if (!isSamePacket(sentPacket, receivedPacket)) {
+					if (!sentPacket.equals(receivedPacket)) {
 						responseList.add(receivedPacket);
 						synchronized (responseList) {
 							responseList.notify();
@@ -1153,24 +1153,6 @@ public abstract class AbstractXBeeDevice {
 		};
 		
 		return packetReceiveListener;
-	}
-	
-	/**
-	 * Returns whether the sent packet is the same than the received one.
-	 * 
-	 * @param sentPacket The packet sent.
-	 * @param receivedPacket The packet received.
-	 * 
-	 * @return {@code true} if the sent packet is the same than the received 
-	 *         one, {@code false} otherwise.
-	 * 
-	 * @see com.digi.xbee.api.packet.XBeePacket
-	 */
-	private boolean isSamePacket(XBeePacket sentPacket, XBeePacket receivedPacket) {
-		// TODO Should not we implement the {@code equals} method in the XBeePacket??
-		if (HexUtils.byteArrayToHexString(sentPacket.generateByteArray()).equals(HexUtils.byteArrayToHexString(receivedPacket.generateByteArray())))
-			return true;
-		return false;
 	}
 	
 	/**

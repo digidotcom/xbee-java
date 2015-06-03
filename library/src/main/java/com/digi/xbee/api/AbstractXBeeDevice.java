@@ -1262,7 +1262,8 @@ public abstract class AbstractXBeeDevice {
 		else if (receivedPacket instanceof TXStatusPacket)
 			status = ((TXStatusPacket)receivedPacket).getTransmitStatus();
 		
-		if (status != XBeeTransmitStatus.SUCCESS)
+		if (status != XBeeTransmitStatus.SUCCESS
+				&& status != XBeeTransmitStatus.SELF_ADDRESSED)
 				throw new TransmitException(status);
 	}
 	

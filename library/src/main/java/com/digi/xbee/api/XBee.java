@@ -12,6 +12,7 @@
 package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.connection.serial.SerialPortJSSC;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 
@@ -19,44 +20,72 @@ import com.digi.xbee.api.connection.serial.SerialPortRxTx;
  * Helper class used to create a serial port connection interface.
  */
 public class XBee {
-	
+
+	public enum SerialPortImplementation {
+
+		RXTX,
+		JSSC
+	}
+	private static SerialPortImplementation implementation = SerialPortImplementation.RXTX;
+
+	public static void setImplementation(SerialPortImplementation implementation) {
+		XBee.implementation = implementation;
+	}
+
 	/**
 	 * Retrieves a serial port connection interface for the provided port with 
 	 * the given baud rate.
-	 * 
+	 *
 	 * @param port Serial port name.
 	 * @param baudRate Serial port baud rate.
-	 * 
+	 *
 	 * @return The serial port connection interface.
-	 * 
+	 *
 	 * @throws NullPointerException if {@code port == null}.
-	 * 
+	 *
 	 * @see #createConnectiontionInterface(String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public static IConnectionInterface createConnectiontionInterface(String port, int baudRate) {
-		IConnectionInterface connectionInterface = new SerialPortRxTx(port, baudRate);
+		IConnectionInterface connectionInterface;
+		switch (implementation) {
+			case JSSC:
+				connectionInterface = new SerialPortJSSC(port, baudRate);
+				break;
+			case RXTX:
+			default:
+				connectionInterface = new SerialPortRxTx(port, baudRate);
+
+		}
 		return connectionInterface;
 	}
-	
+
 	/**
 	 * Retrieves a serial port connection interface for the provided port with 
 	 * the given serial port parameters.
-	 * 
+	 *
 	 * @param port Serial port name.
 	 * @param serialPortParameters Serial port parameters.
-	 * 
+	 *
 	 * @return The serial port connection interface.
-	 * 
+	 *
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code serialPortParameters == null}.
-	 * 
+	 *
 	 * @see #createConnectiontionInterface(String, int)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public static IConnectionInterface createConnectiontionInterface(String port, SerialPortParameters serialPortParameters) {
-		IConnectionInterface connectionInterface = new SerialPortRxTx(port, serialPortParameters);
+		IConnectionInterface connectionInterface;
+		switch (implementation) {
+			case JSSC:
+				connectionInterface = new SerialPortJSSC(port, serialPortParameters);
+				break;
+			case RXTX:
+			default:
+				connectionInterface = new SerialPortRxTx(port, serialPortParameters);
+		}
 		return connectionInterface;
 	}
 }

@@ -728,8 +728,8 @@ public class XBeePacketTest {
 		boolean areEqual2 = packet2.equals(packet1);
 		
 		// Verify the result.
-		assertThat("Packet1 must be equal to packet2", areEqual1, is(equalTo(false)));
-		assertThat("Packet2 must be equal to packet1", areEqual2, is(equalTo(false)));
+		assertThat("Packet1 must be different from packet2", areEqual1, is(equalTo(false)));
+		assertThat("Packet2 must be different from packet1", areEqual2, is(equalTo(false)));
 	}
 	
 	/**
@@ -836,9 +836,9 @@ public class XBeePacketTest {
 		assertThat("Consistent test fail packet1,packet2", packet1.equals(packet2), is(equalTo(true)));
 		assertThat("Consistent test fail packet1,packet2", packet1.equals(packet2), is(equalTo(true)));
 		assertThat("Consistent test fail packet1,packet2", packet1.equals(packet2), is(equalTo(true)));
-		assertThat(packet3.equals(packet1), is(equalTo(false)));
-		assertThat(packet3.equals(packet1), is(equalTo(false)));
-		assertThat(packet3.equals(packet1), is(equalTo(false)));
+		assertThat("Consistent test fail packet3,packet1", packet3.equals(packet1), is(equalTo(false)));
+		assertThat("Consistent test fail packet3,packet1", packet3.equals(packet1), is(equalTo(false)));
+		assertThat("Consistent test fail packet3,packet1", packet3.equals(packet1), is(equalTo(false)));
 
 	}
 	

@@ -11,6 +11,8 @@
  */
 package com.digi.xbee.api.models;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
@@ -106,6 +108,82 @@ public class XBeeProtocolTest {
 	public void testXBeeProtocolToString() {
 		for (XBeeProtocol xbeeProtocol:xbeeProtocolValues)
 			assertEquals(xbeeProtocol.getDescription(), xbeeProtocol.toString());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeeProtocol#determineProtocol(HardwareVersion, String)}
+	 * 
+	 * <p>Verify that the {@code determineProtocol()} method return UNKNOWN for {@code null} hardware version.</p>
+	 */
+	@Test
+	public void testDetermineProtocolHardwareVersionNull() {
+		// Setup the resources for the test.
+		String fv = "";
+		HardwareVersion hv = null;
+		XBeeProtocol expectedProtocol = XBeeProtocol.UNKNOWN;
+		
+		// Call the method under test.
+		XBeeProtocol p = XBeeProtocol.determineProtocol(hv, fv);
+		
+		// Verify the result.
+		assertThat("Expected protocol is XBeeProtocol.UNKNOWN", p, is(equalTo(expectedProtocol)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeeProtocol#determineProtocol(HardwareVersion, String)}
+	 * 
+	 * <p>Verify that the {@code determineProtocol()} method return UNKNOWN for {@code null} firmware version.</p>
+	 */
+	@Test
+	public void testDetermineProtocolFirmwareVersionNull() {
+		// Setup the resources for the test.
+		String fv = null;
+		HardwareVersion hv = HardwareVersion.get(HardwareVersionEnum.X24_019.getValue());
+		XBeeProtocol expectedProtocol = XBeeProtocol.UNKNOWN;
+		
+		// Call the method under test.
+		XBeeProtocol p = XBeeProtocol.determineProtocol(hv, fv);
+		
+		// Verify the result.
+		assertThat("Expected protocol is XBeeProtocol.UNKNOWN", p, is(equalTo(expectedProtocol)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeeProtocol#determineProtocol(HardwareVersion, String)}
+	 * 
+	 * <p>Verify that the {@code determineProtocol()} method return UNKNOWN for a hardware version less than 0x09.</p>
+	 */
+	@Test
+	public void testDetermineProtocolHardwareVersionValueLessThan9() {
+		// Setup the resources for the test.
+		String fv = "2040";
+		HardwareVersion hv = HardwareVersion.get(5);
+		XBeeProtocol expectedProtocol = XBeeProtocol.UNKNOWN;
+		
+		// Call the method under test.
+		XBeeProtocol p = XBeeProtocol.determineProtocol(hv, fv);
+		
+		// Verify the result.
+		assertThat("Expected protocol is XBeeProtocol.UNKNOWN", p, is(equalTo(expectedProtocol)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeeProtocol#determineProtocol(HardwareVersion, String)}
+	 * 
+	 * <p>Verify that the {@code determineProtocol()} method return UNKNOWN for a hardware version less than 0x09.</p>
+	 */
+	@Test
+	public void testDetermineProtocolHardwareVersionNotInTheList() {
+		// Setup the resources for the test.
+		String fv = "2040";
+		HardwareVersion hv = HardwareVersion.get(999999999);
+		XBeeProtocol expectedProtocol = XBeeProtocol.UNKNOWN;
+		
+		// Call the method under test.
+		XBeeProtocol p = XBeeProtocol.determineProtocol(hv, fv);
+		
+		// Verify the result.
+		assertThat("Expected protocol is XBeeProtocol.UNKNOWN", p, is(equalTo(expectedProtocol)));
 	}
 	
 	/**

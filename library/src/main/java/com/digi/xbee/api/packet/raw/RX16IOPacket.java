@@ -66,8 +66,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 *                                  if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255} or
-	 *                                  if {@code rfData.length < 5}.
+	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static RX16IOPacket createPacket(byte[] payload) {
@@ -116,8 +115,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255} or
-	 *                                  if {@code rfData.length < 5}.
+	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress16 == null}.
 	 * 
 	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
@@ -137,7 +135,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
 		this.rfData = rfData;
-		if (rfData != null)
+		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
 		else
 			ioSample = null;

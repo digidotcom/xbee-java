@@ -74,8 +74,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255} or 
-	 *                                  if {@code rfData.length < 5}.
+	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static IODataSampleRxIndicatorPacket createPacket(byte[] payload) {
@@ -122,8 +121,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 * @param rfData Received RF data.
 	 * 
 	 * @throws IllegalArgumentException if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255} or
-	 *                                  if {@code rfData.length < 5}.
+	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress64 == null} or 
 	 *                              if {@code sourceAddress16 == null}.
 	 * 
@@ -145,7 +143,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.receiveOptions = receiveOptions;
 		this.rfData = rfData;
-		if (rfData != null)
+		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
 		else
 			ioSample = null;
@@ -225,8 +223,8 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	/**
 	 * Returns the IO sample corresponding to the data contained in the packet.
 	 * 
-	 * @return The IO sample of the packet, null if the packet has not any data 
-	 *         or if the sample could not be generated correctly.
+	 * @return The IO sample of the packet, {@code null} if the packet has not 
+	 *         any data or if the sample could not be generated correctly.
 	 * 
 	 * @see com.digi.xbee.api.io.IOSample
 	 */

@@ -122,7 +122,7 @@ public class IODataSampleRxIndicatorPacketTest {
 		byte[] payload = new byte[11];
 		payload[0] = (byte)frameType;
 		System.arraycopy(source64Addr.getValue(), 0, payload, 1, source64Addr.getValue().length);
-		System.arraycopy(source64Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
+		System.arraycopy(source16Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
 		
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Incomplete IO Data Sample RX Indicator packet.")));
@@ -149,15 +149,22 @@ public class IODataSampleRxIndicatorPacketTest {
 		byte[] payload = new byte[12 + data.length];
 		payload[0] = (byte)frameType;
 		System.arraycopy(source64Addr.getValue(), 0, payload, 1, source64Addr.getValue().length);
-		System.arraycopy(source64Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
-		payload[10] = (byte)options;
-		System.arraycopy(data, 0, payload, 11, data.length);
+		System.arraycopy(source16Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
+		payload[11] = (byte)options;
+		System.arraycopy(data, 0, payload, 12, data.length);
 		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("IO sample payload must be longer than 4.")));
+		// Call the method under test.
+		IODataSampleRxIndicatorPacket packet = IODataSampleRxIndicatorPacket.createPacket(payload);
 		
-		// Call the method under test that should throw an IllegalArgumentException.
-		IODataSampleRxIndicatorPacket.createPacket(payload);
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
 	
 	/**
@@ -216,6 +223,43 @@ public class IODataSampleRxIndicatorPacketTest {
 		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
 		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(nullValue()));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid API IO Data Sample RX Indicator packet with the provided 
+	 * options without IO sample data is created.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadWithoutIOSamples() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR.getValue();
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int options = 40;
+		byte[] data = new byte[]{(byte)0x01};
+		
+		byte[] payload = new byte[12 + data.length];
+		payload[0] = (byte)frameType;
+		System.arraycopy(source64Addr.getValue(), 0, payload, 1, source64Addr.getValue().length);
+		System.arraycopy(source16Addr.getValue(), 0, payload, 9, source16Addr.getValue().length);
+		payload[11] = (byte)options;
+		System.arraycopy(data, 0, payload, 12, data.length);
+		
+		// Call the method under test.
+		IODataSampleRxIndicatorPacket packet = IODataSampleRxIndicatorPacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -251,6 +295,7 @@ public class IODataSampleRxIndicatorPacketTest {
 		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
 		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO Sample must not be null", packet.getIOSample(), is(not(nullValue(IOSample.class))));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -387,11 +432,19 @@ public class IODataSampleRxIndicatorPacketTest {
 		int options = 40;
 		byte[] data = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF};
 		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("IO sample payload must be longer than 4.")));
+		int expectedLength = 1 /* Frame type */ + 8 /* 64-bit address */ + 2 /* 16-bit address */ + 1 /* options */ + data.length /* Data */;
 		
-		// Call the method under test that should throw an IllegalArgumentException.
-		new IODataSampleRxIndicatorPacket(source64Addr, source16Addr, options, data);
+		// Call the method under test.
+		IODataSampleRxIndicatorPacket packet = new IODataSampleRxIndicatorPacket(source64Addr, source16Addr, options, data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned source 64-bit address is not the expected one", packet.get64bitSourceAddress(), is(equalTo(source64Addr)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
+		assertThat("IO Data Sample RX Indicator packet does NOT need API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
 	}
 	
 	/**

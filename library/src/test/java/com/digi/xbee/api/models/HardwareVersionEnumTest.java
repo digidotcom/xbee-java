@@ -72,7 +72,7 @@ public class HardwareVersionEnumTest {
 	 * <p>Verify that each HardwareVersionEnum entry can be retrieved statically using its ID.</p>
 	 */
 	@Test
-	public void testXBeeProtocolStaticAccess() {
+	public void testHardwareVersionEnumStaticAccess() {
 		for (HardwareVersionEnum hardwareVersionEnum:hardwareVersionValues)
 			assertEquals(hardwareVersionEnum, HardwareVersionEnum.get(hardwareVersionEnum.getValue()));
 	}

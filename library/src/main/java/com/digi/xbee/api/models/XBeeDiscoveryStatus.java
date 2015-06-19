@@ -55,9 +55,9 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Returns the discovery status ID.
+	 * Returns the numeric value of the discovery status identifier.
 	 * 
-	 * @return The discovery status ID.
+	 * @return The discovery status identifier.
 	 */
 	public int getId() {
 		return id;
@@ -73,17 +73,24 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Returns the {@code XBeeDiscoveryStatus} associated to the given ID.
+	 * Returns the {@code XBeeDiscoveryStatus} associated to the given 
+	 * identifier.
 	 * 
-	 * @param id ID of the {@code XBeeDiscoveryStatus} to retrieve.
+	 * Returns {@code DISCOVERY_STATUS_UNKNOWN} if the identifier is not in the 
+	 * enumeration.
 	 * 
-	 * @return The {@code XBeeDiscoveryStatus} associated with the given ID.
+	 * @param id Identifier of the {@code XBeeDiscoveryStatus} to retrieve.
+	 * 
+	 * @return The {@code XBeeDiscoveryStatus} associated with the given 
+	 *         identifier.
+	 *         {@code DISCOVERY_STATUS_UNKNOWN} if the identifier is not in the 
+	 *         enumeration.
 	 */
 	public static XBeeDiscoveryStatus get(int id) {
 		XBeeDiscoveryStatus status = lookupTable.get(id);
 		if (status != null)
 			return status;
-		return XBeeDiscoveryStatus.DISCOVERY_STATUS_UNKNOWN;
+		return DISCOVERY_STATUS_UNKNOWN;
 	}
 	
 	/*
@@ -92,6 +99,6 @@ public enum XBeeDiscoveryStatus {
 	 */
 	@Override
 	public String toString() {
-		return description;
+		return String.format("%s (0x%02X)", description, id);
 	}
 }

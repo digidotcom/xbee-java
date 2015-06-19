@@ -182,7 +182,40 @@ public class ATCommandResponsePacketTest {
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
-		assertThat("Returned status is not the expected one", packet.getStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.OK)));
+		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(nullValue()));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid AT Command Response packet with the provided options without 
+	 * command value is created.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadWithoutDataWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
+		int frameID = 0xE7;
+		byte[] atCommand = "NI".getBytes();
+		int status = 254;
+		
+		byte[] payload = new byte[3 + atCommand.length];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(atCommand, 0, payload, 2, atCommand.length);
+		payload[4] = (byte)status;
+		
+		// Call the method under test.
+		ATCommandResponsePacket packet = ATCommandResponsePacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.UNKNOWN)));
 		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(nullValue()));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -217,7 +250,42 @@ public class ATCommandResponsePacketTest {
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
-		assertThat("Returned status is not the expected one", packet.getStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.OK)));
+		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(equalTo(value)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid AT Command Response packet with the provided options with 
+	 * command value is created.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadWithDataWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
+		int frameID = 0xE7;
+		byte[] atCommand = "NI".getBytes();
+		int status = 254;
+		byte[] value = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		
+		byte[] payload = new byte[3 + atCommand.length + value.length];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(atCommand, 0, payload, 2, atCommand.length);
+		payload[2 + atCommand.length] = (byte)status;
+		System.arraycopy(value, 0, payload, 3 + atCommand.length, value.length);
+		
+		// Call the method under test.
+		ATCommandResponsePacket packet = ATCommandResponsePacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(atCommand))));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.UNKNOWN)));
 		assertThat("Returned Command value is not the expected one", packet.getCommandValue(), is(equalTo(value)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -332,6 +400,35 @@ public class ATCommandResponsePacketTest {
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
 		assertThat("Returned Command Data is not the expected one", packet.getCommandValue(), is(nullValue(byte[].class)));
 		assertThat("AT Command Response needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.OK)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#ATCommandResponsePacket(int, ATCommandStatus, String, byte[])}.
+	 * 
+	 * <p>Construct a new AT Command Response packet but with an valid 
+	 * parameters but without parameter value ({@code null}).</p>
+	 */
+	@Test
+	public final void testCreateATCommandResponsePacketValidParameterNullWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		String command = "NI";
+		byte[] parameter = null;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 1 /* status */ + command.length() /* AT command */;
+		
+		// Call the method under test.
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
+		assertThat("Returned Command Data is not the expected one", packet.getCommandValue(), is(nullValue(byte[].class)));
+		assertThat("AT Command Response needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.UNKNOWN)));
 	}
 	
 	/**
@@ -359,6 +456,35 @@ public class ATCommandResponsePacketTest {
 		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
 		assertThat("Returned Command Data is not the expected one", packet.getCommandValue(), is(equalTo(parameter)));
 		assertThat("AT Command Response needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.OK)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#ATCommandResponsePacket(int, ATCommandStatus, String, byte[])}.
+	 * 
+	 * <p>Construct a new AT Command Response packet but with an valid 
+	 * parameters but without parameter value ({@code null}).</p>
+	 */
+	@Test
+	public final void testCreateATCommandResponsePacketValidParameterWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		String command = "NI";
+		byte[] parameter = "Param value".getBytes();
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 1 /* status */ + command.length() /* AT command */ + parameter.length /* value */;
+		
+		// Call the method under test.
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned AT Command is not the expected one", packet.getCommand(), is(equalTo(new String(command))));
+		assertThat("Returned Command Data is not the expected one", packet.getCommandValue(), is(equalTo(parameter)));
+		assertThat("AT Command Response needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Returned status is not the expected one", packet.getStatus(), is(equalTo(ATCommandStatus.UNKNOWN)));
 	}
 	
 	/**
@@ -380,6 +506,37 @@ public class ATCommandResponsePacketTest {
 		expectedData[0] = (byte)frameID;
 		System.arraycopy(command.getBytes(), 0, expectedData, 1, command.length());
 		expectedData[1 + command.length()] = (byte)status.getId();
+		
+		// Call the method under test.
+		byte[] data = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", data, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIDataATCommandParameterNullWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
+		int frameID = 0x10;
+		byte[] atCommand = "NI".getBytes();
+		int status = 254;
+		
+		byte[] payload = new byte[3 + atCommand.length];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(atCommand, 0, payload, 2, atCommand.length);
+		payload[2 + atCommand.length] = (byte)status;
+		
+		ATCommandResponsePacket packet = ATCommandResponsePacket.createPacket(payload);
+		
+		byte[] expectedData = new byte[payload.length - 1]; /* Do not include the type */
+		System.arraycopy(payload, 1, expectedData, 0, expectedData.length);
 		
 		// Call the method under test.
 		byte[] data = packet.getAPIData();
@@ -417,6 +574,39 @@ public class ATCommandResponsePacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters but with a non-{@code null} parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIDataATCommandParameterNotNullWitUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
+		int frameID = 0x10;
+		byte[] atCommand = "NI".getBytes();
+		int status = 254;
+		byte[] parameter = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		
+		byte[] payload = new byte[3 + atCommand.length + parameter.length];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(atCommand, 0, payload, 2, atCommand.length);
+		payload[2 + atCommand.length] = (byte)status;
+		System.arraycopy(parameter, 0, payload, 3 + atCommand.length, parameter.length);
+		
+		ATCommandResponsePacket packet = ATCommandResponsePacket.createPacket(payload);
+		
+		byte[] expectedData = new byte[payload.length - 1]; /* Do not include the type */
+		System.arraycopy(payload, 1, expectedData, 0, expectedData.length);
+		
+		// Call the method under test.
+		byte[] data = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", data, is(equalTo(expectedData)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getAPIPacketParameters()}.
 	 * 
 	 * <p>Test the get API parameters but with a {@code null} parameter value.</p>
@@ -432,6 +622,41 @@ public class ATCommandResponsePacketTest {
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
 		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(2)));
+		assertThat("Status is not the expected one", packetParams.get("Status"), is(equalTo(expectedStatus)));
+		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
+		assertThat("AT Response is not the expected one", packetParams.get("Response"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with a {@code null} parameter value.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersATCommandParameterNullWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.AT_COMMAND_RESPONSE.getValue();
+		int frameID = 0x10;
+		String cmdString = "NI";
+		byte[] atCommand = cmdString.getBytes();
+		int status = 254;
+		
+		byte[] payload = new byte[3 + atCommand.length];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(atCommand, 0, payload, 2, atCommand.length);
+		payload[2 + atCommand.length] = (byte)status;
+		
+		ATCommandResponsePacket packet = ATCommandResponsePacket.createPacket(payload);
+		
+		String expectedATCommand = HexUtils.prettyHexString(atCommand) + " (" + cmdString + ")";
+		String expectedStatus = Integer.toHexString(status).toUpperCase() + " (" + ATCommandStatus.UNKNOWN.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();

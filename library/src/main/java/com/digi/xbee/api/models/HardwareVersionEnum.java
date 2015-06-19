@@ -134,6 +134,6 @@ public enum HardwareVersionEnum {
 	 */
 	@Override
 	public String toString() {
-		return HexUtils.byteToHexString((byte)value) + ": " + description;
+		return String.format("0x%02X: %s", value, description);
 	}
 }

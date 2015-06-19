@@ -13,8 +13,6 @@ package com.digi.xbee.api.models;
 
 import java.util.HashMap;
 
-import com.digi.xbee.api.utils.HexUtils;
-
 /**
  * Enumerates the different modem status events. This enumeration list is 
  * intended to be used within the 
@@ -106,6 +104,6 @@ public enum ModemStatusEvent {
 	 */
 	@Override
 	public String toString() {
-		return HexUtils.byteToHexString((byte)id) + ": " + description;
+		return String.format("0x%02X: %s", id, description);
 	}
 }

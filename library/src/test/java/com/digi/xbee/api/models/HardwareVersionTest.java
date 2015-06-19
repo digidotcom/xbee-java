@@ -160,7 +160,7 @@ public class HardwareVersionTest {
 	 * <p>Test the equals method with a non {@code HardwareVersion} value.</p>
 	 */
 	@Test
-	public final void testEqualsWithNonXBeePacket() {
+	public final void testEqualsWithNonHardwareVersion() {
 		// Setup the resources for the test.
 		HardwareVersion version = HardwareVersion.get(HardwareVersionEnum.XBP24B.getValue());
 		
@@ -177,7 +177,7 @@ public class HardwareVersionTest {
 	 * <p>Test the equals method with different {@code HardwareVersion}.</p>
 	 */
 	@Test
-	public final void testEqualsWithDifferentXBeePacket() {
+	public final void testEqualsWithDifferentHardwareVersion() {
 		// Setup the resources for the test.
 		HardwareVersion version1 = HardwareVersion.get(HardwareVersionEnum.XBP24B.getValue());
 		HardwareVersion version2 = HardwareVersion.get(HardwareVersionEnum.X09_001.getValue());
@@ -271,7 +271,7 @@ public class HardwareVersionTest {
 	 * Test method for {@link com.digi.xbee.api.models.HardwareVersion#hashCode()}.
 	 */
 	@Test
-	public final void testHashCodeWithEqualPackets() {
+	public final void testHashCodeWithEqualHardwareVersions() {
 		// Setup the resources for the test.
 		HardwareVersion version1 = HardwareVersion.get(HardwareVersionEnum.XBP24B.getValue());
 		HardwareVersion version2 = HardwareVersion.get(HardwareVersionEnum.XBP24B.getValue());
@@ -290,7 +290,7 @@ public class HardwareVersionTest {
 	 * Test method for {@link com.digi.xbee.api.models.HardwareVersion#hashCode()}.
 	 */
 	@Test
-	public final void testHashCodeWithDifferentPackets() {
+	public final void testHashCodeWithDifferentHardwareVersions() {
 		// Setup the resources for the test.
 		HardwareVersion version1 = HardwareVersion.get(HardwareVersionEnum.XBP24B.getValue());
 		HardwareVersion version2 = HardwareVersion.get(HardwareVersionEnum.X09_001.getValue());;

@@ -13,6 +13,7 @@ package com.digi.xbee.api.packet.raw;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
 import java.util.Arrays;
@@ -151,11 +152,18 @@ public class RX16IOPacketTest {
 		payload[4] = (byte)options;
 		System.arraycopy(data, 0, payload, 5, data.length);
 		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("IO sample payload must be longer than 4.")));
+		// Call the method under test.
+		RX16IOPacket packet = RX16IOPacket.createPacket(payload);
 		
-		// Call the method under test that should throw an IllegalArgumentException.
-		RX16IOPacket.createPacket(payload);
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
 	
 	/**
@@ -214,6 +222,43 @@ public class RX16IOPacketTest {
 		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
 		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(nullValue()));
+		assertThat("Returned IO Sample must be null", packet.getIOSample(), is(nullValue(IOSample.class)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid API RX16 Address IO packet with the provided options without 
+	 * IO sample data is created.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadWithoutIOSamples() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.RX_IO_16.getValue();
+		XBee16BitAddress source16Addr = new XBee16BitAddress("A1B2");
+		int rssi = 40;
+		int options = 0x01;
+		byte[] data = new byte[]{(byte)0x01};
+		
+		byte[] payload = new byte[5 + data.length];
+		payload[0] = (byte)frameType;
+		System.arraycopy(source16Addr.getValue(), 0, payload, 1, source16Addr.getValue().length);
+		payload[3] = (byte)rssi;
+		payload[4] = (byte)options;
+		System.arraycopy(data, 0, payload, 5, data.length);
+		
+		// Call the method under test.
+		RX16IOPacket packet = RX16IOPacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(not(nullValue())));
+		assertThat("Returned IO Sample must be null", packet.getIOSample(), is(nullValue(IOSample.class)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -249,6 +294,7 @@ public class RX16IOPacketTest {
 		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
 		assertThat("Returned Received Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO Sample must not be null", packet.getIOSample(), is(not(nullValue(IOSample.class))));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -382,6 +428,7 @@ public class RX16IOPacketTest {
 		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
 		assertThat("Returned Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
 		assertThat("RX16 IO packet does NOT need API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
 	}
 	
@@ -399,11 +446,19 @@ public class RX16IOPacketTest {
 		int options = 40;
 		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("IO sample payload must be longer than 4.")));
+		int expectedLength = 1 /* Frame type */ + 2 /* 16-bit address */ + 1 /* RSSI */ + 1 /* options */ + data.length /* Data */;
 		
-		// Call the method under test that should throw an IllegalArgumentException.
-		new RX16IOPacket(source16Addr, rssi, options, data);
+		// Call the method under test.
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, data);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned source 16-bit address is not the expected one", packet.get16bitSourceAddress(), is(equalTo(source16Addr)));
+		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
+		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
+		assertThat("Returned Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(nullValue(IOSample.class)));
+		assertThat("RX16 IO packet does NOT need API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
 	}
 	
 	/**
@@ -431,6 +486,7 @@ public class RX16IOPacketTest {
 		assertThat("Returned RSSI is not the expected one", packet.getRSSI(), is(equalTo(rssi)));
 		assertThat("Returned received options is not the expected one", packet.getReceiveOptions(), is(equalTo(options)));
 		assertThat("Returned Data is not the expected one", packet.getRFData(), is(equalTo(data)));
+		assertThat("Returned IO sample is not the expected one", packet.getIOSample(), is(not(nullValue(IOSample.class))));
 		assertThat("RX16 IO packet does NOT need API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
 	}
 	

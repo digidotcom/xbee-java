@@ -170,7 +170,36 @@ public class TXStatusPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned status is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(status)));
+		assertThat("Returned status is not the expected one", packet.getTransmitStatus(), is(equalTo(XBeeTransmitStatus.SUCCESS)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid API TX Status packet with the provided options and unknown status.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TX_STATUS.getValue();
+		int frameID = 0xE7;
+		int status = 255;
+		
+		byte[] payload = new byte[3];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		payload[2] = (byte)status;
+		
+		// Call the method under test.
+		TXStatusPacket packet = TXStatusPacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned status id is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getId())));
+		assertThat("Returned status description is not the expected one", packet.getTransmitStatus().getDescription(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getDescription())));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -256,6 +285,29 @@ public class TXStatusPacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#TXStatusPacket(int, XBeeTransmitStatus)}.
+	 * 
+	 * <p>Construct a new TX Status packet with valid parameters.</p>
+	 */
+	@Test
+	public final void testCreateTXStatusPacketValidWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameID = 85;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.UNKNOWN;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 1 /* transmit status */;
+		
+		// Call the method under test.
+		TXStatusPacket packet = new TXStatusPacket(frameID, transmitStatus);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned status is not the expected one", packet.getTransmitStatus(), is(equalTo(transmitStatus)));
+		assertThat("TX Status packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#getAPIData()}.
 	 * 
 	 * <p>Test the get API parameters.</p>
@@ -280,6 +332,35 @@ public class TXStatusPacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters with unknown status.</p>
+	 */
+	@Test
+	public final void testGetAPIDataUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TX_STATUS.getValue();
+		int frameID = 0x65;
+		int status = 255;
+		
+		byte[] payload = new byte[3];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		payload[2] = (byte)status;
+		
+		TXStatusPacket packet = TXStatusPacket.createPacket(payload);
+		
+		byte[] expectedData = new byte[payload.length - 1]; /* Do not include the type */
+		System.arraycopy(payload, 1, expectedData, 0, expectedData.length);
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#getAPIPacketParameters()}.
 	 * 
 	 * <p>Test the get API parameters.</p>
@@ -292,6 +373,35 @@ public class TXStatusPacketTest {
 		TXStatusPacket packet = new TXStatusPacket(frameID, transmitStatus);
 		
 		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getId())) + " (" + transmitStatus.getDescription() + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
+		assertThat("Delivery status is not the expected", packetParams.get("Status"), is(equalTo(expectedTransmitStatus)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TXStatusPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters with unknown status.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersWithUnknownStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TX_STATUS.getValue();
+		int frameID = 0x65;
+		int status = 255;
+		
+		byte[] payload = new byte[3];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		payload[2] = (byte)status;
+		
+		TXStatusPacket packet = TXStatusPacket.createPacket(payload);
+		
+		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(status).toUpperCase()) + " (" + XBeeTransmitStatus.UNKNOWN.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();

@@ -88,6 +88,6 @@ public class ModemStatusEventTest {
 	@Test
 	public void testModemStatusEventToString() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
-			assertEquals(HexUtils.byteToHexString((byte)modemStatusEvent.getId()) + ": " + modemStatusEvent.getDescription(), modemStatusEvent.toString());
+			assertEquals(String.format("0x%02X: %s", modemStatusEvent.getId(), modemStatusEvent.getDescription()), modemStatusEvent.toString());
 	}
 }

@@ -13,8 +13,6 @@ package com.digi.xbee.api.models;
 
 import java.util.HashMap;
 
-import com.digi.xbee.api.utils.HexUtils;
-
 /**
  * Enumerates the different hardware versions of the XBee devices.
  */

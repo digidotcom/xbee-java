@@ -412,7 +412,7 @@ public class XBeeNetwork {
 		if (address == null)
 			throw new NullPointerException("64-bit address cannot be null.");
 		if (address.equals(XBee64BitAddress.UNKNOWN_ADDRESS))
-			throw new NullPointerException("64-bit address cannot be unknown.");
+			throw new IllegalArgumentException("64-bit address cannot be unknown.");
 		
 		logger.debug("{}Getting device '{}' from network.", localDevice.toString(), address);
 		
@@ -443,7 +443,7 @@ public class XBeeNetwork {
 		if (address == null)
 			throw new NullPointerException("16-bit address cannot be null.");
 		if (address.equals(XBee16BitAddress.UNKNOWN_ADDRESS))
-			throw new NullPointerException("16-bit address cannot be unknown.");
+			throw new IllegalArgumentException("16-bit address cannot be unknown.");
 		
 		logger.debug("{}Getting device '{}' from network.", localDevice.toString(), address);
 		
@@ -492,7 +492,7 @@ public class XBeeNetwork {
 	 * @return The remote XBee Device instance in the network, {@code null} if
 	 *         the device could not be successfully added.
 	 * 
-	 * @throws NullPointerException if {@code RemoteDevice == null}.
+	 * @throws NullPointerException if {@code remoteDevice == null}.
 	 * 
 	 * @see #addRemoteDevices(List)
 	 * @see #removeRemoteDevice(RemoteXBeeDevice)
@@ -618,7 +618,11 @@ public class XBeeNetwork {
 		logger.debug("{}Adding '{}' devices to network.", localDevice.toString(), list.size());
 		
 		for (int i = 0; i < list.size(); i++) {
-			RemoteXBeeDevice d = addRemoteDevice(list.get(i));
+			RemoteXBeeDevice toAdd = list.get(i);
+			if (toAdd == null)
+				continue;
+			
+			RemoteXBeeDevice d = addRemoteDevice(toAdd);
 			if (d != null)
 				addedList.add(d);
 		}
@@ -716,7 +720,7 @@ public class XBeeNetwork {
 	public void clearDeviceList() {
 		logger.debug("{}Clearing the network.", localDevice.toString());
 		remotesBy64BitAddr.clear();
-		remotesBy64BitAddr.clear();
+		remotesBy16BitAddr.clear();
 	}
 	
 	/**

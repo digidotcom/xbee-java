@@ -59,4 +59,14 @@ public class IOValuesTest {
 	public void testNullIOValueIsRetrievedWithInvalidID() {
 		assertNull(IOValue.getIOValue(INVALID_ID));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOValue#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		for (IOValue ioValue:ioValues)
+			assertEquals("toString() method does not produce the expected output",
+					ioValue.getName(), ioValue.toString());
+	}
 }

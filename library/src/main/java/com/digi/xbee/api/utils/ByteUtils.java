@@ -38,10 +38,12 @@ public class ByteUtils {
 		if (inputStream == null)
 			throw new NullPointerException("Input stream cannot be null.");
 		if (numBytes < 0)
-			throw new IllegalArgumentException("Number of bytes to read must be greater than 0.");
+			throw new IllegalArgumentException("Number of bytes to read must be equal or greater than 0.");
 		
 		byte[] data = new byte[numBytes];
 		int len = inputStream.read(data, 0, numBytes);
+		if (len == - 1)
+			return new byte[0];
 		if (len < numBytes) {
 			byte[] d = new byte[len];
 			System.arraycopy(data, 0, d, 0, len);
@@ -110,13 +112,16 @@ public class ByteUtils {
 		if (byteArray == null)
 			throw new NullPointerException("Byte array cannot be null.");
 		
+		if (byteArray.length == 0)
+			return 0;
+		
 		byte[] values = byteArray;
 		if (byteArray.length < 8) {
 			values = new byte[8];
-			int diff = 8 - byteArray.length;
+			int diff = values.length - byteArray.length;
 			for (int i = 0; i < diff; i++)
 				values[i] = 0;
-			for (int i = diff; i < 8; i++)
+			for (int i = diff; i < values.length; i++)
 				values[i] = byteArray[i - diff];
 		}
 		return ((long)values[0] << 56) 
@@ -162,13 +167,16 @@ public class ByteUtils {
 		if (byteArray == null)
 			throw new NullPointerException("Byte array cannot be null.");
 		
+		if (byteArray.length == 0)
+			return 0;
+		
 		byte[] values = byteArray;
 		if (byteArray.length < 4) {
 			values = new byte[4];
-			int diff = 4 - byteArray.length;
+			int diff = values.length - byteArray.length;
 			for (int i = 0; i < diff; i++)
 				values[i] = 0;
-			for (int i = diff; i < 4; i++)
+			for (int i = diff; i < values.length; i++)
 				values[i] = byteArray[i - diff];
 		}
 		return ((values[0] & 0xFF) << 24)
@@ -208,8 +216,18 @@ public class ByteUtils {
 		if (byteArray == null)
 			throw new NullPointerException("Byte array cannot be null.");
 		
-		return (short) (((byteArray[0] << 8) & 0xFF00) 
-						| byteArray[1] & 0x00FF);
+		if (byteArray.length == 0)
+			return 0;
+		
+		byte[] values = byteArray;
+		if (byteArray.length < 2) {
+			values = new byte[2];
+			values[1] = byteArray[0];
+			values[0] = 0;
+		}
+		
+		return (short) (((values[0] << 8) & 0xFF00) 
+						| values[1] & 0x00FF);
 	}
 	
 	/**
@@ -267,8 +285,14 @@ public class ByteUtils {
 	 * 
 	 * @return {@code true} if the given bit position is set to {@code 1} 
 	 *         in the {@code containerInteger}, {@code false} otherwise.
+	 *         
+	 * @throws IllegalArgumentException if {@code bitPosition < 0} or
+	 *                                  if {@code bitPosition > 31}.
 	 */
 	public static boolean isBitEnabled(int containerInteger, int bitPosition) {
+		if (bitPosition < 0 || bitPosition > 31)
+			throw new IllegalArgumentException("Bit position must be between 0 and 31.");
+		
 		return (((containerInteger & 0xFFFFFFFF) >> bitPosition) & 0x01) == 0x01;
 	}
 	
@@ -281,10 +305,22 @@ public class ByteUtils {
 	 * @param bitLength Size in bits of the integer value to read.
 	 * 
 	 * @return The integer read value.
+	 * 
+	 * @throws IllegalArgumentException if {@code bitOffset < 0} or
+	 *                                  if {@code bitOffset > 7} or
+	 *                                  if {@code bitLength < 0} or
+	 *                                  if {@code bitLength > 8}.
 	 */
 	public static int readIntegerFromByte(byte containerByte, int bitOffset, int bitLength) {
+		if (bitOffset < 0 || bitOffset > 7)
+			throw new IllegalArgumentException("Offset must be between 0 and 7.");
+		if (bitLength < 0 || bitLength > 7)
+			throw new IllegalArgumentException("Length must be between 0 and 8.");
+		
 		int readInteger = 0;
 		for (int i = 0; i < bitLength; i++) {
+			if (bitOffset + i > 7)
+				break;
 			if (isBitEnabled(containerByte, bitOffset + i))
 				readInteger = readInteger | (int)Math.pow(2, i);
 		}
@@ -298,8 +334,14 @@ public class ByteUtils {
 	 * @param bitOffset Offset inside the byte to read the boolean value.
 	 * 
 	 * @return The read boolean value.
+	 * 
+	 * @throws IllegalArgumentException if {@code bitOffset < 0} or
+	 *                                  if {@code bitOffset > 31}.
 	 */
 	public static boolean readBooleanFromByte(byte containerByte, int bitOffset) {
+		if (bitOffset < 0 || bitOffset > 31)
+			throw new IllegalArgumentException("Bit offset must be between 0 and 7.");
+		
 		return isBitEnabled(containerByte, bitOffset);
 	}
 	
@@ -339,11 +381,17 @@ public class ByteUtils {
 	 * @return Final byte array of the given size containing the given data and
 	 *         replacing with zeros the remaining space.
 	 * 
+	 * @throws IllegalArgumentException if {@code finalSize < 0}.
 	 * @throws NullPointerException if {@code data == null}.
 	 */
 	public static byte[] newByteArray(byte[] data, int finalSize) {
 		if (data == null)
 			throw new NullPointerException("Data cannot be null.");
+		if (finalSize < 0)
+			throw new IllegalArgumentException("Final size must be equal or greater than 0.");
+		
+		if (finalSize == 0)
+			return new byte[0];
 		
 		byte[] filledArray = new byte[finalSize];
 		int diff = finalSize - data.length;
@@ -362,8 +410,16 @@ public class ByteUtils {
 	 * @param source Byte array to swap.
 	 * 
 	 * @return The swapped byte array.
+	 * 
+	 * @throws NullPointerException if {@code source == null}.
 	 */
 	public static byte[] swapByteArray(byte[] source) {
+		if (source == null)
+			throw new NullPointerException("Source cannot be null.");
+		
+		if (source.length == 0)
+			return new byte[0];
+		
 		byte[] swapped = new byte[source.length];
 		for (int i = 0; i < source.length; i++)
 			swapped[source.length - i - 1] = source[i];

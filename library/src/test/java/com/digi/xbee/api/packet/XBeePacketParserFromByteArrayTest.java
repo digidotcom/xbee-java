@@ -100,7 +100,7 @@ public class XBeePacketParserFromByteArrayTest {
 	 * @throws InvalidPacketException 
 	 */
 	@Test
-	public final void testParsePacketNullInputStreamApiMode() throws InvalidPacketException {
+	public final void testParsePacketNullByteArrayApiMode() throws InvalidPacketException {
 		// Setup the resources for the test.
 		byte[] byteArray = null;
 		exception.expect(NullPointerException.class);
@@ -119,7 +119,7 @@ public class XBeePacketParserFromByteArrayTest {
 	 * @throws InvalidPacketException 
 	 */
 	@Test
-	public final void testParsePacketNullInputStreamApiEscapeMode() throws InvalidPacketException {
+	public final void testParsePacketNullByteArrayApiEscapeMode() throws InvalidPacketException {
 		// Setup the resources for the test.
 		byte[] byteArray = null;
 		exception.expect(NullPointerException.class);
@@ -138,7 +138,7 @@ public class XBeePacketParserFromByteArrayTest {
 	 * @throws InvalidPacketException 
 	 */
 	@Test
-	public final void testParsePacketNullInputStreamAtMode() throws InvalidPacketException {
+	public final void testParsePacketNullByteArrayAtMode() throws InvalidPacketException {
 		// Setup the resources for the test.
 		byte[] byteArray = null;
 		exception.expect(NullPointerException.class);
@@ -157,7 +157,7 @@ public class XBeePacketParserFromByteArrayTest {
 	 * @throws InvalidPacketException 
 	 */
 	@Test
-	public final void testParsePacketNullInputStreamUnknownMode() throws InvalidPacketException {
+	public final void testParsePacketNullByteArrayUnknownMode() throws InvalidPacketException {
 		// Setup the resources for the test.
 		byte[] byteArray = null;
 		exception.expect(NullPointerException.class);
@@ -176,7 +176,7 @@ public class XBeePacketParserFromByteArrayTest {
 	 * @throws InvalidPacketException 
 	 */
 	@Test
-	public final void testParsePacketNullInputStreamNullMode() throws InvalidPacketException {
+	public final void testParsePacketNullByteArrayNullMode() throws InvalidPacketException {
 		// Setup the resources for the test.
 		byte[] byteArray = null;
 		exception.expect(NullPointerException.class);
@@ -314,6 +314,46 @@ public class XBeePacketParserFromByteArrayTest {
 		byte[] byteArray = {0x7E, 0x7D, 0x33};
 		exception.expect(InvalidPacketException.class);
 		exception.expectMessage(is(equalTo("Error parsing packet: Incomplete packet.")));
+		
+		// Call the method under test that should throw a InvalidPacketException.
+		packetParser.parsePacket(byteArray, OperatingMode.API_ESCAPE);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * 
+	 * <p>An {@code InvalidPacketException} exception must be thrown when the 
+	 * frame to parse is not starting with the header byte.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketNotHeaderByteApiMode() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x68, 0x00, 0x08, 0x08, 0x01, 0x4E, 0x49, 0x41, 0x54, 0x49, (byte)0x81, (byte)0x7E};
+		exception.expect(InvalidPacketException.class);
+		exception.expectMessage(is(equalTo("Invalid start delimiter (expected 0x" 
+				+ HexUtils.byteToHexString((byte)SpecialByte.HEADER_BYTE.getValue()) + ").")));
+		
+		// Call the method under test that should throw a InvalidPacketException.
+		packetParser.parsePacket(byteArray, OperatingMode.API);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacketParser#parsePacket(byte[], OperatingMode)}.
+	 * 
+	 * <p>An {@code InvalidPacketException} exception must be thrown when the 
+	 * frame to parse is not starting with the header byte.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketNotHeaderByteApiEscapeMode() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x68, 0x00, 0x08, 0x08, 0x01, 0x4E, 0x49, 0x41, 0x54, 0x49, (byte)0x81, (byte)0x7E};
+		exception.expect(InvalidPacketException.class);
+		exception.expectMessage(is(equalTo("Invalid start delimiter (expected 0x" 
+				+ HexUtils.byteToHexString((byte)SpecialByte.HEADER_BYTE.getValue()) + ").")));
 		
 		// Call the method under test that should throw a InvalidPacketException.
 		packetParser.parsePacket(byteArray, OperatingMode.API_ESCAPE);

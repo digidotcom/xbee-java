@@ -13,6 +13,8 @@ package com.digi.xbee.api.io;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+
 import org.junit.Test;
 
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -313,5 +315,46 @@ public class IOSampleTest {
 		assertTrue(ioSample.hasPowerSupplyValue());
 			
 		assertEquals(POWER_SUPPLY_VALUE, ioSample.getPowerSupplyValue());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOSample#toString()}.
+	 * 
+	 * @throws OperationNotSupportedException 
+	 */
+	@Test
+	public void testToString() throws OperationNotSupportedException {
+		IOSample[] samples = new IOSample[] {new IOSample(IO_DATA_ONLY_DIGITAL), 
+				new IOSample(IO_DATA_ONLY_ANALOG), 
+				new IOSample(IO_DATA_MIXED)};
+		for (IOSample s:samples) {
+			String result = s.toString();
+			if(s.hasDigitalValues()) {
+				HashMap<IOLine, IOValue> map = s.getDigitalValues();
+				for (IOLine l: map.keySet()) {
+					String entry = "[" + l + ": " + map.get(l) + "]";
+					assertEquals("toString() method does not produce the expected output",
+							true, result.contains(entry));
+				}
+			}
+			
+			if(s.hasAnalogValues()) {
+				HashMap<IOLine, Integer> map = s.getAnalogValues();
+				for (IOLine l: map.keySet()) {
+					String entry = "[" + l + ": " + map.get(l) + "]";
+					assertEquals("toString() method does not produce the expected output",
+							true, result.contains(entry));
+				}
+			}
+			
+			if(s.hasPowerSupplyValue()) {
+				String entry = "[Power supply voltage: " + s.getPowerSupplyValue() + "]";
+				assertEquals("toString() method does not produce the expected output",
+						true, result.contains(entry));
+			}
+			
+			assertEquals("toString() method does not produce the expected output",
+					true, result.startsWith("{") & result.endsWith("}"));
+		}
 	}
 }

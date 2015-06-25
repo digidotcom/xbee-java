@@ -70,4 +70,14 @@ public class IOModeTest {
 	public void testNullIOModeIsRetrievedWithInvalidID() {
 		assertNull(IOMode.getIOMode(INVALID_ID));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOMode#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		for (IOMode ioMode:ioModes)
+			assertEquals("toString() method does not produce the expected output",
+					ioMode.getName(), ioMode.toString());
+	}
 }

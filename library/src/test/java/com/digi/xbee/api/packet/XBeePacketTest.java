@@ -660,6 +660,42 @@ public class XBeePacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <p>Test parse a null byte array a {@code NullPointerException} is expected.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketNullByteArray() throws InvalidPacketException {
+		// Setup the resources for the test.
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("Packet byte array cannot be null.")));
+		
+		// Call the method under test.
+		XBeePacket.parsePacket((byte[])null, OperatingMode.API);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <<p>An {@code InvalidPacketException} exception must be thrown when the 
+	 * frame to parse is not starting with the header byte.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketNotHeaderByte() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x68, 0x00, 0x08, 0x08, 0x01, 0x4E, 0x49, 0x41, 0x54, 0x49, (byte)0x81, (byte)0x7E};
+		exception.expect(InvalidPacketException.class);
+		exception.expectMessage(is(equalTo("Invalid start delimiter.")));
+		
+		// Call the method under test that should throw a InvalidPacketException.
+		XBeePacket.parsePacket(byteArray, OperatingMode.API);
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#equals(Object)}.
 	 * 
 	 * <p>Test the equals method with a {@code null} value.</p>

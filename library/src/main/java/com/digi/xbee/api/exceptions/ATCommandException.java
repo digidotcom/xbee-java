@@ -105,8 +105,17 @@ public class ATCommandException extends CommunicationException {
 	 */
 	@Override
 	public String getMessage() {
-		if (atCommandStatus != null)
-			return super.getMessage() + " > " + atCommandStatus.getDescription();
-		return super.getMessage();
+		String message = super.getMessage();
+		
+		if (message == null)
+			message = "";
+		
+		if (atCommandStatus != null) {
+			if (message.length() > 0)
+				message = message + " > ";
+			message = message + atCommandStatus.getDescription();
+		}
+		
+		return message;
 	}
 }

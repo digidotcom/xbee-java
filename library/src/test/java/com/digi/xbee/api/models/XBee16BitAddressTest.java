@@ -45,16 +45,30 @@ public class XBee16BitAddressTest {
 	 * Verify that XBee 16 Bit Address object cannot be created using invalid parameters.
 	 */
 	public void testCreateWithInvalidParameters() {
-		// Test with invalid HSB and LSB (lesser than 0).
+		// Test with invalid HSB (lesser than 0).
 		try {
-			new XBee16BitAddress(-1, -1);
+			new XBee16BitAddress(-1, 5);
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
-		// Test with invalid HSB and LSB (greater than 255).
+		// Test with invalid LSB (lesser than 0).
 		try {
-			new XBee16BitAddress(256, 256);
+			new XBee16BitAddress(5, -1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		// Test with invalid HSB (greater than 255).
+		try {
+			new XBee16BitAddress(256, 5);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		// Test with invalid LSB (greater than 255).
+		try {
+			new XBee16BitAddress(5, 256);
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
@@ -65,6 +79,13 @@ public class XBee16BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty byte array.
+		try {
+			new XBee16BitAddress(new byte[0]);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid byte array.
 		try {
@@ -79,6 +100,13 @@ public class XBee16BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty string.
+		try {
+			new XBee16BitAddress("");
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid string.
 		try {

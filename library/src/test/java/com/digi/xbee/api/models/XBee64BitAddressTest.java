@@ -50,9 +50,105 @@ public class XBee64BitAddressTest {
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
+		try {
+			new XBee64BitAddress(-1, 7, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, -1, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, -1, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, -1, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, -1, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, -1, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, -1, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, 1, -1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
 		// Test with invalid byte number values (greater than 255).
 		try {
 			new XBee64BitAddress(256, 256, 256, 256, 256, 256, 256, 256);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(256, 7, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 256, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 256, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 256, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 256, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 256, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, 256, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, 1, 256);
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
@@ -63,6 +159,13 @@ public class XBee64BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty byte array.
+		try {
+			new XBee64BitAddress(new byte[0]);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid byte array.
 		try {
@@ -77,6 +180,13 @@ public class XBee64BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty string.
+		try {
+			new XBee64BitAddress("");
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid string.
 		try {

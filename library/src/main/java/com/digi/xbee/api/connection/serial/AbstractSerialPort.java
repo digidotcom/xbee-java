@@ -77,6 +77,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param port COM port name to use.
 	 * @param parameters Serial port connection parameters.
 	 * 
+	 * @throws IllegalArgumentException if {@code port.length == 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 * 
@@ -97,6 +98,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param baudRate Serial connection baud rate, the rest of parameters will 
 	 *                 be set by default.
 	 * 
+	 * @throws IllegalArgumentException if {@code port.length == 0} or
+	 *                                  if {@code baudRate < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see #DEFAULT_DATA_BITS
@@ -121,7 +124,9 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 *        set by default.
 	 * @param receiveTimeout Receive timeout in milliseconds.
 	 * 
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * @throws IllegalArgumentException if {@code port.length == 0} or 
+	 *                                  if {@code baudRate < 0} or
+	 *                                  if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see DEFAULT_DATA_BITS
@@ -144,7 +149,8 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 * @param parameters Serial port connection parameters.
 	 * @param receiveTimeout Serial connection receive timeout in milliseconds.
 	 * 
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * @throws IllegalArgumentException if {@code port.length == 0} or 
+	 *                                  if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 *
@@ -155,13 +161,16 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 	 */
 	protected AbstractSerialPort(String port, SerialPortParameters parameters, int receiveTimeout) {
 		if (port == null)
-			throw new NullPointerException("Serial port cannot be null");
+			throw new NullPointerException("Serial port cannot be null.");
 
 		if (parameters == null)
-			throw new NullPointerException("SerialPortParameters cannot be null");
+			throw new NullPointerException("SerialPortParameters cannot be null.");
 
+		if (port.length() == 0)
+			throw new IllegalArgumentException("Serial port cannot be an empty string.");
+		
 		if (receiveTimeout < 0)
-			throw new IllegalArgumentException("Receive timeout cannot be less than 0");
+			throw new IllegalArgumentException("Receive timeout cannot be less than 0.");
 
 		this.port = port;
 		this.baudRate = parameters.baudrate;

@@ -679,7 +679,97 @@ public class XBeePacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
 	 * 
-	 * <<p>An {@code InvalidPacketException} exception must be thrown when the 
+	 * <p>Test parse an array with UNKNOWN operating mode an {@code IllegalArgumentException} is expected.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketByteArrayUnknownOperatingMode() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x7E, 0x00, 0x08, 0x08, 0x01, 0x4E, 0x49, 0x41, 0x54, 0x49, (byte)0x81, (byte)0x7E};
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Operating mode must be API or API Escaped.")));
+		
+		// Call the method under test.
+		XBeePacket.parsePacket(byteArray, OperatingMode.UNKNOWN);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <p>Test parse an array with AT operating mode an {@code IllegalArgumentException} is expected.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketByteArrayATOperatingMode() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x7E, 0x00, 0x08, 0x08, 0x01, 0x4E, 0x49, 0x41, 0x54, 0x49, (byte)0x81, (byte)0x7E};
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Operating mode must be API or API Escaped.")));
+		
+		// Call the method under test.
+		XBeePacket.parsePacket(byteArray, OperatingMode.AT);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <p>Test parse an empty byte array an {@code IllegalArgumentException} is expected.</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketEmptyByteArray() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = new byte[0];
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Packet length should be greater than 0.")));
+		
+		// Call the method under test.
+		XBeePacket.parsePacket(byteArray, OperatingMode.API);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <p>Test parse a string in API with invalid length (shorter).</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketOnlyOneByte() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x66};
+		exception.expect(InvalidPacketException.class);
+		exception.expectMessage(is(equalTo("Error parsing packet: Incomplete packet.")));
+		
+		// Call the method under test that should throw a InvalidPacketException.
+		XBeePacket.parsePacket(byteArray, OperatingMode.API);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <p>Test parse a string in API with invalid length (shorter).</p>
+	 * 
+	 * @throws InvalidPacketException 
+	 */
+	@Test
+	public final void testParsePacketOnlyTwoByte() throws InvalidPacketException {
+		// Setup the resources for the test.
+		byte[] byteArray = {0x7E, (byte)0xFF};
+		exception.expect(InvalidPacketException.class);
+		exception.expectMessage(is(equalTo("Error parsing packet: Incomplete packet.")));
+		
+		// Call the method under test that should throw a InvalidPacketException.
+		XBeePacket.parsePacket(byteArray, OperatingMode.API);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeePacket#parsePacket(byte[], com.digi.xbee.api.models.OperatingMode)}.
+	 * 
+	 * <p>An {@code InvalidPacketException} exception must be thrown when the 
 	 * frame to parse is not starting with the header byte.</p>
 	 * 
 	 * @throws InvalidPacketException 

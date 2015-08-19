@@ -13,8 +13,10 @@ package com.digi.xbee.api.packet.raw;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -387,7 +389,7 @@ public class TX16PacketTest {
 	 * <p>Test the get API parameters but with a {@code null} received data.</p>
 	 */
 	@Test
-	public final void testGetAPIDataReceivedDataNull() {
+	public final void testGetAPIDatadataNull() {
 		// Setup the resources for the test.
 		int frameID = 0x65;
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
@@ -414,7 +416,7 @@ public class TX16PacketTest {
 	 * <p>Test the get API parameters but with a not-{@code null} received data.</p>
 	 */
 	@Test
-	public final void testGetAPIDataReceivedDataNotNull() {
+	public final void testGetAPIDatadataNotNull() {
 		// Setup the resources for the test.
 		int frameID = 0x65;
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
@@ -442,7 +444,7 @@ public class TX16PacketTest {
 	 * <p>Test the get API parameters but with a {@code null} received data.</p>
 	 */
 	@Test
-	public final void testGetAPIPacketParametersReceivedDataNull() {
+	public final void testGetAPIPacketParametersdataNull() {
 		// Setup the resources for the test.
 		int frameID = 0x65;
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
@@ -469,7 +471,7 @@ public class TX16PacketTest {
 	 * <p>Test the get API parameters but with a non-{@code null} received data.</p>
 	 */
 	@Test
-	public final void testGetAPIPacketParametersReceivedDataNotNull() {
+	public final void testGetAPIPacketParametersdataNotNull() {
 		// Setup the resources for the test.
 		int frameID = 0x65;
 		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
@@ -492,7 +494,7 @@ public class TX16PacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#isBroadcast()}.
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#isBroadcast()}.
 	 * 
 	 * <p>Test if a TX 16 packet is a broadcast packet address when the 
 	 * destination address is not broadcast.</p>
@@ -512,7 +514,7 @@ public class TX16PacketTest {
 	
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#isBroadcast()}.
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#isBroadcast()}.
 	 * 
 	 * <p>Test if a TX 16 packet is a broadcast packet address when the 
 	 * destination address is broadcast.</p>
@@ -528,5 +530,119 @@ public class TX16PacketTest {
 		
 		// Call the method under test and verify the result.
 		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataNullData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 0x14; /* bit 2 */
+		byte[] data = null;
+		TX16Packet packet = new TX16Packet(frameID, dest16Addr, options, data);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataValidData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 0x14; /* bit 2 */
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TX16Packet packet = new TX16Packet(frameID, dest16Addr, options, data);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataNullData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 0x14; /* bit 2 */
+		byte[] origData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		byte[] data = null;
+		TX16Packet packet = new TX16Packet(frameID, dest16Addr, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataValidData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		TX16Packet packet = new TX16Packet(frameID, dest16Addr, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX16Packet#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataAndModifyOriginal() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		TX16Packet packet = new TX16Packet(frameID, dest16Addr, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		byte[] backup = Arrays.copyOf(data, data.length);
+		data[0] = 0x11;
+		data[1] = 0x12;
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same as the setted data", result, is(equalTo(backup)));
+		assertThat("RF Data must not be the current value of received data", result, is(not(equalTo(data))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(backup.hashCode()))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
 	}
 }

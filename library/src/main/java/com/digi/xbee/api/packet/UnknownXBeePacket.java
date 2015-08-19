@@ -115,7 +115,10 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 * @param rfData The new XBee RF Data.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData == null)
+			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/**
@@ -124,7 +127,9 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 * @return The RF Data.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

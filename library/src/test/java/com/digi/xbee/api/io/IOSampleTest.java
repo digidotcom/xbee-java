@@ -11,9 +11,17 @@
  */
 package com.digi.xbee.api.io;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -356,5 +364,65 @@ public class IOSampleTest {
 			assertEquals("toString() method does not produce the expected output",
 					true, result.startsWith("{") & result.endsWith("}"));
 		}
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOSample#getDigitalValues()}.
+	 * 
+	 * @throws OperationNotSupportedException 
+	 */
+	@Test
+	public void testGetDigitalValuesModify() {
+		// Setup the resources for the test.
+		IOSample ioSample = new IOSample(IO_DATA_MIXED);
+		
+		// Call the method under test.
+		HashMap<IOLine, IOValue> values = ioSample.getDigitalValues();
+		HashMap<IOLine, IOValue> backup = new IOSample(IO_DATA_MIXED).getDigitalValues();
+		
+		Iterator<IOLine> it = values.keySet().iterator();
+		
+		while (it.hasNext()) {
+			IOLine line = it.next();
+			
+			if (values.get(line) == IOValue.HIGH)
+				values.put(line, IOValue.LOW);
+		}
+		
+		HashMap<IOLine, IOValue> result = ioSample.getDigitalValues();
+		
+		// Verify the result.
+		assertThat(result, is(equalTo(backup)));
+		assertThat(result.hashCode(), is(equalTo(backup.hashCode())));
+		assertThat(result.hashCode(), is(not(equalTo(values.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOSample#getDigitalValues()}.
+	 * 
+	 * @throws OperationNotSupportedException 
+	 */
+	@Test
+	public void testGetAnalogValuesModify() {
+		// Setup the resources for the test.
+		IOSample ioSample = new IOSample(IO_DATA_MIXED);
+		
+		// Call the method under test.
+		HashMap<IOLine, Integer> values = ioSample.getAnalogValues();
+		HashMap<IOLine, Integer> backup = new IOSample(IO_DATA_MIXED).getAnalogValues();
+		
+		Iterator<IOLine> it = values.keySet().iterator();
+		
+		while (it.hasNext()) {
+			IOLine line = it.next();
+			values.put(line, values.get(line) + 10);
+		}
+		
+		HashMap<IOLine, Integer> result = ioSample.getAnalogValues();
+		
+		// Verify the result.
+		assertThat(result, is(equalTo(backup)));
+		assertThat(result.hashCode(), is(equalTo(backup.hashCode())));
+		assertThat(result.hashCode(), is(not(equalTo(values.hashCode()))));
 	}
 }

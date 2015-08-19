@@ -13,8 +13,10 @@ package com.digi.xbee.api.packet;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -27,7 +29,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.digi.xbee.api.models.XBee16BitAddress;
+import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.packet.GenericXBeePacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 public class GenericXBeePacketTest {
@@ -307,5 +312,104 @@ public class GenericXBeePacketTest {
 		
 		// Call the method under test and verify the result.
 		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataNullData() {
+		// Setup the resources for the test.
+		byte[] data = null;
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataValidData() {
+		// Setup the resources for the test.
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		GenericXBeePacket packet = new GenericXBeePacket(data);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataNullData() {
+		// Setup the resources for the test.
+		byte[] origData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		byte[] data = null;
+		GenericXBeePacket packet = new GenericXBeePacket(origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataValidData() {
+		// Setup the resources for the test.
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		GenericXBeePacket packet = new GenericXBeePacket(origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.GenericXBeePacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataAndModifyOriginal() {
+		// Setup the resources for the test.
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		GenericXBeePacket packet = new GenericXBeePacket(origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		byte[] backup = Arrays.copyOf(data, data.length);
+		data[0] = 0x11;
+		data[1] = 0x12;
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same as the setted data", result, is(equalTo(backup)));
+		assertThat("RF Data must not be the current value of received data", result, is(not(equalTo(data))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(backup.hashCode()))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
 	}
 }

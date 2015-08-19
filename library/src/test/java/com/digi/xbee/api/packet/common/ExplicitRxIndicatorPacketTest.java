@@ -13,8 +13,10 @@ package com.digi.xbee.api.packet.common;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -800,5 +802,209 @@ public class ExplicitRxIndicatorPacketTest {
 		assertThat("Profile ID is not the expected one", packetParams.get("Profile ID"), is(equalTo(expectedProfileID)));
 		assertThat("Receive options are not the expected one", packetParams.get("Receive options"), is(equalTo(expectedOptions)));
 		assertThat("RF Data is not the expected one", packetParams.get("RF data"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an Explicit Rx Indicator packet is a broadcast packet when 
+	 * broadcast options is not enabled.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithNonBroadcastOption() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x19;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#isBroadcast()}.
+	 * 
+	 * <p>Test if an Explicit Rx Indicator packet is a broadcast packet when 
+	 * broadcast is enabled in the options.</p>
+	 */
+	@Test
+	public final void testIsBroadcastWithBroadcastOptionEnabled() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x8A; /* bit 1 */
+		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, receivedData);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataNullData() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x06;
+		byte[] rfData = null;
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(rfData)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataInvalidData() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x06;
+		byte[] rfData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(rfData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(rfData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataValidData() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x06;
+		byte[] rfData = new byte[]{0x68, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11, 0x32};
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, rfData);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(rfData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(rfData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataNullData() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x06;
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] rfData = null;
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(rfData);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(rfData)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataValidData() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x06;
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] rfData = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(rfData);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(rfData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(rfData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataAndModifyOriginal() {
+		// Setup the resources for the test.
+		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		XBee16BitAddress source16Addr = new XBee16BitAddress("B45C");
+		int sourceEndpoint = 0xA0;
+		int destEndpoint = 0xA1;
+		int clusterID = 0x1554;
+		int profileID =  0xC105;
+		int options = 0x06;
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] rfData = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		ExplicitRxIndicatorPacket packet = new ExplicitRxIndicatorPacket(source64Addr, source16Addr, sourceEndpoint, destEndpoint, clusterID, profileID, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(rfData);
+		byte[] backup = Arrays.copyOf(rfData, rfData.length);
+		rfData[0] = 0x11;
+		rfData[1] = 0x12;
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same as the setted data", result, is(equalTo(backup)));
+		assertThat("RF Data must not be the current value of received data", result, is(not(equalTo(rfData))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(backup.hashCode()))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(rfData.hashCode()))));
 	}
 }

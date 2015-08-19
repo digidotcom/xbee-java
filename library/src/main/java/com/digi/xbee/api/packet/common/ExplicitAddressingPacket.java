@@ -392,7 +392,10 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData == null)
+			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/**
@@ -401,7 +404,9 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * @return RF Data to send.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

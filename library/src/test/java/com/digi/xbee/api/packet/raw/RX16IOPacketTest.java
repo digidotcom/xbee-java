@@ -15,6 +15,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -517,6 +518,40 @@ public class RX16IOPacketTest {
 		assertThat("Number of samples is not the expected", packetParams.get("Number of samples"), is(nullValue(String.class)));
 		assertThat("Digital channel mask is not the expected", packetParams.get("Digital channel mask"), is(nullValue(String.class)));
 		assertThat("Analog channel mask is not the expected", packetParams.get("Analog channel mask"), is(nullValue(String.class)));
+		assertThat("RF data is not the expected", packetParams.get("RF data"), is(nullValue(String.class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters but with invalid received data.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersInvalidReceivedData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 40;
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		String expectedSource16Addr = HexUtils.prettyHexString(source16Addr.getValue());
+		String expectedRSSI = HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1));
+		String expectedOptions = HexUtils.prettyHexString(Integer.toHexString(options));
+		String expectedRFData = HexUtils.prettyHexString(HexUtils.byteArrayToHexString(receivedData));
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
+		assertThat("Source 16-bit Address is not the expected one", packetParams.get("16-bit source address"), is(equalTo(expectedSource16Addr)));
+		assertThat("RSSI is not the expected", packetParams.get("RSSI"), is(equalTo(expectedRSSI)));
+		assertThat("Options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
+		assertThat("Number of samples is not the expected", packetParams.get("Number of samples"), is(nullValue(String.class)));
+		assertThat("Digital channel mask is not the expected", packetParams.get("Digital channel mask"), is(nullValue(String.class)));
+		assertThat("Analog channel mask is not the expected", packetParams.get("Analog channel mask"), is(nullValue(String.class)));
+		assertThat("RF data is not the expected", packetParams.get("RF data"), is(equalTo(expectedRFData)));
 	}
 	
 	/**
@@ -530,7 +565,7 @@ public class RX16IOPacketTest {
 		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
 		int rssi = 75;
 		int options = 40;
-		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x02, 0x0C, 0x00, (byte)0xFA, 0x04, (byte)0xE2};
 		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
 		
 		String expectedSource16Addr = HexUtils.prettyHexString(source16Addr.getValue());
@@ -538,13 +573,13 @@ public class RX16IOPacketTest {
 		String expectedOptions = HexUtils.prettyHexString(Integer.toHexString(options));
 		IOSample expectedIoSample = new IOSample(receivedData);
 		String expectedDigitalMask = HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getDigitalMask(), 2));
-		String expectedAnalogMask = HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getAnalogMask(), 1));
+		String expectedAnalogMask = HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getAnalogMask(), 2));
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
 		
 		// Verify the result.
-		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(15)));
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(24)));
 		assertThat("Source 16-bit Address is not the expected one", packetParams.get("16-bit source address"), is(equalTo(expectedSource16Addr)));
 		assertThat("RSSI is not the expected", packetParams.get("RSSI"), is(equalTo(expectedRSSI)));
 		assertThat("Options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
@@ -560,6 +595,8 @@ public class RX16IOPacketTest {
 			if (expectedIoSample.hasAnalogValue(IOLine.getDIO(i)))
 				assertThat(packetParams.get(IOLine.getDIO(i).getName() + " analog value"), 
 						is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getAnalogValue(IOLine.getDIO(i)), 2)))));
+		
+		assertThat("RF data is not the expected", packetParams.get("RF data"), is(nullValue(String.class)));
 	}
 	
 	/**
@@ -601,7 +638,7 @@ public class RX16IOPacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#isBroadcast()}.
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#isBroadcast()}.
 	 * 
 	 * <p>Test if a RX16 IO packet is a broadcast packet when broadcast (bit 2 
 	 * - PAN broadcast) is enabled in the options.</p>
@@ -617,5 +654,275 @@ public class RX16IOPacketTest {
 		
 		// Call the method under test and verify the result.
 		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataNullData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = null;
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(receivedData)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataInvalidData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(receivedData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataValidData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11, 0x32};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(receivedData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataNullData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = null;
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, origData);
+		
+		IOSample origSample = packet.getIOSample();
+		
+		// Call the method under test.
+		packet.setRFData(receivedData);
+		
+		byte[] result = packet.getRFData();
+		IOSample sample = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(receivedData)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+		
+		assertThat("IO sample must be null", sample, is(nullValue(IOSample.class)));
+		assertThat("IO sample orig must not be null", origSample, is(not(nullValue(IOSample.class))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataInvalidData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, origData);
+		
+		IOSample origSample = packet.getIOSample();
+		
+		// Call the method under test.
+		packet.setRFData(receivedData);
+		
+		byte[] result = packet.getRFData();
+		IOSample sample = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(receivedData.hashCode()))));
+		
+		assertThat("IO sample is not the expected", sample, is(nullValue(IOSample.class)));
+		assertThat("IO sample orig must not be null", origSample, is(not(nullValue(IOSample.class))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataValidData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, origData);
+		
+		IOSample origSample = packet.getIOSample();
+		
+		// Call the method under test.
+		packet.setRFData(receivedData);
+		
+		byte[] result = packet.getRFData();
+		IOSample sample = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(receivedData.hashCode()))));
+		
+		assertThat("IO sample is not the expected", sample.toString(), is(equalTo(new IOSample(receivedData).toString())));
+		assertThat("IO sample must not be equal to the original", sample.toString(), is(not(equalTo(origSample.toString()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataAndModifyOriginal() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, origData);
+		
+		IOSample origSample = packet.getIOSample();
+		
+		// Call the method under test.
+		packet.setRFData(receivedData);
+		byte[] backup = Arrays.copyOf(receivedData, receivedData.length);
+		receivedData[0] = 0x11;
+		receivedData[1] = 0x12;
+		
+		byte[] result = packet.getRFData();
+		IOSample sample = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same as the setted data", result, is(equalTo(backup)));
+		assertThat("RF Data must not be the current value of received data", result, is(not(equalTo(receivedData))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(backup.hashCode()))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(receivedData.hashCode()))));
+		
+		assertThat("IO sample is not the expected", sample.toString(), is(equalTo(new IOSample(backup).toString())));
+		assertThat("IO sample must not be equal to the original", sample.toString(), is(not(equalTo(origSample.toString()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getIOSample()}.
+	 */
+	@Test
+	public final void testGetIOSampleNullData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = null;
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		IOSample result = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("IO sample is not the expected", result, is(nullValue(IOSample.class)));
+		assertThat("RF data must be null", packet.getRFData(), is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getIOSample()}.
+	 */
+	@Test
+	public final void testGetIOSampleInvalidData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		IOSample result = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("IO sample is not the expected", result, is(nullValue(IOSample.class)));
+		assertThat("RF data is not the expected", packet.getRFData(), is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", packet.getRFData().hashCode(), is(not(equalTo(receivedData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getIOSample()}.
+	 */
+	@Test
+	public final void testGetIOSampleValidData() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		IOSample result = packet.getIOSample();
+		
+		// Verify the result.
+		assertThat("IO sample must not be null", result, is(not(nullValue(IOSample.class))));
+		assertThat("IO sample is not the expected", result.toString(), is(equalTo(new IOSample(receivedData).toString())));
+		assertThat("RF data is not the expected", packet.getRFData(), is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", packet.getRFData().hashCode(), is(not(equalTo(receivedData.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#getIOSample()}.
+	 */
+	@Test
+	public final void testGetIOSampleModify() {
+		// Setup the resources for the test.
+		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
+		int rssi = 75;
+		int options = 0x84; /* bit 2 */
+		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11};
+		RX16IOPacket packet = new RX16IOPacket(source16Addr, rssi, options, receivedData);
+		
+		// Call the method under test.
+		IOSample result = packet.getIOSample();
+		IOSample backup = new IOSample(receivedData);
+		
+		result.getAnalogValues().clear();
+		result.getDigitalValues().clear();
+		
+		// Verify the result.
+		assertThat("IO sample must not be null", result, is(not(nullValue(IOSample.class))));
+		assertThat("IO sample is not the expected", result.toString(), is(equalTo(backup.toString())));
+		assertThat("RF data is not the expected", packet.getRFData(), is(equalTo(receivedData)));
+		assertThat("RF Data must not be the same object", packet.getRFData().hashCode(), is(not(equalTo(receivedData.hashCode()))));
 	}
 }

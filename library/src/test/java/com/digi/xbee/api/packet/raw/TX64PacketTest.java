@@ -13,8 +13,10 @@ package com.digi.xbee.api.packet.raw;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -264,7 +266,7 @@ public class TX64PacketTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#TX16Packet(int, XBee64BitAddress, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#TX64Packet(int, XBee64BitAddress, int, byte[])}.
 	 * 
 	 * <p>Construct a new TX64 packet but with a negative frame ID. This 
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -528,5 +530,119 @@ public class TX64PacketTest {
 		
 		// Call the method under test and verify the result.
 		assertThat("Packet should be broadcast", packet.isBroadcast(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataNullData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int options = 0x14; /* bit 2 */
+		byte[] data = null;
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, data);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#getRFData())}.
+	 */
+	@Test
+	public final void testGetRFDataValidData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int options = 0x14; /* bit 2 */
+		byte[] data = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, data);
+		
+		// Call the method under test.
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataNullData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int options = 0x14; /* bit 2 */
+		byte[] origData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
+		byte[] data = null;
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must be null", result, is(nullValue(byte[].class)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataValidData() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same", result, is(equalTo(data)));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.raw.TX64Packet#setRFData(byte[])}.
+	 */
+	@Test
+	public final void testSetRFDataAndModifyOriginal() {
+		// Setup the resources for the test.
+		int frameID = 0x65;
+		XBee64BitAddress dest64Addr = new XBee64BitAddress("0013A2004032D9AB");
+		int options = 0x84; /* bit 2 */
+		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		TX64Packet packet = new TX64Packet(frameID, dest64Addr, options, origData);
+		
+		// Call the method under test.
+		packet.setRFData(data);
+		byte[] backup = Arrays.copyOf(data, data.length);
+		data[0] = 0x11;
+		data[1] = 0x12;
+		
+		byte[] result = packet.getRFData();
+		
+		// Verify the result.
+		assertThat("RF Data must be the same as the setted data", result, is(equalTo(backup)));
+		assertThat("RF Data must not be the current value of received data", result, is(not(equalTo(data))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(backup.hashCode()))));
+		assertThat("RF Data must not be the same object", result.hashCode(), is(not(equalTo(data.hashCode()))));
 	}
 }

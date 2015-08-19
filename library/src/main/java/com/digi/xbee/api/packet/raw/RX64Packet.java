@@ -214,7 +214,10 @@ public class RX64Packet extends XBeeAPIPacket {
 	 * @param rfData Received RF data.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData == null)
+			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/**
@@ -223,7 +226,9 @@ public class RX64Packet extends XBeeAPIPacket {
 	 * @return Received RF data.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

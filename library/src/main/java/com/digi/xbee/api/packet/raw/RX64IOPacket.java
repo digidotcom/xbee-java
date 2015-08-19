@@ -43,7 +43,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	// Variables.
 	private final XBee64BitAddress sourceAddress64;
 	
-	private final IOSample ioSample;
+	private IOSample ioSample;
 	
 	private final int rssi;
 	private final int receiveOptions;
@@ -231,7 +231,16 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * @param rfData Received RF data.
 	 */
 	public void setRFData(byte[] rfData){
-		this.rfData = rfData;
+		if (rfData == null)
+			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
+		
+		// Modify the ioSample accordingly.
+		if (rfData != null && rfData.length >= 5)
+			ioSample = new IOSample(this.rfData);
+		else
+			ioSample = null;
 	}
 	
 	/**
@@ -240,7 +249,9 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * @return Received RF data.
 	 */
 	public byte[] getRFData(){
-		return rfData;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

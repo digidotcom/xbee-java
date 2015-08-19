@@ -88,12 +88,30 @@ public class XBeeChecksumTest {
 	 * Test method for {@link com.digi.xbee.api.packet.XBeeChecksum#add(byte[])}.
 	 */
 	@Test
+	public final void testAddNullArray() {
+		// Setup the resources for the test.
+		XBeeChecksum c = new XBeeChecksum();
+		byte[] array = null;
+		int added = 5;
+		int expectedResult = 255 - added;
+		c.add(added);
+		
+		// Call the method under test.
+		c.add(array);
+		
+		// Verify the result.
+		assertThat("Returned result is not the expected one", c.generate(), is(equalTo(expectedResult)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeeChecksum#add(byte[])}.
+	 */
+	@Test
 	public final void testAddArrayOnce() {
 		// Setup the resources for the test.
 		XBeeChecksum c = new XBeeChecksum();
 		byte[] array = new byte[] {2, 6, 1};
 		int expectedResult = 246;
-		
 		
 		// Call the method under test.
 		c.add(array);
@@ -112,7 +130,6 @@ public class XBeeChecksumTest {
 		byte[] array1 = new byte[] {2, 6, 1};
 		byte[] array2 = new byte[] {5, 3};
 		int expectedResult = 238;
-		
 		
 		// Call the method under test.
 		c.add(array1);

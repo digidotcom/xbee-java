@@ -150,7 +150,7 @@ public final class XBee64BitAddress {
 			throw new IllegalArgumentException("B3 must be between 0 and 255.");
 		if (b5 > 255 || b5 < 0)
 			throw new IllegalArgumentException("B4 must be between 0 and 255.");
-		if (b5 > 255 || b5 < 0)
+		if (b4 > 255 || b4 < 0)
 			throw new IllegalArgumentException("B5 must be between 0 and 255.");
 		if (b6 > 255 || b6 < 0)
 			throw new IllegalArgumentException("B6 must be between 0 and 255.");

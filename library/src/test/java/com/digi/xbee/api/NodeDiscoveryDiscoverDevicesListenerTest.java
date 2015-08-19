@@ -268,6 +268,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 		String error = "Error adding device '0013A20040A6A0DB - Ni string' to the network.";
 		
 		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(0)));
+		assertThat("There must be discovery errors", listener.getErrors().size(), is(equalTo(1)));
 		assertThat("The discovery error should be " + error, listener.getErrors().get(0), is(equalTo(error)));
 	}
 	
@@ -349,7 +350,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 			Thread.sleep(30);
 		}
 		
-		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
 		
@@ -417,7 +418,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 			Thread.sleep(30);
 		}
 		
-		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
 		
@@ -484,7 +485,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 			Thread.sleep(30);
 		}
 		
-		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), 
+		assertThat("The discovered devices list must have a size of " + (ndAnswers.size() -1), listener.getDiscoveredDevices().size(), 
 				is(equalTo(ndAnswers.size() - 1 /* Remove the end packet */)));
 		
 		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
@@ -550,7 +551,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 			Thread.sleep(30);
 		}
 		
-		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		RemoteXBeeDevice remoteDevice = listener.getDiscoveredDevices().get(0);
 		
@@ -621,7 +622,7 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 			Thread.sleep(30);
 		}
 		
-		assertThat("The discovered devices list should be empty", listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), listener.getDiscoveredDevices().size(), is(equalTo(ndAnswers.size())));
 		
 		List<RemoteXBeeDevice> list = listener.getDiscoveredDevices();
 		

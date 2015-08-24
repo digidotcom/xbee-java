@@ -609,6 +609,11 @@ public class NodeDiscoveryDiscoverDevicesListenerTest {
 				addr16[1], macs[1], nIds[1], parentAddr[1], (byte)0x01 /* router */, (byte)0x67, false);
 		ndAnswers.add(packet);
 		
+		// Give more time to avoid the test fails.
+		long m = System.currentTimeMillis();
+		PowerMockito.when(deviceMock.getParameter("NT")).thenReturn(ByteUtils.longToByteArray(TIMEOUT*2 / 100));
+		System.out.println(System.currentTimeMillis() - m);
+		
 		DiscoveryListener listener = new DiscoveryListener();
 		listeners.add(listener);
 		

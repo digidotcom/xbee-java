@@ -13,8 +13,6 @@ package com.digi.xbee.api.models;
 
 import java.util.HashMap;
 
-import com.digi.xbee.api.utils.HexUtils;
-
 /**
  * Enumerates the different hardware versions of the XBee devices.
  */
@@ -67,7 +65,9 @@ public enum HardwareVersionEnum {
 	XB900HP_NZ(0x2C, "XB900HP (New Zealand): XB9 NZ HW/SW"),
 	XBP24C_TH_DIP(0x2D, "XBP24C (TH-DIP): XBee PRO DIP"),
 	XB24C_TH_DIP(0x2E, "XB24C (TH-DIP): XBee DIP"),
-	XLR_BASEBOARD(0x2F, "XLR Baseboard");
+	XLR_BASEBOARD(0x2F, "XLR Baseboard"),
+	XBP24C_S2C_SMT(0x30, "XBee PRO SMT"),
+	XTEND_GEN3(0x31, "XTend Gen 3");
 	
 	// Variables
 	private final int value;
@@ -132,6 +132,6 @@ public enum HardwareVersionEnum {
 	 */
 	@Override
 	public String toString() {
-		return HexUtils.byteToHexString((byte)value) + ": " + description;
+		return String.format("0x%02X: %s", value, description);
 	}
 }

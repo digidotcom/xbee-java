@@ -16,8 +16,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.digi.xbee.api.utils.HexUtils;
-
 public class ModemStatusEventTest {
 
 	// Variables.
@@ -88,6 +86,6 @@ public class ModemStatusEventTest {
 	@Test
 	public void testModemStatusEventToString() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
-			assertEquals(HexUtils.byteToHexString((byte)modemStatusEvent.getID()) + ": " + modemStatusEvent.getDescription(), modemStatusEvent.toString());
+			assertEquals(String.format("0x%02X: %s", modemStatusEvent.getId(), modemStatusEvent.getDescription()), modemStatusEvent.toString());
 	}
 }

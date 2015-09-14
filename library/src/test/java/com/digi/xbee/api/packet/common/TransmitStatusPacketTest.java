@@ -199,6 +199,81 @@ public class TransmitStatusPacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid API Transmit Status packet with the provided options and unknown delivery status.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadUnknownDeliveryStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TRANSMIT_STATUS.getValue();
+		int frameID = 0xE7;
+		XBee16BitAddress address = new XBee16BitAddress("B45C");
+		int retryCount = 3;
+		int deliveryStatus = 255;
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getId();
+		
+		byte[] payload = new byte[7];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(address.getValue(), 0, payload, 2, address.getValue().length);
+		payload[4] = (byte)retryCount;
+		payload[5] = (byte)deliveryStatus;
+		payload[6] = (byte)discoveryStatus;
+		
+		// Call the method under test.
+		TransmitStatusPacket packet = TransmitStatusPacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(address)));
+		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
+		assertThat("Returned delivery status id is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getId())));
+		assertThat("Returned delivery status description is not the expected one", packet.getTransmitStatus().getDescription(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getDescription())));
+		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus(), is(equalTo(XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#createPacket(byte[])}.
+	 * 
+	 * <p>A valid API Transmit Status packet with the provided options and unknown discovery status.</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadUnknownDiscoveryStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TRANSMIT_STATUS.getValue();
+		int frameID = 0xE7;
+		XBee16BitAddress address = new XBee16BitAddress("B45C");
+		int retryCount = 3;
+		int deliveryStatus = XBeeTransmitStatus.BROADCAST_FAILED.getId();;
+		int discoveryStatus = 255;
+		
+		byte[] payload = new byte[7];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(address.getValue(), 0, payload, 2, address.getValue().length);
+		payload[4] = (byte)retryCount;
+		payload[5] = (byte)deliveryStatus;
+		payload[6] = (byte)discoveryStatus;
+		
+		// Call the method under test.
+		TransmitStatusPacket packet = TransmitStatusPacket.createPacket(payload);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(address)));
+		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
+		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus(), is(equalTo(XBeeTransmitStatus.BROADCAST_FAILED)));
+		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus(), is(equalTo(XBeeDiscoveryStatus.DISCOVERY_STATUS_UNKNOWN)));
+		
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
 	 * 
 	 * <p>Construct a new Transmit Status packet but with a {@code null} 16-bit 
@@ -382,6 +457,64 @@ public class TransmitStatusPacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet with valid parameters but an unknown delivery status.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketValidWithUnknownDeliveryStatus() {
+		// Setup the resources for the test.
+		int frameID = 85;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 2;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.get(255);
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 2 /* 16-bit address */ + 1 /* retry count */ + 1 /* delivery status */ + 1 /* discovery status */;
+		
+		// Call the method under test.
+		TransmitStatusPacket packet = new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
+		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus(), is(equalTo(transmitStatus)));
+		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus(), is(equalTo(XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD)));
+		assertThat("Transmit status packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#TransmitStatusPacket(int, XBee16BitAddress, int, XBeeTransmitStatus, XBeeDiscoveryStatus)}.
+	 * 
+	 * <p>Construct a new Transmit Status packet with valid parameters but an unknown discovery status.</p>
+	 */
+	@Test
+	public final void testCreateTransmitStatusPacketValidWithUnknownDiscoveryStatus() {
+		// Setup the resources for the test.
+		int frameID = 85;
+		XBee16BitAddress dest16Addr = new XBee16BitAddress("D817");
+		int retryCount = 2;
+		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.ADDRESS_NOT_FOUND;
+		XBeeDiscoveryStatus discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_UNKNOWN;
+		
+		int expectedLength = 1 /* Frame type */ + 1 /* Frame ID */ + 2 /* 16-bit address */ + 1 /* retry count */ + 1 /* delivery status */ + 1 /* discovery status */;
+		
+		// Call the method under test.
+		TransmitStatusPacket packet = new TransmitStatusPacket(frameID, dest16Addr, retryCount, transmitStatus, discoveryStatus);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
+		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus(), is(equalTo(transmitStatus)));
+		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus(), is(equalTo(XBeeDiscoveryStatus.DISCOVERY_STATUS_UNKNOWN)));
+		assertThat("Transmit status packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIData()}.
 	 * 
 	 * <p>Test the get API parameters.</p>
@@ -412,6 +545,76 @@ public class TransmitStatusPacketTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters with unknown delivery status.</p>
+	 */
+	@Test
+	public final void testGetAPIDataUnknownTransmitStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TRANSMIT_STATUS.getValue();
+		int frameID = 0xE7;
+		XBee16BitAddress address = new XBee16BitAddress("B45C");
+		int retryCount = 3;
+		int deliveryStatus = 255;
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getId();
+		
+		byte[] payload = new byte[7];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(address.getValue(), 0, payload, 2, address.getValue().length);
+		payload[4] = (byte)retryCount;
+		payload[5] = (byte)deliveryStatus;
+		payload[6] = (byte)discoveryStatus;
+		
+		TransmitStatusPacket packet = TransmitStatusPacket.createPacket(payload);
+		
+		byte[] expectedData = new byte[payload.length - 1]; /* Do not include the type */
+		System.arraycopy(payload, 1, expectedData, 0, expectedData.length);
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIData()}.
+	 * 
+	 * <p>Test the get API parameters with unknown discovery status.</p>
+	 */
+	@Test
+	public final void testGetAPIDataUnknownDiscoveryStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TRANSMIT_STATUS.getValue();
+		int frameID = 0xE7;
+		XBee16BitAddress address = new XBee16BitAddress("B45C");
+		int retryCount = 3;
+		int deliveryStatus = XBeeTransmitStatus.NO_ACK.getId();
+		int discoveryStatus = 255;
+		
+		byte[] payload = new byte[7];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(address.getValue(), 0, payload, 2, address.getValue().length);
+		payload[4] = (byte)retryCount;
+		payload[5] = (byte)deliveryStatus;
+		payload[6] = (byte)discoveryStatus;
+		
+		TransmitStatusPacket packet = TransmitStatusPacket.createPacket(payload);
+		
+		byte[] expectedData = new byte[payload.length - 1]; /* Do not include the type */
+		System.arraycopy(payload, 1, expectedData, 0, expectedData.length);
+		
+		// Call the method under test.
+		byte[] apiData = packet.getAPIData();
+		
+		// Verify the result.
+		assertThat("API data is not the expected", apiData, is(equalTo(expectedData)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIPacketParameters()}.
 	 * 
 	 * <p>Test the get API parameters.</p>
@@ -430,6 +633,88 @@ public class TransmitStatusPacketTest {
 		String expectedRetryCount = HexUtils.prettyHexString(Integer.toHexString(retryCount)) + " (" + retryCount + ")";
 		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getID())) + " (" + transmitStatus.getDescription() + ")";
 		String expectedDiscoveryStatus = HexUtils.prettyHexString(Integer.toHexString(discoveryStatus.getID())) + " (" + discoveryStatus.getDescription() + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
+		assertThat("Destination 16-bit Address is not the expected one", packetParams.get("16-bit dest. address"), is(equalTo(expectedDest16Addr)));
+		assertThat("Retry count is not the expected", packetParams.get("Tx. retry count"), is(equalTo(expectedRetryCount)));
+		assertThat("Delivery status is not the expected", packetParams.get("Delivery status"), is(equalTo(expectedTransmitStatus)));
+		assertThat("Discovery status not the expected", packetParams.get("Discovery status"), is(equalTo(expectedDiscoveryStatus)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters with unknown transmit status.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersWithUnknownTransmitStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TRANSMIT_STATUS.getValue();
+		int frameID = 0xE7;
+		XBee16BitAddress address = new XBee16BitAddress("B45C");
+		int retryCount = 3;
+		int deliveryStatus = 255;
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_ADDRESS_DISCOVERY.getId();
+		
+		byte[] payload = new byte[7];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(address.getValue(), 0, payload, 2, address.getValue().length);
+		payload[4] = (byte)retryCount;
+		payload[5] = (byte)deliveryStatus;
+		payload[6] = (byte)discoveryStatus;
+		
+		TransmitStatusPacket packet = TransmitStatusPacket.createPacket(payload);
+		
+		String expectedDest16Addr = HexUtils.prettyHexString(address.getValue());
+		String expectedRetryCount = HexUtils.prettyHexString(Integer.toHexString(retryCount)) + " (" + retryCount + ")";
+		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(deliveryStatus).toUpperCase()) + " (" + XBeeTransmitStatus.UNKNOWN.getDescription() + ")";
+		String expectedDiscoveryStatus = HexUtils.prettyHexString(Integer.toHexString(discoveryStatus).toUpperCase()) + " (" + XBeeDiscoveryStatus.DISCOVERY_STATUS_ADDRESS_DISCOVERY.getDescription() + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
+		assertThat("Destination 16-bit Address is not the expected one", packetParams.get("16-bit dest. address"), is(equalTo(expectedDest16Addr)));
+		assertThat("Retry count is not the expected", packetParams.get("Tx. retry count"), is(equalTo(expectedRetryCount)));
+		assertThat("Delivery status is not the expected", packetParams.get("Delivery status"), is(equalTo(expectedTransmitStatus)));
+		assertThat("Discovery status not the expected", packetParams.get("Discovery status"), is(equalTo(expectedDiscoveryStatus)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.TransmitStatusPacket#getAPIPacketParameters()}.
+	 * 
+	 * <p>Test the get API parameters with unknown discovery status.</p>
+	 */
+	@Test
+	public final void testGetAPIPacketParametersWithUnknownDiscoveryStatus() {
+		// Setup the resources for the test.
+		int frameType = APIFrameType.TRANSMIT_STATUS.getValue();
+		int frameID = 0xE7;
+		XBee16BitAddress address = new XBee16BitAddress("B45C");
+		int retryCount = 3;
+		int deliveryStatus = XBeeTransmitStatus.NO_ACK.getId();
+		int discoveryStatus = 255;
+		
+		byte[] payload = new byte[7];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(address.getValue(), 0, payload, 2, address.getValue().length);
+		payload[4] = (byte)retryCount;
+		payload[5] = (byte)deliveryStatus;
+		payload[6] = (byte)discoveryStatus;
+		
+		TransmitStatusPacket packet = TransmitStatusPacket.createPacket(payload);
+		
+		String expectedDest16Addr = HexUtils.prettyHexString(address.getValue());
+		String expectedRetryCount = HexUtils.prettyHexString(Integer.toHexString(retryCount)) + " (" + retryCount + ")";
+		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(deliveryStatus).toUpperCase()) + " (" + XBeeTransmitStatus.NO_ACK.getDescription() + ")";
+		String expectedDiscoveryStatus = HexUtils.prettyHexString(Integer.toHexString(discoveryStatus).toUpperCase()) + " (" + XBeeDiscoveryStatus.DISCOVERY_STATUS_UNKNOWN.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();

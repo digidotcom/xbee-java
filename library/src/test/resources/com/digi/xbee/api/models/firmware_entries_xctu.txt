@@ -65,30 +65,42 @@
 17 ; 10E8 ; 802.15.4
 17 ; 10EC ; 802.15.4
 17 ; 10ED ; 802.15.4
+17 ; 10EE ; 802.15.4
+17 ; 10EF ; 802.15.4
 17 ; 11E6 ; 802.15.4
 17 ; 11E8 ; 802.15.4
 17 ; 11EC ; 802.15.4
 17 ; 11ED ; 802.15.4
+17 ; 11EE ; 802.15.4
+17 ; 11EF ; 802.15.4
 17 ; 12E6 ; 802.15.4
 17 ; 13E6 ; 802.15.4
 17 ; 13E8 ; 802.15.4
 17 ; 13EC ; 802.15.4
 17 ; 13ED ; 802.15.4
+17 ; 13EE ; 802.15.4
+17 ; 13EF ; 802.15.4
 17 ; 14E6 ; 802.15.4
 17 ; 14E8 ; 802.15.4
 17 ; 14EC ; 802.15.4
 17 ; 14ED ; 802.15.4
+17 ; 14EE ; 802.15.4
+17 ; 14EF ; 802.15.4
 17 ; 15CF ; 802.15.4
 17 ; 16CF ; 802.15.4
 17 ; 16E6 ; 802.15.4
 17 ; 16E8 ; 802.15.4
 17 ; 16EC ; 802.15.4
 17 ; 16ED ; 802.15.4
+17 ; 16EE ; 802.15.4
+17 ; 16EF ; 802.15.4
 17 ; 17CF ; 802.15.4
 17 ; 17E6 ; 802.15.4
 17 ; 17E8 ; 802.15.4
 17 ; 17EC ; 802.15.4
 17 ; 17ED ; 802.15.4
+17 ; 17EE ; 802.15.4
+17 ; 17EF ; 802.15.4
 17 ; 8003 ; DigiMesh
 17 ; 804B ; DigiMesh
 17 ; 8062 ; DigiMesh
@@ -96,41 +108,48 @@
 17 ; 8065 ; DigiMesh
 17 ; 8067 ; DigiMesh
 17 ; 8070 ; DigiMesh
+17 ; 8073 ; DigiMesh
 17 ; 814B ; DigiMesh
 17 ; 8162 ; DigiMesh
 17 ; 8164 ; DigiMesh
 17 ; 8165 ; DigiMesh
 17 ; 8167 ; DigiMesh
 17 ; 8170 ; DigiMesh
+17 ; 8173 ; DigiMesh
 17 ; 834B ; DigiMesh
 17 ; 8362 ; DigiMesh
 17 ; 8364 ; DigiMesh
 17 ; 8365 ; DigiMesh
 17 ; 8367 ; DigiMesh
 17 ; 8370 ; DigiMesh
+17 ; 8373 ; DigiMesh
 17 ; 844B ; DigiMesh
 17 ; 8462 ; DigiMesh
 17 ; 8464 ; DigiMesh
 17 ; 8465 ; DigiMesh
 17 ; 8467 ; DigiMesh
 17 ; 8470 ; DigiMesh
+17 ; 8473 ; DigiMesh
 17 ; 864B ; DigiMesh
 17 ; 8662 ; DigiMesh
 17 ; 8664 ; DigiMesh
 17 ; 8665 ; DigiMesh
 17 ; 8667 ; DigiMesh
 17 ; 8670 ; DigiMesh
+17 ; 8673 ; DigiMesh
 17 ; 874B ; DigiMesh
 17 ; 8762 ; DigiMesh
 17 ; 8764 ; DigiMesh
 17 ; 8765 ; DigiMesh
 17 ; 8767 ; DigiMesh
 17 ; 8770 ; DigiMesh
+17 ; 8773 ; DigiMesh
 17 ; 8862 ; DigiMesh
 17 ; 8864 ; DigiMesh
 17 ; 8865 ; DigiMesh
 17 ; 8867 ; DigiMesh
 17 ; 8870 ; DigiMesh
+17 ; 8873 ; DigiMesh
 18 ; 1081 ; 802.15.4
 18 ; 1083 ; 802.15.4
 18 ; 1084 ; 802.15.4
@@ -143,30 +162,42 @@
 18 ; 10E8 ; 802.15.4
 18 ; 10EC ; 802.15.4
 18 ; 10ED ; 802.15.4
+18 ; 10EE ; 802.15.4
+18 ; 10EF ; 802.15.4
 18 ; 11E6 ; 802.15.4
 18 ; 11E8 ; 802.15.4
 18 ; 11EC ; 802.15.4
 18 ; 11ED ; 802.15.4
+18 ; 11EE ; 802.15.4
+18 ; 11EF ; 802.15.4
 18 ; 12E6 ; 802.15.4
 18 ; 13E6 ; 802.15.4
 18 ; 13E8 ; 802.15.4
 18 ; 13EC ; 802.15.4
 18 ; 13ED ; 802.15.4
+18 ; 13EE ; 802.15.4
+18 ; 13EF ; 802.15.4
 18 ; 14E6 ; 802.15.4
 18 ; 14E8 ; 802.15.4
 18 ; 14EC ; 802.15.4
 18 ; 14ED ; 802.15.4
+18 ; 14EE ; 802.15.4
+18 ; 14EF ; 802.15.4
 18 ; 15CF ; 802.15.4
 18 ; 16CF ; 802.15.4
 18 ; 16E6 ; 802.15.4
 18 ; 16E8 ; 802.15.4
 18 ; 16EC ; 802.15.4
 18 ; 16ED ; 802.15.4
+18 ; 16EE ; 802.15.4
+18 ; 16EF ; 802.15.4
 18 ; 17CF ; 802.15.4
 18 ; 17E6 ; 802.15.4
 18 ; 17E8 ; 802.15.4
 18 ; 17EC ; 802.15.4
 18 ; 17ED ; 802.15.4
+18 ; 17EE ; 802.15.4
+18 ; 17EF ; 802.15.4
 18 ; 8003 ; DigiMesh
 18 ; 804B ; DigiMesh
 18 ; 8062 ; DigiMesh
@@ -174,41 +205,48 @@
 18 ; 8065 ; DigiMesh
 18 ; 8067 ; DigiMesh
 18 ; 8070 ; DigiMesh
+18 ; 8073 ; DigiMesh
 18 ; 814B ; DigiMesh
 18 ; 8162 ; DigiMesh
 18 ; 8164 ; DigiMesh
 18 ; 8165 ; DigiMesh
 18 ; 8167 ; DigiMesh
 18 ; 8170 ; DigiMesh
+18 ; 8173 ; DigiMesh
 18 ; 834B ; DigiMesh
 18 ; 8362 ; DigiMesh
 18 ; 8364 ; DigiMesh
 18 ; 8365 ; DigiMesh
 18 ; 8367 ; DigiMesh
 18 ; 8370 ; DigiMesh
+18 ; 8373 ; DigiMesh
 18 ; 844B ; DigiMesh
 18 ; 8462 ; DigiMesh
 18 ; 8464 ; DigiMesh
 18 ; 8465 ; DigiMesh
 18 ; 8467 ; DigiMesh
 18 ; 8470 ; DigiMesh
+18 ; 8473 ; DigiMesh
 18 ; 864B ; DigiMesh
 18 ; 8662 ; DigiMesh
 18 ; 8664 ; DigiMesh
 18 ; 8665 ; DigiMesh
 18 ; 8667 ; DigiMesh
 18 ; 8670 ; DigiMesh
+18 ; 8673 ; DigiMesh
 18 ; 874B ; DigiMesh
 18 ; 8762 ; DigiMesh
 18 ; 8764 ; DigiMesh
 18 ; 8765 ; DigiMesh
 18 ; 8767 ; DigiMesh
 18 ; 8770 ; DigiMesh
+18 ; 8773 ; DigiMesh
 18 ; 8862 ; DigiMesh
 18 ; 8864 ; DigiMesh
 18 ; 8865 ; DigiMesh
 18 ; 8867 ; DigiMesh
 18 ; 8870 ; DigiMesh
+18 ; 8873 ; DigiMesh
 19 ; 1020 ; ZigBee
 19 ; 1041 ; ZNet 2.5
 19 ; 1047 ; ZNet 2.5
@@ -450,14 +488,17 @@
 1D ; 1661 ; Point-to-multipoint
 1D ; 1727 ; Point-to-multipoint
 1D ; 1761 ; Point-to-multipoint
+1E ; 3119 ; Smart Energy
 1E ; 3123 ; Smart Energy
 1E ; 3128 ; Smart Energy
 1E ; 3130 ; Smart Energy
 1E ; 3132 ; Smart Energy
+1E ; 3319 ; Smart Energy
 1E ; 3323 ; Smart Energy
 1E ; 3328 ; Smart Energy
 1E ; 3330 ; Smart Energy
 1E ; 3332 ; Smart Energy
+1E ; 3919 ; Smart Energy
 1E ; 3423 ; Smart Energy
 1E ; 3923 ; Smart Energy
 1E ; 3928 ; Smart Energy
@@ -504,6 +545,8 @@
 21 ; 4023 ; ZigBee
 21 ; 4041 ; ZigBee
 21 ; 4043 ; ZigBee
+21 ; 4053 ; ZigBee
+21 ; 4055 ; ZigBee
 21 ; 5122 ; Smart Energy
 21 ; 5132 ; Smart Energy
 22 ; 401E ; ZigBee
@@ -511,6 +554,8 @@
 22 ; 4023 ; ZigBee
 22 ; 4041 ; ZigBee
 22 ; 4043 ; ZigBee
+22 ; 4053 ; ZigBee
+22 ; 4055 ; ZigBee
 22 ; 5122 ; Smart Energy
 22 ; 5132 ; Smart Energy
 23 ; 1067 ; Point-to-multipoint
@@ -543,9 +588,17 @@
 23 ; 3309 ; XSC
 24 ; 1059 ; Point-to-multipoint
 24 ; 1072 ; Point-to-multipoint
+24 ; 1074 ; Point-to-multipoint
 24 ; 8059 ; DigiMesh
 24 ; 8072 ; DigiMesh
+24 ; 8074 ; DigiMesh
 27 ; 2004 ; Wi-Fi
 27 ; 2021 ; Wi-Fi
+27 ; 2023 ; Wi-Fi
+27 ; 2024 ; Wi-Fi
 28 ; 2004 ; Wi-Fi
 28 ; 2021 ; Wi-Fi
+28 ; 2023 ; Wi-Fi
+28 ; 2024 ; Wi-Fi
+2B ; 1003 ; XLR
+2B ; 1006 ; XLR

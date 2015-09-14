@@ -34,7 +34,8 @@ public class HexUtils {
 	 */
 	public static String byteArrayToHexString(byte[] value) {
 		if (value == null )
-			throw new NullPointerException("Value to convert cannot be null");
+			throw new NullPointerException("Value to convert cannot be null.");
+		
 		final StringBuilder hex = new StringBuilder(2 * value.length );
 		for (final byte b : value) {
 			hex.append(HEXES.charAt((b & 0xF0) >> 4))
@@ -118,18 +119,15 @@ public class HexUtils {
 	 * @param minBytes The minimum number of bytes to be represented.
 	 * 
 	 * @return The integer value as hexadecimal string.
+	 * 
+	 * @throws IllegalArgumentException if {@code minBytes <= 0}.
 	 */
 	public static String integerToHexString(int value, int minBytes) {
-		byte[] intAsByteArray = ByteUtils.intToByteArray(value);
-		StringBuilder intAsHexString = new StringBuilder();
-		boolean numberFound = false;
-		for (int i = 0; i < intAsByteArray.length; i++) {
-			if (intAsByteArray[i] == 0x00 && !numberFound && intAsByteArray.length - i > minBytes)
-				continue;
-			intAsHexString.append(HexUtils.byteArrayToHexString(new byte[] {(byte)(intAsByteArray[i] & 0xFF)}));
-			numberFound = true;
-		}
-		return intAsHexString.toString();
+		if (minBytes <= 0)
+			throw new IllegalArgumentException("Minimum number of bytes must be greater than 0.");
+		
+		String f = String.format("%%0%dX", minBytes*2);
+		return String.format(f, value);
 	}
 	
 	/**
@@ -148,10 +146,16 @@ public class HexUtils {
 		if (hexString == null)
 			throw new NullPointerException("Hexadecimal string cannot be null.");
 		
+		String copy = hexString.toUpperCase();
 		StringBuilder prettyHexString = new StringBuilder();
-		if (hexString.length() % 2 != 0)
-			hexString = "0" + hexString;
-		int iterations = hexString.length() / 2;
+		for (final char c : copy.toCharArray()) {
+			if (!HEXES.contains(""+c))
+				throw new IllegalArgumentException("Given string cannot contain non-hexadecimal characters.");
+		}
+		
+		if (copy.length() % 2 != 0)
+			copy = "0" + copy;
+		int iterations = copy.length() / 2;
 		for (int i = 0; i < iterations; i++)
 			prettyHexString.append(hexString.substring(2 * i, 2 * i + 2) + " ");
 		return prettyHexString.toString().trim();

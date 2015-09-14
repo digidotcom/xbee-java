@@ -40,9 +40,10 @@ Contributing code
 -----------------
 1. Fork the [XBee Java Library](http://github.com/digidotcom/XBeeJavaLibrary) 
 repository ([how to fork a repo](https://help.github.com/articles/fork-a-repo/)).
-2. Make your changes following the code style used in the library.
-3. Add the corresponding unit tests for the new code.
-4. Make sure all tests pass.
-5. Submit a pull request ([how to create a pull request](https://help.github.com/articles/fork-a-repo/#next-steps)).
+2. Create a branch for your contribution. Use a name that defines the purpose of the additions/modifications. 
+3. Make your changes following the code style used in the library.
+4. Add the corresponding unit tests for the new code.
+5. Make sure all tests pass.
+6. Submit a pull request ([how to create a pull request](https://help.github.com/articles/fork-a-repo/#next-steps)).
 A project developer will review your work and then merge your request into the
 project, or come back to you with comments and/or questions.

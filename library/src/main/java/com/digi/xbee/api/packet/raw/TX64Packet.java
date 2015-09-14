@@ -200,10 +200,10 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
-		if (rfData != null)
-			this.rfData = rfData.clone();
-		else
+		if (rfData == null)
 			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/**
@@ -212,9 +212,9 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @return RF data to send.
 	 */
 	public byte[] getRFData() {
-		if (rfData != null)
-			return rfData.clone();
-		return null;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

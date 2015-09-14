@@ -71,9 +71,7 @@ public class HardwareVersion {
 	 * 
 	 * @param value Numeric value of the {@code HardwareVersion} retrieve.
 	 * 
-	 * @return The {@code HardwareVersion} associated to the given value, 
-	 *         {@code null} if there is not any {@code HardwareVersion} with 
-	 *         that value.
+	 * @return The {@code HardwareVersion} associated to the given value.
 	 */
 	public static HardwareVersion get(int value) {
 		HardwareVersionEnum hvEnum = HardwareVersionEnum.get(value);
@@ -90,8 +88,7 @@ public class HardwareVersion {
 	 * @param description Description of the {@code HardwareVersion} retrieve.
 	 * 
 	 * @return The {@code HardwareVersion} associated to the given value and 
-	 *         description, {@code null} if there is not any 
-	 *         {@code HardwareVersion} associated to those values.
+	 *         description.
 	 * 
 	 * @throws IllegalArgumentException if {@code value < 0} or
 	 *                                  if {@code description.length() < 1}.

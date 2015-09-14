@@ -103,8 +103,17 @@ public class TransmitException extends CommunicationException {
 	 */
 	@Override
 	public String getMessage() {
-		if (transmitStatus != null)
-			return super.getMessage() + " > " + transmitStatus.getDescription();
-		return super.getMessage();
+		String message = super.getMessage();
+		
+		if (message == null)
+			message = "";
+		
+		if (transmitStatus != null) {
+			if (message.length() > 0)
+				message = message + " > ";
+			message = message + transmitStatus.toString();
+		}
+		
+		return message;
 	}
 }

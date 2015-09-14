@@ -345,7 +345,7 @@ public class IOSample {
 	 * @see IOValue
 	 */
 	public HashMap<IOLine, IOValue> getDigitalValues() {
-		return digitalValuesMap;
+		return (HashMap<IOLine, IOValue>) digitalValuesMap.clone();
 	}
 	
 	/**
@@ -447,7 +447,7 @@ public class IOSample {
 	 * @see IOLine
 	 */
 	public HashMap<IOLine, Integer> getAnalogValues() {
-		return analogValuesMap;
+		return (HashMap<IOLine, Integer>) analogValuesMap.clone();
 	}
 	
 	/**

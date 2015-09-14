@@ -11,7 +11,13 @@
  */
 package com.digi.xbee.api.models;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -39,16 +45,30 @@ public class XBee16BitAddressTest {
 	 * Verify that XBee 16 Bit Address object cannot be created using invalid parameters.
 	 */
 	public void testCreateWithInvalidParameters() {
-		// Test with invalid HSB and LSB (lesser than 0).
+		// Test with invalid HSB (lesser than 0).
 		try {
-			new XBee16BitAddress(-1, -1);
+			new XBee16BitAddress(-1, 5);
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
-		// Test with invalid HSB and LSB (greater than 255).
+		// Test with invalid LSB (lesser than 0).
 		try {
-			new XBee16BitAddress(256, 256);
+			new XBee16BitAddress(5, -1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		// Test with invalid HSB (greater than 255).
+		try {
+			new XBee16BitAddress(256, 5);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		// Test with invalid LSB (greater than 255).
+		try {
+			new XBee16BitAddress(5, 256);
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
@@ -59,6 +79,13 @@ public class XBee16BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty byte array.
+		try {
+			new XBee16BitAddress(new byte[0]);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid byte array.
 		try {
@@ -73,6 +100,13 @@ public class XBee16BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty string.
+		try {
+			new XBee16BitAddress("");
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid string.
 		try {
@@ -201,5 +235,188 @@ public class XBee16BitAddressTest {
 		assertEquals(INCOMPLETE_LSB, address.getLsb());
 		assertArrayEquals(INCOMPLETE_EXPECTED_BYTE_ARRAY, address.getValue());
 		assertEquals(INCOMPLETE_EXPECTED_STRING, address.toString());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#equals(Object)}.
+	 * 
+	 * <p>Test the equals method with a {@code null} value.</p>
+	 */
+	@Test
+	public final void testEqualsWithNull() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr = new XBee16BitAddress("0x1234");
+		
+		// Call the method under test.
+		boolean areEqual = addr.equals(null);
+		
+		// Verify the result.
+		assertThat("16-bit address cannot be equal to null", areEqual, is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#equals(Object)}.
+	 * 
+	 * <p>Test the equals method with a non {@code XBee16BitAddress} value.</p>
+	 */
+	@Test
+	public final void testEqualsWithNonXBeePacket() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr = new XBee16BitAddress("0x1234");
+		
+		// Call the method under test.
+		boolean areEqual = addr.equals(new Object());
+		
+		// Verify the result.
+		assertThat("16-bit address cannot be equal to an Object", areEqual, is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.models.XBee16BitAddress(Object)}.
+	 * 
+	 * <p>Test the equals method with different {@code XBee16BitAddress}.</p>
+	 */
+	@Test
+	public final void testEqualsWithDifferentXBeePacket() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr1 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr2 = new XBee16BitAddress("0x5678");
+		
+		// Call the method under test.
+		boolean areEqual1 = addr1.equals(addr2);
+		boolean areEqual2 = addr2.equals(addr1);
+		
+		// Verify the result.
+		assertThat("16-bit addr1 must be different from 16-bit addr2", areEqual1, is(equalTo(false)));
+		assertThat("16-bit addr2 must be different from 16-bit addr1", areEqual2, is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#equals(Object)}.
+	 * 
+	 * <p>Test the equals method with equal {@code XBee16BitAddress}.</p>
+	 */
+	@Test
+	public final void testEqualsIsSymetric() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr1 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr2 = new XBee16BitAddress("0x1234");
+		
+		// Call the method under test.
+		boolean areEqual1 = addr1.equals(addr2);
+		boolean areEqual2 = addr2.equals(addr1);
+		
+		// Verify the result.
+		assertThat("16-bit addr1 must be equal to 16-bit addr2", areEqual1, is(equalTo(true)));
+		assertThat("16-bit addr2 must be equal to 16-bit addr1", areEqual2, is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#equals(Object)}.
+	 */
+	@Test
+	public final void testEqualsIsReflexive() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr = new XBee16BitAddress("0x1234");
+		
+		// Call the method under test.
+		boolean areEqual = addr.equals(addr);
+		
+		// Verify the result.
+		assertThat("16-bits addr must be equal to itself", areEqual, is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#equals(Object)}.
+	 */
+	@Test
+	public final void testEqualsIsTransitive() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr1 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr2 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr3 = new XBee16BitAddress("0x1234");
+		
+		// Call the method under test.
+		boolean areEqual1 = addr1.equals(addr2);
+		boolean areEqual2 = addr2.equals(addr3);
+		boolean areEqual3 = addr1.equals(addr3);
+		
+		// Verify the result.
+		assertThat("16-bits addr1 must be equal to 16-bits addr2", areEqual1, is(equalTo(true)));
+		assertThat("16-bits addr2 must be equal to 16-bits addr3", areEqual2, is(equalTo(true)));
+		assertThat("16-bits addr1 must be equal to 16-bits addr3", areEqual3, is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#equals(Object)}.
+	 */
+	@Test
+	public final void testEqualsIsConsistent() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr1 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr2 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr3 = new XBee16BitAddress("0x5678");
+		
+		// Verify the result.
+		assertThat("Consistent test fail addr1,addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("Consistent test fail addr1,addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("Consistent test fail addr1,addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("Consistent test fail addr3,addr1", addr3.equals(addr1), is(equalTo(false)));
+		assertThat("Consistent test fail addr3,addr1", addr3.equals(addr1), is(equalTo(false)));
+		assertThat("Consistent test fail addr3,addr1", addr3.equals(addr1), is(equalTo(false)));
+
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#hashCode()}.
+	 */
+	@Test
+	public final void testHashCodeWithEqualPackets() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr1 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr2 = new XBee16BitAddress("0x1234");
+		
+		// Call the method under test.
+		int hashAddr1 = addr1.hashCode();
+		int hashAddr2 = addr2.hashCode();
+		
+		// Verify the result.
+		assertThat("16-bit addr1 must be equal to 16-bit addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("16-bit addr2 must be equal to 16-bit addr1", addr2.equals(addr1), is(equalTo(true)));
+		assertThat("Hash codes must be equal", hashAddr1, is(equalTo(hashAddr2)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#hashCode()}.
+	 */
+	@Test
+	public final void testHashCodeWithDifferentPackets() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr1 = new XBee16BitAddress("0x1234");
+		XBee16BitAddress addr2 = new XBee16BitAddress("0x5678");
+		
+		// Call the method under test.
+		int hashAddr1 = addr1.hashCode();
+		int hashAddr2 = addr2.hashCode();
+		
+		// Verify the result.
+		assertThat("16-bit addr1 must be different from 16-bit addr2", addr1.equals(addr2), is(equalTo(false)));
+		assertThat("16-bit addr2 must be different from to 16-bit addr1", addr2.equals(addr1), is(equalTo(false)));
+		assertThat("Hash codes must be different", hashAddr1, is(not(equalTo(hashAddr2))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee16BitAddress#hashCode()}.
+	 */
+	@Test
+	public final void testHashCodeIsConsistent() {
+		// Setup the resources for the test.
+		XBee16BitAddress addr = new XBee16BitAddress("0x1234");
+		
+		int initialHashCode = addr.hashCode();
+		
+		// Verify the result.
+		assertThat("Consistent hashcode test fails", addr.hashCode(), is(equalTo(initialHashCode)));
+		assertThat("Consistent hashcode test fails", addr.hashCode(), is(equalTo(initialHashCode)));
 	}
 }

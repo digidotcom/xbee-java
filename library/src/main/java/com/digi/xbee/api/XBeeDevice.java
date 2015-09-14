@@ -911,9 +911,10 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending explicit data asynchronously to {} [{} - {} - {} - {}] >> {}.", address, HexUtils.integerToHexString(sourceEndpoint, 1), 
-				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.integerToHexString(clusterID, 2), 
-				HexUtils.integerToHexString(profileID, 2), HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending explicit data asynchronously to {} [{} - {} - {} - {}] >> {}.", address, 
+				String.format("%02X", sourceEndpoint), String.format("%02X", destEndpoint), 
+				String.format("%04X", clusterID), String.format("%04X", profileID), 
+				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
@@ -984,8 +985,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
 		logger.debug(toString() + "Sending explicit data asynchronously to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, 
-				HexUtils.integerToHexString(sourceEndpoint, 1), HexUtils.integerToHexString(destEndpoint, 1), 
-				HexUtils.integerToHexString(clusterID, 2), HexUtils.integerToHexString(profileID, 2), 
+				String.format("%02X", sourceEndpoint), String.format("%02X", destEndpoint), 
+				String.format("%04X", clusterID), String.format("%04X", profileID), 
 				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
@@ -1108,9 +1109,10 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		if (isRemote())
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
-		logger.debug(toString() + "Sending explicit data to {} [{} - {} - {} - {}] >> {}.", address, HexUtils.integerToHexString(sourceEndpoint, 1), 
-				HexUtils.integerToHexString(destEndpoint, 1), HexUtils.integerToHexString(clusterID, 2), 
-				HexUtils.integerToHexString(profileID, 2), HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending explicit data to {} [{} - {} - {} - {}] >> {}.", address, 
+				String.format("%02X", sourceEndpoint), String.format("%02X", destEndpoint), 
+				String.format("%04X", clusterID), String.format("%04X", profileID), 
+				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address, XBee16BitAddress.UNKNOWN_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
 		sendAndCheckXBeePacket(xbeePacket, false);
@@ -1184,8 +1186,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			throw new OperationNotSupportedException("Cannot send explicit data to a remote device from a remote device.");
 		
 		logger.debug(toString() + "Sending explicit data to {}[{}] [{} - {} - {} - {}] >> {}.", address64Bit, address16Bit, 
-				HexUtils.integerToHexString(sourceEndpoint, 1), HexUtils.integerToHexString(destEndpoint, 1), 
-				HexUtils.integerToHexString(clusterID, 2), HexUtils.integerToHexString(profileID, 2), 
+				String.format("%02X", sourceEndpoint), String.format("%02X", destEndpoint), 
+				String.format("%04X", clusterID), String.format("%04X", profileID), 
 				HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.NONE, data);
@@ -1291,6 +1293,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			byte[] data) throws TimeoutException, XBeeException {
 		if (getXBeeProtocol() == XBeeProtocol.RAW_802_15_4)
 			throw new OperationNotSupportedException("802.15.4. protocol does not support explicit data transmissions.");
+		
 		sendExplicitData(XBee64BitAddress.BROADCAST_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, data);
 	}
 	

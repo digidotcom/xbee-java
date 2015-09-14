@@ -84,4 +84,14 @@ public class IOLineTest {
 			}
 		}
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOLine#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		for (IOLine ioLine: ioLines)
+			assertEquals("toString() method does not produce the expected output",
+					ioLine.getName(), ioLine.toString());
+	}
 }

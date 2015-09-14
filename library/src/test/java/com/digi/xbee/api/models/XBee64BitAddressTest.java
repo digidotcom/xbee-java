@@ -11,7 +11,13 @@
  */
 package com.digi.xbee.api.models;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -44,9 +50,105 @@ public class XBee64BitAddressTest {
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
+		try {
+			new XBee64BitAddress(-1, 7, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, -1, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, -1, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, -1, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, -1, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, -1, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, -1, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, 1, -1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
 		// Test with invalid byte number values (greater than 255).
 		try {
 			new XBee64BitAddress(256, 256, 256, 256, 256, 256, 256, 256);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(256, 7, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 256, 6, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 256, 5, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 256, 4, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 256, 3, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 256, 2, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, 256, 1);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
+		}
+		try {
+			new XBee64BitAddress(7, 6, 5, 4, 3, 2, 1, 256);
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), IllegalArgumentException.class);
@@ -57,6 +159,13 @@ public class XBee64BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty byte array.
+		try {
+			new XBee64BitAddress(new byte[0]);
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid byte array.
 		try {
@@ -71,6 +180,13 @@ public class XBee64BitAddressTest {
 			fail("Object should not have been created.");
 		} catch (Exception e) {
 			assertEquals(e.getClass(), NullPointerException.class);
+		}
+		// Test with empty string.
+		try {
+			new XBee64BitAddress("");
+			fail("Object should not have been created.");
+		} catch (Exception e) {
+			assertEquals(e.getClass(), IllegalArgumentException.class);
 		}
 		// Test with invalid string.
 		try {
@@ -189,5 +305,188 @@ public class XBee64BitAddressTest {
 		assertArrayEquals(INCOMPLETE_EXPECTED_BYTE_ARRAY, address.getValue());
 		assertEquals(INCOMPLETE_EXPECTED_STRING, address.toString());
 		assertEquals(EXPECTED_DEVICE_ID, address.generateDeviceID());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#equals(Object)}.
+	 * 
+	 * <p>Test the equals method with a {@code null} value.</p>
+	 */
+	@Test
+	public final void testEqualsWithNull() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr = new XBee64BitAddress("0x0013A20040123456");
+		
+		// Call the method under test.
+		boolean areEqual = addr.equals(null);
+		
+		// Verify the result.
+		assertThat("64-bit address cannot be equal to null", areEqual, is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#equals(Object)}.
+	 * 
+	 * <p>Test the equals method with a non {@code XBee64BitAddress} value.</p>
+	 */
+	@Test
+	public final void testEqualsWithNonXBeePacket() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr = new XBee64BitAddress("0x0013A20040123456");
+		
+		// Call the method under test.
+		boolean areEqual = addr.equals(new Object());
+		
+		// Verify the result.
+		assertThat("64-bit address cannot be equal to an Object", areEqual, is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.models.XBee64BitAddress(Object)}.
+	 * 
+	 * <p>Test the equals method with different {@code XBee64BitAddress}.</p>
+	 */
+	@Test
+	public final void testEqualsWithDifferentXBeePacket() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr1 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr2 = new XBee64BitAddress("0x0013A20040789012");
+		
+		// Call the method under test.
+		boolean areEqual1 = addr1.equals(addr2);
+		boolean areEqual2 = addr2.equals(addr1);
+		
+		// Verify the result.
+		assertThat("64-bit addr1 must be different from 64-bit addr2", areEqual1, is(equalTo(false)));
+		assertThat("64-bit addr2 must be different from 64-bit addr1", areEqual2, is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#equals(Object)}.
+	 * 
+	 * <p>Test the equals method with equal {@code XBee64BitAddress}.</p>
+	 */
+	@Test
+	public final void testEqualsIsSymetric() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr1 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr2 = new XBee64BitAddress("0x0013A20040123456");
+		
+		// Call the method under test.
+		boolean areEqual1 = addr1.equals(addr2);
+		boolean areEqual2 = addr2.equals(addr1);
+		
+		// Verify the result.
+		assertThat("64-bit addr1 must be equal to 64-bit addr2", areEqual1, is(equalTo(true)));
+		assertThat("64-bit addr2 must be equal to 64-bit addr1", areEqual2, is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#equals(Object)}.
+	 */
+	@Test
+	public final void testEqualsIsReflexive() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr = new XBee64BitAddress("0x0013A20040123456");
+		
+		// Call the method under test.
+		boolean areEqual = addr.equals(addr);
+		
+		// Verify the result.
+		assertThat("64-bits addr must be equal to itself", areEqual, is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#equals(Object)}.
+	 */
+	@Test
+	public final void testEqualsIsTransitive() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr1 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr2 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr3 = new XBee64BitAddress("0x0013A20040123456");
+		
+		// Call the method under test.
+		boolean areEqual1 = addr1.equals(addr2);
+		boolean areEqual2 = addr2.equals(addr3);
+		boolean areEqual3 = addr1.equals(addr3);
+		
+		// Verify the result.
+		assertThat("64-bits addr1 must be equal to 64-bits addr2", areEqual1, is(equalTo(true)));
+		assertThat("64-bits addr2 must be equal to 64-bits addr3", areEqual2, is(equalTo(true)));
+		assertThat("64-bits addr1 must be equal to 64-bits addr3", areEqual3, is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#equals(Object)}.
+	 */
+	@Test
+	public final void testEqualsIsConsistent() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr1 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr2 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr3 = new XBee64BitAddress("0x0013A20040789012");
+		
+		// Verify the result.
+		assertThat("Consistent test fail addr1,addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("Consistent test fail addr1,addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("Consistent test fail addr1,addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("Consistent test fail addr3,addr1", addr3.equals(addr1), is(equalTo(false)));
+		assertThat("Consistent test fail addr3,addr1", addr3.equals(addr1), is(equalTo(false)));
+		assertThat("Consistent test fail addr3,addr1", addr3.equals(addr1), is(equalTo(false)));
+
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#hashCode()}.
+	 */
+	@Test
+	public final void testHashCodeWithEqualPackets() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr1 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr2 = new XBee64BitAddress("0x0013A20040123456");
+		
+		// Call the method under test.
+		int hashAddr1 = addr1.hashCode();
+		int hashAddr2 = addr2.hashCode();
+		
+		// Verify the result.
+		assertThat("64-bit addr1 must be equal to 64-bit addr2", addr1.equals(addr2), is(equalTo(true)));
+		assertThat("64-bit addr2 must be equal to 64-bit addr1", addr2.equals(addr1), is(equalTo(true)));
+		assertThat("Hash codes must be equal", hashAddr1, is(equalTo(hashAddr2)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#hashCode()}.
+	 */
+	@Test
+	public final void testHashCodeWithDifferentPackets() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr1 = new XBee64BitAddress("0x0013A20040123456");
+		XBee64BitAddress addr2 = new XBee64BitAddress("0x0013A20040789012");
+		
+		// Call the method under test.
+		int hashAddr1 = addr1.hashCode();
+		int hashAddr2 = addr2.hashCode();
+		
+		// Verify the result.
+		assertThat("64-bit addr1 must be different from 64-bit addr2", addr1.equals(addr2), is(equalTo(false)));
+		assertThat("64-bit addr2 must be different from to 64-bit addr1", addr2.equals(addr1), is(equalTo(false)));
+		assertThat("Hash codes must be different", hashAddr1, is(not(equalTo(hashAddr2))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBee64BitAddress#hashCode()}.
+	 */
+	@Test
+	public final void testHashCodeIsConsistent() {
+		// Setup the resources for the test.
+		XBee64BitAddress addr = new XBee64BitAddress("0x0013A20040123456");
+		
+		int initialHashCode = addr.hashCode();
+		
+		// Verify the result.
+		assertThat("Consistent hashcode test fails", addr.hashCode(), is(equalTo(initialHashCode)));
+		assertThat("Consistent hashcode test fails", addr.hashCode(), is(equalTo(initialHashCode)));
 	}
 }

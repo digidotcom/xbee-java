@@ -259,7 +259,7 @@ public class ByteUtils {
 		if (bitPosition < 0 || bitPosition > 31)
 			throw new IllegalArgumentException("Bit position must be between 0 and 31.");
 		
-		return (((containerInteger & 0xFFFFFFFF) >> bitPosition) & 0x01) == 0x01;
+		return ((containerInteger >> bitPosition) & 0x01) == 0x01;
 	}
 	
 	/**

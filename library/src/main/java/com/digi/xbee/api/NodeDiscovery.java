@@ -287,7 +287,8 @@ class NodeDiscovery {
 				if (!discovering)
 					return;
 				RemoteXBeeDevice rdevice = null;
-				
+				if (!(receivedPacket instanceof XBeeAPIPacket))
+					return;
 				byte[] commandValue = getRemoteDeviceData((XBeeAPIPacket)receivedPacket);
 				
 				rdevice = parseDiscoveryAPIData(commandValue, xbeeDevice);

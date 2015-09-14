@@ -142,7 +142,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.sourceAddress16 = sourceAddress16;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData;
+		this.rfData = rfData.clone();
 		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
 		else

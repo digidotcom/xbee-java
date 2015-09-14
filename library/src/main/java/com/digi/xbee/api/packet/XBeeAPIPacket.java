@@ -122,7 +122,9 @@ public abstract class XBeeAPIPacket extends XBeePacket {
 		data.write(frameTypeValue);
 		
 		byte[] apiData = getAPIData();
-		if (apiData.length > 0) {
+		if (apiData == null)
+			apiData = new byte[0];
+		if (apiData != null && apiData.length > 0) {
 			try {
 				data.write(apiData);
 			} catch (IOException e) {

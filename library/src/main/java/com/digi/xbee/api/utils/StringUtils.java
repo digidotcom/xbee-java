@@ -63,6 +63,8 @@ public class StringUtils {
 	 * @see #byteArrayToString(byte[], int, int)
 	 */
 	public static String byteArrayToString(byte[] byteArray) {
+		if (byteArray == null)
+			throw new NullPointerException("Byte array cannot be null.");
 		return byteArrayToString(byteArray, 0, byteArray.length);
 	}
 	
@@ -83,7 +85,7 @@ public class StringUtils {
 	 */
 	public static String byteArrayToString(byte[] byteArray, int offset, int numBytes) {
 		if (byteArray == null)
-			throw new NullPointerException("Value cannot be null.");
+			throw new NullPointerException("Byte array cannot be null.");
 		
 		String value;
 		try {

@@ -147,17 +147,17 @@ public class HexUtils {
 			throw new NullPointerException("Hexadecimal string cannot be null.");
 		
 		String copy = hexString.toUpperCase();
-		StringBuilder prettyHexString = new StringBuilder();
 		for (final char c : copy.toCharArray()) {
 			if (!HEXES.contains(""+c))
 				throw new IllegalArgumentException("Given string cannot contain non-hexadecimal characters.");
 		}
 		
+		StringBuilder prettyHexString = new StringBuilder();
 		if (copy.length() % 2 != 0)
 			copy = "0" + copy;
 		int iterations = copy.length() / 2;
 		for (int i = 0; i < iterations; i++)
-			prettyHexString.append(hexString.substring(2 * i, 2 * i + 2) + " ");
+			prettyHexString.append(copy.substring(2 * i, 2 * i + 2) + " ");
 		return prettyHexString.toString().trim();
 	}
 	

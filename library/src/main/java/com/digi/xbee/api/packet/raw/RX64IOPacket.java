@@ -134,13 +134,11 @@ public class RX64IOPacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		if (rfData != null) {
+		this.rfData = rfData;
 		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
-		} else {
-			this.rfData = null;
+		else
 			ioSample = null;
-		}
 		this.logger = LoggerFactory.getLogger(RX64Packet.class);
 	}
 	

@@ -583,7 +583,7 @@ public class ByteUtilsTest {
 		exception.expectMessage(is(equalTo("Value cannot be null.")));
 		
 		// Call the method under test.
-		ByteUtils.stringToByteArray(s);
+		StringUtils.stringToByteArray(s);
 	}
 	
 	/**
@@ -595,7 +595,7 @@ public class ByteUtilsTest {
 		String s = "";
 		
 		// Call the method under test.
-		byte[] result = ByteUtils.stringToByteArray(s);
+		byte[] result = StringUtils.stringToByteArray(s);
 		
 		// Verify the result.
 		assertThat("Returned byte array must be empty", result.length, is(equalTo(0)));
@@ -611,7 +611,7 @@ public class ByteUtilsTest {
 		byte[] expectedResult =  new byte[]{'H', 'e', 'l', 'l', 'o'};
 		
 		// Call the method under test.
-		byte[] result = ByteUtils.stringToByteArray(s);
+		byte[] result = StringUtils.stringToByteArray(s);
 		
 		// Verify the result.
 		assertThat("Returned byte array must be equal to 'expectedResult'", result, is(equalTo(expectedResult)));
@@ -629,7 +629,7 @@ public class ByteUtilsTest {
 		exception.expectMessage(is(equalTo("Byte array cannot be null.")));
 		
 		// Call the method under test.
-		ByteUtils.byteArrayToString(byteArray);
+		StringUtils.byteArrayToString(byteArray);
 	}
 	
 	/**
@@ -642,7 +642,7 @@ public class ByteUtilsTest {
 		String expectedResult = "";
 		
 		// Call the method under test.
-		String result = ByteUtils.byteArrayToString(byteArray);
+		String result = StringUtils.byteArrayToString(byteArray);
 		
 		// Verify the result.
 		assertThat("Returned string must be equal to 'expectedResult'", result, is(equalTo(expectedResult)));
@@ -658,7 +658,7 @@ public class ByteUtilsTest {
 		String expectedResult = "Hello";
 		
 		// Call the method under test.
-		String result = ByteUtils.byteArrayToString(byteArray);
+		String result = StringUtils.byteArrayToString(byteArray);
 		
 		// Verify the result.
 		assertThat("Returned string must be equal to 'expectedResult'", result, is(equalTo(expectedResult)));
@@ -674,7 +674,7 @@ public class ByteUtilsTest {
 		String s = "Hello";
 		
 		// Call the method under test.
-		String result = ByteUtils.byteArrayToString(ByteUtils.stringToByteArray(s));
+		String result = StringUtils.byteArrayToString(StringUtils.stringToByteArray(s));
 		
 		// Verify the result.
 		assertThat("Returned string must be equal to initial string", result, is(equalTo(s)));

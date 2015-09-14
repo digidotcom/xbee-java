@@ -118,7 +118,7 @@ public enum XBeeTransmitStatus {
 	 */
 	@Override
 	public String toString() {
-		if (id != SUCCESS.getId())
+		if (id != SUCCESS.getID())
 			return String.format("Error: %s (0x%02X)", description, id);
 		else
 			return String.format("%s (0x%02X)", description, id);

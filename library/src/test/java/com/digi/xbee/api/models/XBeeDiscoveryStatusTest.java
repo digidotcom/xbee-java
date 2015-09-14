@@ -63,13 +63,13 @@ public class XBeeDiscoveryStatusTest {
 	public void testGetWithASupportedValue() {
 		// Setup the resources for the test.
 		XBeeDiscoveryStatus expectedStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_EXTENDED_TIMEOUT_DISCOVERY;
-		int id = expectedStatus.getId();
+		int id = expectedStatus.getID();
 		
 		// Call the method under test.
 		XBeeDiscoveryStatus status = XBeeDiscoveryStatus.get(id);
 		
 		// Verify the result.
-		assertThat("The identifier of both status does not have the same value", status.getId(), is(equalTo(id)));
+		assertThat("The identifier of both status does not have the same value", status.getID(), is(equalTo(id)));
 		assertThat("Transmit status is not the expected", status, is(equalTo(expectedStatus)));
 	}
 	
@@ -86,7 +86,7 @@ public class XBeeDiscoveryStatusTest {
 		XBeeDiscoveryStatus status = XBeeDiscoveryStatus.get(id);
 		
 		// Verify the result.
-		assertThat("The identifier of both status does not have the same value", status.getId(), is(equalTo(expectedStatus.getId())));
+		assertThat("The identifier of both status does not have the same value", status.getID(), is(equalTo(expectedStatus.getID())));
 		assertThat("The description of both status does not have the same value", status.getDescription(), is(equalTo(expectedStatus.getDescription())));
 		assertThat("Transmit status is not the expected", status, is(equalTo(expectedStatus)));
 	}
@@ -99,7 +99,7 @@ public class XBeeDiscoveryStatusTest {
 	@Test
 	public void testXBeeDiscoveryStatusValues() {
 		for (XBeeDiscoveryStatus status: discoveryStatusValues)
-			assertTrue(status.getId() >= 0);
+			assertTrue(status.getID() >= 0);
 	}
 	
 	/**
@@ -137,6 +137,6 @@ public class XBeeDiscoveryStatusTest {
 	@Test
 	public void testXBeeDiscoveryStatusStaticAccess() {
 		for (XBeeDiscoveryStatus status: discoveryStatusValues)
-			assertEquals(status, XBeeDiscoveryStatus.get(status.getId()));
+			assertEquals(status, XBeeDiscoveryStatus.get(status.getID()));
 	}
 }

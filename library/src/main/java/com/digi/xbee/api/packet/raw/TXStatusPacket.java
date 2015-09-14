@@ -149,7 +149,7 @@ public class TXStatusPacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("Status", 
-				HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) 
+				HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getID(), 1)) 
 				+ " (" + transmitStatus.getDescription() + ")");
 		return parameters;
 	}

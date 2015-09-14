@@ -134,13 +134,11 @@ public class RX16IOPacket extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		if (rfData != null) {
+		this.rfData = rfData;
 		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
-		} else {
-			this.rfData = null;
+		else
 			ioSample = null;
-		}
 		this.logger = LoggerFactory.getLogger(RX16IOPacket.class);
 	}
 	

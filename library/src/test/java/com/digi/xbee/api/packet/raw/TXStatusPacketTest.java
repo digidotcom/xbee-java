@@ -198,7 +198,7 @@ public class TXStatusPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned status id is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getId())));
+		assertThat("Returned status id is not the expected one", packet.getTransmitStatus().getID(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getID())));
 		assertThat("Returned status description is not the expected one", packet.getTransmitStatus().getDescription(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getDescription())));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));

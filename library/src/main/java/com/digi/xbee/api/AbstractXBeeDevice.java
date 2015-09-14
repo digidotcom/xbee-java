@@ -1115,33 +1115,34 @@ public abstract class AbstractXBeeDevice {
 			@Override
 			public void packetReceived(XBeePacket receivedPacket) {
 				// Check if it is the packet we are waiting for.
+				if (!(receivedPacket instanceof XBeeAPIPacket))
+					return;
+				if (!(sentPacket instanceof XBeeAPIPacket))
+					return;
 				if (((XBeeAPIPacket)receivedPacket).checkFrameID((((XBeeAPIPacket)sentPacket).getFrameID()))) {
 					// Security check to avoid class cast exceptions. It has been observed that parallel processes 
 					// using the same connection but with different frame index may collide and cause this exception at some point.
-					if (sentPacket instanceof XBeeAPIPacket
-							&& receivedPacket instanceof XBeeAPIPacket) {
-						XBeeAPIPacket sentAPIPacket = (XBeeAPIPacket)sentPacket;
-						XBeeAPIPacket receivedAPIPacket = (XBeeAPIPacket)receivedPacket;
-						
-						// If the packet sent is an AT command, verify that the received one is an AT command response and 
-						// the command matches in both packets.
-						if (sentAPIPacket.getFrameType() == APIFrameType.AT_COMMAND) {
-							if (receivedAPIPacket.getFrameType() != APIFrameType.AT_COMMAND_RESPONSE)
+					XBeeAPIPacket sentAPIPacket = (XBeeAPIPacket)sentPacket;
+					XBeeAPIPacket receivedAPIPacket = (XBeeAPIPacket)receivedPacket;
+
+					// If the packet sent is an AT command, verify that the received one is an AT command response and 
+					// the command matches in both packets.
+					if (sentAPIPacket.getFrameType() == APIFrameType.AT_COMMAND) {
+						if (receivedAPIPacket.getFrameType() != APIFrameType.AT_COMMAND_RESPONSE)
+							return;
+						if (sentAPIPacket instanceof ATCommandPacket && receivedPacket instanceof ATCommandResponsePacket) {
+							if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
 								return;
-							if (sentAPIPacket instanceof ATCommandPacket && receivedPacket instanceof ATCommandResponsePacket) {
-								if (!((ATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((ATCommandResponsePacket)receivedPacket).getCommand()))
-									return;
-							}
 						}
-						// If the packet sent is a remote AT command, verify that the received one is a remote AT command response and 
-						// the command matches in both packets.
-						if (sentAPIPacket.getFrameType() == APIFrameType.REMOTE_AT_COMMAND_REQUEST) {
-							if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_AT_COMMAND_RESPONSE)
+					}
+					// If the packet sent is a remote AT command, verify that the received one is a remote AT command response and 
+					// the command matches in both packets.
+					if (sentAPIPacket.getFrameType() == APIFrameType.REMOTE_AT_COMMAND_REQUEST) {
+						if (receivedAPIPacket.getFrameType() != APIFrameType.REMOTE_AT_COMMAND_RESPONSE)
+							return;
+						if (sentAPIPacket instanceof RemoteATCommandPacket && receivedPacket instanceof RemoteATCommandResponsePacket) {
+							if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
 								return;
-							if (sentAPIPacket instanceof RemoteATCommandPacket && receivedPacket instanceof RemoteATCommandResponsePacket) {
-								if (!((RemoteATCommandPacket)sentAPIPacket).getCommand().equalsIgnoreCase(((RemoteATCommandResponsePacket)receivedPacket).getCommand()))
-									return;
-							}
 						}
 					}
 					

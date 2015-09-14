@@ -81,8 +81,8 @@ public class IDataReceiveListenerXBeeTest {
 		explicitPacket = Mockito.mock(ExplicitRxIndicatorPacket.class);
 		Mockito.when(explicitPacket.getFrameType()).thenReturn(APIFrameType.EXPLICIT_RX_INDICATOR);
 		Mockito.when(explicitPacket.getRFData()).thenReturn(RECEIVED_DATA_BYTES);
-		Mockito.when(explicitPacket.get64BitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
-		Mockito.when(explicitPacket.get16BitSourceAddress()).thenReturn(XBee16BitAddress.UNKNOWN_ADDRESS);
+		Mockito.when(explicitPacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(explicitPacket.get16bitSourceAddress()).thenReturn(XBee16BitAddress.UNKNOWN_ADDRESS);
 		Mockito.when(explicitPacket.isBroadcast()).thenReturn(false);
 		
 		// Mock an invalid packet.

@@ -485,8 +485,8 @@ public class DataReader extends Thread {
 						clusterID == ExplicitRxIndicatorPacket.DATA_CLUSTER && 
 						profileID == ExplicitRxIndicatorPacket.DIGI_PROFILE) {
 					notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-					xbeePacketsQueue.addPacket(new ReceivePacket(explicitDataPacket.get64BitSourceAddress(), 
-							explicitDataPacket.get16BitSourceAddress(), 
+					xbeePacketsQueue.addPacket(new ReceivePacket(explicitDataPacket.get64bitSourceAddress(), 
+							explicitDataPacket.get16bitSourceAddress(), 
 							explicitDataPacket.getReceiveOptions(), 
 							explicitDataPacket.getRFData()));
 				}
@@ -592,8 +592,8 @@ public class DataReader extends Thread {
 			if (!(apiPacket instanceof ExplicitRxIndicatorPacket))
 				return remoteDevice;
 			ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)apiPacket;
-			addr64 = explicitDataPacket.get64BitSourceAddress();
-			addr16 = explicitDataPacket.get16BitSourceAddress();
+			addr64 = explicitDataPacket.get64bitSourceAddress();
+			addr16 = explicitDataPacket.get16bitSourceAddress();
 			remoteDevice = network.getDevice(addr64);
 			break;
 		default:

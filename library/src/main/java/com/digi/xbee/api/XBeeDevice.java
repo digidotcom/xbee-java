@@ -1901,12 +1901,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		// Obtain the necessary data from the packet.
 		ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)xbeePacket;
-		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64BitSourceAddress());
+		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64bitSourceAddress());
 		if (remoteDevice == null) {
 			if (remoteXBeeDevice != null)
 				remoteDevice = remoteXBeeDevice;
 			else
-				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64BitSourceAddress());
+				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64bitSourceAddress());
 			getNetwork().addRemoteDevice(remoteDevice);
 		}
 		int sourceEndpoint = explicitDataPacket.getSourceEndpoint();

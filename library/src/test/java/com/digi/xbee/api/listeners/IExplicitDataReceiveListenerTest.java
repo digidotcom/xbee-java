@@ -75,7 +75,7 @@ public class IExplicitDataReceiveListenerTest {
 		// Mock Explicit Data Packet.
 		explicitDataPacket = Mockito.mock(ExplicitRxIndicatorPacket.class);
 		Mockito.when(explicitDataPacket.getFrameType()).thenReturn(APIFrameType.EXPLICIT_RX_INDICATOR);
-		Mockito.when(explicitDataPacket.get64BitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(explicitDataPacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		Mockito.when(explicitDataPacket.getSourceEndpoint()).thenReturn(RECEIVED_SOURCE_ENDPOINT);
 		Mockito.when(explicitDataPacket.getDestinationEndpoint()).thenReturn(RECEIVED_DESTINATION_ENDPOINT);
 		Mockito.when(explicitDataPacket.getClusterID()).thenReturn(RECEIVED_CLUSTER_ID);

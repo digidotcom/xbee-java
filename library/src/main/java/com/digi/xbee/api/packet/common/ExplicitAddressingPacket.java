@@ -303,8 +303,8 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		if (get64BitDestinationAddress().equals(XBee64BitAddress.BROADCAST_ADDRESS) 
-				|| get16BitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS))
+		if (get64bitDestinationAddress().equals(XBee64BitAddress.BROADCAST_ADDRESS) 
+				|| get16bitDestinationAddress().equals(XBee16BitAddress.BROADCAST_ADDRESS))
 			return true;
 		return false;
 	}
@@ -316,7 +316,7 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public XBee64BitAddress get64BitDestinationAddress() {
+	public XBee64BitAddress get64bitDestinationAddress() {
 		return destAddress64;
 	}
 	
@@ -327,7 +327,7 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
-	public XBee16BitAddress get16BitDestinationAddress() {
+	public XBee16BitAddress get16bitDestinationAddress() {
 		return destAddress16;
 	}
 	

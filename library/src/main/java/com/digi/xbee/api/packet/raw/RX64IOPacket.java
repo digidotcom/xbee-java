@@ -134,7 +134,8 @@ public class RX64IOPacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData.clone();
+		if (rfData != null)
+			this.rfData = rfData.clone();
 		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
 		else

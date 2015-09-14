@@ -257,7 +257,8 @@ public class ExplicitAddressingPacket extends XBeeAPIPacket {
 		this.profileID = profileID;
 		this.broadcastRadius = broadcastRadius;
 		this.transmitOptions = transmitOptions;
-		this.rfData = rfData.clone();
+		if (rfData != null)
+			this.rfData = rfData.clone();
 		this.logger = LoggerFactory.getLogger(ExplicitAddressingPacket.class);
 	}
 	

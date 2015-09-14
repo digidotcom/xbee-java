@@ -202,7 +202,8 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 		this.clusterID = clusterID;
 		this.profileID = profileID;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData.clone();
+		if (rfData != null)
+			this.rfData = rfData.clone();
 		this.logger = LoggerFactory.getLogger(ExplicitRxIndicatorPacket.class);
 	}
 	

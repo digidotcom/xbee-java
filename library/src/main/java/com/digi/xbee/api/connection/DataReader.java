@@ -589,6 +589,8 @@ public class DataReader extends Thread {
 			}
 			break;
 		case EXPLICIT_RX_INDICATOR:
+			if (!(apiPacket instanceof ExplicitRxIndicatorPacket))
+				return remoteDevice;
 			ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)apiPacket;
 			addr64 = explicitDataPacket.get64BitSourceAddress();
 			addr16 = explicitDataPacket.get16BitSourceAddress();

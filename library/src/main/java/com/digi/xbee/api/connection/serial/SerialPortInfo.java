@@ -26,6 +26,8 @@ public class SerialPortInfo {
 	 * 
 	 * @param portName Name of the port.
 	 * 
+	 * @throws NullPointerException if {@code portName == null}.
+	 * 
 	 * @see #SerialPortInfo(String, String)
 	 */
 	public SerialPortInfo(String portName) {
@@ -37,11 +39,16 @@ public class SerialPortInfo {
 	 * the given parameters.
 	 * 
 	 * @param portName Name of the port.
-	 * @param portDescription Description of the port.
+	 * @param portDescription Description of the port. It may be {@code null}.
+	 * 
+	 * @throws NullPointerException if {@code portName == null}.
 	 * 
 	 * @see #SerialPortInfo(String)
 	 */
 	public SerialPortInfo(String portName, String portDescription) {
+		if (portName == null)
+			throw new NullPointerException("Serial port name cannot be null.");
+		
 		this.portName = portName;
 		this.portDescription = portDescription;
 	}
@@ -60,7 +67,7 @@ public class SerialPortInfo {
 	/**
 	 * Returns the serial port description.
 	 * 
-	 * @return The serial port description.
+	 * @return The serial port description. It may be {@code null}.
 	 * 
 	 * @see #getPortName()
 	 */

@@ -444,7 +444,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		if (offset < 0)
 			throw new IllegalArgumentException("Offset cannot be less than 0.");
 		if (length < 1)
-			throw new IllegalArgumentException("Length cannot be less than 0.");
+			throw new IllegalArgumentException("Length cannot be less than 1.");
 		if (offset >= data.length)
 			throw new IllegalArgumentException("Offset must be less than the data length.");
 		if (offset + length > data.length)
@@ -503,7 +503,7 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		if (offset < 0)
 			throw new IllegalArgumentException("Offset cannot be less than 0.");
 		if (length < 1)
-			throw new IllegalArgumentException("Length cannot be less than 0.");
+			throw new IllegalArgumentException("Length cannot be less than 1.");
 		if (offset >= data.length)
 			throw new IllegalArgumentException("Offset must be less than the buffer length.");
 		if (offset + length > data.length)

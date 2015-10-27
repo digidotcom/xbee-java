@@ -14,8 +14,6 @@ package com.digi.xbee.api.connection.serial;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
@@ -27,7 +25,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
-import com.digi.xbee.api.io.IOLine;
 
 public class SerialPortParametersTest {
 	@Rule

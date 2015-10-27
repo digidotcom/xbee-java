@@ -53,7 +53,6 @@ public class XBeeDeviceReadDataTest {
 	private XBee16BitAddress addr16;
 	private String receivedData;
 	
-	
 	@Before
 	public void setUp() throws Exception {
 		addr64 = new XBee64BitAddress("0013A20040A820DB");

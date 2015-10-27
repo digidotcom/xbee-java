@@ -29,8 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.digi.xbee.api.models.XBee16BitAddress;
-import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.GenericXBeePacket;
 import com.digi.xbee.api.utils.HexUtils;

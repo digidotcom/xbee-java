@@ -38,8 +38,6 @@ import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
 import com.digi.xbee.api.exceptions.PermissionDeniedException;
 
-//@RunWith(PowerMockRunner.class)
-//@PrepareForTest({TestAbstractSerialPort.class})
 public class AbstractSerialPortTest {
 	
 	private static final byte[] RECEIVED_BUFFER = "Hello, this is the received data".getBytes();

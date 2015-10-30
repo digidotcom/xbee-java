@@ -425,4 +425,36 @@ public class IOSampleTest {
 		assertThat(result.hashCode(), is(equalTo(backup.hashCode())));
 		assertThat(result.hashCode(), is(not(equalTo(values.hashCode()))));
 	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOSample#getDigitalHSBMask()}.
+	 */
+	@Test
+	public void testGetDigitalHSBMask() {
+		// Setup the resources for the test.
+		IOSample ioSample = new IOSample(IO_DATA_ONLY_DIGITAL);
+		int expected = IO_DATA_ONLY_DIGITAL[1] & 0x7F;
+		
+		// Call the method under test.
+		int result = ioSample.getDigitalHSBMask();
+		
+		// Verify the result.
+		assertThat(result, is(equalTo(expected)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOSample#getDigitalLSBMask()}.
+	 */
+	@Test
+	public void testGetDigitalLSBMask() {
+		// Setup the resources for the test.
+		IOSample ioSample = new IOSample(IO_DATA_ONLY_DIGITAL);
+		int expected = IO_DATA_ONLY_DIGITAL[2] & 0xFF;
+		
+		// Call the method under test.
+		int result = ioSample.getDigitalLSBMask();
+		
+		// Verify the result.
+		assertThat(result, is(equalTo(expected)));
+	}
 }

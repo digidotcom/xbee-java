@@ -149,10 +149,15 @@ public class DataReader extends Thread {
 	 * @param listener Listener to be notified when new XBee data packets are 
 	 *                 received.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
 	 * @see #removeDataReceiveListener(IDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IDataReceiveListener
 	 */
 	public void addDataReceiveListener(IDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		synchronized (dataReceiveListeners) {
 			if (!dataReceiveListeners.contains(listener))
 				dataReceiveListeners.add(listener);
@@ -186,6 +191,8 @@ public class DataReader extends Thread {
 	 * 
 	 * @param listener Listener to be notified when any XBee packet is received.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
 	 * @see #addPacketReceiveListener(IPacketReceiveListener, int)
 	 * @see #removePacketReceiveListener(IPacketReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
@@ -207,11 +214,16 @@ public class DataReader extends Thread {
 	 *                Using {@link #ALL_FRAME_IDS} this listener will be 
 	 *                notified always and will be removed only by user request.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
 	 * @see #addPacketReceiveListener(IPacketReceiveListener)
 	 * @see #removePacketReceiveListener(IPacketReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 */
 	public void addPacketReceiveListener(IPacketReceiveListener listener, int frameID) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		synchronized (packetReceiveListeners) {
 			if (!packetReceiveListeners.containsKey(listener))
 				packetReceiveListeners.put(listener, frameID);
@@ -247,10 +259,15 @@ public class DataReader extends Thread {
 	 * @param listener Listener to be notified when new IO sample packets are 
 	 *                 received.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
 	 * @see #removeIOSampleReceiveListener(IIOSampleReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IIOSampleReceiveListener
 	 */
 	public void addIOSampleReceiveListener(IIOSampleReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		synchronized (ioSampleReceiveListeners) {
 			if (!ioSampleReceiveListeners.contains(listener))
 				ioSampleReceiveListeners.add(listener);
@@ -285,10 +302,15 @@ public class DataReader extends Thread {
 	 * @param listener Listener to be notified when new modem status packets are
 	 *                 received.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
 	 * @see #removeModemStatusReceiveListener(IModemStatusReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IModemStatusReceiveListener
 	 */
 	public void addModemStatusReceiveListener(IModemStatusReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		synchronized (modemStatusListeners) {
 			if (!modemStatusListeners.contains(listener))
 				modemStatusListeners.add(listener);
@@ -323,10 +345,15 @@ public class DataReader extends Thread {
 	 * @param listener Listener to be notified when new explicit data packets 
 	 *                 are received.
 	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
 	 * @see #removeExplicitDataReceiveListener(IExplicitDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IExplicitDataReceiveListener
 	 */
 	public void addExplicitDataReceiveListener(IExplicitDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
 		synchronized (explicitDataReceiveListeners) {
 			if (!explicitDataReceiveListeners.contains(listener))
 				explicitDataReceiveListeners.add(listener);

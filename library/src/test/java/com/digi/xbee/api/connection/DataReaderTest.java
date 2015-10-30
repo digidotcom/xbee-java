@@ -120,6 +120,7 @@ public class DataReaderTest {
 		public InputStream getInputStream() {
 			if (alreadyRead)
 				return null;
+			
 			return mockInput;
 		}
 
@@ -221,16 +222,19 @@ public class DataReaderTest {
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			@Override
 			public XBeePacket answer(InvocationOnMock invocation) throws Throwable {
-				if (testCI.alreadyRead)
-					return null;
-				
-				testCI.alreadyRead = true;
 				return PACKET_TO_BE_RECEIVED;
 			}
 		}).when(mockParser).parsePacket(Mockito.eq(mockInput), Mockito.any(OperatingMode.class));
 		
 		mockQueue = Mockito.mock(XBeePacketsQueue.class);
 		PowerMockito.whenNew(XBeePacketsQueue.class).withNoArguments().thenReturn(mockQueue);
+		Mockito.doAnswer(new Answer<Object>() {
+			@Override
+			public Object answer(InvocationOnMock invocation) throws Throwable {
+				testCI.alreadyRead = true;
+				return null;
+			}
+		}).when(mockQueue).addPacket(Mockito.any(XBeePacket.class));
 	}
 
 	/**
@@ -931,7 +935,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -966,7 +970,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1004,7 +1008,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1046,7 +1050,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1088,7 +1092,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1130,7 +1134,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1172,7 +1176,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1214,7 +1218,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1256,7 +1260,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1298,7 +1302,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1340,7 +1344,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1382,7 +1386,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1424,7 +1428,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1466,7 +1470,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1508,7 +1512,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1550,7 +1554,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1589,7 +1593,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1622,7 +1626,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1653,7 +1657,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(200);
+		Thread.sleep(150);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);

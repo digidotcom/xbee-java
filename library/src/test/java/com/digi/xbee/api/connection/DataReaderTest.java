@@ -931,7 +931,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -966,7 +966,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1004,7 +1004,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1046,7 +1046,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1088,7 +1088,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1130,7 +1130,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1172,7 +1172,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1214,7 +1214,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1256,7 +1256,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1298,7 +1298,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1340,7 +1340,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1382,7 +1382,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1424,7 +1424,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1466,7 +1466,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1508,7 +1508,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1550,7 +1550,7 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		Thread.sleep(200);
 		testCI.notifyData();
 		while (!testCI.alreadyRead)
 			Thread.sleep(30);
@@ -1563,5 +1563,104 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(1)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 */
+	@Test
+	public final void testDataReaderReceivePacketIOExceptionWhenReading() throws Exception {
+		// Setup the resources for the test.
+		Mockito.doAnswer(new Answer<XBeePacket>() {
+			@Override
+			public XBeePacket answer(InvocationOnMock invocation) throws Throwable {
+				if (testCI.alreadyRead)
+					return null;
+				
+				testCI.alreadyRead = true;
+				throw new IOException("Exception when reading");
+			}
+		}).when(mockInput).read();
+		
+		DataReader dataReader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
+		dataReader.addPacketReceiveListener(packetListener);
+		
+		// Call the method under test.
+		dataReader.start();
+		
+		Thread.sleep(200);
+		testCI.notifyData();
+		while (!testCI.alreadyRead)
+			Thread.sleep(30);
+		
+		// Verify the result.
+		Mockito.verify(mockQueue, Mockito.times(0)).addPacket(Mockito.any(XBeePacket.class));
+		Mockito.verify(packetListener, Mockito.times(0)).packetReceived(Mockito.any(XBeePacket.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 */
+	@Test
+	public final void testDataReaderReceivePacketATmode() throws Exception {
+		// Setup the resources for the test.
+		TestConnectionInterface testCI = new TestConnectionInterface() {
+			@Override
+			public InputStream getInputStream() {
+				if (alreadyRead)
+					return null;
+				
+				alreadyRead = true;
+				return mockInput;
+			}
+		};
+		DataReader dataReader = new DataReader(testCI, OperatingMode.AT, mockDevice);
+		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
+		dataReader.addPacketReceiveListener(packetListener);
+		
+		// Call the method under test.
+		dataReader.start();
+		
+		Thread.sleep(200);
+		testCI.notifyData();
+		while (!testCI.alreadyRead)
+			Thread.sleep(30);
+		
+		// Verify the result.
+		Mockito.verify(mockInput, Mockito.times(0)).read();
+		Mockito.verify(mockQueue, Mockito.times(0)).addPacket(Mockito.any(XBeePacket.class));
+		Mockito.verify(packetListener, Mockito.times(0)).packetReceived(Mockito.any(XBeePacket.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 */
+	@Test
+	public final void testDataReaderReceivePacketNullInputStream() throws Exception {
+		// Setup the resources for the test.
+		TestConnectionInterface testCI = new TestConnectionInterface() {
+			@Override
+			public InputStream getInputStream() {
+				alreadyRead = true;
+				return null;
+			}
+		};
+		DataReader dataReader = new DataReader(testCI, OperatingMode.AT, mockDevice);
+		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
+		dataReader.addPacketReceiveListener(packetListener);
+		
+		// Call the method under test.
+		dataReader.start();
+		
+		Thread.sleep(200);
+		testCI.notifyData();
+		while (!testCI.alreadyRead)
+			Thread.sleep(30);
+		
+		// Verify the result.
+		Mockito.verify(mockInput, Mockito.times(0)).read();
+		Mockito.verify(mockQueue, Mockito.times(0)).addPacket(Mockito.any(XBeePacket.class));
+		Mockito.verify(packetListener, Mockito.times(0)).packetReceived(Mockito.any(XBeePacket.class));
 	}
 }

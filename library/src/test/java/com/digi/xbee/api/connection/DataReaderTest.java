@@ -18,6 +18,10 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.Thread.State;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -242,6 +246,24 @@ public class DataReaderTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+	}
+	
+	private void waitForInitialization(long threadID) throws InterruptedException {
+		ThreadMXBean mbean = ManagementFactory.getThreadMXBean();
+		boolean isWaiting = true;
+		
+		while (isWaiting) {
+			ThreadInfo[] infos = mbean.dumpAllThreads(true, true);
+			for (ThreadInfo threadInfo : infos) {
+				if (threadInfo.getThreadId() == threadID) {
+					if (threadInfo.getThreadState() == State.WAITING)
+						isWaiting = false;
+					else
+						Thread.sleep(50);
+					break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -935,9 +957,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -970,9 +992,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1008,9 +1030,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1050,9 +1072,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1092,9 +1114,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1134,9 +1156,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1176,9 +1198,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1218,9 +1240,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1260,9 +1282,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1302,9 +1324,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1344,9 +1366,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1386,9 +1408,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1428,9 +1450,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1470,9 +1492,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1512,9 +1534,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1554,9 +1576,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1593,9 +1615,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1626,9 +1648,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1657,9 +1679,9 @@ public class DataReaderTest {
 		// Call the method under test.
 		dataReader.start();
 		
-		Thread.sleep(150);
+		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (!testCI.alreadyRead)
+		while (dataReader.isRunning())
 			Thread.sleep(30);
 		
 		// Verify the result.

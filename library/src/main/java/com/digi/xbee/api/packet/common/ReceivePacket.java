@@ -139,7 +139,10 @@ public class ReceivePacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.sourceAddress16 = sourceAddress16;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(ReceivePacket.class);
 	}
 

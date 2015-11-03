@@ -23,6 +23,7 @@ import com.digi.xbee.api.models.ATStringCommands;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * This class represents an AT Command XBee packet. Packet is built
@@ -83,7 +84,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		index = index + 1;
 		
 		// 2 bytes of AT command, starting at 2nd byte.
-		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		String command = StringUtils.byteArrayToString(new byte[]{payload[index], payload[index + 1]});
 		index = index + 2;
 		
 		// Get data.
@@ -108,7 +109,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code command == null}.
 	 */
 	public ATCommandPacket(int frameID, String command, String parameter) {
-		this(frameID, command, parameter == null ? null : parameter.getBytes());
+		this(frameID, command, parameter == null ? null : StringUtils.stringToByteArray(parameter));
 	}
 	
 	/**
@@ -133,7 +134,10 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		
 		this.frameID = frameID;
 		this.command = command;
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 		this.logger = LoggerFactory.getLogger(ATCommandPacket.class);
 	}
 	
@@ -145,7 +149,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(command.getBytes());
+			os.write(StringUtils.stringToByteArray(command));
 			if (parameter != null)
 				os.write(parameter);
 		} catch (IOException e) {
@@ -181,7 +185,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 		if (parameter == null)
 			this.parameter = null;
 		else
-			this.parameter = parameter.getBytes();
+			this.parameter = StringUtils.stringToByteArray(parameter);
 	}
 	
 	/**
@@ -190,7 +194,10 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @param parameter The AT command parameter.
 	 */
 	public void setParameter(byte[] parameter) {
-		this.parameter = parameter;
+		if (parameter != null)
+			this.parameter = parameter.clone();
+		else
+			this.parameter = null;
 	}
 	
 	/**
@@ -199,7 +206,9 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	 * @return The AT command parameter.
 	 */
 	public byte[] getParameter() {
-		return parameter;
+		if (parameter != null)
+			return parameter.clone();
+		return null;
 	}
 	
 	/**
@@ -211,7 +220,7 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	public String getParameterAsString() {
 		if (parameter == null)
 			return null;
-		return new String(parameter);
+		return StringUtils.byteArrayToString(parameter);
 	}
 	
 	/*
@@ -230,10 +239,10 @@ public class ATCommandPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
+		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(StringUtils.stringToByteArray(command))) + " (" + command + ")");
 		if (parameter != null) {
 			if (ATStringCommands.get(command) != null)
-				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + " (" + new String(parameter) + ")");
+				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + " (" + StringUtils.byteArrayToString(parameter) + ")");
 			else
 				parameters.put("Parameter", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)));
 		}

@@ -192,7 +192,10 @@ public class TransmitPacket extends XBeeAPIPacket {
 		this.destAddress16 = destAddress16;
 		this.broadcastRadius = broadcastRadius;
 		this.transmitOptions = transmitOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(TransmitPacket.class);
 	}
 

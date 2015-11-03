@@ -13,6 +13,8 @@ package com.digi.xbee.api.models;
 
 import java.util.HashMap;
 
+import com.digi.xbee.api.utils.StringUtils;
+
 /**
  * Enumerates several AT commands used to parse AT command packets. The list 
  * of AT Command alias listed here represents those AT commands whose values 
@@ -66,6 +68,6 @@ public enum ATStringCommands {
 	 *         alias. 
 	 */
 	public static ATStringCommands get(String command) {
-		return lookupTable.get(command.toUpperCase());
+		return lookupTable.get(StringUtils.stringToUpperCase(command));
 	}
 }

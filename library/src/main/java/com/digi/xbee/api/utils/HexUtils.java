@@ -11,6 +11,8 @@
  */
 package com.digi.xbee.api.utils;
 
+import java.util.Locale;
+
 /**
  * Utility class containing methods to work with hexadecimal values and several 
  * data type conversions.
@@ -104,7 +106,7 @@ public class HexUtils {
 		if (parameter == null)
 			throw new NullPointerException("Parameter cannot be null.");
 		
-		byte[] byteArray = parameter.getBytes();
+		byte[] byteArray = StringUtils.stringToByteArray(parameter);
 		for (int i = 0; i < byteArray.length; i++){
 			if (!((byteArray[i] >= '0') && (byteArray[i] <= '9')))
 				return true;
@@ -146,19 +148,19 @@ public class HexUtils {
 		if (hexString == null)
 			throw new NullPointerException("Hexadecimal string cannot be null.");
 		
-		String copy = hexString.toUpperCase();
+		String copy = hexString.toUpperCase(Locale.getDefault());
 		for (final char c : copy.toCharArray()) {
 			if (!HEXES.contains(""+c))
 				throw new IllegalArgumentException("Given string cannot contain non-hexadecimal characters.");
 		}
 		
-		String prettyHexString = "";
+		StringBuilder prettyHexString = new StringBuilder();
 		if (copy.length() % 2 != 0)
 			copy = "0" + copy;
 		int iterations = copy.length() / 2;
 		for (int i = 0; i < iterations; i++)
-			prettyHexString += copy.substring(2 * i, 2 * i + 2) + " ";
-		return prettyHexString.trim();
+			prettyHexString.append(copy.substring(2 * i, 2 * i + 2) + " ");
+		return prettyHexString.toString().trim();
 	}
 	
 	/**

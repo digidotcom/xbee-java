@@ -225,8 +225,8 @@ public class ExplicitAddressingPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64BitDestinationAddress(), is(equalTo(dest64Addr)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16BitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
 		assertThat("Returned source endpoint is not the expected one", packet.getSourceEndpoint(), is(equalTo(sourceEndpoint)));
 		assertThat("Returned destination endpoint is not the expected one", packet.getDestinationEndpoint(), is(equalTo(destEndpoint)));
 		assertThat("Returned cluster ID is not the expected one", packet.getClusterID(), is(equalTo(clusterID)));
@@ -280,8 +280,8 @@ public class ExplicitAddressingPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64BitDestinationAddress(), is(equalTo(dest64Addr)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16BitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
 		assertThat("Returned source endpoint is not the expected one", packet.getSourceEndpoint(), is(equalTo(sourceEndpoint)));
 		assertThat("Returned destination endpoint is not the expected one", packet.getDestinationEndpoint(), is(equalTo(destEndpoint)));
 		assertThat("Returned cluster ID is not the expected one", packet.getClusterID(), is(equalTo(clusterID)));
@@ -756,8 +756,8 @@ public class ExplicitAddressingPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64BitDestinationAddress(), is(equalTo(dest64Addr)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16BitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
 		assertThat("Returned source endpoint is not the expected one", packet.getSourceEndpoint(), is(equalTo(sourceEndpoint)));
 		assertThat("Returned destination endpoint is not the expected one", packet.getDestinationEndpoint(), is(equalTo(destEndpoint)));
 		assertThat("Returned cluster ID is not the expected one", packet.getClusterID(), is(equalTo(clusterID)));
@@ -796,8 +796,8 @@ public class ExplicitAddressingPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned destination 64-bit address is not the expected one", packet.get64BitDestinationAddress(), is(equalTo(dest64Addr)));
-		assertThat("Returned destination 16-bit address is not the expected one", packet.get16BitDestinationAddress(), is(equalTo(dest16Addr)));
+		assertThat("Returned destination 64-bit address is not the expected one", packet.get64bitDestinationAddress(), is(equalTo(dest64Addr)));
+		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(dest16Addr)));
 		assertThat("Returned source endpoint is not the expected one", packet.getSourceEndpoint(), is(equalTo(sourceEndpoint)));
 		assertThat("Returned destination endpoint is not the expected one", packet.getDestinationEndpoint(), is(equalTo(destEndpoint)));
 		assertThat("Returned cluster ID is not the expected one", packet.getClusterID(), is(equalTo(clusterID)));

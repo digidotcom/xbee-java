@@ -29,14 +29,14 @@ public class ModemStatusEventTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.ModemStatusEvent#getId()}.
+	 * Test method for {@link com.digi.xbee.api.models.ModemStatusEvent#getID()}.
 	 * 
 	 * <p>Verify that the ID of each ModemStatusEvent entry is valid.</p>
 	 */
 	@Test
 	public void testModemStatusEventValues() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
-			assertTrue(modemStatusEvent.getId() >= 0);
+			assertTrue(modemStatusEvent.getID() >= 0);
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class ModemStatusEventTest {
 	@Test
 	public void testModemStatusEventStaticAccess() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
-			assertEquals(modemStatusEvent, ModemStatusEvent.get(modemStatusEvent.getId()));
+			assertEquals(modemStatusEvent, ModemStatusEvent.get(modemStatusEvent.getID()));
 	}
 	
 	/**
@@ -86,6 +86,6 @@ public class ModemStatusEventTest {
 	@Test
 	public void testModemStatusEventToString() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
-			assertEquals(String.format("0x%02X: %s", modemStatusEvent.getId(), modemStatusEvent.getDescription()), modemStatusEvent.toString());
+			assertEquals(String.format("0x%02X: %s", modemStatusEvent.getID(), modemStatusEvent.getDescription()), modemStatusEvent.toString());
 	}
 }

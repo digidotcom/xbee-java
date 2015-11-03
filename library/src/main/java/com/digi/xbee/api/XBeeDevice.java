@@ -50,6 +50,7 @@ import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * This class represents a local XBee device.
@@ -413,9 +414,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		byte[] readData = new byte[256];
 		try {
 			// Send the command mode sequence.
-			connectionInterface.writeData(COMMAND_MODE_CHAR.getBytes());
-			connectionInterface.writeData(COMMAND_MODE_CHAR.getBytes());
-			connectionInterface.writeData(COMMAND_MODE_CHAR.getBytes());
+			connectionInterface.writeData(StringUtils.stringToByteArray(COMMAND_MODE_CHAR));
+			connectionInterface.writeData(StringUtils.stringToByteArray(COMMAND_MODE_CHAR));
+			connectionInterface.writeData(StringUtils.stringToByteArray(COMMAND_MODE_CHAR));
 			
 			// Wait some time to let the module generate a response.
 			Thread.sleep(TIMEOUT_ENTER_COMMAND_MODE);
@@ -426,7 +427,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 				throw new TimeoutException();
 			
 			// Check if the read data is 'OK\r'.
-			String readString = new String(readData, 0, readBytes);
+			String readString = StringUtils.byteArrayToString(readData, 0, readBytes);
 			if (!readString.contains(COMMAND_MODE_OK))
 				return false;
 			
@@ -1403,7 +1404,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		addModemStatusListener(resetStatusListener);
 		synchronized (resetLock) {
 			try {
-				resetLock.wait(TIMEOUT_RESET);
+				while (!modemStatusReceived)
+					resetLock.wait(TIMEOUT_RESET);
 			} catch (InterruptedException e) { }
 		}
 		removeModemStatusListener(resetStatusListener);
@@ -1435,7 +1437,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 				modemStatusReceived = true;
 				// Continue execution by notifying the lock object.
 				synchronized (resetLock) {
-					resetLock.notify();
+					resetLock.notifyAll();
 				}
 			}
 		}
@@ -1899,12 +1901,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		// Obtain the necessary data from the packet.
 		ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)xbeePacket;
-		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64BitSourceAddress());
+		RemoteXBeeDevice remoteDevice = getNetwork().getDevice(explicitDataPacket.get64bitSourceAddress());
 		if (remoteDevice == null) {
 			if (remoteXBeeDevice != null)
 				remoteDevice = remoteXBeeDevice;
 			else
-				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64BitSourceAddress());
+				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64bitSourceAddress());
 			getNetwork().addRemoteDevice(remoteDevice);
 		}
 		int sourceEndpoint = explicitDataPacket.getSourceEndpoint();

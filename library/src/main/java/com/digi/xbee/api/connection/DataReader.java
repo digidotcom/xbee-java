@@ -390,13 +390,14 @@ public class DataReader extends Thread {
 		// Clear the list of read packets.
 		xbeePacketsQueue.clearQueue();
 		try {
-			synchronized (connectionInterface) {
-				connectionInterface.wait();
-			}
 			while (running) {
+				synchronized (connectionInterface) {
+					while (connectionInterface.getInputStream() != null &&connectionInterface.getInputStream().available() == 0)
+						connectionInterface.wait();
+				}
 				if (!running)
 					break;
-				if (connectionInterface.getInputStream() != null) {
+				if (connectionInterface.getInputStream() != null && connectionInterface.getInputStream().available() > 0) {
 					switch (mode) {
 					case AT:
 						break;
@@ -416,15 +417,9 @@ public class DataReader extends Thread {
 					default:
 						break;
 					}
-				} else if (connectionInterface.getInputStream() == null)
-					break;
+				}
 				if (connectionInterface.getInputStream() == null)
 					break;
-				else if (connectionInterface.getInputStream().available() > 0)
-					continue;
-				synchronized (connectionInterface) {
-					connectionInterface.wait();
-				}
 			}
 		} catch (IOException e) {
 			logger.error("Error reading from input stream.", e);
@@ -517,8 +512,8 @@ public class DataReader extends Thread {
 						clusterID == ExplicitRxIndicatorPacket.DATA_CLUSTER && 
 						profileID == ExplicitRxIndicatorPacket.DIGI_PROFILE) {
 					notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-					xbeePacketsQueue.addPacket(new ReceivePacket(explicitDataPacket.get64BitSourceAddress(), 
-							explicitDataPacket.get16BitSourceAddress(), 
+					xbeePacketsQueue.addPacket(new ReceivePacket(explicitDataPacket.get64bitSourceAddress(), 
+							explicitDataPacket.get16bitSourceAddress(), 
 							explicitDataPacket.getReceiveOptions(), 
 							explicitDataPacket.getRFData()));
 				}
@@ -575,43 +570,57 @@ public class DataReader extends Thread {
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
-			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			addr64 = receivePacket.get64bitSourceAddress();
-			addr16 = receivePacket.get16bitSourceAddress();
-			remoteDevice = network.getDevice(addr64);
+			if (apiPacket instanceof ReceivePacket) {
+				ReceivePacket receivePacket = (ReceivePacket)apiPacket;
+				addr64 = receivePacket.get64bitSourceAddress();
+				addr16 = receivePacket.get16bitSourceAddress();
+				remoteDevice = network.getDevice(addr64);
+			}
 			break;
 		case RX_64:
-			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			addr64 = rx64Packet.get64bitSourceAddress();
-			remoteDevice = network.getDevice(addr64);
+			if (apiPacket instanceof RX64Packet) {
+				RX64Packet rx64Packet = (RX64Packet)apiPacket;
+				addr64 = rx64Packet.get64bitSourceAddress();
+				remoteDevice = network.getDevice(addr64);
+			}
 			break;
 		case RX_16:
-			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			addr64 = XBee64BitAddress.UNKNOWN_ADDRESS;
-			addr16 = rx16Packet.get16bitSourceAddress();
-			remoteDevice = network.getDevice(addr16);
+			if (apiPacket instanceof RX16Packet) {
+				RX16Packet rx16Packet = (RX16Packet)apiPacket;
+				addr64 = XBee64BitAddress.UNKNOWN_ADDRESS;
+				addr16 = rx16Packet.get16bitSourceAddress();
+				remoteDevice = network.getDevice(addr16);
+			}
 			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
-			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
-			addr64 = ioSamplePacket.get64bitSourceAddress();
-			addr16 = ioSamplePacket.get16bitSourceAddress();
-			remoteDevice = network.getDevice(addr64);
+			if (apiPacket instanceof IODataSampleRxIndicatorPacket) {
+				IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+				addr64 = ioSamplePacket.get64bitSourceAddress();
+				addr16 = ioSamplePacket.get16bitSourceAddress();
+				remoteDevice = network.getDevice(addr64);
+			}
 			break;
 		case RX_IO_64:
-			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-			addr64 = rx64IOPacket.get64bitSourceAddress();
-			remoteDevice = network.getDevice(addr64);
+			if (apiPacket instanceof RX64IOPacket) {
+				RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+				addr64 = rx64IOPacket.get64bitSourceAddress();
+				remoteDevice = network.getDevice(addr64);
+			}
 			break;
 		case RX_IO_16:
-			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-			addr64 = XBee64BitAddress.UNKNOWN_ADDRESS;
-			addr16 = rx16IOPacket.get16bitSourceAddress();
-			remoteDevice = network.getDevice(addr16);
+			if (apiPacket instanceof RX16IOPacket) {
+				RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+				addr64 = XBee64BitAddress.UNKNOWN_ADDRESS;
+				addr16 = rx16IOPacket.get16bitSourceAddress();
+				remoteDevice = network.getDevice(addr16);
+			}
 			break;
 		case EXPLICIT_RX_INDICATOR:
+			if (!(apiPacket instanceof ExplicitRxIndicatorPacket))
+				return remoteDevice;
 			ExplicitRxIndicatorPacket explicitDataPacket = (ExplicitRxIndicatorPacket)apiPacket;
-			addr64 = explicitDataPacket.get64BitSourceAddress();
-			addr16 = explicitDataPacket.get16BitSourceAddress();
+			addr64 = explicitDataPacket.get64bitSourceAddress();
+			addr16 = explicitDataPacket.get16bitSourceAddress();
 			remoteDevice = network.getDevice(addr64);
 			break;
 		default:
@@ -912,7 +921,7 @@ public class DataReader extends Thread {
 	public void stopReader() {
 		running = false;
 		synchronized (connectionInterface) {
-			connectionInterface.notify();
+			connectionInterface.notifyAll();
 		}
 		logger.debug(connectionInterface.toString() + "Data reader stopped.");
 	}

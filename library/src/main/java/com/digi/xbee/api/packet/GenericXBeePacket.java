@@ -79,7 +79,10 @@ public class GenericXBeePacket extends XBeeAPIPacket {
 	 */
 	public GenericXBeePacket(byte[] rfData) {
 		super(APIFrameType.GENERIC);
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(GenericXBeePacket.class);
 	}
 	

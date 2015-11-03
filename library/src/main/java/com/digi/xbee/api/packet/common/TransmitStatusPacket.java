@@ -163,8 +163,8 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 		try {
 			data.write(destAddress16.getValue());
 			data.write(tranmistRetryCount);
-			data.write(transmitStatus.getId());
-			data.write(discoveryStatus.getId());
+			data.write(transmitStatus.getID());
+			data.write(discoveryStatus.getID());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -243,10 +243,10 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 				HexUtils.prettyHexString(HexUtils.integerToHexString(tranmistRetryCount, 1)) 
 				+ " (" + tranmistRetryCount + ")");
 		parameters.put("Delivery status", 
-				HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) 
+				HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getID(), 1)) 
 				+ " (" + transmitStatus.getDescription() + ")");
 		parameters.put("Discovery status", 
-				HexUtils.prettyHexString(HexUtils.integerToHexString(discoveryStatus.getId(), 1)) 
+				HexUtils.prettyHexString(HexUtils.integerToHexString(discoveryStatus.getID(), 1)) 
 				+ " (" + discoveryStatus.getDescription() + ")");
 		return parameters;
 	}

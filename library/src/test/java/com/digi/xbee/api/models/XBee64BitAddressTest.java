@@ -204,13 +204,8 @@ public class XBee64BitAddressTest {
 	 */
 	public void testCreateWithValidByteNumbers() {
 		// Test with valid byte number values.
-		XBee64BitAddress address = null;
-		try {
-			address = new XBee64BitAddress(VALID_BYTE_ARRAY[0] & 0xFF, VALID_BYTE_ARRAY[1] & 0xFF, VALID_BYTE_ARRAY[2] & 0xFF, VALID_BYTE_ARRAY[3] & 0xFF,
+		XBee64BitAddress address = new XBee64BitAddress(VALID_BYTE_ARRAY[0] & 0xFF, VALID_BYTE_ARRAY[1] & 0xFF, VALID_BYTE_ARRAY[2] & 0xFF, VALID_BYTE_ARRAY[3] & 0xFF,
 					(int)VALID_BYTE_ARRAY[4] & 0xFF, VALID_BYTE_ARRAY[5] & 0xFF, VALID_BYTE_ARRAY[6] & 0xFF, VALID_BYTE_ARRAY[7] & 0xFF);
-		} catch (Exception e) {
-			fail("This exception should have not been thrown.");
-		}
 		
 		assertArrayEquals(VALID_BYTE_ARRAY, address.getValue());
 		assertEquals(VALID_STRING_NO_PREFIX, address.toString());

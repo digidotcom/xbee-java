@@ -129,7 +129,10 @@ public class TX64Packet extends XBeeAPIPacket {
 		this.frameID = frameID;
 		this.destAddress64 = destAddress64;
 		this.transmitOptions = transmitOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(TX64Packet.class);
 	}
 

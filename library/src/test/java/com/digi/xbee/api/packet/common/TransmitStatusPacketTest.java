@@ -115,7 +115,7 @@ public class TransmitStatusPacketTest {
 		int frameID = 0xE7;
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
-		int deliveryStatus = XBeeTransmitStatus.SUCCESS.getId();
+		int deliveryStatus = XBeeTransmitStatus.SUCCESS.getID();
 		
 		byte[] payload = new byte[6];
 		payload[0] = (byte)frameType;
@@ -143,8 +143,8 @@ public class TransmitStatusPacketTest {
 		int frameID = 0xE7;
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
-		int deliveryStatus = XBeeTransmitStatus.SUCCESS.getId();
-		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getId();
+		int deliveryStatus = XBeeTransmitStatus.SUCCESS.getID();
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getID();
 		
 		byte[] payload = new byte[7];
 		payload[0] = (byte)frameID;
@@ -173,8 +173,8 @@ public class TransmitStatusPacketTest {
 		int frameID = 0xE7;
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
-		int deliveryStatus = XBeeTransmitStatus.SUCCESS.getId();
-		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getId();
+		int deliveryStatus = XBeeTransmitStatus.SUCCESS.getID();
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getID();
 		
 		byte[] payload = new byte[7];
 		payload[0] = (byte)frameType;
@@ -192,8 +192,8 @@ public class TransmitStatusPacketTest {
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
 		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(address)));
 		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
-		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(deliveryStatus)));
-		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus().getId(), is(equalTo(discoveryStatus)));
+		assertThat("Returned delivery status is not the expected one", packet.getTransmitStatus().getID(), is(equalTo(deliveryStatus)));
+		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus().getID(), is(equalTo(discoveryStatus)));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -211,7 +211,7 @@ public class TransmitStatusPacketTest {
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
 		int deliveryStatus = 255;
-		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getId();
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getID();
 		
 		byte[] payload = new byte[7];
 		payload[0] = (byte)frameType;
@@ -229,7 +229,7 @@ public class TransmitStatusPacketTest {
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
 		assertThat("Returned destination 16-bit address is not the expected one", packet.get16bitDestinationAddress(), is(equalTo(address)));
 		assertThat("Returned retry count is not the expected one", packet.getTransmitRetryCount(), is(equalTo(retryCount)));
-		assertThat("Returned delivery status id is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getId())));
+		assertThat("Returned delivery status id is not the expected one", packet.getTransmitStatus().getID(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getID())));
 		assertThat("Returned delivery status description is not the expected one", packet.getTransmitStatus().getDescription(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getDescription())));
 		assertThat("Returned discovery status is not the expected one", packet.getDiscoveryStatus(), is(equalTo(XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD)));
 		
@@ -248,7 +248,7 @@ public class TransmitStatusPacketTest {
 		int frameID = 0xE7;
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
-		int deliveryStatus = XBeeTransmitStatus.BROADCAST_FAILED.getId();;
+		int deliveryStatus = XBeeTransmitStatus.BROADCAST_FAILED.getID();;
 		int discoveryStatus = 255;
 		
 		byte[] payload = new byte[7];
@@ -534,8 +534,8 @@ public class TransmitStatusPacketTest {
 		expectedData[0] = (byte)frameID;
 		System.arraycopy(dest16Addr.getValue(), 0, expectedData, 1, dest16Addr.getValue().length);
 		expectedData[3] = (byte)retryCount;
-		expectedData[4] = (byte)transmitStatus.getId();
-		expectedData[5] = (byte)discoveryStatus.getId();
+		expectedData[4] = (byte)transmitStatus.getID();
+		expectedData[5] = (byte)discoveryStatus.getID();
 		
 		// Call the method under test.
 		byte[] apiData = packet.getAPIData();
@@ -557,7 +557,7 @@ public class TransmitStatusPacketTest {
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
 		int deliveryStatus = 255;
-		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getId();
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_NO_DISCOVERY_OVERHEAD.getID();
 		
 		byte[] payload = new byte[7];
 		payload[0] = (byte)frameType;
@@ -591,7 +591,7 @@ public class TransmitStatusPacketTest {
 		int frameID = 0xE7;
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
-		int deliveryStatus = XBeeTransmitStatus.NO_ACK.getId();
+		int deliveryStatus = XBeeTransmitStatus.NO_ACK.getID();
 		int discoveryStatus = 255;
 		
 		byte[] payload = new byte[7];
@@ -631,8 +631,8 @@ public class TransmitStatusPacketTest {
 		
 		String expectedDest16Addr = HexUtils.prettyHexString(dest16Addr.getValue());
 		String expectedRetryCount = HexUtils.prettyHexString(Integer.toHexString(retryCount)) + " (" + retryCount + ")";
-		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getId())) + " (" + transmitStatus.getDescription() + ")";
-		String expectedDiscoveryStatus = HexUtils.prettyHexString(Integer.toHexString(discoveryStatus.getId())) + " (" + discoveryStatus.getDescription() + ")";
+		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getID())) + " (" + transmitStatus.getDescription() + ")";
+		String expectedDiscoveryStatus = HexUtils.prettyHexString(Integer.toHexString(discoveryStatus.getID())) + " (" + discoveryStatus.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
@@ -658,7 +658,7 @@ public class TransmitStatusPacketTest {
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
 		int deliveryStatus = 255;
-		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_ADDRESS_DISCOVERY.getId();
+		int discoveryStatus = XBeeDiscoveryStatus.DISCOVERY_STATUS_ADDRESS_DISCOVERY.getID();
 		
 		byte[] payload = new byte[7];
 		payload[0] = (byte)frameType;
@@ -698,7 +698,7 @@ public class TransmitStatusPacketTest {
 		int frameID = 0xE7;
 		XBee16BitAddress address = new XBee16BitAddress("B45C");
 		int retryCount = 3;
-		int deliveryStatus = XBeeTransmitStatus.NO_ACK.getId();
+		int deliveryStatus = XBeeTransmitStatus.NO_ACK.getID();
 		int discoveryStatus = 255;
 		
 		byte[] payload = new byte[7];

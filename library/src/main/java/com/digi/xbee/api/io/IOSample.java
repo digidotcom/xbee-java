@@ -138,7 +138,7 @@ public class IOSample {
 		if (ioSamplePayload.length < 5)
 			throw new IllegalArgumentException("IO sample payload must be longer than 4.");
 		
-		this.ioSamplePayload = ioSamplePayload;
+		this.ioSamplePayload = ioSamplePayload.clone();
 		if (ioSamplePayload.length % 2 != 0)
 			parseRawIOSample();
 		else

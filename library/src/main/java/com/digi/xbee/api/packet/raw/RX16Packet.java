@@ -135,7 +135,10 @@ public class RX16Packet extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(RX16Packet.class);
 	}
 	

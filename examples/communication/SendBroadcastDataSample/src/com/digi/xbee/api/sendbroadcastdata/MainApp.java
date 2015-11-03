@@ -13,6 +13,7 @@ package com.digi.xbee.api.sendbroadcastdata;
 
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * XBee Java Library Send Broadcast Data sample application.
@@ -44,12 +45,12 @@ public class MainApp {
 		System.out.println(" +------------------------------------------------+\n");
 		
 		XBeeDevice myDevice = new XBeeDevice(PORT, BAUD_RATE);
-		byte[] dataToSend = DATA_TO_SEND.getBytes();
+		byte[] dataToSend = StringUtils.stringToByteArray(DATA_TO_SEND);
 		
 		try {
 			myDevice.open();
 			
-			System.out.format("Sending broadcast data: '%s'...%n", new String(dataToSend));
+			System.out.format("Sending broadcast data: '%s'...%n", StringUtils.byteArrayToString(dataToSend));
 			
 			myDevice.sendBroadcastData(dataToSend);
 			

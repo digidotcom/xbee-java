@@ -5,6 +5,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
+import java.io.ByteArrayInputStream;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,6 +47,8 @@ public class XBeeDeviceReadDataTest {
 	
 	private SerialPortRxTx mockConnectionInterface;
 	
+	private ByteArrayInputStream dummyInputStream;
+	
 	//private DataReader mockDataReader;
 	
 	private XBeePacketsQueue mockXBeePacketsQueue;
@@ -58,22 +62,25 @@ public class XBeeDeviceReadDataTest {
 		addr64 = new XBee64BitAddress("0013A20040A820DB");
 		addr16 = new XBee16BitAddress("9634");
 		receivedData = "Received data";
+		dummyInputStream = new ByteArrayInputStream(new byte[8]);
 		
 		mockConnectionInterface = Mockito.mock(SerialPortRxTx.class);
 		
 		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				Mockito.when(mockConnectionInterface.isOpen()).thenReturn(true);
+				Mockito.doReturn(true).when(mockConnectionInterface).isOpen();
 				return null;
 			}
 		}).when(mockConnectionInterface).open();
 		
 		Mockito.doAnswer(new Answer<Object>() {
 			public Object answer(InvocationOnMock invocation) throws Exception {
-				Mockito.when(mockConnectionInterface.isOpen()).thenReturn(false);
+				Mockito.doReturn(false).when(mockConnectionInterface).isOpen();
 				return null;
 			}
 		}).when(mockConnectionInterface).close();
+		
+		Mockito.doReturn(dummyInputStream).when(mockConnectionInterface).getInputStream();
 		
 		mockXBeePacketsQueue = Mockito.mock(XBeePacketsQueue.class);
 		
@@ -113,7 +120,7 @@ public class XBeeDeviceReadDataTest {
 	@Test
 	public final void testReadDataInterfaceNotOpenException() {
 		// Setup the resources for the test.
-		Mockito.when(xbeeDevice.isOpen()).thenReturn(false);
+		Mockito.doReturn(false).when(xbeeDevice).isOpen();
 		
 		exception.expect(InterfaceNotOpenException.class);
 		exception.expectMessage(is(equalTo("The connection interface is not open.")));
@@ -130,7 +137,7 @@ public class XBeeDeviceReadDataTest {
 	@Test
 	public final void testReadData() throws Exception {
 		// Setup the resources for the test.
-		
+	
 		assertThat("Network should be empty", xbeeDevice.getNetwork().getNumberOfDevices(), is(equalTo(0)));
 		
 		// Call the method under test.
@@ -320,7 +327,7 @@ public class XBeeDeviceReadDataTest {
 	@Test
 	public final void testReadDataPacketInterfaceNotOpenException() throws Exception {
 		// Setup the resources for the test.
-		Mockito.when(xbeeDevice.isOpen()).thenReturn(false);
+		Mockito.doReturn(false).when(xbeeDevice).isOpen();
 		
 		exception.expect(InterfaceNotOpenException.class);
 		exception.expectMessage(is(equalTo("The connection interface is not open.")));

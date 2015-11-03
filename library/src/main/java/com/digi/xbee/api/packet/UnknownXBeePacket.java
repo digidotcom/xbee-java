@@ -80,7 +80,10 @@ public class UnknownXBeePacket extends XBeeAPIPacket {
 	 */
 	public UnknownXBeePacket(int apiIDValue, byte[] rfData) {
 		super(apiIDValue);
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(UnknownXBeePacket.class);
 	}
 	

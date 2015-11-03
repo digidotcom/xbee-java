@@ -14,6 +14,7 @@ package com.digi.xbee.api.receivedata;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * Class to manage the XBee received data that was sent by other modules in the 
@@ -34,7 +35,7 @@ public class MyDataReceiveListener implements IDataReceiveListener {
 	@Override
 	public void dataReceived(XBeeMessage xbeeMessage) {
 		System.out.format("From %s >> %s | %s%n", xbeeMessage.getDevice().get64BitAddress(), 
-				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(xbeeMessage.getData())), 
-				new String(xbeeMessage.getData()));
+				HexUtils.prettyHexString(HexUtils.byteArrayToHexString(xbeeMessage.getData())),
+				StringUtils.byteArrayToString(xbeeMessage.getData()));
 	}
 }

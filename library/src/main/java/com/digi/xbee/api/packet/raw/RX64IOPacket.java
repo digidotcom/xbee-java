@@ -134,7 +134,8 @@ public class RX64IOPacket extends XBeeAPIPacket {
 		this.sourceAddress64 = sourceAddress64;
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
 		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
 		else
@@ -228,7 +229,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * 
 	 * @param rfData Received RF data.
 	 */
-	public void setRFData(byte[] rfData){
+	public void setRFData(byte[] rfData) {
 		if (rfData == null)
 			this.rfData = null;
 		else
@@ -246,7 +247,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Received RF data.
 	 */
-	public byte[] getRFData(){
+	public byte[] getRFData() {
 		if (rfData == null)
 			return null;
 		return Arrays.copyOf(rfData, rfData.length);
@@ -267,10 +268,14 @@ public class RX64IOPacket extends XBeeAPIPacket {
 			parameters.put("Digital channel mask", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getDigitalMask(), 2)));
 			parameters.put("Analog channel mask", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getAnalogMask(), 2)));
 			for (int i = 0; i < 16; i++) {
+				if (IOLine.getDIO(i) == null)
+					continue;
 				if (ioSample.hasDigitalValue(IOLine.getDIO(i)))
 					parameters.put(IOLine.getDIO(i).getName() + " digital value", ioSample.getDigitalValue(IOLine.getDIO(i)).getName());
 			}
 			for (int i = 0; i < 6; i++) {
+				if (IOLine.getDIO(i) == null)
+					continue;
 				if (ioSample.hasAnalogValue(IOLine.getDIO(i)))
 					parameters.put(IOLine.getDIO(i).getName() + " analog value", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getAnalogValue(IOLine.getDIO(i)), 2)));
 			}

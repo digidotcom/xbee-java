@@ -200,8 +200,9 @@ public class XBeeProtocolTest {
 		
 		// Generate the list of firmware entries from the firmware_entries_xctu.txt file.
 		File firmwareEntriesFile = new File(getClass().getResource(FILE_FIRMWARE_ENTRIES).getFile());
-		BufferedReader reader = new BufferedReader(new FileReader(firmwareEntriesFile.getAbsolutePath()));
+		BufferedReader reader = null;
 		try {
+			reader = new BufferedReader(new FileReader(firmwareEntriesFile.getAbsolutePath()));
 			String line = reader.readLine();
 			while (line != null) {
 				// Skip empty lines.
@@ -229,9 +230,13 @@ public class XBeeProtocolTest {
 				line = reader.readLine();
 			}
 		} catch (IOException e) {
-			try {
-				reader.close();
-			} catch (IOException e1) { }
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e1) { }
+			}
 		}
 		
 		// Verify that the determineProtocol method is able to determine the protocol of all the firmware entries of the list.

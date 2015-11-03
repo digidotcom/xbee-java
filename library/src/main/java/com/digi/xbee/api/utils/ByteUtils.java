@@ -231,40 +231,6 @@ public class ByteUtils {
 	}
 	
 	/**
-	 * Converts the given string into a byte array.
-	 * 
-	 * @param value String to convert to byte array.
-	 * 
-	 * @return Byte array of the given string.
-	 * 
-	 * @throws NullPointerException if {@code value == null}.
-	 * 
-	 * @see #byteArrayToString(byte[])
-	 */
-	public static byte[] stringToByteArray(String value) {
-		if (value == null)
-			throw new NullPointerException("Value cannot be null.");
-		
-		return value.getBytes();
-	}
-	
-	/**
-	 * Converts the given byte array into a string.
-	 * 
-	 * @param value Byte array to convert to string.
-	 * 
-	 * @return Converted String.
-	 * 
-	 * @throws NullPointerException if {@code value == null}.
-	 */
-	public static String byteArrayToString(byte[] value) {
-		if (value == null)
-			throw new NullPointerException("Byte array cannot be null.");
-		
-		return new String(value);
-	}
-	
-	/**
 	 * Converts the given byte into an integer.
 	 * 
 	 * @param b Byte to convert to integer.
@@ -293,7 +259,7 @@ public class ByteUtils {
 		if (bitPosition < 0 || bitPosition > 31)
 			throw new IllegalArgumentException("Bit position must be between 0 and 31.");
 		
-		return (((containerInteger & 0xFFFFFFFF) >> bitPosition) & 0x01) == 0x01;
+		return ((containerInteger >> bitPosition) & 0x01) == 0x01;
 	}
 	
 	/**

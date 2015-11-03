@@ -15,6 +15,7 @@ import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * XBee Java Library Receive Data polling sample application.
@@ -54,10 +55,11 @@ public class MainApp {
 		
 		while (true) {
 			XBeeMessage xbeeMessage = myDevice.readData();
-			if (xbeeMessage != null)
+			if (xbeeMessage != null) {
 				System.out.format("From %s >> %s | %s%n", xbeeMessage.getDevice().get64BitAddress(), 
-						HexUtils.prettyHexString(HexUtils.byteArrayToHexString(xbeeMessage.getData())), 
-						new String(xbeeMessage.getData()));
+						HexUtils.prettyHexString(HexUtils.byteArrayToHexString(xbeeMessage.getData())),
+						StringUtils.byteArrayToString(xbeeMessage.getData()));
+			}
 		}
 	}
 }

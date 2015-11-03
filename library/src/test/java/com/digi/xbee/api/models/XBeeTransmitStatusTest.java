@@ -63,13 +63,13 @@ public class XBeeTransmitStatusTest {
 	public void testGetWithASupportedValue() {
 		// Setup the resources for the test.
 		XBeeTransmitStatus expectedStatus = XBeeTransmitStatus.ADDRESS_NOT_FOUND;
-		int id = expectedStatus.getId();
+		int id = expectedStatus.getID();
 		
 		// Call the method under test.
 		XBeeTransmitStatus status = XBeeTransmitStatus.get(id);
 		
 		// Verify the result.
-		assertThat("The identifier of both status does not have the same value", status.getId(), is(equalTo(id)));
+		assertThat("The identifier of both status does not have the same value", status.getID(), is(equalTo(id)));
 		assertThat("Transmit status is not the expected", status, is(equalTo(expectedStatus)));
 	}
 	
@@ -86,7 +86,7 @@ public class XBeeTransmitStatusTest {
 		XBeeTransmitStatus status = XBeeTransmitStatus.get(id);
 		
 		// Verify the result.
-		assertThat("The identifier of both status does not have the same value", status.getId(), is(equalTo(expectedStatus.getId())));
+		assertThat("The identifier of both status does not have the same value", status.getID(), is(equalTo(expectedStatus.getID())));
 		assertThat("The description of both status does not have the same value", status.getDescription(), is(equalTo(expectedStatus.getDescription())));
 		assertThat("Transmit status is not the expected", status, is(equalTo(expectedStatus)));
 	}
@@ -99,7 +99,7 @@ public class XBeeTransmitStatusTest {
 	@Test
 	public void testXBeeTransmitStatusValues() {
 		for (XBeeTransmitStatus status: transmitStatusValues)
-			assertTrue(status.getId() >= 0 || status.getId() == -1);
+			assertTrue(status.getID() >= 0 || status.getID() == -1);
 	}
 	
 	/**
@@ -137,6 +137,6 @@ public class XBeeTransmitStatusTest {
 	@Test
 	public void testXBeeTransmitStatusStaticAccess() {
 		for (XBeeTransmitStatus status: transmitStatusValues)
-			assertEquals(status, XBeeTransmitStatus.get(status.getId()));
+			assertEquals(status, XBeeTransmitStatus.get(status.getID()));
 	}
 }

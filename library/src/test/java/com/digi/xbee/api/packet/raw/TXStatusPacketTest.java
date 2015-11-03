@@ -133,7 +133,7 @@ public class TXStatusPacketTest {
 	public final void testCreatePacketPayloadNotIncludingFrameType() {
 		// Setup the resources for the test.
 		int frameID = 0xE7;
-		int status = XBeeTransmitStatus.SUCCESS.getId();
+		int status = XBeeTransmitStatus.SUCCESS.getID();
 		
 		byte[] payload = new byte[3];
 		payload[0] = (byte)frameID;
@@ -157,7 +157,7 @@ public class TXStatusPacketTest {
 		// Setup the resources for the test.
 		int frameType = APIFrameType.TX_STATUS.getValue();
 		int frameID = 0xE7;
-		int status = XBeeTransmitStatus.SUCCESS.getId();
+		int status = XBeeTransmitStatus.SUCCESS.getID();
 		
 		byte[] payload = new byte[3];
 		payload[0] = (byte)frameType;
@@ -198,7 +198,7 @@ public class TXStatusPacketTest {
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
 		assertThat("Frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
-		assertThat("Returned status id is not the expected one", packet.getTransmitStatus().getId(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getId())));
+		assertThat("Returned status id is not the expected one", packet.getTransmitStatus().getID(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getID())));
 		assertThat("Returned status description is not the expected one", packet.getTransmitStatus().getDescription(), is(equalTo(XBeeTransmitStatus.UNKNOWN.getDescription())));
 		
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
@@ -322,7 +322,7 @@ public class TXStatusPacketTest {
 		int expectedLength = 1 /* Frame ID */ + 1 /* transmit status */;
 		byte[] expectedData = new byte[expectedLength];
 		expectedData[0] = (byte)frameID;
-		expectedData[1] = (byte)transmitStatus.getId();
+		expectedData[1] = (byte)transmitStatus.getID();
 		
 		// Call the method under test.
 		byte[] apiData = packet.getAPIData();
@@ -372,7 +372,7 @@ public class TXStatusPacketTest {
 		XBeeTransmitStatus transmitStatus = XBeeTransmitStatus.SUCCESS;
 		TXStatusPacket packet = new TXStatusPacket(frameID, transmitStatus);
 		
-		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getId())) + " (" + transmitStatus.getDescription() + ")";
+		String expectedTransmitStatus = HexUtils.prettyHexString(Integer.toHexString(transmitStatus.getID())) + " (" + transmitStatus.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();

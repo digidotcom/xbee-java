@@ -129,7 +129,10 @@ public class TX16Packet extends XBeeAPIPacket {
 		this.frameID = frameID;
 		this.destAddress16 = destAddress16;
 		this.transmitOptions = transmitOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
+		else
+			this.rfData = null;
 		this.logger = LoggerFactory.getLogger(TX16Packet.class);
 	}
 

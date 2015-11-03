@@ -287,7 +287,8 @@ class NodeDiscovery {
 				if (!discovering)
 					return;
 				RemoteXBeeDevice rdevice = null;
-				
+				if (!(receivedPacket instanceof XBeeAPIPacket))
+					return;
 				byte[] commandValue = getRemoteDeviceData((XBeeAPIPacket)receivedPacket);
 				
 				rdevice = parseDiscoveryAPIData(commandValue, xbeeDevice);
@@ -458,8 +459,6 @@ class NodeDiscovery {
 		// TODO role of the device: coordinator, router, end device or unknown.
 		//XBeeDeviceType role = XBeeDeviceType.UNKNOWN;
 		int signalStrength = 0;
-		byte[] profileID = null;
-		byte[] manufacturerID = null;
 		
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
 		// Read 16 bit address.
@@ -485,9 +484,9 @@ class NodeDiscovery {
 			// Consume status byte, it is not used yet.
 			ByteUtils.readBytes(1, inputStream);
 			// Read profile ID.
-			profileID = ByteUtils.readBytes(2, inputStream);
+			byte[] profileID = ByteUtils.readBytes(2, inputStream);
 			// Read manufacturer ID.
-			manufacturerID = ByteUtils.readBytes(2, inputStream);
+			byte[] manufacturerID = ByteUtils.readBytes(2, inputStream);
 			
 			logger.debug("{}Discovered {} device: 16-bit[{}], 64-bit[{}], id[{}], parent[{}], profile[{}], manufacturer[{}].", 
 					xbeeDevice.toString(), localDevice.getXBeeProtocol().getDescription(), addr16, 

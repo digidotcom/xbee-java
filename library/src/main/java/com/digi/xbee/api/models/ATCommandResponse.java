@@ -11,6 +11,8 @@
  */
 package com.digi.xbee.api.models;
 
+import com.digi.xbee.api.utils.StringUtils;
+
 /**
  * This class represents the response of an AT Command sent by the connected 
  * XBee device or by a remote device after executing an AT Command.
@@ -99,7 +101,10 @@ public class ATCommandResponse {
 			throw new NullPointerException("Status cannot be null.");
 		
 		this.command = command;
-		this.response = response;
+		if (response != null)
+			this.response = response.clone();
+		else
+			this.response = null;
 		this.status = status;
 	}
 	
@@ -121,7 +126,9 @@ public class ATCommandResponse {
 	 *         {@code null} if there is not response data.
 	 */
 	public byte[] getResponse() {
-		return response;
+		if (response != null)
+			return response.clone();
+		return null;
 	}
 	
 	/**
@@ -133,7 +140,7 @@ public class ATCommandResponse {
 	public String getResponseString() {
 		if (response == null)
 			return null;
-		return new String(response);
+		return StringUtils.byteArrayToString(response);
 	}
 	
 	/**

@@ -202,7 +202,8 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 		this.clusterID = clusterID;
 		this.profileID = profileID;
 		this.receiveOptions = receiveOptions;
-		this.rfData = rfData;
+		if (rfData != null)
+			this.rfData = rfData.clone();
 		this.logger = LoggerFactory.getLogger(ExplicitRxIndicatorPacket.class);
 	}
 	
@@ -258,7 +259,7 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public XBee64BitAddress get64BitSourceAddress() {
+	public XBee64BitAddress get64bitSourceAddress() {
 		return sourceAddress64;
 	}
 	
@@ -269,7 +270,7 @@ public class ExplicitRxIndicatorPacket extends XBeeAPIPacket {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
-	public XBee16BitAddress get16BitSourceAddress() {
+	public XBee16BitAddress get16bitSourceAddress() {
 		return sourceAddress16;
 	}
 	

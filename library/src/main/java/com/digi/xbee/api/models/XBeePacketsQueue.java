@@ -384,7 +384,7 @@ public class XBeePacketsQueue {
 				return true;
 			break;
 		case EXPLICIT_RX_INDICATOR:
-			if (((ExplicitRxIndicatorPacket)xbeePacket).get64BitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+			if (((ExplicitRxIndicatorPacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
 			break;
 		default:

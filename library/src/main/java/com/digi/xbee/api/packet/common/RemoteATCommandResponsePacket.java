@@ -25,8 +25,8 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.StringUtils;
 
 /**
  * This class represents a Remote AT Command Response packet. Packet is built 
@@ -108,7 +108,7 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		index = index + 2;
 		
 		// 2 bytes of AT command.
-		String command = new String(new byte[]{payload[index], payload[index + 1]});
+		String command = StringUtils.byteArrayToString(new byte[]{payload[index], payload[index + 1]});
 		index = index + 2;
 				
 		// Status byte.
@@ -168,7 +168,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		this.sourceAddress16 = sourceAddress16;
 		this.command = command;
 		this.status = status;
-		this.commandValue = commandValue;
+		if (commandValue != null)
+			this.commandValue = commandValue.clone();
+		else
+			this.commandValue = null;
 		this.logger = LoggerFactory.getLogger(RemoteATCommandResponsePacket.class);
 	}
 	
@@ -182,8 +185,8 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		try {
 			data.write(sourceAddress64.getValue());
 			data.write(sourceAddress16.getValue());
-			data.write(ByteUtils.stringToByteArray(command));
-			data.write(status.getId());
+			data.write(StringUtils.stringToByteArray(command));
+			data.write(status.getID());
 			if (commandValue != null)
 				data.write(commandValue);
 		} catch (IOException e) {
@@ -252,7 +255,7 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		if (commandValue == null)
 			this.commandValue = null;
 		else
-			this.commandValue = commandValue.getBytes();
+			this.commandValue = StringUtils.stringToByteArray(commandValue);
 	}
 	
 	/**
@@ -261,7 +264,10 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @param commandValue The AT command response value.
 	 */
 	public void setCommandValue(byte[] commandValue) {
-		this.commandValue = commandValue;
+		if (commandValue != null)
+			this.commandValue = commandValue.clone();
+		else
+			this.commandValue = null;
 	}
 	
 	/**
@@ -270,7 +276,9 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @return The AT command response value.
 	 */
 	public byte[] getCommandValue() {
-		return commandValue;
+		if (commandValue != null)
+			return commandValue.clone();
+		return null;
 	}
 	
 	/**
@@ -282,7 +290,7 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	public String getCommandValueAsString() {
 		if (commandValue == null)
 			return null;
-		return new String(commandValue);
+		return StringUtils.byteArrayToString(commandValue);
 	}
 	
 	/*
@@ -303,11 +311,11 @@ public class RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("64-bit source address", HexUtils.prettyHexString(sourceAddress64.toString()));
 		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
-		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
-		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")");
+		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(StringUtils.stringToByteArray(command))) + " (" + command + ")");
+		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getID(), 1)) + " (" + status.getDescription() + ")");
 		if (commandValue != null) {
 			if (ATStringCommands.get(command) != null)
-				parameters.put("Response", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(commandValue)) + " (" + new String(commandValue) + ")");
+				parameters.put("Response", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(commandValue)) + " (" + StringUtils.byteArrayToString(commandValue) + ")");
 			else
 				parameters.put("Response", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(commandValue)));
 		}

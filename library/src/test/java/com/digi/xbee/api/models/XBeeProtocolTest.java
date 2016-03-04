@@ -16,9 +16,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -192,15 +191,15 @@ public class XBeeProtocolTest {
 	 * <p>Verify that the {@code determineProtocol()} method is able to obtain the protocol of any firmware file 
 	 * contained in the XCTU application.</p>
 	 * 
-	 * @throws FileNotFoundException 
+	 * @throws IOException
 	 */
 	@Test
-	public void testDetermineProtocol() throws FileNotFoundException {
+	public void testDetermineProtocol() throws IOException {
 		ArrayList<FirmwareEntry> firmwareEntries = new ArrayList<FirmwareEntry>();
 		
 		// Generate the list of firmware entries from the firmware_entries_xctu.txt file.
-		File firmwareEntriesFile = new File(getClass().getResource(FILE_FIRMWARE_ENTRIES).getFile());
-		BufferedReader reader = new BufferedReader(new FileReader(firmwareEntriesFile.getAbsolutePath()));
+		InputStream inputStream = getClass().getResourceAsStream(FILE_FIRMWARE_ENTRIES);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
 			String line = reader.readLine();
 			while (line != null) {
@@ -232,6 +231,10 @@ public class XBeeProtocolTest {
 			try {
 				reader.close();
 			} catch (IOException e1) { }
+		} finally {
+			try {
+				inputStream.close();
+			} catch (IOException e) { }
 		}
 		
 		// Verify that the determineProtocol method is able to determine the protocol of all the firmware entries of the list.

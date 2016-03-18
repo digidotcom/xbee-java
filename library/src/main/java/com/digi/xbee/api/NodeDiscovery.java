@@ -316,12 +316,14 @@ class NodeDiscovery {
 			
 			// In 802.15.4 devices, the discovery finishes when the 'end' command 
 			// is received, so it's not necessary to calculate the timeout.
-			if (xbeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4)
+			// This also applies to S1B devices working in compatibility mode.
+			boolean is802Compatible = is802Compatible(); 
+			if (!is802Compatible)
 				deadLine += calculateTimeout(listeners);
 			
 			sendNodeDiscoverCommand(id);
 			
-			if (xbeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4) {
+			if (!is802Compatible) {
 				// Wait for scan timeout.
 				while (discovering) {
 					if (System.currentTimeMillis() < deadLine)
@@ -624,5 +626,25 @@ class NodeDiscovery {
 	public String toString() {
 		return getClass().getName() + " [" + xbeeDevice.toString() + "] @" + 
 				Integer.toHexString(hashCode());
+	}
+	
+	/**
+	 * Checks whether the device performing the node discovery is a legacy 
+	 * 802.15.4 device or a S1B device working compatibility mode.
+	 * 
+	 * @return {@code true} if the device performing the node discovery is a
+	 *         legacy 802.15.4 device or S1B in compatibility mode, {@code false}
+	 *         otherwise.
+	 */
+	private boolean is802Compatible() {
+		if (xbeeDevice.getXBeeProtocol() != XBeeProtocol.RAW_802_15_4)
+			return false;
+		byte[] param = null;
+		try {
+			param = xbeeDevice.getParameter("C8");
+		} catch (Exception e) { }
+		if (param == null || ((param[0] & 0x2) == 2 ))
+			return true;
+		return false;
 	}
 }

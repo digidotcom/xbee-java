@@ -67,7 +67,13 @@ public enum HardwareVersionEnum {
 	XB24C_TH_DIP(0x2E, "XB24C (TH-DIP): XBee DIP"),
 	XLR_BASEBOARD(0x2F, "XLR Baseboard"),
 	XBP24C_S2C_SMT(0x30, "XBee PRO SMT"),
-	XTEND_GEN3(0x31, "XTend Gen 3");
+	SX_PRO(0x31, "SX Pro"),
+	S2D_SMT_PRO(0x32, "XBP24D: S2D SMT PRO"),
+	S2D_SMT_REG(0x33, "XB24D: S2D SMT Reg"),
+	S2D_TH_PRO(0x34, "XBP24D: S2D TH PRO"),
+	S2D_TH_REG(0x35, "XB24D: S2D TH Reg"),
+	SX(0x3E, "SX"),
+	XTR(0x3F, "XTR");
 	
 	// Variables
 	private final int value;

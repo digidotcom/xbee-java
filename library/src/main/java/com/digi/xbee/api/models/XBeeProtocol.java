@@ -33,6 +33,8 @@ public enum XBeeProtocol {
 	XC(10, "XSC"),
 	XLR(11, "XLR"),
 	XLR_DM(12, "XLR"), // TODO [XLR_DM] XLR device with DigiMesh support.
+	SX(13, "XBee SX"),
+	XLR_MODULE(14, "XLR Module"),
 	UNKNOWN(99, "Unknown");
 	
 	// Variables
@@ -105,78 +107,77 @@ public enum XBeeProtocol {
 	 * @see HardwareVersion
 	 */
 	public static XBeeProtocol determineProtocol(HardwareVersion hardwareVersion, String firmwareVersion) {
-		if (hardwareVersion == null || firmwareVersion == null || hardwareVersion.getValue() < 0x09)
+		if (hardwareVersion == null || firmwareVersion == null || hardwareVersion.getValue() < 0x09 
+				|| HardwareVersionEnum.get(hardwareVersion.getValue()) == null)
 			return UNKNOWN;
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XC09_009.getValue() 
-				|| hardwareVersion.getValue() == HardwareVersionEnum.XC09_038.getValue())
+		switch (HardwareVersionEnum.get(hardwareVersion.getValue())) {
+		case XC09_009:
+		case XC09_038:
 			return XCITE;
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XT09_XXX.getValue()) {
+		case XT09_XXX:
+		case XT09B_XXX:
 			if ((firmwareVersion.length() == 4 && firmwareVersion.startsWith("8"))
 					|| (firmwareVersion.length() == 5 && firmwareVersion.charAt(1) == '8'))
 				return XTEND_DM;
 			return XTEND;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XB24_AXX_XX.getValue() 
-				|| hardwareVersion.getValue() == HardwareVersionEnum.XBP24_AXX_XX.getValue()) {
+		case XB24_AXX_XX:
+		case XBP24_AXX_XX:
 			if ((firmwareVersion.length() == 4 && firmwareVersion.startsWith("8")))
-					return DIGI_MESH;
+				return DIGI_MESH;
 			return RAW_802_15_4;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XB24_BXIX_XXX.getValue() 
-				|| hardwareVersion.getValue() == HardwareVersionEnum.XBP24_BXIX_XXX.getValue()) {
+		case XB24_BXIX_XXX:
+		case XBP24_BXIX_XXX:
 			if ((firmwareVersion.length() == 4 && firmwareVersion.startsWith("1") && firmwareVersion.endsWith("20")) 
 					|| (firmwareVersion.length() == 4 && firmwareVersion.startsWith("2")))
 				return ZIGBEE;
 			else if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("3"))
 				return SMART_ENERGY;
 			return ZNET;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP09_DXIX_XXX.getValue()) {
+		case XBP09_DXIX_XXX:
 			if ((firmwareVersion.length() == 4 && firmwareVersion.startsWith("8") 
 					|| (firmwareVersion.length() == 4 && firmwareVersion.charAt(1) == '8'))
 					|| (firmwareVersion.length() == 5 && firmwareVersion.charAt(1) == '8'))
 				return DIGI_MESH;
 			return DIGI_POINT;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP09_XCXX_XXX.getValue())
+		case XBP09_XCXX_XXX:
 			return XC;
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP08_DXXX_XXX.getValue())
+		case XBP08_DXXX_XXX:
 			return DIGI_POINT;
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP24B.getValue()) {
+		case XBP24B:
 			if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("3"))
 				return SMART_ENERGY;
 			return ZIGBEE;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XB24_WF.getValue() 
-					|| hardwareVersion.getValue() == HardwareVersionEnum.WIFI_ATHEROS.getValue() 
-					|| hardwareVersion.getValue() == HardwareVersionEnum.SMT_WIFI_ATHEROS.getValue())
+		case XB24_WF:
+		case WIFI_ATHEROS:
+		case SMT_WIFI_ATHEROS:
 			return XBEE_WIFI;
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP24C.getValue() 
-					|| hardwareVersion.getValue() == HardwareVersionEnum.XB24C.getValue()) {
-			if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("5"))
+		case XBP24C:
+		case XB24C:
+			if (firmwareVersion.length() == 4 && (firmwareVersion.startsWith("5") || firmwareVersion.startsWith("6")))
 				return SMART_ENERGY;
+			else if (firmwareVersion.startsWith("2"))
+				return RAW_802_15_4;
 			return ZIGBEE;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XSC_GEN3.getValue() 
-					|| hardwareVersion.getValue() == HardwareVersionEnum.SRD_868_GEN3.getValue()) {
+		case XSC_GEN3:
+		case SRD_868_GEN3:
 			if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("8"))
 				return DIGI_MESH;
 			else if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("1"))
 				return DIGI_POINT;
 			return XC;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBEE_CELL_TH.getValue()) {
+		case XBEE_CELL_TH:
 			return UNKNOWN;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XLR_MODULE.getValue()) {
+		case XLR_MODULE:
 			// This is for the old version of the XLR we have (K60), and it is 
 			// reporting the firmware of the module (8001), this will change in 
 			// future (after K64 integration) reporting the hardware and firmware
 			// version of the baseboard (see the case HardwareVersionEnum.XLR_BASEBOARD).
 			// TODO maybe this should be removed in future, since this case will never be released.
-			return XLR;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XLR_BASEBOARD.getValue()) {
+			if (firmwareVersion.startsWith("1"))
+				return XLR;
+			else
+				return XLR_MODULE;
+		case XLR_BASEBOARD:
 			// XLR devices with K64 will report the baseboard hardware version, 
 			// and also firmware version (the one we have here is 1002, but this value
 			// is not being reported since is an old K60 version, the module fw version
@@ -185,25 +186,37 @@ public enum XBeeProtocol {
 			// TODO [XLR_DM] The next version of the XLR will add DigiMesh support should be added.
 			// Probably this XLR_DM and XLR will depend on the firmware version.
 			
-			return XLR;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XB900HP_NZ.getValue()) {
+			if (firmwareVersion.startsWith("1"))
+				return XLR;
+			else
+				return XLR_MODULE;
+		case XB900HP_NZ:
 			return DIGI_POINT;
-		}
-		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP24C_TH_DIP.getValue()
-				|| hardwareVersion.getValue() == HardwareVersionEnum.XB24C_TH_DIP.getValue()
-				|| hardwareVersion.getValue() == HardwareVersionEnum.XBP24C_S2C_SMT.getValue()) {
-			if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("5"))
+		case XBP24C_TH_DIP:
+		case XB24C_TH_DIP:
+		case XBP24C_S2C_SMT:
+			if (firmwareVersion.length() == 4 && (firmwareVersion.startsWith("5") || firmwareVersion.startsWith("6")))
 				return SMART_ENERGY;
+			else if (firmwareVersion.startsWith("2"))
+				return RAW_802_15_4;
+			return ZIGBEE;
+		case SX_PRO:
+		case SX:
+		case XTR:
+			if (firmwareVersion.startsWith("2"))
+				return XTEND;
+			else if (firmwareVersion.startsWith("8"))
+				return XTEND_DM;
+			else
+				return SX;
+		case S2D_SMT_PRO:
+		case S2D_SMT_REG:
+		case S2D_TH_PRO:
+		case S2D_TH_REG:
+			return ZIGBEE;
+		default:
 			return ZIGBEE;
 		}
-		// If the hardware is not in the list, lets return Unknown.
-		else if (HardwareVersionEnum.get(hardwareVersion.getValue()) == null) {
-			return UNKNOWN;
-		}
-		
-		// TODO: Logic protocol goes here.
-		return ZIGBEE;
 	}
 	
 	/*

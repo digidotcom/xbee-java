@@ -84,6 +84,7 @@ public class XBeeDeviceInstantiateTest {
 		// Real methods must be called so the checkers for bad parameters are executed.
 		PowerMockito.when(XBee.class, "createConnectiontionInterface", Mockito.anyString(), Mockito.anyInt()).thenCallRealMethod();
 		PowerMockito.when(XBee.class, "createConnectiontionInterface", Mockito.anyString(), Mockito.anyObject()).thenCallRealMethod();
+		PowerMockito.when(XBee.class, "getSerialConnectionInterfaceFactory").thenCallRealMethod();
 		
 		// Instantiate an XBeeDevice object with a null name.
 		try {

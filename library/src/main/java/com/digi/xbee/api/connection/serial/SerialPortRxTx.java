@@ -30,6 +30,9 @@ import java.util.TooManyListenersException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.XBee;
+import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.connection.ISerialConnectionInterfaceFactory;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InterfaceInUseException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
@@ -59,6 +62,35 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	private Logger logger;
 	
+	// Set a new SerialPortRxTxFactory as the serial connection interface factory. 
+	static {
+		XBee.setSerialConnectionInterfaceFactory(new SerialPortRxTxFactory());
+	}
+	
+	/**
+	 * 
+	 */
+	private static class SerialPortRxTxFactory implements ISerialConnectionInterfaceFactory {
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.digi.xbee.api.connection.ISerialConnectionInterfaceFactory#createInterface(String, int)
+		 */
+		@Override
+		public IConnectionInterface createInterface(String port, int baudrate) {
+			return new SerialPortRxTx(port, baudrate);
+		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.digi.xbee.api.connection.ISerialConnectionInterfaceFactory#createInterface(String, SerialPortParameters)
+		 */
+		@Override
+		public IConnectionInterface createInterface (String port, SerialPortParameters serialPortParameters) {
+			return new SerialPortRxTx(port, serialPortParameters);
+		}
+	}
+	
 	/**
 	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
 	 * the given parameters.
@@ -66,6 +98,7 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @param port Serial port name to use.
 	 * @param parameters Serial port parameters.
 	 * 
+	 * @throws IllegalArgumentException if {@code port.length == 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 * 
@@ -86,7 +119,8 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	 * @param parameters Serial port parameters.
 	 * @param receiveTimeout Serial port receive timeout in milliseconds.
 	 * 
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * @throws IllegalArgumentException if {@code port.length == 0} or 
+	 *                                  if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code port == null} or
 	 *                              if {@code parameters == null}.
 	 * 
@@ -102,12 +136,16 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/**
 	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
-	 * the given parameters.
+	 * the given baud rate.
+	 * 
+	 * <p>For the rest of parameters default values will be used.</p>
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
 	 *                 set by default.
 	 * 
+	 * @throws IllegalArgumentException if {@code port.length == 0} or
+	 *                                  if {@code baudRate < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see #DEFAULT_DATA_BITS
@@ -126,14 +164,18 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 	
 	/**
 	 * Class constructor. Instances a new {@code SerialPortRxTx} object using
-	 * the given parameters.
+	 * the given baud rate and receive timeout.
+	 * 
+	 * <p>For the rest of parameters default values will be used.</p>
 	 * 
 	 * @param port Serial port name to use.
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
 	 *                 set by default.
 	 * @param receiveTimeout Serial port receive timeout in milliseconds.
 	 * 
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
+	 * @throws IllegalArgumentException if {@code port.length == 0} or
+	 *                                  if {@code baudRate < 0} or
+	 *                                  if {@code receiveTimeout < 0}
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see #DEFAULT_DATA_BITS

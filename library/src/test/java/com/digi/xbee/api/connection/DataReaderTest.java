@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015 Digi International Inc.,
+ * Copyright (c) 2015-2016 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -24,6 +24,8 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -95,13 +97,19 @@ public class DataReaderTest {
 	
 	private TestConnectionInterface testCI;
 	
+	private ScheduledThreadPoolExecutor mockExecutorService;
+	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 	
 	class TestConnectionInterface implements IConnectionInterface {
 
-		boolean isOpen = false;
-		boolean alreadyRead = false;
+		boolean isOpen = true;
+		int counter = 4; // Because to read a packet the 
+		                 // 'connectionInterface.getInputStream()' is called 
+		                 // 3 times inside the 'while (running)' loop of the 
+		                 // DataReader 'run' method + 1.
+		boolean transmissionFinished = false;
 		
 		@Override
 		public void open() throws InterfaceInUseException,
@@ -122,10 +130,11 @@ public class DataReaderTest {
 
 		@Override
 		public InputStream getInputStream() {
-			if (alreadyRead)
-				return null;
-			
-			return mockInput;
+			if (counter > 0) {
+				counter--;
+				return mockInput;
+			}
+			return null;
 		}
 
 		@Override
@@ -167,6 +176,14 @@ public class DataReaderTest {
 			synchronized (this) {
 				this.notify();
 			}
+		}
+		
+		public void setAlreadyRead() {
+			counter = 0;
+		}
+		
+		public boolean isAlreadyRead() {
+			return counter > 0;
 		}
 	}
 	
@@ -232,13 +249,19 @@ public class DataReaderTest {
 		
 		mockQueue = Mockito.mock(XBeePacketsQueue.class);
 		PowerMockito.whenNew(XBeePacketsQueue.class).withNoArguments().thenReturn(mockQueue);
+		
+		mockExecutorService = Mockito.mock(ScheduledThreadPoolExecutor.class);
+		PowerMockito.mockStatic(Executors.class);
+		Mockito.when(Executors.newScheduledThreadPool(Mockito.anyInt())).thenReturn(mockExecutorService);
+		// Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, dataReceiveListeners.size()));
+		
 		Mockito.doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				testCI.alreadyRead = true;
+			public Object answer(InvocationOnMock invocation) throws Exception {
+				((Runnable) invocation.getArguments()[0]).run();
+				testCI.transmissionFinished = true;
 				return null;
 			}
-		}).when(mockQueue).addPacket(Mockito.any(XBeePacket.class));
+		}).when(mockExecutorService).execute(Mockito.any(Runnable.class));
 	}
 
 	/**
@@ -253,16 +276,16 @@ public class DataReaderTest {
 		boolean isWaiting = true;
 		
 		while (isWaiting) {
-			ThreadInfo[] infos = mbean.dumpAllThreads(true, true);
-			for (ThreadInfo threadInfo : infos) {
-				if (threadInfo.getThreadId() == threadID) {
-					if (threadInfo.getThreadState() == State.WAITING)
-						isWaiting = false;
-					else
-						Thread.sleep(50);
-					break;
-				}
+			ThreadInfo threadInfo = mbean.getThreadInfo(threadID);
+			if (threadInfo == null) {
+				Thread.sleep(50);
+				continue;
 			}
+			
+			if (threadInfo.getThreadState() == State.WAITING)
+				isWaiting = false;
+			else
+				Thread.sleep(50);
 		}
 	}
 
@@ -940,10 +963,10 @@ public class DataReaderTest {
 		Mockito.doAnswer(new Answer<Integer>() {
 			@Override
 			public Integer answer(InvocationOnMock invocation) throws Throwable {
-				if (testCI.alreadyRead)
+				if (testCI.isAlreadyRead())
 					return null;
 				
-				testCI.alreadyRead = true;
+				testCI.setAlreadyRead();
 				return 0x88;
 			}
 		}).when(mockInput).read();
@@ -977,10 +1000,10 @@ public class DataReaderTest {
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			@Override
 			public XBeePacket answer(InvocationOnMock invocation) throws Throwable {
-				if (testCI.alreadyRead)
+				if (testCI.isAlreadyRead())
 					return null;
 				
-				testCI.alreadyRead = true;
+				testCI.setAlreadyRead();
 				throw new InvalidPacketException();
 			}
 		}).when(mockParser).parsePacket(Mockito.eq(mockInput), Mockito.any(OperatingMode.class));
@@ -1242,7 +1265,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1284,7 +1307,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1326,7 +1349,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1368,7 +1391,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1410,7 +1433,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1452,7 +1475,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1494,7 +1517,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1536,7 +1559,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1578,7 +1601,7 @@ public class DataReaderTest {
 		
 		waitForInitialization(dataReader.getId());
 		testCI.notifyData();
-		while (dataReader.isRunning())
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
 			Thread.sleep(30);
 		
 		// Verify the result.
@@ -1600,10 +1623,10 @@ public class DataReaderTest {
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			@Override
 			public XBeePacket answer(InvocationOnMock invocation) throws Throwable {
-				if (testCI.alreadyRead)
+				if (testCI.isAlreadyRead())
 					return null;
 				
-				testCI.alreadyRead = true;
+				testCI.setAlreadyRead();
 				throw new IOException("Exception when reading");
 			}
 		}).when(mockInput).read();
@@ -1611,6 +1634,8 @@ public class DataReaderTest {
 		DataReader dataReader = new DataReader(testCI, OperatingMode.API, mockDevice);
 		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
 		dataReader.addPacketReceiveListener(packetListener);
+		
+		assertThat(testCI.isOpen(), is(equalTo(true)));
 		
 		// Call the method under test.
 		dataReader.start();
@@ -1623,6 +1648,7 @@ public class DataReaderTest {
 		// Verify the result.
 		Mockito.verify(mockQueue, Mockito.times(0)).addPacket(Mockito.any(XBeePacket.class));
 		Mockito.verify(packetListener, Mockito.times(0)).packetReceived(Mockito.any(XBeePacket.class));
+		assertThat(testCI.isOpen(), is(equalTo(false)));
 	}
 	
 	/**
@@ -1634,16 +1660,18 @@ public class DataReaderTest {
 		TestConnectionInterface testCI = new TestConnectionInterface() {
 			@Override
 			public InputStream getInputStream() {
-				if (alreadyRead)
+				if (isAlreadyRead())
 					return null;
 				
-				alreadyRead = true;
+				setAlreadyRead();
 				return mockInput;
 			}
 		};
 		DataReader dataReader = new DataReader(testCI, OperatingMode.AT, mockDevice);
 		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
 		dataReader.addPacketReceiveListener(packetListener);
+		
+		assertThat(testCI.isOpen(), is(equalTo(true)));
 		
 		// Call the method under test.
 		dataReader.start();
@@ -1657,6 +1685,7 @@ public class DataReaderTest {
 		Mockito.verify(mockInput, Mockito.times(0)).read();
 		Mockito.verify(mockQueue, Mockito.times(0)).addPacket(Mockito.any(XBeePacket.class));
 		Mockito.verify(packetListener, Mockito.times(0)).packetReceived(Mockito.any(XBeePacket.class));
+		assertThat(testCI.isOpen(), is(equalTo(false)));
 	}
 	
 	/**
@@ -1668,13 +1697,15 @@ public class DataReaderTest {
 		TestConnectionInterface testCI = new TestConnectionInterface() {
 			@Override
 			public InputStream getInputStream() {
-				alreadyRead = true;
+				setAlreadyRead();
 				return null;
 			}
 		};
 		DataReader dataReader = new DataReader(testCI, OperatingMode.AT, mockDevice);
 		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
 		dataReader.addPacketReceiveListener(packetListener);
+		
+		assertThat(testCI.isOpen(), is(equalTo(true)));
 		
 		// Call the method under test.
 		dataReader.start();
@@ -1688,5 +1719,6 @@ public class DataReaderTest {
 		Mockito.verify(mockInput, Mockito.times(0)).read();
 		Mockito.verify(mockQueue, Mockito.times(0)).addPacket(Mockito.any(XBeePacket.class));
 		Mockito.verify(packetListener, Mockito.times(0)).packetReceived(Mockito.any(XBeePacket.class));
+		assertThat(testCI.isOpen(), is(equalTo(false)));
 	}
 }

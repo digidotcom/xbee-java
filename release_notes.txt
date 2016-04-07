@@ -1,10 +1,10 @@
                       XBee Java Library
  
                   Release Notes (PN 93000776)
-                         Build 1.1.0
-                        25 May, 2015
+                         Build 1.1.1
+                        7 April, 2016
  
-              (c) 2014-2015, Digi International
+              (c) 2014-2016, Digi International
                      http://www.digi.com
  
 Introduction
@@ -14,6 +14,12 @@ This document provides the latest release information for the XBee Java
 Library, which allows customers to easily develop Java applications 
 that communicate with XBee modules.
 
+ XBee Java Library v1.1.1, April 2016
+----------------------------------------------------------------------
+ 1. Changes with respect to previous version:
+     * Added new unit tests.
+     * Minor code improvements.
+     * Minor bug fixes.
 
  XBee Java Library v1.1.0, May 2015
 ----------------------------------------------------------------------

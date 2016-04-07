@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.digi.xbee</groupId>
 	<artifactId>xbjlib-parent</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<packaging>pom</packaging>
 	<name>XBee Java Library Project</name>
 	<inceptionYear>2014</inceptionYear>
@@ -56,7 +56,6 @@
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
 		<javadoc.plugin.version>2.10.3</javadoc.plugin.version>
 		<rxtx.version>2.2</rxtx.version>
-		<jssc.version>2.8.0</jssc.version>
 		<slf4j-api.version>1.7.12</slf4j-api.version>
 		<slf4j-jdk1.4.version>1.7.12</slf4j-jdk1.4.version>
 		<slf4j-simple.version>1.7.12</slf4j-simple.version>
@@ -133,11 +132,6 @@
 			<artifactId>rxtx-native</artifactId>
 			<version>${rxtx.version}</version>
 			<classifier>${build.type}</classifier>
-		</dependency>
-		<dependency>
-			<groupId>org.scream3r</groupId>
-			<artifactId>jssc</artifactId>
-			<version>${jssc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

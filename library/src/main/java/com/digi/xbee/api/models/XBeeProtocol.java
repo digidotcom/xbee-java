@@ -157,6 +157,8 @@ public enum XBeeProtocol {
 				return SMART_ENERGY;
 			else if (firmwareVersion.startsWith("2"))
 				return RAW_802_15_4;
+			else if (firmwareVersion.startsWith("9"))
+				return DIGI_MESH;
 			return ZIGBEE;
 		case XSC_GEN3:
 		case SRD_868_GEN3:
@@ -199,6 +201,8 @@ public enum XBeeProtocol {
 				return SMART_ENERGY;
 			else if (firmwareVersion.startsWith("2"))
 				return RAW_802_15_4;
+			else if (firmwareVersion.startsWith("9"))
+				return DIGI_MESH;
 			return ZIGBEE;
 		case SX_PRO:
 		case SX:

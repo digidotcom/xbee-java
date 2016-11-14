@@ -225,6 +225,19 @@
 				<build.type>linux_x86_64</build.type>
 			</properties>
 		</profile>
+
+		<profile>
+			<id>linux-amd64</id>
+			<activation>
+				<os>
+					<name>linux</name>
+					<arch>amd64</arch>
+				</os>
+			</activation>
+			<properties>
+				<build.type>linux_x86_64</build.type>
+			</properties>
+		</profile>
 		
 		<!-- Mac -->
 		<profile>

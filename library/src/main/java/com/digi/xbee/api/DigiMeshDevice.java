@@ -27,6 +27,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
  * This class represents a local DigiMesh device.
  * 
  * @see XBeeDevice
+ * @see CellularDevice
  * @see DigiPointDevice
  * @see Raw802Device
  * @see ZigBeeDevice

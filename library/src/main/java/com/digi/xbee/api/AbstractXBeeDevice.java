@@ -407,6 +407,7 @@ public abstract class AbstractXBeeDevice {
 		XBeeProtocol protocol = getXBeeProtocol();
 		if (protocol != XBeeProtocol.DIGI_MESH 
 				&& protocol != XBeeProtocol.DIGI_POINT
+				&& protocol != XBeeProtocol.CELLULAR
 				&& protocol != XBeeProtocol.UNKNOWN) {
 			response = getParameter("MY");
 			xbee16BitAddress = new XBee16BitAddress(response);

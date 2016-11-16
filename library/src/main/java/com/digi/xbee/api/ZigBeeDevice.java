@@ -34,6 +34,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * This class represents a local ZigBee device.
  * 
  * @see XBeeDevice
+ * @see CellularDevice
  * @see DigiMeshDevice
  * @see DigiPointDevice
  * @see Raw802Device

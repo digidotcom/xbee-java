@@ -35,6 +35,7 @@ public enum XBeeProtocol {
 	XLR_DM(12, "XLR"), // TODO [XLR_DM] XLR device with DigiMesh support.
 	SX(13, "XBee SX"),
 	XLR_MODULE(14, "XLR Module"),
+	CELLULAR(15, "Cellular"),
 	UNKNOWN(99, "Unknown");
 	
 	// Variables
@@ -218,6 +219,8 @@ public enum XBeeProtocol {
 		case S2D_TH_PRO:
 		case S2D_TH_REG:
 			return ZIGBEE;
+		case CELLULAR:
+			return CELLULAR;
 		default:
 			return ZIGBEE;
 		}

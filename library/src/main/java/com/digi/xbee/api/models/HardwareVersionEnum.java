@@ -73,7 +73,8 @@ public enum HardwareVersionEnum {
 	S2D_TH_PRO(0x34, "XBP24D: S2D TH PRO"),
 	S2D_TH_REG(0x35, "XB24D: S2D TH Reg"),
 	SX(0x3E, "SX"),
-	XTR(0x3F, "XTR");
+	XTR(0x3F, "XTR"),
+	CELLULAR(0x40, "CELLULAR");
 	
 	// Variables
 	private final int value;

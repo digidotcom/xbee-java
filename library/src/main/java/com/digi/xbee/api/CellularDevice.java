@@ -1,0 +1,378 @@
+/**
+ * Copyright (c) 2016 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
+package com.digi.xbee.api;
+
+import java.util.Set;
+
+import com.digi.xbee.api.connection.IConnectionInterface;
+import com.digi.xbee.api.connection.serial.SerialPortParameters;
+import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.TimeoutException;
+import com.digi.xbee.api.exceptions.XBeeDeviceException;
+import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.io.IOLine;
+import com.digi.xbee.api.io.IOMode;
+import com.digi.xbee.api.io.IOSample;
+import com.digi.xbee.api.io.IOValue;
+import com.digi.xbee.api.models.CellularAssociationIndicationStatus;
+import com.digi.xbee.api.models.PowerLevel;
+import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeIMEIAddress;
+import com.digi.xbee.api.models.XBeeProtocol;
+import com.digi.xbee.api.utils.ByteUtils;
+
+/**
+ * This class represents a local Cellular device.
+ * 
+ * @see XBeeDevice
+ * @see DigiMeshDevice
+ * @see DigiPointDevice
+ * @see Raw802Device
+ * @see ZigBeeDevice
+ */
+public class CellularDevice extends WLANDevice {
+
+	// Constants
+	private static final String OPERATION_EXCEPTION = "Operation not supported in Cellular protocol.";
+	
+	// Variables
+	private XBeeIMEIAddress imeiAddress;
+	
+	/**
+	 * Class constructor. Instantiates a new {@code CellularDevice} object in 
+	 * the given port name and baud rate.
+	 * 
+	 * @param port Serial port name where Cellular device is attached to.
+	 * @param baudRate Serial port baud rate to communicate with the device. 
+	 *                 Other connection parameters will be set as default (8 
+	 *                 data bits, 1 stop bit, no parity, no flow control).
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 0}.
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see #CellularDevice(IConnectionInterface)
+	 * @see #CellularDevice(String, SerialPortParameters)
+	 * @see #CellularDevice(String, int, int, int, int, int)
+	 */
+	public CellularDevice(String port, int baudRate) {
+		this(XBee.createConnectiontionInterface(port, baudRate));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code CellularDevice} object in 
+	 * the given serial port name and settings.
+	 * 
+	 * @param port Serial port name where Cellular device is attached to.
+	 * @param baudRate Serial port baud rate to communicate with the device.
+	 * @param dataBits Serial port data bits.
+	 * @param stopBits Serial port data bits.
+	 * @param parity Serial port data bits.
+	 * @param flowControl Serial port data bits.
+	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 0} or
+	 *                                  if {@code dataBits < 0} or
+	 *                                  if {@code stopBits < 0} or
+	 *                                  if {@code parity < 0} or
+	 *                                  if {@code flowControl < 0}.
+	 * @throws NullPointerException if {@code port == null}.
+	 * 
+	 * @see #CellularDevice(IConnectionInterface)
+	 * @see #CellularDevice(String, int)
+	 * @see #CellularDevice(String, SerialPortParameters)
+	 */
+	public CellularDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
+		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code CellularDevice} object in 
+	 * the given serial port name and parameters.
+	 * 
+	 * @param port Serial port name where Cellular device is attached to.
+	 * @param serialPortParameters Object containing the serial port parameters.
+	 * 
+	 * @throws NullPointerException if {@code port == null} or
+	 *                              if {@code serialPortParameters == null}.
+	 * 
+	 * @see #CellularDevice(IConnectionInterface)
+	 * @see #CellularDevice(String, int)
+	 * @see #CellularDevice(String, int, int, int, int, int)
+	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 */
+	public CellularDevice(String port, SerialPortParameters serialPortParameters) {
+		this(XBee.createConnectiontionInterface(port, serialPortParameters));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code CellularDevice} object with 
+	 * the given connection interface.
+	 * 
+	 * @param connectionInterface The connection interface with the physical 
+	 *                            Cellular device.
+	 * 
+	 * @throws NullPointerException if {@code connectionInterface == null}
+	 * 
+	 * @see #CellularDevice(String, int)
+	 * @see #CellularDevice(String, SerialPortParameters)
+	 * @see #CellularDevice(String, int, int, int, int, int)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 */
+	public CellularDevice(IConnectionInterface connectionInterface) {
+		super(connectionInterface);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#open()
+	 */
+	@Override
+	public void open() throws XBeeException {
+		super.open();
+		if (xbeeProtocol != XBeeProtocol.CELLULAR)
+			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.XBeeDevice#getXBeeProtocol()
+	 */
+	@Override
+	public XBeeProtocol getXBeeProtocol() {
+		return XBeeProtocol.CELLULAR;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#readDeviceInfo()
+	 */
+	@Override
+	public void readDeviceInfo() throws TimeoutException, XBeeException {
+		super.readDeviceInfo();
+		
+		// Generate the IMEI address.
+		imeiAddress = new XBeeIMEIAddress(xbee64BitAddress.getValue());
+	}
+	
+	/**
+	 * Returns the IMEI address of this Cellular device.
+	 * 
+	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>
+	 * 
+	 * @return The IMEI address of this Cellular device.
+	 * 
+	 * @see com.digi.xbee.api.models.XBeeIMEIAddress
+	 */
+	public XBeeIMEIAddress getIMEIAddress() {
+		return imeiAddress;
+	}
+	
+	/**
+	 * Returns the current association status of this Cellular device.
+	 * 
+	 * <p>It indicates occurrences of errors during the modem initialization 
+	 * and connection.</p>
+	 * 
+	 * @return The association indication status of the Cellular device.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws TimeoutException if there is a timeout getting the association 
+	 *                          indication status.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see com.digi.xbee.api.models.CellularAssociationIndicationStatus
+	 */
+	public CellularAssociationIndicationStatus getCellularAssociationIndicationStatus() throws TimeoutException, 
+			XBeeException {
+		byte[] associationIndicationValue = getParameter("AI");
+		return CellularAssociationIndicationStatus.get(ByteUtils.byteArrayToInt(associationIndicationValue));
+	}
+	
+	/**
+	 * @deprecated Cellular protocol does not have an associated 64-bit address.
+	 */
+	@Override
+	public XBee64BitAddress get64BitAddress() {
+		// Cellular protocol does not have 64-bit address.
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public int getADCValue(IOLine ioLine) throws TimeoutException,
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public Set<IOLine> getDIOChangeDetection() throws TimeoutException,
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setDIOChangeDetection(Set<IOLine> lines)
+			throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException,
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setDIOValue(IOLine ioLine, IOValue ioValue)
+			throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public IOMode getIOConfiguration(IOLine ioLine) throws TimeoutException,
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIOConfiguration(IOLine ioLine, IOMode ioMode)
+			throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public int getIOSamplingRate() throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIOSamplingRate(int rate) throws TimeoutException,
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public String getNodeID() {
+		// Cellular protocol does not have Node Identifier.
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setNodeID(String nodeID) throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public PowerLevel getPowerLevel() throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setPowerLevel(PowerLevel powerLevel) throws TimeoutException,
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public double getPWMDutyCycle(IOLine ioLine) throws TimeoutException, 
+			XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle)
+			throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in Cellular protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public IOSample readIOSample() throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+}

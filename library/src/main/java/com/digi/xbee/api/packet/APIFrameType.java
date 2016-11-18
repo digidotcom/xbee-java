@@ -31,6 +31,8 @@ public enum APIFrameType {
 	TRANSMIT_REQUEST (0x10, "Transmit Request"),
 	EXPLICIT_ADDRESSING_COMMAND_FRAME (0x11, "Explicit Addressing Command Frame"),
 	REMOTE_AT_COMMAND_REQUEST (0x17, "Remote AT Command Request"),
+	TX_SMS (0x1F, "TX SMS"),
+	TX_IPV4 (0x20, "TX IPv4"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),
 	RX_IO_64 (0x82, "IO Data Sample RX 64-bit Address Indicator"),
@@ -43,6 +45,8 @@ public enum APIFrameType {
 	EXPLICIT_RX_INDICATOR (0x91, "Explicit RX Indicator"),
 	IO_DATA_SAMPLE_RX_INDICATOR (0x92, "IO Data Sample RX Indicator"),
 	REMOTE_AT_COMMAND_RESPONSE (0x97, "Remote Command Response"),
+	RX_SMS (0x9F, "RX SMS"),
+	RX_IPV4 (0xB0, "RX IPv4"),
 	GENERIC (0xFF, "Generic");
 	
 	// Variables.

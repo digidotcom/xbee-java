@@ -136,7 +136,11 @@ public class XBeeTransmitStatusTest {
 	 */
 	@Test
 	public void testXBeeTransmitStatusStaticAccess() {
-		for (XBeeTransmitStatus status: transmitStatusValues)
+		for (XBeeTransmitStatus status: transmitStatusValues) {
+			// Do not check deprecated entry.
+			if (status == XBeeTransmitStatus.UDP_SRC_PORT_NOT_MATCH_LISTENING_PORT)
+				continue;
 			assertEquals(status, XBeeTransmitStatus.get(status.getId()));
+		}
 	}
 }

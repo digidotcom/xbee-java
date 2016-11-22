@@ -16,6 +16,7 @@ import java.util.Set;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
+import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
@@ -23,11 +24,14 @@ import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOMode;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.io.IOValue;
+import com.digi.xbee.api.listeners.ISMSReceiveListener;
 import com.digi.xbee.api.models.CellularAssociationIndicationStatus;
 import com.digi.xbee.api.models.PowerLevel;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeIMEIAddress;
 import com.digi.xbee.api.models.XBeeProtocol;
+import com.digi.xbee.api.packet.XBeePacket;
+import com.digi.xbee.api.packet.cellular.TXSMSPacket;
 import com.digi.xbee.api.utils.ByteUtils;
 
 /**
@@ -374,5 +378,105 @@ public class CellularDevice extends WLANDevice {
 	public IOSample readIOSample() throws TimeoutException, XBeeException {
 		// Not supported in Cellular.
 		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addSMSListener(com.digi.xbee.api.listeners.ISMSReceiveListener)
+	 */
+	@Override
+	public void addSMSListener(ISMSReceiveListener listener) {
+		super.addSMSListener(listener);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeSMSListener(com.digi.xbee.api.listeners.ISMSReceiveListener)
+	 */
+	@Override
+	public void removeSMSListener(ISMSReceiveListener listener) {
+		super.removeSMSListener(listener);
+	}
+	
+	/**
+	 * Sends the provided SMS message to the given phone number.
+	 * 
+	 * <p>This method blocks till a success or error response arrives or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations use the method 
+	 * {@link #sendSMSAsync(String, String)}.</p>
+	 * 
+	 * @param phoneNumber The phone number to send the SMS to.
+	 * @param data String containing the text of the SMS.
+	 * 
+	 * @throws IllegalArgumentException if {@code phoneNumber.length() > 20} or
+	 *                                  if {@code phoneNumber} is invalid.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code phoneNumber == null} or 
+	 *                              if {@code data == null}.
+	 * @throws TimeoutException if there is a timeout sending the SMS.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #sendSMSAsync(String, String)
+	 */
+	public void sendSMS(String phoneNumber, String data) throws TimeoutException, XBeeException {
+		if (phoneNumber == null)
+			throw new NullPointerException("Phone number cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send SMS from a remote device.");
+		
+		logger.debug(toString() + "Sending SMS to {} >> {}.", phoneNumber, data);
+		
+		XBeePacket xbeePacket = new TXSMSPacket(getNextFrameID(), phoneNumber, data);
+		
+		sendAndCheckXBeePacket(xbeePacket, false);
+	}
+	
+	/**
+	 * Sends asynchronously the provided SMS to the given phone number.
+	 * 
+	 * <p>Asynchronous transmissions do not wait for answer or for transmit 
+	 * status packet.</p>
+	 * 
+	 * @param phoneNumber The phone number to send the SMS to.
+	 * @param data String containing the text of the SMS.
+	 * 
+	 * @throws IllegalArgumentException if {@code phoneNumber.length() > 20} or
+	 *                                  if {@code phoneNumber} is invalid.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code phoneNumber == null} or 
+	 *                              if {@code data == null}.
+	 * @throws TimeoutException if there is a timeout sending the SMS.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #sendSMS(String, String)
+	 */
+	public void sendSMSAsync(String phoneNumber, String data) throws TimeoutException, XBeeException {
+		if (phoneNumber == null)
+			throw new NullPointerException("Phone number cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send SMS from a remote device.");
+		
+		logger.debug(toString() + "Sending SMS asynchronously to {} >> {}.", phoneNumber, data);
+		
+		XBeePacket xbeePacket = new TXSMSPacket(getNextFrameID(), phoneNumber, data);
+		
+		sendAndCheckXBeePacket(xbeePacket, true);
 	}
 }

@@ -33,10 +33,14 @@ import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
+import com.digi.xbee.api.listeners.INetworkDataReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
+import com.digi.xbee.api.listeners.ISMSReceiveListener;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
+import com.digi.xbee.api.models.NetworkMessage;
+import com.digi.xbee.api.models.SMSMessage;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -47,10 +51,12 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
+import com.digi.xbee.api.packet.cellular.RXSMSPacket;
 import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
+import com.digi.xbee.api.packet.network.RXIPv4Packet;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
@@ -84,6 +90,8 @@ public class DataReader extends Thread {
 	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
 	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<IModemStatusReceiveListener>();
 	private ArrayList<IExplicitDataReceiveListener> explicitDataReceiveListeners = new ArrayList<IExplicitDataReceiveListener>();
+	private ArrayList<INetworkDataReceiveListener> networkDataReceiveListeners = new ArrayList<INetworkDataReceiveListener>();
+	private ArrayList<ISMSReceiveListener> smsReceiveListeners = new ArrayList<ISMSReceiveListener>();
 	
 	private Logger logger;
 	
@@ -379,6 +387,91 @@ public class DataReader extends Thread {
 		}
 	}
 	
+	/**
+	 * Adds the given network data receive listener to the list of listeners 
+	 * that will be notified when a network data packet is received.
+	 * 
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new network data packets 
+	 *                 are received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
+	 * @see #removeNetworkDataReceiveListener(INetworkDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 */
+	public void addNetworkDataReceiveListener(INetworkDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		synchronized (networkDataReceiveListeners) {
+			if (!networkDataReceiveListeners.contains(listener))
+				networkDataReceiveListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given network data receive listener from the list of 
+	 * network data receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Network data receive listener to remove from the list.
+	 * 
+	 * @see #addNetworkDataReceiveListener(INetworkDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 */
+	public void removeNetworkDataReceiveListener(INetworkDataReceiveListener listener) {
+		synchronized (networkDataReceiveListeners) {
+			if (networkDataReceiveListeners.contains(listener))
+				networkDataReceiveListeners.remove(listener);
+		}
+	}
+	
+	/**
+	 * Adds the given SMS receive listener to the list of listeners that will 
+	 * be notified when an SMS packet is received.
+	 * 
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new SMS packet is received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}.
+	 * 
+	 * @see #removeSMSReceiveListener(ISMSReceiveListener)
+	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 */
+	public void addSMSReceiveListener(ISMSReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		synchronized (smsReceiveListeners) {
+			if (!smsReceiveListeners.contains(listener))
+				smsReceiveListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given SMS receive listener from the list of SMS receive 
+	 * listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener SMS receive listener to remove from the list.
+	 * 
+	 * @see #addSMSReceiveListener(ISMSReceiveListener)
+	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 */
+	public void removeSMSReceiveListener(ISMSReceiveListener listener) {
+		synchronized (smsReceiveListeners) {
+			if (smsReceiveListeners.contains(listener))
+				smsReceiveListeners.remove(listener);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -524,6 +617,20 @@ public class DataReader extends Thread {
 				}
 				notifyExplicitDataReceived(new ExplicitXBeeMessage(remoteDevice, sourceEndpoint, destEndpoint, clusterID, profileID, data, explicitDataPacket.isBroadcast()));
 				break;
+			case RX_IPV4:
+				RXIPv4Packet rxIPv4Packet = (RXIPv4Packet)apiPacket;
+				notifyNetworkDataReceived(new NetworkMessage(
+						rxIPv4Packet.getDestAddress(), 
+						rxIPv4Packet.getSourcePort(), 
+						rxIPv4Packet.getDestPort(),
+						rxIPv4Packet.getProtocol(),
+						rxIPv4Packet.getData(),
+						apiPacket.isBroadcast()));
+				break;
+			case RX_SMS:
+				RXSMSPacket rxSMSPacket = (RXSMSPacket)apiPacket;
+				notifySMSReceived(new SMSMessage(rxSMSPacket.getPhoneNumber(), rxSMSPacket.getData()));
+				break;
 			default:
 				break;
 			}
@@ -572,6 +679,9 @@ public class DataReader extends Thread {
 		XBee16BitAddress addr16 = null;
 		
 		XBeeNetwork network = xbeeDevice.getNetwork();
+		// There are protocols that do not support the network feature.
+		if (network == null)
+			return null;
 		
 		switch(apiType) {
 		case RECEIVE_PACKET:
@@ -881,6 +991,89 @@ public class DataReader extends Thread {
 							 twice. That is, let the listener to finish its job. */
 							synchronized (listener) {
 								listener.explicitDataReceived(explicitXBeeMessage);
+							}
+						}
+					});
+				}
+				executor.shutdown();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed network data receive listeners that a new network 
+	 * data packet has been received in form of a {@code NetworkMessage}.
+	 *
+	 * @param networkMessage The network message to be sent to subscribed 
+	 *                       network data listeners.
+	 * 
+	 * @see com.digi.xbee.api.models.NetworkMessage
+	 */
+	private void notifyNetworkDataReceived(final NetworkMessage networkMessage) {
+		if (networkMessage.isBroadcast())
+			logger.info(connectionInterface.toString() + 
+					"Broadcast network data received from {} >> {}.", networkMessage.getIPAddress(), HexUtils.prettyHexString(networkMessage.getData()));
+		else
+			logger.info(connectionInterface.toString() + 
+					"Network data received from {} >> {}.", networkMessage.getIPAddress(), HexUtils.prettyHexString(networkMessage.getData()));
+		
+		try {
+			synchronized (networkDataReceiveListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						networkDataReceiveListeners.size()));
+				for (final INetworkDataReceiveListener listener:networkDataReceiveListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							/* Synchronize the listener so it is not called 
+							 twice. That is, let the listener to finish its job. */
+							synchronized (listener) {
+								listener.networkDataReceived(networkMessage);
+							}
+						}
+					});
+				}
+				executor.shutdown();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed SMS receive listeners that a new SMS packet has 
+	 * been received in form of an {@code SMSMessage}.
+	 *
+	 * @param smsMessage The SMS message to be sent to subscribed SMS listeners.
+	 * 
+	 * @see com.digi.xbee.api.models.SMSMessage
+	 */
+	private void notifySMSReceived(final SMSMessage smsMessage) {
+		logger.info(connectionInterface.toString() + 
+				"SMS received from {} >> {}.", smsMessage.getPhoneNumber(), smsMessage.getData());
+		
+		try {
+			synchronized (smsReceiveListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						smsReceiveListeners.size()));
+				for (final ISMSReceiveListener listener:smsReceiveListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							/* Synchronize the listener so it is not called 
+							 twice. That is, let the listener to finish its job. */
+							synchronized (listener) {
+								listener.smsReceived(smsMessage);
 							}
 						}
 					});

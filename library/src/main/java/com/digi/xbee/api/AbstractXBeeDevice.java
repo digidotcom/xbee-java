@@ -37,8 +37,10 @@ import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
+import com.digi.xbee.api.listeners.INetworkDataReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
+import com.digi.xbee.api.listeners.ISMSReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
@@ -797,6 +799,97 @@ public abstract class AbstractXBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeExplicitDataReceiveListener(listener);
+	}
+	
+	
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new network data is received. 
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Listener to be notified when new network data is 
+	 *                 received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #removeNetworkDataListener(INetworkDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 */
+	protected void addNetworkDataListener(INetworkDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		if (dataReader == null)
+			return;
+		dataReader.addNetworkDataReceiveListener(listener);
+	}
+	
+	/**
+	 * Removes the provided listener from the list of network data listeners. 
+	 * 
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #addNetworkDataListener(INetworkDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 */
+	protected void removeNetworkDataListener(INetworkDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		if (dataReader == null)
+			return;
+		dataReader.removeNetworkDataReceiveListener(listener);
+	}
+	
+	
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new SMS is received. 
+	 * 
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 * 
+	 * @param listener Listener to be notified when new SMS is received.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #removeSMSListener(ISMSReceiveListener)
+	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 */
+	protected void addSMSListener(ISMSReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		if (dataReader == null)
+			return;
+		dataReader.addSMSReceiveListener(listener);
+	}
+	
+	/**
+	 * Removes the provided listener from the list of SMS listeners. 
+	 * 
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be removed from the list of listeners.
+	 * 
+	 * @throws NullPointerException if {@code listener == null}
+	 * 
+	 * @see #addSMSListener(ISMSReceiveListener)
+	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 */
+	protected void removeSMSListener(ISMSReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+		
+		if (dataReader == null)
+			return;
+		dataReader.removeSMSReceiveListener(listener);
 	}
 	
 	/**

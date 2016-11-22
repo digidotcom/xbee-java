@@ -33,6 +33,11 @@ public class IP32BitAddress {
 	 */
 	public static final IP32BitAddress BROADCAST_ADDRESS = new IP32BitAddress("255.255.255.255");
 	
+	/**
+	 * Localhost IP address (value: "127.0.0.1").
+	 */
+	public static final IP32BitAddress LOCALHOST_ADDRESS = new IP32BitAddress("127.0.0.1");
+	
 	private static final String ERROR_IP_NULL = "IP address cannot be null.";
 	private static final String ERROR_IP_TOO_LONG = "IP address cannot be longer than 4 bytes.";
 	private static final String ERROR_IP_INVALID = "Invalid IP address.";

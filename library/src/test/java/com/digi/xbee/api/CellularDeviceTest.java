@@ -52,7 +52,7 @@ public class CellularDeviceTest {
 	public void setup() throws Exception {
 		// Suppress the 'readDeviceInfo' method of the parent class so that it is not
 		// called from the child (CellularDevice) class.
-		PowerMockito.suppress(PowerMockito.method(WLANDevice.class, "readDeviceInfo"));
+		PowerMockito.suppress(PowerMockito.method(IPDevice.class, "readDeviceInfo"));
 		
 		// Spy the CellularDevice class.
 		SerialPortRxTx mockPort = Mockito.mock(SerialPortRxTx.class);
@@ -85,7 +85,7 @@ public class CellularDeviceTest {
 		
 		// Call the readDeviceInfo method.
 		cellularDevice.readDeviceInfo();
-		Mockito.verify((WLANDevice)cellularDevice, Mockito.times(1)).readDeviceInfo();
+		Mockito.verify((IPDevice)cellularDevice, Mockito.times(1)).readDeviceInfo();
 		
 		// Verify that the IMEI address was generated.
 		assertEquals(imeiAddress, cellularDevice.getIMEIAddress());

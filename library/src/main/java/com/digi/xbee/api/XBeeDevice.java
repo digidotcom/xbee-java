@@ -63,7 +63,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 
 	// Constants.
 	private static int TIMEOUT_RESET = 5000;
-	private static int TIMEOUT_READ_PACKET = 3000;
+	protected static int TIMEOUT_READ_PACKET = 3000;
 	
 	private static String COMMAND_MODE_CHAR = "+";
 	private static String COMMAND_MODE_OK = "OK\r";

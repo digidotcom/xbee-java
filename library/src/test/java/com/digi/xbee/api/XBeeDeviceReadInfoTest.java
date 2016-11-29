@@ -66,6 +66,7 @@ public class XBeeDeviceReadInfoTest {
 	private ZigBeeDevice zbDevice;
 	private Raw802Device r802Device;
 	private CellularDevice cellularDevice;
+	private WiFiDevice wifiDevice;
 	
 	@Before
 	public void setup() throws Exception {
@@ -78,6 +79,7 @@ public class XBeeDeviceReadInfoTest {
 		zbDevice = PowerMockito.spy(new ZigBeeDevice(mockPort));
 		r802Device = PowerMockito.spy(new Raw802Device(mockPort));
 		cellularDevice = PowerMockito.spy(new CellularDevice(mockPort));
+		wifiDevice = PowerMockito.spy(new WiFiDevice(mockPort));
 	}
 	
 	/**
@@ -617,6 +619,50 @@ public class XBeeDeviceReadInfoTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
+	 * <p>Verify that device info of a ZigBee local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidWiFiClassForZBDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.ZIGBEE;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + wifiDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(wifiDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(wifiDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(wifiDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(wifiDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(wifiDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		wifiDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
 	 * <p>Verify that device info of a DigiPoint local device cannot be read if 
 	 * the class for the specified device is not the right one. It is, there is 
 	 * an AT command exception reading the parameter.</p>
@@ -788,6 +834,50 @@ public class XBeeDeviceReadInfoTest {
 		
 		// Execute the method under test.
 		cellularDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a DigiPoint local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidWiFiClassForDPDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.DIGI_POINT;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + wifiDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(wifiDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(wifiDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(wifiDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(wifiDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(wifiDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		wifiDevice.readDeviceInfo();
 	}
 	
 	/**
@@ -969,6 +1059,50 @@ public class XBeeDeviceReadInfoTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
+	 * <p>Verify that device info of a 802.15.4 local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidWiFiClassFor802Device() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.RAW_802_15_4;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + wifiDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(wifiDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(wifiDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(wifiDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(wifiDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(wifiDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		wifiDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
 	 * <p>Verify that device info of a DigiMesh local device cannot be read if 
 	 * the class for the specified device is not the right one. It is, there is 
 	 * an AT command exception reading the parameter.</p>
@@ -1140,6 +1274,50 @@ public class XBeeDeviceReadInfoTest {
 		
 		// Execute the method under test.
 		cellularDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a DigiMesh local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidWiFiClassForDMDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.DIGI_MESH;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + wifiDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(wifiDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(wifiDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(wifiDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(wifiDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(wifiDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		wifiDevice.readDeviceInfo();
 	}
 	
 	/**
@@ -1321,6 +1499,270 @@ public class XBeeDeviceReadInfoTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
 	 * 
+	 * <p>Verify that device info of a Cellular local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidWiFiClassForCellularDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.CELLULAR;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + wifiDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(wifiDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(wifiDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(wifiDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(wifiDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(wifiDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		wifiDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a Wi-Fi local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidDigiMeshClassForWiFiDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.XBEE_WIFI;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + dmDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(dmDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(dmDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(dmDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(dmDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(dmDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		dmDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a Wi-Fi local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidDigiPointClassForWiFiDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.XBEE_WIFI;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + dpDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(dpDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(dpDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(dpDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(dpDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(dpDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		dpDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a Wi-Fi local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidZigBeeClassForWiFiDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.XBEE_WIFI;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + zbDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(zbDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(zbDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(zbDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(zbDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(zbDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		zbDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a Wi-Fi local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalid802ClassForWiFiDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.XBEE_WIFI;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + r802Device.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(r802Device).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(r802Device).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(r802Device).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(r802Device).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(r802Device).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		r802Device.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a Wi-Fi local device cannot be read if 
+	 * the class for the specified device is not the right one. It is, there is 
+	 * an AT command exception reading the parameter.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException 
+	 */
+	@Test
+	public void testReadDeviceInfoErrorInvalidCellularClassForWiFiDevice() throws XBeeException, IOException {
+		// Setup the resources for the test.
+		XBeeProtocol realProtocol = XBeeProtocol.XBEE_WIFI;
+		
+		exception.expect(XBeeException.class);
+		exception.expectMessage(is(equalTo("Error reading device information: "
+				+ "Your module seems to be " + realProtocol 
+				+ " and NOT " + cellularDevice.getXBeeProtocol() + ". Check if you are using" 
+				+ " the appropriate device class.")));
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(cellularDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(cellularDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(cellularDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(cellularDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(cellularDevice).getParameter(PARAMETER_VR);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(realProtocol);
+		
+		// Execute the method under test.
+		cellularDevice.readDeviceInfo();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
 	 * <p>Verify that device info of a local device can be read successfully.</p>
 	 * 
 	 * @throws XBeeException
@@ -1477,6 +1919,56 @@ public class XBeeDeviceReadInfoTest {
 	 */
 	@Test
 	public void testReadDeviceInfoSuccessCellular() throws XBeeException, IOException {
+		// Return that the protocol of the device is first unknown and then DigiPoint when asked.
+		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.UNKNOWN, XBeeProtocol.CELLULAR);
+		
+		// Return a valid response when requesting the SH parameter value.
+		Mockito.doReturn(RESPONSE_SH).when(xbeeDevice).getParameter(PARAMETER_SH);
+		
+		// Return a valid response when requesting the SL parameter value.
+		Mockito.doReturn(RESPONSE_SL).when(xbeeDevice).getParameter(PARAMETER_SL);
+		
+		// Return a valid response when requesting the NI parameter value.
+		Mockito.doReturn(RESPONSE_NI).when(xbeeDevice).getParameter(PARAMETER_NI);
+		
+		// Return a valid response when requesting the HV parameter value.
+		Mockito.doReturn(RESPONSE_HV).when(xbeeDevice).getParameter(PARAMETER_HV);
+		
+		// Return a valid response when requesting the VR parameter value.
+		Mockito.doReturn(RESPONSE_VR).when(xbeeDevice).getParameter(PARAMETER_VR);
+		
+		// Return a valid response when requesting the MY parameter value.
+		Mockito.doReturn(RESPONSE_MY).when(xbeeDevice).getParameter(PARAMETER_MY);
+		
+		// Return the "real" value of the module protocol.
+		PowerMockito.mockStatic(XBeeProtocol.class);
+		PowerMockito.when(XBeeProtocol.determineProtocol(Mockito.any(HardwareVersion.class), Mockito.anyString())).thenReturn(XBeeProtocol.DIGI_POINT);
+		
+		// Initialize the device.
+		xbeeDevice.readDeviceInfo();
+		
+		// Verify that all parameters but the network address were read successfully.
+		Mockito.verify(xbeeDevice, Mockito.times(2)).getXBeeProtocol();
+		Mockito.verify(xbeeDevice, Mockito.never()).getParameter(PARAMETER_MY);
+		assertEquals(XBee16BitAddress.UNKNOWN_ADDRESS, xbeeDevice.get16BitAddress());
+		assertEquals("XBEE", xbeeDevice.getNodeID());
+		assertEquals(HardwareVersion.get(0x01), xbeeDevice.getHardwareVersion());
+		assertEquals("4567", xbeeDevice.getFirmwareVersion());
+		assertEquals(XBeeProtocol.CELLULAR, xbeeDevice.getXBeeProtocol());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#readDeviceInfo()}.
+	 * 
+	 * <p>Verify that device info of a local device can be read successfully when the 
+	 * protocol of the device is Wi-Fi. In this case the16-bit address should be null, 
+	 * but the method should read valid values for the IP address.</p>
+	 * 
+	 * @throws XBeeException
+	 * @throws IOException
+	 */
+	@Test
+	public void testReadDeviceInfoSuccessWiFi() throws XBeeException, IOException {
 		// Return that the protocol of the device is first unknown and then DigiPoint when asked.
 		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.UNKNOWN, XBeeProtocol.CELLULAR);
 		

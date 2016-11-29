@@ -39,6 +39,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * This class provides common functionality for XBee IP devices.
  * 
  * @see CellularDevice
+ * @see WiFiDevice
  */
 public class IPDevice extends XBeeDevice {
 

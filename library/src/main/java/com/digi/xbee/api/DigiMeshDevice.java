@@ -30,6 +30,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
  * @see CellularDevice
  * @see DigiPointDevice
  * @see Raw802Device
+ * @see WiFiDevice
  * @see ZigBeeDevice
  */
 public class DigiMeshDevice extends XBeeDevice {

@@ -34,6 +34,7 @@ import com.digi.xbee.api.utils.HexUtils;
  * @see CellularDevice
  * @see DigiMeshDevice
  * @see DigiPointDevice
+ * @see WiFiDevice
  * @see ZigBeeDevice
  */
 public class Raw802Device extends XBeeDevice {

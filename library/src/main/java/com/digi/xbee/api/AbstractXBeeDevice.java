@@ -409,6 +409,7 @@ public abstract class AbstractXBeeDevice {
 		XBeeProtocol protocol = getXBeeProtocol();
 		if (protocol != XBeeProtocol.DIGI_MESH 
 				&& protocol != XBeeProtocol.DIGI_POINT
+				&& protocol != XBeeProtocol.XBEE_WIFI
 				&& protocol != XBeeProtocol.CELLULAR
 				&& protocol != XBeeProtocol.UNKNOWN) {
 			response = getParameter("MY");

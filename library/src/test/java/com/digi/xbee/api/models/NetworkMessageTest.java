@@ -109,21 +109,20 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[], boolean)}, 
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}, 
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getIPAddress()},
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getSourcePort()}, 
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getDestPort()}, 
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getProtocol()},  
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getData()} and 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getDataString()}, 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#isBroadcast()}.
+	 * {@link com.digi.xbee.api.models.NetworkMessage#getDataString()}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} can be created successfully and the getters work 
-	 * properly when the message is unicast.</p>
+	 * properly.</p>
 	 */
 	@Test
-	public void testCreateSuccessNotBroadcast() {
-		NetworkMessage networkMessage = new NetworkMessage(ipAddress, sourcePort, destPort, protocol, DATA.getBytes(), false);
+	public void testCreateSuccess() {
+		NetworkMessage networkMessage = new NetworkMessage(ipAddress, sourcePort, destPort, protocol, DATA.getBytes());
 		
 		assertEquals(ipAddress, networkMessage.getIPAddress());
 		assertEquals(sourcePort, networkMessage.getSourcePort());
@@ -131,32 +130,5 @@ public class NetworkMessageTest {
 		assertEquals(protocol, networkMessage.getProtocol());
 		assertArrayEquals(DATA.getBytes(), networkMessage.getData());
 		assertEquals(DATA, networkMessage.getDataString());
-		assertFalse(networkMessage.isBroadcast());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[], boolean)}, 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getIPAddress()},
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getSourcePort()}, 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getDestPort()}, 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getProtocol()},  
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getData()} and 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#getDataString()}, 
-	 * {@link com.digi.xbee.api.models.NetworkMessage#isBroadcast()}.
-	 * 
-	 * <p>Verify that the {@code NetworkMessage} can be created successfully and the getters work 
-	 * properly when the message is broadcast.</p>
-	 */
-	@Test
-	public void testCreateSuccessBroadcast() {
-		NetworkMessage networkMessage = new NetworkMessage(ipAddress, sourcePort, destPort, protocol, DATA.getBytes(), true);
-		
-		assertEquals(ipAddress, networkMessage.getIPAddress());
-		assertEquals(sourcePort, networkMessage.getSourcePort());
-		assertEquals(destPort, networkMessage.getDestPort());
-		assertEquals(protocol, networkMessage.getProtocol());
-		assertArrayEquals(DATA.getBytes(), networkMessage.getData());
-		assertEquals(DATA, networkMessage.getDataString());
-		assertTrue(networkMessage.isBroadcast());
 	}
 }

@@ -149,7 +149,6 @@ public class IPDeviceReadDataTest {
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
 		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
-		assertThat("Receive message must not be broadcast", readMessage.isBroadcast(), is(equalTo(false)));
 	}
 	
 	/**
@@ -193,7 +192,6 @@ public class IPDeviceReadDataTest {
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
 		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
-		assertThat("Receive message must not be broadcast", readMessage.isBroadcast(), is(equalTo(false)));
 	}
 	
 	/**
@@ -230,7 +228,6 @@ public class IPDeviceReadDataTest {
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
 		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
-		assertThat("Receive message must not be broadcast", readMessage.isBroadcast(), is(equalTo(false)));
 	}
 	
 	/**
@@ -287,7 +284,6 @@ public class IPDeviceReadDataTest {
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
 		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
-		assertThat("Receive message must not be broadcast", readMessage.isBroadcast(), is(equalTo(false)));
 	}
 	
 	/**
@@ -351,7 +347,6 @@ public class IPDeviceReadDataTest {
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
 		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
-		assertThat("Receive message must not be broadcast", readMessage.isBroadcast(), is(equalTo(false)));
 		
 		Mockito.verify(mockXBeePacketsQueue).getFirstNetworkDataPacket(100);
 	}
@@ -400,7 +395,6 @@ public class IPDeviceReadDataTest {
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
 		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
-		assertThat("Receive message must not be broadcast", readMessage.isBroadcast(), is(equalTo(false)));
 		
 		Mockito.verify(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(ipAddress, 100);
 	}

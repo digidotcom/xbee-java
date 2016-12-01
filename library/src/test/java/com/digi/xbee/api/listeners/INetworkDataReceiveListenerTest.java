@@ -77,7 +77,6 @@ public class INetworkDataReceiveListenerTest {
 		Mockito.when(rxIPv4Packet.getProtocol()).thenReturn(PROTOCOL);
 		Mockito.when(rxIPv4Packet.getData()).thenReturn(RECEIVED_DATA_BYTES);
 		Mockito.when(rxIPv4Packet.getDestAddress()).thenReturn(IP_ADDRESS);
-		Mockito.when(rxIPv4Packet.isBroadcast()).thenReturn(false);
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);
@@ -110,13 +109,12 @@ public class INetworkDataReceiveListenerTest {
 	 * Test method for {@link com.digi.xbee.api.listeners.INetworkDataReceiveListener#networkDataReceived(NetworkMessage)}.
 	 * 
 	 * <p>Verify that the network data received callback of the INetworkDataReceiveListener interface
-	 * is executed correctly when a unicast NetworkMessage (originated by an RXIPV4 frame) is
-	 * received.</p>
+	 * is executed correctly when a NetworkMessage (originated by an RXIPV4 frame) is received.</p>
 	 */
 	@Test
-	public void testUnicastDataReceiveEvent() {
+	public void testDataReceiveEvent() {
 		// This is the message that should have been created if an RXIPV4 frame would have been received.
-		NetworkMessage networkMessage = new NetworkMessage(IP_ADDRESS, SOURCE_PORT, DEST_PORT, PROTOCOL, RECEIVED_DATA_BYTES, false);
+		NetworkMessage networkMessage = new NetworkMessage(IP_ADDRESS, SOURCE_PORT, DEST_PORT, PROTOCOL, RECEIVED_DATA_BYTES);
 		
 		receiveNetworkDataListener.networkDataReceived(networkMessage);
 		
@@ -125,29 +123,6 @@ public class INetworkDataReceiveListenerTest {
 		assertEquals(DEST_PORT, receiveNetworkDataListener.getDestPort());
 		assertEquals(PROTOCOL, receiveNetworkDataListener.getProtocol());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveNetworkDataListener.getData());
-		assertFalse(receiveNetworkDataListener.isBroadcast());
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.listeners.INetworkDataReceiveListener#networkDataReceived(NetworkMessage)}.
-	 * 
-	 * <p>Verify that the network data received callback of the INetworkDataReceiveListener interface
-	 * is executed correctly when a broadcast NetworkMessage (originated by an RXIPV4 frame) is
-	 * received.</p>
-	 */
-	@Test
-	public void testBroadcastDataReceiveEvent() {
-		// This is the message that should have been created if an RXIPV4 frame would have been received.
-		NetworkMessage networkMessage = new NetworkMessage(IP_ADDRESS, SOURCE_PORT, DEST_PORT, PROTOCOL, RECEIVED_DATA_BYTES, true);
-		
-		receiveNetworkDataListener.networkDataReceived(networkMessage);
-		
-		assertEquals(IP_ADDRESS, receiveNetworkDataListener.getIPAddress());
-		assertEquals(SOURCE_PORT, receiveNetworkDataListener.getSourcePort());
-		assertEquals(DEST_PORT, receiveNetworkDataListener.getDestPort());
-		assertEquals(PROTOCOL, receiveNetworkDataListener.getProtocol());
-		assertArrayEquals(RECEIVED_DATA_BYTES, receiveNetworkDataListener.getData());
-		assertTrue(receiveNetworkDataListener.isBroadcast());
 	}
 	
 	/**
@@ -178,7 +153,6 @@ public class INetworkDataReceiveListenerTest {
 		assertEquals(-1, receiveNetworkDataListener.getDestPort());
 		assertNull(receiveNetworkDataListener.getProtocol());
 		assertNull(receiveNetworkDataListener.getData());
-		assertFalse(receiveNetworkDataListener.isBroadcast());
 	}
 	
 	/**
@@ -214,7 +188,6 @@ public class INetworkDataReceiveListenerTest {
 		assertEquals(DEST_PORT, receiveNetworkDataListener.getDestPort());
 		assertEquals(PROTOCOL, receiveNetworkDataListener.getProtocol());
 		assertArrayEquals(RECEIVED_DATA_BYTES, receiveNetworkDataListener.getData());
-		assertFalse(receiveNetworkDataListener.isBroadcast());
 	}
 	
 	/**
@@ -247,7 +220,6 @@ public class INetworkDataReceiveListenerTest {
 		assertEquals(-1, receiveNetworkDataListener.getDestPort());
 		assertNull(receiveNetworkDataListener.getProtocol());
 		assertNull(receiveNetworkDataListener.getData());
-		assertFalse(receiveNetworkDataListener.isBroadcast());
 	}
 	
 	/**
@@ -256,8 +228,7 @@ public class INetworkDataReceiveListenerTest {
 	 * 'notifyNetworkDataReceived' located within the dataReader object because it generates a 
 	 * thread for each notify process.
 	 * 
-	 * @param networkMessage The NetworkMessage containing the IP address that sent the data, the data 
-	 *                       and a flag indicating if the data was sent via broadcast.
+	 * @param networkMessage The NetworkMessage containing the IP address that sent the data, the data.
 	 */
 	private void notifyDataReceiveListeners(NetworkMessage networkMessage) {
 		@SuppressWarnings("unchecked")
@@ -277,7 +248,6 @@ public class INetworkDataReceiveListenerTest {
 		private int sourcePort = -1;
 		private int destPort = -1;
 		private NetworkProtocol protocol = null;
-		private boolean isBroadcast = false;
 		
 		/*
 		 * (non-Javadoc)
@@ -289,7 +259,6 @@ public class INetworkDataReceiveListenerTest {
 			this.destPort = networkMessage.getDestPort();
 			this.protocol = networkMessage.getProtocol();
 			this.data = networkMessage.getData();
-			this.isBroadcast = networkMessage.isBroadcast();
 		}
 		
 		/**
@@ -335,15 +304,6 @@ public class INetworkDataReceiveListenerTest {
 		 */
 		public NetworkProtocol getProtocol() {
 			return protocol;
-		}
-		
-		/**
-		 * Retrieves whether or not the data was sent via broadcast.
-		 * 
-		 * @return True if the data was sent via broadcast, false otherwise.
-		 */
-		public boolean isBroadcast() {
-			return isBroadcast;
 		}
 	}
 }

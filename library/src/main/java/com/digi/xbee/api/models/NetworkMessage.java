@@ -14,8 +14,7 @@ package com.digi.xbee.api.models;
 /**
  * This class represents a network message containing the IP address the 
  * message belongs to, the source and destination ports, the network protocol,
- * the content (data) of the message and a flag indicating if the message is 
- * a broadcast message (was received or is being sent via broadcast). 
+ * and the content (data) of the message. 
  * 
  * <p>This class is used within the XBee Java Library to read data sent to IP 
  * devices.</p>
@@ -32,16 +31,14 @@ public class NetworkMessage {
 	
 	private final NetworkProtocol protocol;
 	
-	private boolean isBroadcast;
-	
 	/**
 	 * Class constructor. Instantiates a new object of type 
-	 * {@code NetworkMessage} with the given parameters.
+	 * {@code XBeeMessage} with the given parameters.
 	 * 
 	 * @param ipAddress The IP address the message comes from.
 	 * @param sourcePort TCP or UDP source port of the transmission.
 	 * @param destPort TCP or UDP destination port of the transmission.
-	 * @param protocol Network protocol used in the transmission. 
+	 * @param protocol Network protocol used in the transmission.
 	 * @param data Byte array containing the data of the message.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourcePort < 0} or
@@ -57,33 +54,6 @@ public class NetworkMessage {
 	 */
 	public NetworkMessage(IP32BitAddress ipAddress, int sourcePort, int destPort, 
 			NetworkProtocol protocol, byte[] data) {
-		this(ipAddress, sourcePort, destPort, protocol, data, false);
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new object of type 
-	 * {@code XBeeMessage} with the given parameters.
-	 * 
-	 * @param ipAddress The IP address the message comes from.
-	 * @param sourcePort TCP or UDP source port of the transmission.
-	 * @param destPort TCP or UDP destination port of the transmission.
-	 * @param protocol Network protocol used in the transmission.
-	 * @param data Byte array containing the data of the message.
-	 * @param isBroadcast Indicates if the message was received via broadcast.
-	 * 
-	 * @throws IllegalArgumentException if {@code sourcePort < 0} or
-	 *                                  if {@code sourcePort > 65535} or
-	 *                                  if {@code destPort < 0} or
-	 *                                  if {@code destPort > 65535}.
-	 * @throws NullPointerException if {@code ipAddress == null} or
-	 *                              if {@code data == null} or
-	 *                              if {@code protocol ==  null}.
-	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
-	 * @see com.digi.xbee.api.models.NetworkProtocol
-	 */
-	public NetworkMessage(IP32BitAddress ipAddress, int sourcePort, int destPort, 
-			NetworkProtocol protocol, byte[] data, boolean isBroadcast) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
 		if (protocol == null)
@@ -101,7 +71,6 @@ public class NetworkMessage {
 		this.destPort = destPort;
 		this.protocol = protocol;
 		this.data = data;
-		this.isBroadcast = isBroadcast;
 	}
 	
 	/**
@@ -160,15 +129,5 @@ public class NetworkMessage {
 	 */
 	public String getDataString() {
 		return new String(data);
-	}
-	
-	/**
-	 * Returns whether or not the message was received via broadcast.
-	 * 
-	 * @return {@code true} if the message was received via broadcast, 
-	 *         {@code false} otherwise.
-	 */
-	public boolean isBroadcast() {
-		return isBroadcast;
 	}
 }

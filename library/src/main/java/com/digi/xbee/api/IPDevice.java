@@ -848,7 +848,6 @@ public class IPDevice extends XBeeDevice {
 		int sourcePort;
 		int destPort;
 		NetworkProtocol protocol = NetworkProtocol.TCP;
-		boolean isBroadcast = false;
 		
 		switch (((XBeeAPIPacket)xbeePacket).getFrameType()) {
 		case RX_IPV4:
@@ -857,13 +856,12 @@ public class IPDevice extends XBeeDevice {
 			ipAddress = receivePacket.getDestAddress();
 			sourcePort = receivePacket.getSourcePort();
 			destPort = receivePacket.getDestPort();
-			isBroadcast = receivePacket.isBroadcast();
 			break;
 		default:
 			return null;
 		}
 		
 		// Create and return the XBee message.
-		return new NetworkMessage(ipAddress, sourcePort, destPort, protocol, data, isBroadcast);
+		return new NetworkMessage(ipAddress, sourcePort, destPort, protocol, data);
 	}
 }

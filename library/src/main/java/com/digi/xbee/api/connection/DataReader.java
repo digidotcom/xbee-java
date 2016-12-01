@@ -624,8 +624,7 @@ public class DataReader extends Thread {
 						rxIPv4Packet.getSourcePort(), 
 						rxIPv4Packet.getDestPort(),
 						rxIPv4Packet.getProtocol(),
-						rxIPv4Packet.getData(),
-						apiPacket.isBroadcast()));
+						rxIPv4Packet.getData()));
 				break;
 			case RX_SMS:
 				RXSMSPacket rxSMSPacket = (RXSMSPacket)apiPacket;
@@ -1012,12 +1011,8 @@ public class DataReader extends Thread {
 	 * @see com.digi.xbee.api.models.NetworkMessage
 	 */
 	private void notifyNetworkDataReceived(final NetworkMessage networkMessage) {
-		if (networkMessage.isBroadcast())
-			logger.info(connectionInterface.toString() + 
-					"Broadcast network data received from {} >> {}.", networkMessage.getIPAddress(), HexUtils.prettyHexString(networkMessage.getData()));
-		else
-			logger.info(connectionInterface.toString() + 
-					"Network data received from {} >> {}.", networkMessage.getIPAddress(), HexUtils.prettyHexString(networkMessage.getData()));
+		logger.info(connectionInterface.toString() + 
+				"Network data received from {} >> {}.", networkMessage.getIPAddress(), HexUtils.prettyHexString(networkMessage.getData()));
 		
 		try {
 			synchronized (networkDataReceiveListeners) {

@@ -38,7 +38,8 @@ import com.digi.xbee.api.utils.HexUtils;
 public class RXIPv4PacketTest {
 
 	private int frameType = APIFrameType.RX_IPV4.getValue();
-	private IP32BitAddress destAddress = new IP32BitAddress("10.10.11.12");
+	private IP32BitAddress sourceAddress = new IP32BitAddress("10.10.11.12");
+	private IP32BitAddress sourceAddressBroadcast = IP32BitAddress.BROADCAST_ADDRESS;
 	private int destPort = 0x0025;
 	private int sourcePort = 0x00B3;
 	private NetworkProtocol protocol = NetworkProtocol.TCP;
@@ -124,7 +125,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[10];
 		payload[0] = (byte)frameType;
-		System.arraycopy(destAddress.getValue(), 0, payload, 1, destAddress.getValue().length);
+		System.arraycopy(sourceAddress.getValue(), 0, payload, 1, sourceAddress.getValue().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -148,7 +149,7 @@ public class RXIPv4PacketTest {
 	public final void testCreatePacketPayloadNotIncludingFrameType() {
 		// Set up the resources for the test.
 		byte[] payload = new byte[9 + data.length];
-		System.arraycopy(destAddress.getValue(), 0, payload, 0, destAddress.getValue().length);
+		System.arraycopy(sourceAddress.getValue(), 0, payload, 0, sourceAddress.getValue().length);
 		payload[4] = (byte)(destPort >> 8);
 		payload[5] = (byte)destPort;
 		payload[6] = (byte)(sourcePort >> 8);
@@ -174,7 +175,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[11];
 		payload[0] = (byte)frameType;
-		System.arraycopy(destAddress.getValue(), 0, payload, 1, destAddress.getValue().length);
+		System.arraycopy(sourceAddress.getValue(), 0, payload, 1, sourceAddress.getValue().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -187,11 +188,12 @@ public class RXIPv4PacketTest {
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(nullValue()));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -207,7 +209,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[11 + data.length];
 		payload[0] = (byte)frameType;
-		System.arraycopy(destAddress.getValue(), 0, payload, 1, destAddress.getValue().length);
+		System.arraycopy(sourceAddress.getValue(), 0, payload, 1, sourceAddress.getValue().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -221,11 +223,47 @@ public class RXIPv4PacketTest {
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(equalTo(data)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
+
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 *
+	 * <p>A valid API IPv4 IPv4 packet with the provided options and data is
+	 * created (broadcast transmission).</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadWithDataBroadcast() {
+		// Set up the resources for the test.
+		byte[] payload = new byte[11 + data.length];
+		payload[0] = (byte)frameType;
+		System.arraycopy(sourceAddressBroadcast.getValue(), 0, payload, 1, sourceAddressBroadcast.getValue().length);
+		payload[5] = (byte)(destPort >> 8);
+		payload[6] = (byte)destPort;
+		payload[7] = (byte)(sourcePort >> 8);
+		payload[8] = (byte)sourcePort;
+		payload[9] = (byte)protocol.getID();
+		payload[10] = (byte)status;
+		System.arraycopy(data, 0, payload, 11, data.length);
+
+		// Call the method under test.
+		RXIPv4Packet packet = RXIPv4Packet.createPacket(payload);
+
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned dest address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddressBroadcast)));
+		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
+		assertThat("Returned data is not the expected one", packet.getData(), is(equalTo(data)));
+		assertThat("Packet is not broadcast", packet.isBroadcast(), is(equalTo(true)));
 
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -239,13 +277,13 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testCreateRXIPv4PacketDestAddressNull() {
 		// Set up the resources for the test.
-		destAddress = null;
+		sourceAddress = null;
 
 		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Destination address cannot be null.")));
+		exception.expectMessage(is(equalTo("Source address cannot be null.")));
 
 		// Call the method under test that should throw a NullPointerException.
-		new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
@@ -263,7 +301,7 @@ public class RXIPv4PacketTest {
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
-		new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
@@ -281,7 +319,7 @@ public class RXIPv4PacketTest {
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
-		new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
@@ -299,7 +337,7 @@ public class RXIPv4PacketTest {
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
-		new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
@@ -317,7 +355,7 @@ public class RXIPv4PacketTest {
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
-		new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
@@ -335,13 +373,13 @@ public class RXIPv4PacketTest {
 		exception.expectMessage(is(equalTo("Protocol cannot be null.")));
 
 		// Call the method under test that should throw a NullPointerException.
-		new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
 	 *
-	 * <p>Construct a new RX SMS packet without data ({@code null}).</p>
+	 * <p>Construct a new RX IPv4 packet without data ({@code null}).</p>
 	 */
 	@Test
 	public final void testCreateRXIPv4PacketValidDataNull() {
@@ -351,22 +389,23 @@ public class RXIPv4PacketTest {
 		int expectedLength = 11;
 
 		// Call the method under test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
-		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(nullValue()));
 		assertThat("RX IPv4 packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
 	 *
-	 * <p>Construct a new RX SMS packet with data.</p>
+	 * <p>Construct a new RX IPv4 packet with data.</p>
 	 */
 	@Test
 	public final void testCreateRXIPv4PacketValidDataNotNull() {
@@ -374,16 +413,41 @@ public class RXIPv4PacketTest {
 		int expectedLength = 11 + data.length;
 
 		// Call the method under test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
-		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(data));
 		assertThat("RX IPv4 packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 *
+	 * <p>Construct a new RX IPv4 packet with data (broadcast transmission).</p>
+	 */
+	@Test
+	public final void testCreateRXIPv4PacketValidDataNotNullBroadcast() {
+		// Set up the resources for the test.
+		int expectedLength = 11 + data.length;
+
+		// Call the method under test.
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddressBroadcast, destPort, sourcePort, protocol, data);
+
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned dest address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddressBroadcast)));
+		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
+		assertThat("Returned data is not the expected one", packet.getData(), is(data));
+		assertThat("RX IPv4 packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(false)));
+		assertThat("Packet is not broadcast", packet.isBroadcast(), is(equalTo(true)));
 	}
 
 	/**
@@ -396,11 +460,11 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		data = null;
 
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		int expectedLength = 10;
 		byte[] expectedData = new byte[expectedLength];
-		System.arraycopy(destAddress.getValue(), 0, expectedData, 0, destAddress.getValue().length);
+		System.arraycopy(sourceAddress.getValue(), 0, expectedData, 0, sourceAddress.getValue().length);
 		expectedData[4] = (byte)(destPort >> 8);
 		expectedData[5] = (byte)destPort;
 		expectedData[6] = (byte)(sourcePort >> 8);
@@ -422,11 +486,11 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testGetAPIDataReceivedDataNotNull() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		int expectedLength = 10 + data.length;
 		byte[] expectedData = new byte[expectedLength];
-		System.arraycopy(destAddress.getValue(), 0, expectedData, 0, destAddress.getValue().length);
+		System.arraycopy(sourceAddress.getValue(), 0, expectedData, 0, sourceAddress.getValue().length);
 		expectedData[4] = (byte)(destPort >> 8);
 		expectedData[5] = (byte)destPort;
 		expectedData[6] = (byte)(sourcePort >> 8);
@@ -451,18 +515,20 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		data = null;
 
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
 
 		// Verify the result.
-		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
-		assertThat("Returned dest address is not the expected one", packetParams.get("Destination address"), is(equalTo(destAddress.toString())));
-		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(String.valueOf(destPort))));
-		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(String.valueOf(sourcePort))));
-		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(protocol.getName())));
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(5)));
+		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo(HexUtils.prettyHexString(sourceAddress.getValue()) + " (" + sourceAddress.toString() + ")")));
+		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")")));
+		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")")));
+		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")")));
+		assertThat("Returned status is not the expected one", packetParams.get("Status"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(0x00, 1)) + " (Reserved)")));
 		assertThat("Data is not the expected", packetParams.get("Data"), is(nullValue(String.class)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**
@@ -473,18 +539,20 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testGetAPIPacketParametersReceivedDataNotNull() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
 
 		// Verify the result.
-		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(5)));
-		assertThat("Returned dest address is not the expected one", packetParams.get("Destination address"), is(equalTo(destAddress.toString())));
-		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(String.valueOf(destPort))));
-		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(String.valueOf(sourcePort))));
-		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(protocol.getName())));
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(6)));
+		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo(HexUtils.prettyHexString(sourceAddress.getValue()) + " (" + sourceAddress.toString() + ")")));
+		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")")));
+		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")")));
+		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")")));
+		assertThat("Returned status is not the expected one", packetParams.get("Status"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(0x00, 1)) + " (Reserved)")));
 		assertThat("Data is not the expected", packetParams.get("Data"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)))));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**
@@ -493,13 +561,13 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetDestAddressNull() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(NullPointerException.class);
-		exception.expectMessage(is(equalTo("Destination address cannot be null.")));
+		exception.expectMessage(is(equalTo("Source address cannot be null.")));
 
 		// Call the method under test that should throw a NullPointerException.
-		packet.setDestAddress(null);
+		packet.setSourceAddress(null);
 	}
 
 	/**
@@ -508,15 +576,15 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetDestAddressNotNull() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		IP32BitAddress newAddress = new IP32BitAddress("192.168.1.30");
 
 		// Call the method under test.
-		packet.setDestAddress(newAddress);
+		packet.setSourceAddress(newAddress);
 
 		// Verify the result.
-		assertThat("Dest address is not the expected one", packet.getDestAddress(), is(equalTo(newAddress)));
+		assertThat("Dest address is not the expected one", packet.getSourceAddress(), is(equalTo(newAddress)));
 	}
 
 	/**
@@ -525,7 +593,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetDestPortNegative() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
@@ -540,7 +608,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetDestPortBigger() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
@@ -555,7 +623,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetDestPortValid() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		int newPort = 0;
 
@@ -572,7 +640,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetSourcePortNegative() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
@@ -587,7 +655,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetSourcePortBigger() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
@@ -602,7 +670,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetSourcePortValid() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		int newPort = 65535;
 
@@ -619,7 +687,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetProtocolNull() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(NullPointerException.class);
 		exception.expectMessage(is(equalTo("Protocol cannot be null.")));
@@ -634,7 +702,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testSetProtocolNotNull() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		NetworkProtocol newProtocol = NetworkProtocol.TCP_SSL;
 
@@ -653,7 +721,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		data = null;
 
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		byte[] result = packet.getData();
@@ -669,7 +737,7 @@ public class RXIPv4PacketTest {
 	@Test
 	public final void testGetDataValidData() {
 		// Set up the resources for the test.
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		byte[] result = packet.getData();
@@ -687,7 +755,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] newData = null;
 
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		packet.setData(newData);
@@ -707,7 +775,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] newData = "New data".getBytes();
 
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		packet.setData(newData);
@@ -726,7 +794,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] newData = "New data".getBytes();
 
-		RXIPv4Packet packet = new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
 		// Call the method under test.
 		packet.setData(newData);

@@ -250,10 +250,10 @@ public class TXSMSPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Transmit options", HexUtils.byteToHexString((byte)transmitOptions));
-		parameters.put("Phone number", new String(phoneNumber).replaceAll("\0", ""));
+		parameters.put("Transmit options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
+		parameters.put("Phone number", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(phoneNumber)) + " (" + new String(phoneNumber).replaceAll("\0", "") + ")");
 		if (data != null)
-			parameters.put("Data", data);
+			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data.getBytes())) + " (" + data + ")");
 		return parameters;
 	}
 }

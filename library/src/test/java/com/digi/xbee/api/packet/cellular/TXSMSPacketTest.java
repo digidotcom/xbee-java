@@ -440,8 +440,8 @@ public class TXSMSPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(2)));
-		assertThat("Options are not the expected", packetParams.get("Transmit options"), is(equalTo(HexUtils.byteToHexString((byte)options))));
-		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(phoneNumber)));
+		assertThat("Options are not the expected", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1)))));
+		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(Arrays.copyOf(phoneNumber.getBytes(), 20))) + " (" + new String(phoneNumber).replaceAll("\0", "") + ")")));
 		assertThat("Data is not the expected", packetParams.get("Data"), is(nullValue(String.class)));
 	}
 
@@ -460,9 +460,23 @@ public class TXSMSPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(3)));
-		assertThat("Options are not the expected", packetParams.get("Transmit options"), is(equalTo(HexUtils.byteToHexString((byte)options))));
-		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(phoneNumber)));
-		assertThat("Data is not the expected", packetParams.get("Data"), is(equalTo(data)));
+		assertThat("Options are not the expected", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(options, 1)))));
+		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(Arrays.copyOf(phoneNumber.getBytes(), 20))) + " (" + new String(phoneNumber).replaceAll("\0", "") + ")")));
+		assertThat("Data is not the expected", packetParams.get("Data"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data.getBytes())) + " (" + data + ")")));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.cellular.TXSMSPacket#isBroadcast()}.
+	 *
+	 * <p>Test the is broadcast method.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Set up the resources for the test.
+		TXSMSPacket packet = new TXSMSPacket(frameID, phoneNumber, data);
+
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**

@@ -620,7 +620,7 @@ public class DataReader extends Thread {
 			case RX_IPV4:
 				RXIPv4Packet rxIPv4Packet = (RXIPv4Packet)apiPacket;
 				notifyNetworkDataReceived(new NetworkMessage(
-						rxIPv4Packet.getDestAddress(), 
+						rxIPv4Packet.getSourceAddress(), 
 						rxIPv4Packet.getSourcePort(), 
 						rxIPv4Packet.getDestPort(),
 						rxIPv4Packet.getProtocol(),

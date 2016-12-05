@@ -35,18 +35,18 @@ import com.digi.xbee.api.utils.HexUtils;
 public class RXIPv4Packet extends XBeeAPIPacket {
 
 	// Constants.
-	private static final int MIN_API_PAYLOAD_LENGTH = 11; /* 1 (Frame type) + 4 (dest address) + 2 (dest port) +
+	private static final int MIN_API_PAYLOAD_LENGTH = 11; /* 1 (Frame type) + 4 (source address) + 2 (dest port) +
 																2 (source port) + 1 (protocol) + 1 (status) */
 
 	private static final String ERROR_PAYLOAD_NULL = "RX IPv4 packet payload cannot be null.";
 	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete RX IPv4 packet.";
 	private static final String ERROR_NOT_RXIPV4 = "Payload is not a RX IPv4 packet.";
-	private static final String ERROR_DEST_ADDR_NULL = "Destination address cannot be null.";
+	private static final String ERROR_SOURCE_ADDR_NULL = "Source address cannot be null.";
 	private static final String ERROR_PROTOCOL_NULL = "Protocol cannot be null.";
 	private static final String ERROR_PORT_ILLEGAL = "Port must be between 0 and 65535.";
 
 	// Variables.
-	private IP32BitAddress destAddress;
+	private IP32BitAddress sourceAddress;
 
 	private int destPort;
 	private int sourcePort;
@@ -83,8 +83,8 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 		// payload[0] is the frame type.
 		int index = 1;
 
-		// 4 bytes of IP 32-bit destination address.
-		IP32BitAddress destAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index, index + 4));
+		// 4 bytes of IP 32-bit source address.
+		IP32BitAddress sourceAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index, index + 4));
 		index = index + 4;
 
 		// 2 bytes of destination port.
@@ -107,14 +107,14 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 		if (index < payload.length)
 			data = Arrays.copyOfRange(payload, index, payload.length);
 
-		return new RXIPv4Packet(destAddress, destPort, sourcePort, protocol, data);
+		return new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
 	 * Class constructor. Instantiates a new {@code RXIPv4Packet} object with
 	 * the given parameters.
 	 *
-	 * @param destAddress 32-bit IP address of the destination device.
+	 * @param sourceAddress 32-bit IP address of the source device.
 	 * @param destPort Destination port number.
 	 * @param sourcePort Source port number.
 	 * @param protocol Protocol used for transmitted data.
@@ -131,20 +131,20 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	 * @see IP32BitAddress
 	 * @see NetworkProtocol
 	 */
-	public RXIPv4Packet(IP32BitAddress destAddress, int destPort, int sourcePort,
-			NetworkProtocol protocol, byte[] data) {
+	public RXIPv4Packet(IP32BitAddress sourceAddress, int destPort,
+			int sourcePort, NetworkProtocol protocol, byte[] data) {
 		super(APIFrameType.RX_IPV4);
 
 		if (destPort < 0 || destPort > 65535)
 			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
 		if (sourcePort < 0 || sourcePort > 65535)
 			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
-		if (destAddress == null)
-			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
+		if (sourceAddress == null)
+			throw new NullPointerException(ERROR_SOURCE_ADDR_NULL);
 		if (protocol == null)
 			throw new NullPointerException(ERROR_PROTOCOL_NULL);
 
-		this.destAddress = destAddress;
+		this.sourceAddress = sourceAddress;
 		this.destPort = destPort;
 		this.sourcePort = sourcePort;
 		this.protocol = protocol;
@@ -160,7 +160,7 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(destAddress.getValue());
+			os.write(sourceAddress.getValue());
 			os.write(destPort >> 8);
 			os.write(destPort);
 			os.write(sourcePort >> 8);
@@ -190,36 +190,36 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		return false;
+		return sourceAddress.equals(IP32BitAddress.BROADCAST_ADDRESS);
 	}
 
 	/**
-	 * Retrieves the 32-bit destination IP address.
+	 * Retrieves the 32-bit source IP address.
 	 *
-	 * @return The 32-bit destination IP address.
+	 * @return The 32-bit source IP address.
 	 *
-	 * @see #setDestAddress(IP32BitAddress)
+	 * @see #setSourceAddress(IP32BitAddress)
 	 * @see IP32BitAddress
 	 */
-	public IP32BitAddress getDestAddress() {
-		return destAddress;
+	public IP32BitAddress getSourceAddress() {
+		return sourceAddress;
 	}
 
 	/**
 	 * Sets the 32-bit destination IP address.
 	 *
-	 * @param destAddress The new 32-bit destination IP address.
+	 * @param sourceAddress The new 32-bit destination IP address.
 	 *
 	 * @throws NullPointerException if {@code destAddress == null}.
 	 *
-	 * @see #getDestAddress()
+	 * @see #getSourceAddress()
 	 * @see IP32BitAddress
 	 */
-	public void setDestAddress(IP32BitAddress destAddress) {
-		if (destAddress == null)
-			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
+	public void setSourceAddress(IP32BitAddress sourceAddress) {
+		if (sourceAddress == null)
+			throw new NullPointerException(ERROR_SOURCE_ADDR_NULL);
 
-		this.destAddress = destAddress;
+		this.sourceAddress = sourceAddress;
 	}
 
 	/**
@@ -341,10 +341,11 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Destination address", destAddress.toString());
-		parameters.put("Destination port", String.valueOf(destPort));
-		parameters.put("Source port", String.valueOf(sourcePort));
-		parameters.put("Protocol", protocol.getName());
+		parameters.put("Source address", HexUtils.prettyHexString(sourceAddress.getValue()) + " (" + sourceAddress.toString() + ")");
+		parameters.put("Destination port", HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")");
+		parameters.put("Source port", HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")");
+		parameters.put("Protocol", HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")");
+		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(0x00, 1)) + " (Reserved)"); // Status byte is always 0.
 		if (data != null)
 			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		return parameters;

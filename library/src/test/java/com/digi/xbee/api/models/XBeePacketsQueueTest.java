@@ -502,11 +502,11 @@ public class XBeePacketsQueueTest {
 			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
 		
 		// Add a network data packet from the mocked IP address.
-		Mockito.when(mockedRxIPv4Packet.getDestAddress()).thenReturn(ipAddress1);
+		Mockito.when(mockedRxIPv4Packet.getSourceAddress()).thenReturn(ipAddress1);
 		xbeePacketsQueue.addPacket(mockedRxIPv4Packet);
 		
 		// Add another network data packet from a different IP address.
-		Mockito.when(mockedRxIPv4Packet2.getDestAddress()).thenReturn(ipAddress2);
+		Mockito.when(mockedRxIPv4Packet2.getSourceAddress()).thenReturn(ipAddress2);
 		xbeePacketsQueue.addPacket(mockedRxIPv4Packet2);
 		
 		// Add a packet again.
@@ -886,7 +886,7 @@ public class XBeePacketsQueueTest {
 		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress3);
 		
 		// Configure a network data packet with a different IP address.
-		Mockito.when(mockedRxIPv4Packet.getDestAddress()).thenReturn(ipAddress2);
+		Mockito.when(mockedRxIPv4Packet.getSourceAddress()).thenReturn(ipAddress2);
 		
 		// Create an XBeePacketsQueue of 5 slots.
 		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue(5));
@@ -1216,12 +1216,12 @@ public class XBeePacketsQueueTest {
 		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
 		
 		// Verify the addresses match.
-		Mockito.when(mockedRxIPv4Packet.getDestAddress()).thenReturn(ipAddress1);
+		Mockito.when(mockedRxIPv4Packet.getSourceAddress()).thenReturn(ipAddress1);
 		for (XBeePacket packet:ipPackets)
 			assertTrue((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IP_ADDRESSES_MATCH, packet, ipAddress1));
 		
 		// Verify the addresses don't match.
-		Mockito.when(mockedRxIPv4Packet.getDestAddress()).thenReturn(ipAddress2);
+		Mockito.when(mockedRxIPv4Packet.getSourceAddress()).thenReturn(ipAddress2);
 		for (XBeePacket packet:ipPackets)
 			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IP_ADDRESSES_MATCH, packet, ipAddress1));
 	}

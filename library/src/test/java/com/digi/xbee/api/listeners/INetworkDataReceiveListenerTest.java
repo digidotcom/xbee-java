@@ -76,7 +76,7 @@ public class INetworkDataReceiveListenerTest {
 		Mockito.when(rxIPv4Packet.getDestPort()).thenReturn(DEST_PORT);
 		Mockito.when(rxIPv4Packet.getProtocol()).thenReturn(PROTOCOL);
 		Mockito.when(rxIPv4Packet.getData()).thenReturn(RECEIVED_DATA_BYTES);
-		Mockito.when(rxIPv4Packet.getDestAddress()).thenReturn(IP_ADDRESS);
+		Mockito.when(rxIPv4Packet.getSourceAddress()).thenReturn(IP_ADDRESS);
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);

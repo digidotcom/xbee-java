@@ -40,6 +40,7 @@ public class TXIPv4PacketTest {
 	private int frameType = APIFrameType.TX_IPV4.getValue();
 	private int frameID = 0x01;
 	private IP32BitAddress destAddress = new IP32BitAddress("10.10.11.12");
+	private IP32BitAddress destAddressBroadcast = IP32BitAddress.BROADCAST_ADDRESS;
 	private int destPort = 0x0025;
 	private int sourcePort = 0x00B3;
 	private NetworkProtocol protocol = NetworkProtocol.TCP;
@@ -198,6 +199,7 @@ public class TXIPv4PacketTest {
 		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
 		assertThat("Returned options is not the expected one", packet.getTransmitOptions(), is(equalTo(transmitOptions)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(nullValue()));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -205,7 +207,7 @@ public class TXIPv4PacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
 	 *
-	 * <p>A valid API IPv4 IPv4 packet with the provided options and data is
+	 * <p>A valid API TX IPv4 packet with the provided options and data is
 	 * created.</p>
 	 */
 	@Test
@@ -235,6 +237,45 @@ public class TXIPv4PacketTest {
 		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
 		assertThat("Returned options is not the expected one", packet.getTransmitOptions(), is(equalTo(transmitOptions)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(equalTo(data)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
+
+		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 *
+	 * <p>A valid API TX IPv4 packet with the provided options and data is
+	 * created (broadcast transmission).</p>
+	 */
+	@Test
+	public final void testCreatePacketValidPayloadWithDataBroadcast() {
+		// Set up the resources for the test.
+		byte[] payload = new byte[12 + data.length];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(destAddressBroadcast.getValue(), 0, payload, 2, destAddressBroadcast.getValue().length);
+		payload[6] = (byte)(destPort >> 8);
+		payload[7] = (byte)destPort;
+		payload[8] = (byte)(sourcePort >> 8);
+		payload[9] = (byte)sourcePort;
+		payload[10] = (byte)protocol.getID();
+		payload[11] = (byte)transmitOptions;
+		System.arraycopy(data, 0, payload, 12, data.length);
+
+		// Call the method under test.
+		TXIPv4Packet packet = TXIPv4Packet.createPacket(payload);
+
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
+		assertThat("Returned frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddressBroadcast)));
+		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
+		assertThat("Returned options is not the expected one", packet.getTransmitOptions(), is(equalTo(transmitOptions)));
+		assertThat("Returned data is not the expected one", packet.getData(), is(equalTo(data)));
+		assertThat("Packet is not broadcast", packet.isBroadcast(), is(equalTo(true)));
 
 		assertThat("Returned payload array is not the expected one", packet.getPacketData(), is(equalTo(payload)));
 	}
@@ -368,6 +409,25 @@ public class TXIPv4PacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, IP32BitAddress, int, int, NetworkProtocol, int, byte[])}.
 	 *
+	 * <p>Construct a new TX IPv4 packet with illegal transmit options. This
+	 * must throw an {@code IllegalArgumentException}.</p>
+	 */
+	@Test
+	public final void testCreateTXIPv4PacketTransmitOptionsIllegal() {
+		// Set up the resources for the test.
+		transmitOptions = 20;
+
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo("Transmit options can only be " + TXIPv4Packet.OPTIONS_CLOSE_SOCKET +
+				" or " + TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN + ".")));
+
+		// Call the method under test that should throw an IllegalArgumentException.
+		new TXIPv4Packet(frameID, destAddress, destPort, sourcePort, protocol, transmitOptions, data);
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, IP32BitAddress, int, int, NetworkProtocol, int, byte[])}.
+	 *
 	 * <p>Construct a new TX IPv4 packet with a null protocol. This must throw
 	 * a {@code NullPointerException}.</p>
 	 */
@@ -405,7 +465,7 @@ public class TXIPv4PacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, IP32BitAddress, int, int, NetworkProtocol, int, byte[])}.
 	 *
-	 * <p>Construct a new TX SMS packet without data ({@code null}).</p>
+	 * <p>Construct a new TX IPv4 packet without data ({@code null}).</p>
 	 */
 	@Test
 	public final void testCreateTXIPv4PacketValidDataNull() {
@@ -427,17 +487,19 @@ public class TXIPv4PacketTest {
 		assertThat("Returned options is not the expected one", packet.getTransmitOptions(), is(equalTo(transmitOptions)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(nullValue()));
 		assertThat("TX IPv4 packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, IP32BitAddress, int, int, NetworkProtocol, int, byte[])}.
 	 *
-	 * <p>Construct a new TX SMS packet with data.</p>
+	 * <p>Construct a new TX IPv4 packet with data.</p>
 	 */
 	@Test
 	public final void testCreateTXIPv4PacketValidDataNotNull() {
 		// Set up the resources for the test.
 		int expectedLength = 12 + data.length;
+		transmitOptions = TXIPv4Packet.OPTIONS_CLOSE_SOCKET;
 
 		// Call the method under test.
 		TXIPv4Packet packet = new TXIPv4Packet(frameID, destAddress, destPort, sourcePort, protocol, transmitOptions, data);
@@ -452,6 +514,33 @@ public class TXIPv4PacketTest {
 		assertThat("Returned options is not the expected one", packet.getTransmitOptions(), is(equalTo(transmitOptions)));
 		assertThat("Returned data is not the expected one", packet.getData(), is(data));
 		assertThat("TX IPv4 packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, IP32BitAddress, int, int, NetworkProtocol, int, byte[])}.
+	 *
+	 * <p>Construct a new TX IPv4 packet with data (broadcast transmission).</p>
+	 */
+	@Test
+	public final void testCreateTXIPv4PacketValidDataNotNullBroadcast() {
+		// Set up the resources for the test.
+		int expectedLength = 12 + data.length;
+
+		// Call the method under test.
+		TXIPv4Packet packet = new TXIPv4Packet(frameID, destAddressBroadcast, destPort, sourcePort, protocol, transmitOptions, data);
+
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned frame ID is not the expected one", packet.getFrameID(), is(equalTo(frameID)));
+		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddressBroadcast)));
+		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
+		assertThat("Returned protocol is not the expected one", packet.getProtocol(), is(equalTo(protocol)));
+		assertThat("Returned options is not the expected one", packet.getTransmitOptions(), is(equalTo(transmitOptions)));
+		assertThat("Returned data is not the expected one", packet.getData(), is(data));
+		assertThat("TX IPv4 packet needs API Frame ID", packet.needsAPIFrameID(), is(equalTo(true)));
+		assertThat("Packet is not broadcast", packet.isBroadcast(), is(equalTo(true)));
 	}
 
 	/**
@@ -530,12 +619,13 @@ public class TXIPv4PacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(5)));
-		assertThat("Returned dest address is not the expected one", packetParams.get("Destination address"), is(equalTo(destAddress.toString())));
-		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(String.valueOf(destPort))));
-		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(String.valueOf(sourcePort))));
-		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(protocol.getName())));
-		assertThat("Returned options is not the expected one", packetParams.get("Transmit options"), is(equalTo(String.valueOf(transmitOptions))));
+		assertThat("Returned dest address is not the expected one", packetParams.get("Destination address"), is(equalTo(HexUtils.prettyHexString(destAddress.getValue()) + " (" + destAddress.toString() + ")")));
+		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")")));
+		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")")));
+		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")")));
+		assertThat("Returned options is not the expected one", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)))));
 		assertThat("Data is not the expected", packetParams.get("Data"), is(nullValue(String.class)));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**
@@ -553,12 +643,13 @@ public class TXIPv4PacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(6)));
-		assertThat("Returned dest address is not the expected one", packetParams.get("Destination address"), is(equalTo(destAddress.toString())));
-		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(String.valueOf(destPort))));
-		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(String.valueOf(sourcePort))));
-		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(protocol.getName())));
-		assertThat("Returned options is not the expected one", packetParams.get("Transmit options"), is(equalTo(String.valueOf(transmitOptions))));
+		assertThat("Returned dest address is not the expected one", packetParams.get("Destination address"), is(equalTo(HexUtils.prettyHexString(destAddress.getValue()) + " (" + destAddress.toString() + ")")));
+		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")")));
+		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")")));
+		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")")));
+		assertThat("Returned options is not the expected one", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)))));
 		assertThat("Data is not the expected", packetParams.get("Data"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)))));
+		assertThat("Packet is broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**
@@ -744,6 +835,23 @@ public class TXIPv4PacketTest {
 		TXIPv4Packet packet = new TXIPv4Packet(frameID, destAddress, destPort, sourcePort, protocol, transmitOptions, data);
 
 		int newTransmitOptions = TXIPv4Packet.OPTIONS_CLOSE_SOCKET;
+
+		// Call the method under test.
+		packet.setTransmitOptions(newTransmitOptions);
+
+		// Verify the result.
+		assertThat("Transmit options are not the expected one", packet.getTransmitOptions(), is(equalTo(newTransmitOptions)));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setTransmitOptions(int))}.
+	 */
+	@Test
+	public final void testSetTransmitOptionsValid2() {
+		// Set up the resources for the test.
+		TXIPv4Packet packet = new TXIPv4Packet(frameID, destAddress, destPort, sourcePort, protocol, transmitOptions, data);
+
+		int newTransmitOptions = TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN;
 
 		// Call the method under test.
 		packet.setTransmitOptions(newTransmitOptions);

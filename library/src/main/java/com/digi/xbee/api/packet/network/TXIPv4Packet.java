@@ -216,7 +216,7 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		return false;
+		return destAddress.equals(IP32BitAddress.BROADCAST_ADDRESS);
 	}
 
 	/**
@@ -400,11 +400,11 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Destination address", destAddress.toString());
-		parameters.put("Destination port", String.valueOf(destPort));
-		parameters.put("Source port", String.valueOf(sourcePort));
-		parameters.put("Protocol", protocol.getName());
-		parameters.put("Transmit options", String.valueOf(transmitOptions));
+		parameters.put("Destination address", HexUtils.prettyHexString(destAddress.getValue()) + " (" + destAddress.toString() + ")");
+		parameters.put("Destination port", HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")");
+		parameters.put("Source port", HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")");
+		parameters.put("Protocol", HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")");
+		parameters.put("Transmit options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
 		if (data != null)
 			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		return parameters;

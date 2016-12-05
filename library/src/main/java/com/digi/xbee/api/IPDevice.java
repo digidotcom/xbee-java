@@ -855,7 +855,7 @@ public class IPDevice extends XBeeDevice {
 		case RX_IPV4:
 			RXIPv4Packet receivePacket = (RXIPv4Packet)xbeePacket;
 			data = receivePacket.getData();
-			ipAddress = receivePacket.getDestAddress();
+			ipAddress = receivePacket.getSourceAddress();
 			sourcePort = receivePacket.getSourcePort();
 			destPort = receivePacket.getDestPort();
 			break;

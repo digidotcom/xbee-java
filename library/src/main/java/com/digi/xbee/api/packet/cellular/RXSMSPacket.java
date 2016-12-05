@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
+import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * This class represents a RX (Receive) SMS packet. Packet is built
@@ -222,9 +223,9 @@ public class RXSMSPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Phone number", new String(phoneNumber).replaceAll("\0", ""));
+		parameters.put("Phone number", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(phoneNumber)) + " (" + new String(phoneNumber).replaceAll("\0", "") + ")");
 		if (data != null)
-			parameters.put("Data", data);
+			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data.getBytes())) + " (" + data + ")");
 		return parameters;
 	}
 }

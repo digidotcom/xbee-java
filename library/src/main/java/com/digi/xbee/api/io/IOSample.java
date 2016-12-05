@@ -11,6 +11,7 @@
  */
 package com.digi.xbee.api.io;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -552,5 +553,19 @@ public class IOSample {
 		if (s.endsWith(", "))
 			s = s.substring(0, s.length() - 2);
 		return s + "}";
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		try {
+			IOSample sample = (IOSample)obj;
+			return Arrays.equals(ioSamplePayload, sample.ioSamplePayload);
+		} catch (ClassCastException e) {
+			return false;
+		}
 	}
 }

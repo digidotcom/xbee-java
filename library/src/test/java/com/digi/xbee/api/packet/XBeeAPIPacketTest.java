@@ -179,7 +179,7 @@ public class XBeeAPIPacketTest {
 	@Test
 	public final void testCreateXBeeAPIPacketNotSupportedFrameType() {
 		// Setup the resources for the test.
-		int frameTypeValue = 0xFE;
+		int frameTypeValue = 0xFD;
 		
 		int expectedLength = 1 /* Frame type */;
 		

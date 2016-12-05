@@ -26,7 +26,6 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
-import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -69,7 +68,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 	 *                corresponding to a IO Data Sample RX Indicator packet ({@code 0x92}).
 	 *                The byte array must be in {@code OperatingMode.API} mode.
 	 * 
-	 * @return Parsed ZigBee Receive packet.
+	 * @return Parsed IO Data Sample Rx Indicator packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
@@ -147,7 +146,7 @@ public class IODataSampleRxIndicatorPacket extends XBeeAPIPacket {
 			ioSample = new IOSample(rfData);
 		else
 			ioSample = null;
-		this.logger = LoggerFactory.getLogger(RX64Packet.class);
+		this.logger = LoggerFactory.getLogger(IODataSampleRxIndicatorPacket.class);
 	}
 	
 	/*

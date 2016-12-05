@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.cellular.RXSMSPacket;
+import com.digi.xbee.api.utils.HexUtils;
 
 public class RXSMSPacketTest {
 
@@ -383,7 +384,7 @@ public class RXSMSPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
-		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(phoneNumber)));
+		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(Arrays.copyOf(phoneNumber.getBytes(), 20))) + " (" + new String(phoneNumber).replaceAll("\0", "") + ")")));
 		assertThat("Data is not the expected", packetParams.get("Data"), is(nullValue(String.class)));
 	}
 
@@ -402,8 +403,22 @@ public class RXSMSPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(2)));
-		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(phoneNumber)));
-		assertThat("Data is not the expected", packetParams.get("Data"), is(equalTo(data)));
+		assertThat("Phone number is not the expected", packetParams.get("Phone number"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(Arrays.copyOf(phoneNumber.getBytes(), 20))) + " (" + new String(phoneNumber).replaceAll("\0", "") + ")")));
+		assertThat("Data is not the expected", packetParams.get("Data"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data.getBytes())) + " (" + data + ")")));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.cellular.RXSMSPacket#isBroadcast()}.
+	 *
+	 * <p>Test the is broadcast method.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Set up the resources for the test.
+		RXSMSPacket packet = new RXSMSPacket(phoneNumber, data);
+
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
 	}
 
 	/**

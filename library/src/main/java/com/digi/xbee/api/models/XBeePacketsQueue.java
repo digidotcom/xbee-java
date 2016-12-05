@@ -496,7 +496,7 @@ public class XBeePacketsQueue {
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
 		switch (packetType) {
 		case RX_IPV4:
-			if (((RXIPv4Packet)xbeePacket).getDestAddress().equals(ipAddress))
+			if (((RXIPv4Packet)xbeePacket).getSourceAddress().equals(ipAddress))
 				return true;
 			break;
 		default:

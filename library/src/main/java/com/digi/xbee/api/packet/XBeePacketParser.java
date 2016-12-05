@@ -33,6 +33,12 @@ import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
+import com.digi.xbee.api.packet.devicecloud.DeviceRequestPacket;
+import com.digi.xbee.api.packet.devicecloud.DeviceResponsePacket;
+import com.digi.xbee.api.packet.devicecloud.DeviceResponseStatusPacket;
+import com.digi.xbee.api.packet.devicecloud.FrameErrorPacket;
+import com.digi.xbee.api.packet.devicecloud.SendDataRequestPacket;
+import com.digi.xbee.api.packet.devicecloud.SendDataResponsePacket;
 import com.digi.xbee.api.packet.network.RXIPv4Packet;
 import com.digi.xbee.api.packet.network.TXIPv4Packet;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
@@ -42,6 +48,9 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket;
+import com.digi.xbee.api.packet.wifi.RemoteATCommandResponseWifiPacket;
+import com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -281,6 +290,9 @@ public class XBeePacketParser {
 		case TX_16:
 			packet = TX16Packet.createPacket(payload);
 			break;
+		case REMOTE_AT_COMMAND_REQUEST_WIFI:
+			packet = RemoteATCommandWifiPacket.createPacket(payload);
+			break;
 		case AT_COMMAND:
 			packet = ATCommandPacket.createPacket(payload);
 			break;
@@ -302,6 +314,12 @@ public class XBeePacketParser {
 		case TX_IPV4:
 			packet = TXIPv4Packet.createPacket(payload);
 			break;
+		case SEND_DATA_REQUEST:
+			packet = SendDataRequestPacket.createPacket(payload);
+			break;
+		case DEVICE_RESPONSE:
+			packet = DeviceResponsePacket.createPacket(payload);
+			break;
 		case RX_64:
 			packet = RX64Packet.createPacket(payload);
 			break;
@@ -314,6 +332,9 @@ public class XBeePacketParser {
 		case RX_IO_16:
 			packet = RX16IOPacket.createPacket(payload);
 			break;
+		case REMOTE_AT_COMMAND_RESPONSE_WIFI:
+			packet = RemoteATCommandResponseWifiPacket.createPacket(payload);
+			break;
 		case AT_COMMAND_RESPONSE:
 			packet = ATCommandResponsePacket.createPacket(payload);
 			break;
@@ -325,6 +346,9 @@ public class XBeePacketParser {
 			break;
 		case TRANSMIT_STATUS:
 			packet = TransmitStatusPacket.createPacket(payload);
+			break;
+		case IO_DATA_SAMPLE_RX_INDICATOR_WIFI:
+			packet = IODataSampleRxIndicatorWifiPacket.createPacket(payload);
 			break;
 		case RECEIVE_PACKET:
 			packet = ReceivePacket.createPacket(payload);
@@ -343,6 +367,18 @@ public class XBeePacketParser {
 			break;
 		case RX_IPV4:
 			packet = RXIPv4Packet.createPacket(payload);
+			break;
+		case SEND_DATA_RESPONSE:
+			packet = SendDataResponsePacket.createPacket(payload);
+			break;
+		case DEVICE_REQUEST:
+			packet = DeviceRequestPacket.createPacket(payload);
+			break;
+		case DEVICE_RESPONSE_STATUS:
+			packet = DeviceResponseStatusPacket.createPacket(payload);
+			break;
+		case FRAME_ERROR:
+			packet = FrameErrorPacket.createPacket(payload);
 			break;
 		case GENERIC:
 			packet = GenericXBeePacket.createPacket(payload);

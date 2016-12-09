@@ -92,20 +92,7 @@ public class CellularDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.CellularDevice#getADCValue(com.digi.xbee.api.io.IOLine)}, 
-	 * {@link com.digi.xbee.api.CellularDevice#getDIOChangeDetection()},
-	 * {@link com.digi.xbee.api.CellularDevice#setDIOChangeDetection(java.util.Set)}, 
-	 * {@link com.digi.xbee.api.CellularDevice#getDIOValue(com.digi.xbee.api.io.IOLine)}, 
-	 * {@link com.digi.xbee.api.CellularDevice#setDIOValue(com.digi.xbee.api.io.IOLine, com.digi.xbee.api.io.IOValue)},
-	 * {@link com.digi.xbee.api.CellularDevice#getIOConfiguration(com.digi.xbee.api.io.IOLine)},
-	 * {@link com.digi.xbee.api.CellularDevice#setIOConfiguration(com.digi.xbee.api.io.IOLine, com.digi.xbee.api.io.IOMode)},
-	 * {@link com.digi.xbee.api.CellularDevice#getIOSamplingRate()},
-	 * {@link com.digi.xbee.api.CellularDevice#setIOSamplingRate(int)},
-	 * {@link com.digi.xbee.api.CellularDevice#getNodeID()},
-	 * {@link com.digi.xbee.api.CellularDevice#setNodeID(String)},
-	 * {@link com.digi.xbee.api.CellularDevice#getPWMDutyCycle(com.digi.xbee.api.io.IOLine)},
-	 * {@link com.digi.xbee.api.CellularDevice#setPWMDutyCycle(com.digi.xbee.api.io.IOLine, double)} and
-	 * {@link com.digi.xbee.api.CellularDevice#readIOSample()}.
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getADCValue(com.digi.xbee.api.io.IOLine)}.
 	 * 
 	 * <p>Verify that the not supported methods of the Cellular protocol throw an
 	 * {@code UnsupportedOperationException}.</p>
@@ -114,26 +101,263 @@ public class CellularDeviceTest {
 	 */
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testNotSupportedOperations() throws Exception {
+	public void testNotSupportedOperationGetADCValue() throws Exception {
 		exception.expect(UnsupportedOperationException.class);
 		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
 		
-		// All the following operations should throw an 
-		// {@code UnsupportedOperationException} exception 
+		// Call the method that should throw the exception.
 		cellularDevice.getADCValue(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getDIOChangeDetection()}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetDIOChangeDetection() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.getDIOChangeDetection();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setDIOChangeDetection(java.util.Set)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetDIOChangeDetection() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setDIOChangeDetection(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getDIOValue(com.digi.xbee.api.io.IOLine)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetDIOValue() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.getDIOValue(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setDIOValue(com.digi.xbee.api.io.IOLine, com.digi.xbee.api.io.IOValue)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetDIOValue() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setDIOValue(null, null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getIOConfiguration(com.digi.xbee.api.io.IOLine)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetIOConfiguration() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.getIOConfiguration(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setIOConfiguration(com.digi.xbee.api.io.IOLine, com.digi.xbee.api.io.IOMode)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetIOConfiguration() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setIOConfiguration(null, null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getIOSamplingRate()}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetIOSamplingRate() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.getIOSamplingRate();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setIOSamplingRate(int)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetIOSamplingRate() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setIOSamplingRate(-1);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setNodeID(String)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetNodeID() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setNodeID(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getPowerLevel()}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetPowerLevel() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.getPowerLevel();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setPowerLevel(com.digi.xbee.api.models.PowerLevel)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetPowerLevel() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setPowerLevel(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#getPWMDutyCycle(com.digi.xbee.api.io.IOLine)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetPWMDutyCycle() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.getPWMDutyCycle(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#setPWMDutyCycle(com.digi.xbee.api.io.IOLine, double)}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetPWMDutyCycle() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.setPWMDutyCycle(null, -1);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.CellularDevice#readIOSample()}.
+	 * 
+	 * <p>Verify that the not supported methods of the Cellular protocol throw an
+	 * {@code UnsupportedOperationException}.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationReadIOSample() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in Cellular protocol.")));
+		
+		// Call the method that should throw the exception.
 		cellularDevice.readIOSample();
 	}
 	

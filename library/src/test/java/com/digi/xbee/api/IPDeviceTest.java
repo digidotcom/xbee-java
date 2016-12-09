@@ -275,21 +275,7 @@ public class IPDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#getDestinationAddress()},
-	 * {@link com.digi.xbee.api.IPDevice#setDestinationAddress(com.digi.xbee.api.models.XBee64BitAddress)},
-	 * {@link com.digi.xbee.api.IPDevice#getPANID()},
-	 * {@link com.digi.xbee.api.IPDevice#setPANID(byte[])},
-	 * {@link com.digi.xbee.api.IPDevice#addDataListener(com.digi.xbee.api.listeners.IDataReceiveListener)},
-	 * {@link com.digi.xbee.api.IPDevice#removeDataListener(com.digi.xbee.api.listeners.IDataReceiveListener)},
-	 * {@link com.digi.xbee.api.IPDevice#addIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)},
-	 * {@link com.digi.xbee.api.IPDevice#removeIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)},
-	 * {@link com.digi.xbee.api.IPDevice#readData()},
-	 * {@link com.digi.xbee.api.IPDevice#readData(int)},
-	 * {@link com.digi.xbee.api.IPDevice#readDataFrom(RemoteXBeeDevice)},
-	 * {@link com.digi.xbee.api.IPDevice#readDataFrom(RemoteXBeeDevice, int)},
-	 * {@link com.digi.xbee.api.IPDevice#sendBroadcastData(byte[])},
-	 * {@link com.digi.xbee.api.IPDevice#sendData(RemoteXBeeDevice, byte[])} and
-	 * {@link com.digi.xbee.api.IPDevice#sendDataAsync(RemoteXBeeDevice, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#getDestinationAddress()}.
 	 * 
 	 * <p>Verify that the not supported methods of the IP device throw an
 	 * {@code UnsupportedOperationException}</p>.
@@ -298,26 +284,264 @@ public class IPDeviceTest {
 	 */
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testNotSupportedOperations() throws Exception {
+	public void testNotSupportedOperationGetDestinationAddress() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.getDestinationAddress();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#setDestinationAddress(com.digi.xbee.api.models.XBee64BitAddress)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetDestinationAddress() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.setDestinationAddress(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#getPANID()}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationGetPANID() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.getPANID();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#setPANID(byte[])}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSetPANID() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.setPANID(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#addDataListener(com.digi.xbee.api.listeners.IDataReceiveListener)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationAddDataListener() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.addDataListener(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#removeDataListener(com.digi.xbee.api.listeners.IDataReceiveListener)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationRemoveDataListener() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.removeDataListener(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#addIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationsAddIOSampleListener() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.addIOSampleListener(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#removeIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationRemoveIOSampleListener() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.removeIOSampleListener(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readData()}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationReadData() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.readData();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readData(int)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationReadDataTimeout() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.readData(-1);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readDataFrom(RemoteXBeeDevice)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationReadDataFrom() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.readDataFrom(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readDataFrom(RemoteXBeeDevice, int)}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationReadDataFromTimeout() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.readDataFrom(null, -1);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#sendBroadcastData(byte[])}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSendBroadcastData() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
+		ipDevice.sendBroadcastData(null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#sendData(RemoteXBeeDevice, byte[])}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSendData() throws Exception {
 		exception.expect(UnsupportedOperationException.class);
 		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
 		
 		// All the following operations should throw an 
 		// {@code UnsupportedOperationException} exception.
-		ipDevice.getDestinationAddress();
-		ipDevice.setDestinationAddress(null);
-		ipDevice.getPANID();
-		ipDevice.setPANID(null);
-		ipDevice.addDataListener(null);
-		ipDevice.removeDataListener(null);
-		ipDevice.addIOSampleListener(null);
-		ipDevice.removeIOSampleListener(null);
-		ipDevice.readData();
-		ipDevice.readData(-1);
-		ipDevice.readDataFrom(null);
-		ipDevice.readDataFrom(null, -1);
-		ipDevice.sendBroadcastData(null);
 		ipDevice.sendData((RemoteXBeeDevice)null, null);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.IPDevice#sendDataAsync(RemoteXBeeDevice, byte[])}.
+	 * 
+	 * <p>Verify that the not supported methods of the IP device throw an
+	 * {@code UnsupportedOperationException}</p>.
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testNotSupportedOperationSendDataAsync() throws Exception {
+		exception.expect(UnsupportedOperationException.class);
+		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
+		
+		// Call the method that should throw the exception.
 		ipDevice.sendDataAsync((RemoteXBeeDevice)null, null);
 	}
 	

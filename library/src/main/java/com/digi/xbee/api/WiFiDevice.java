@@ -12,6 +12,8 @@
 package com.digi.xbee.api;
 
 import java.io.ByteArrayInputStream;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.AccessPoint;
+import com.digi.xbee.api.models.IPAddressingMode;
 import com.digi.xbee.api.models.WiFiAssociationIndicationStatus;
 import com.digi.xbee.api.models.WiFiEncryptionType;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -622,4 +625,196 @@ public class WiFiDevice extends IPDevice {
 		
 		this.wifiReceiveTimeout = wifiReceiveTimeout;
 	}
+	
+	/**
+	 * Sets the IP addressing mode.
+	 * 
+	 * @param mode IP addressing mode.
+	 * 
+	 * @throws NullPointerException if {@code mode == null}.
+	 * @throws TimeoutException if there is a timeout setting the IP addressing
+	 *                          mode.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getIPAddressingMode()
+	 * @see IPAddressingMode
+	 */
+	public void setIPAddressingMode(IPAddressingMode mode) throws TimeoutException, XBeeException {
+		if (mode == null)
+			throw new NullPointerException("IP addressing mode cannot be null.");
+		
+		setParameter("MA", ByteUtils.intToByteArray(mode.getID()));
+	}
+	
+	/**
+	 * Returns the IP addressing mode.
+	 * 
+	 * @return The configured IP addressing mode.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the IP addressing
+	 *                          mode.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setIPAddressingMode(IPAddressingMode)
+	 * @see IPAddressingMode
+	 */
+	public IPAddressingMode getIPAddressingMode() throws TimeoutException, XBeeException {
+		return IPAddressingMode.get(ByteUtils.byteArrayToInt(getParameter("MA")));
+	}
+	
+	/**
+	 * Sets the IP address of the module.
+	 * 
+	 * <p>This method <b>can only be called</b> if the module is configured in
+	 * {@link IPAddressingMode#STATIC} mode. Otherwise an {@code XBeeException}
+	 * will be thrown.</p>
+	 * 
+	 * @param address IP address.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws TimeoutException if there is a timeout setting the IP address.
+	 * @throws XBeeException if the module is in {@link IPAddressingMode#DHCP}
+	 *                       mode or there is any other XBee related exception.
+	 * 
+	 * @see #getIPAddress()
+	 * @see #getIPAddressingMode()
+	 * @see Inet4Address
+	 */
+	public void setIPAddress(Inet4Address address) throws TimeoutException, XBeeException {
+		if (address == null)
+			throw new NullPointerException("IP address cannot be null.");
+		
+		setParameter("MY", address.getAddress());
+	}
+	
+	/**
+	 * Sets the IP address subnet mask.
+	 * 
+	 * <p>This method <b>can only be called</b> if the module is configured in
+	 * {@link IPAddressingMode#STATIC} mode. Otherwise an {@code XBeeException}
+	 * will be thrown.</p>
+	 * 
+	 * @param address IP address subnet mask.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws TimeoutException if there is a timeout setting the IP address
+	 *                          mask.
+	 * @throws XBeeException if the module is in {@link IPAddressingMode#DHCP}
+	 *                       mode or there is any other XBee related exception.
+	 * 
+	 * @see #getIPAddressingMode()
+	 * @see #getIPAddressMask()
+	 * @see Inet4Address
+	 */
+	public void setIPAddressMask(Inet4Address address) throws TimeoutException, XBeeException {
+		if (address == null)
+			throw new NullPointerException("Address mask cannot be null.");
+		
+		setParameter("MK", address.getAddress());
+	}
+	
+	/**
+	 * Returns the IP address subnet mask.
+	 * 
+	 * @return The configured IP address subnet mask.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the IP address
+	 *                          mask.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setIPAddressMask(Inet4Address)
+	 * @see Inet4Address
+	 */
+	public Inet4Address getIPAddressMask() throws TimeoutException, XBeeException {
+		try {
+			return (Inet4Address) Inet4Address.getByAddress(getParameter("MK"));
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
+	}
+	
+	/**
+	 * Sets the IP address of the gateway.
+	 * 
+	 * <p>This method <b>can only be called</b> if the module is configured in
+	 * {@link IPAddressingMode#STATIC} mode. Otherwise an {@code XBeeException}
+	 * will be thrown.</p>
+	 * 
+	 * @param address IP address of the gateway.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws TimeoutException if there is a timeout setting the gateway IP
+	 *                          address.
+	 * @throws XBeeException if the module is in {@link IPAddressingMode#DHCP}
+	 *                       mode or there is any other XBee related exception.
+	 * 
+	 * @see #getGatewayIPAddress()
+	 * @see #getIPAddressingMode()
+	 * @see Inet4Address
+	 */
+	public void setGatewayIPAddress(Inet4Address address) throws TimeoutException, XBeeException {
+		if (address == null)
+			throw new NullPointerException("Gateway address cannot be null.");
+		
+		setParameter("GW", address.getAddress());
+	}
+	
+	/**
+	 * Returns the IP address of the gateway.
+	 * 
+	 * @return The configured IP address of the gateway.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the gateway IP
+	 *                          address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setGatewayIPAddress(Inet4Address)
+	 * @see Inet4Address
+	 */
+	public Inet4Address getGatewayIPAddress() throws TimeoutException, XBeeException {
+		try {
+			return (Inet4Address) Inet4Address.getByAddress(getParameter("GW"));
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
+	}
+	
+	/**
+	 * Sets the IP address of domain name server.
+	 * 
+	 * @param address DNS address.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws TimeoutException if there is a timeout setting the DNS address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getDNSAddress()
+	 * @see Inet4Address
+	 */
+	public void setDNSAddress(Inet4Address address) throws TimeoutException, XBeeException {
+		if (address == null)
+			throw new NullPointerException("DNS address cannot be null.");
+		
+		setParameter("NS", address.getAddress());
+	}
+	
+	/**
+	 * Returns the IP address of domain name server.
+	 * 
+	 * @return The configured DNS address.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the DNS address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDNSAddress(Inet4Address)
+	 * @see Inet4Address
+	 */
+	public Inet4Address getDNSAddress() throws TimeoutException, XBeeException {
+		try {
+			return (Inet4Address) Inet4Address.getByAddress(getParameter("NS"));
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
+	}
+
 }

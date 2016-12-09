@@ -309,8 +309,7 @@ public class CellularDevice extends IPDevice {
 	}
 	
 	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
+	 * @deprecated Cellular protocol does not have node identifier.
 	 */
 	@Override
 	public String getNodeID() {

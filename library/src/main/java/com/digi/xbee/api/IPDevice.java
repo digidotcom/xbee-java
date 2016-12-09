@@ -11,6 +11,9 @@
  */
 package com.digi.xbee.api;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
@@ -186,6 +189,46 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
+	 * Sets the destination IP address.
+	 * 
+	 * @param address Destination IP address.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws TimeoutException if there is a timeout setting the destination
+	 *                          address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getDestinationIPAddress()
+	 * @see Inet4Address
+	 */
+	public void setDestinationIPAddress(Inet4Address address) throws TimeoutException, XBeeException {
+		if (address == null)
+			throw new NullPointerException("Destination IP address cannot be null.");
+		
+		setParameter("DL", address.getAddress());
+	}
+	
+	/**
+	 * Returns the destination IP address.
+	 * 
+	 * @return The configured destination IP address.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the destination
+	 *                          address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDestinationIPAddress(Inet4Address)
+	 * @see Inet4Address
+	 */
+	public Inet4Address getDestinationIPAddress() throws TimeoutException, XBeeException {
+		try {
+			return (Inet4Address) Inet4Address.getByAddress(getParameter("DL"));
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
+	}
+	
+	/**
 	 * @deprecated This protocol does not have an associated 16-bit address.
 	 */
 	@Override
@@ -195,7 +238,8 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * @deprecated This protocol does not have not have a destination address. 
+	 * @deprecated Operation not supported in this protocol. Use
+	 *             {@link #getDestinationIPAddress()} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */
@@ -207,7 +251,8 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * @deprecated This protocol does not have not have a destination address. 
+	 * @deprecated Operation not supported in this protocol. Use
+	 *             {@link #setDestinationIPAddress(IP32BitAddress)} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */

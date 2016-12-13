@@ -105,7 +105,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#startListening(int)}.
 	 * 
-	 * <p>Verify that device cannot start listening for network data if the 
+	 * <p>Verify that device cannot start listening for IP data if the 
 	 * source port is bigger than 65535.</p>
 	 * 
 	 * @throws XBeeException 
@@ -119,7 +119,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#startListening(int)}.
 	 * 
-	 * <p>Verify that device cannot start listening for network data if the 
+	 * <p>Verify that device cannot start listening for IP data if the 
 	 * source port is negative.</p>
 	 * 
 	 * @throws XBeeException 
@@ -133,7 +133,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#startListening(int)}.
 	 * 
-	 * <p>Verify that device cannot start listening for network data if the 
+	 * <p>Verify that device cannot start listening for IP data if the 
 	 * device is not open.</p>
 	 * 
 	 * @throws XBeeException 
@@ -150,7 +150,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#startListening(int)}.
 	 * 
-	 * <p>Verify that device cannot start listening for network data if device 
+	 * <p>Verify that device cannot start listening for IP data if device 
 	 * has an invalid operating mode.</p>
 	 * 
 	 * @throws XBeeException 
@@ -167,7 +167,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#startListening(int)}.
 	 * 
-	 * <p>Verify that device cannot start listening for network data if there 
+	 * <p>Verify that device cannot start listening for IP data if there 
 	 * is a timeout setting the 'C0' parameter.</p>
 	 * 
 	 * @throws XBeeException 
@@ -184,7 +184,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#startListening(int)}.
 	 * 
-	 * <p>Verify that device starts listening for network data successfully.</p>
+	 * <p>Verify that device starts listening for IP data successfully.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 
@@ -204,7 +204,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#stopListening()}.
 	 * 
-	 * <p>Verify that device cannot stop listening for network data if the 
+	 * <p>Verify that device cannot stop listening for IP data if the 
 	 * device is not open.</p>
 	 * 
 	 * @throws XBeeException 
@@ -221,7 +221,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#stopListening()}.
 	 * 
-	 * <p>Verify that device cannot stop listening for network data if device 
+	 * <p>Verify that device cannot stop listening for IP data if device 
 	 * has an invalid operating mode.</p>
 	 * 
 	 * @throws XBeeException 
@@ -238,7 +238,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#stopListening()}.
 	 * 
-	 * <p>Verify that device cannot stop listening for network data if there 
+	 * <p>Verify that device cannot stop listening for IP data if there 
 	 * is a timeout setting the 'C0' parameter.</p>
 	 * 
 	 * @throws XBeeException 
@@ -255,7 +255,7 @@ public class IPDeviceTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#stopListening()}.
 	 * 
-	 * <p>Verify that device stops listening for network data successfully.</p>
+	 * <p>Verify that device stops listening for IP data successfully.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TimeoutException 

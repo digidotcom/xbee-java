@@ -11,24 +11,24 @@
  */
 package com.digi.xbee.api.listeners;
 
-import com.digi.xbee.api.models.NetworkMessage;
+import com.digi.xbee.api.models.IPMessage;
 
 /**
  * This interface defines the required methods that should be implemented to 
- * behave as a network data listener and be notified when new network data is 
+ * behave as an IP data listener and be notified when new IP data is 
  * received.
  */
-public interface INetworkDataReceiveListener {
+public interface IIPDataReceiveListener {
 
 	/**
-	 * Called when network data is received.
+	 * Called when IP data is received.
 	 * 
-	 * @param networkMessage A {@code NetworkMessage} object containing the
-	 *                       data, the IP address that sent the data, the source
-	 *                       and destination ports and the
-	 *                       {@code NetworkProtocol} of the transmission.
+	 * @param ipMessage An {@code IPMessage} object containing the data, the 
+	 *                  IP address that sent the data, the source and 
+	 *                  destination ports and the {@code IPProtocol} of the 
+	 *                  transmission.
 	 * 
-	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 */
-	public void networkDataReceived(NetworkMessage networkMessage);
+	public void ipDataReceived(IPMessage ipMessage);
 }

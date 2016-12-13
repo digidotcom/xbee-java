@@ -11,9 +11,11 @@
  */
 package com.digi.xbee.api.connecttoechoserver;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+
 import com.digi.xbee.api.CellularDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.models.NetworkMessage;
 import com.digi.xbee.api.models.NetworkProtocol;
 
@@ -37,7 +39,7 @@ public class MainApp {
 	// TODO Optionally, replace with the text you want to send to the server.
 	private static final String TEXT = "Hello XBee!";
 	
-	private static final IP32BitAddress ECHO_SERVER = new IP32BitAddress("52.43.121.77");
+	private static final String ECHO_SERVER = "52.43.121.77";
 	
 	private static final int ECHO_SERVER_PORT = 11001;
 	
@@ -61,7 +63,8 @@ public class MainApp {
 			
 			System.out.format("Sending text to %s:%s >> '%s'... ", ECHO_SERVER, ECHO_SERVER_PORT,
 					new String(dataToSend));
-			myDevice.sendNetworkData(ECHO_SERVER, ECHO_SERVER_PORT, PROTOCOL_TCP, TEXT.getBytes());
+			myDevice.sendNetworkData((Inet4Address) Inet4Address.getByName(ECHO_SERVER), 
+					ECHO_SERVER_PORT, PROTOCOL_TCP, TEXT.getBytes());
 			
 			System.out.println("Success");
 			
@@ -74,8 +77,8 @@ public class MainApp {
 			System.out.format("Echo response received from %s:%s >> '%s'", response.getIPAddress(), 
 					response.getSourcePort(),
 					response.getDataString());
-		} catch (XBeeException e) {
-			System.out.println("Error sendind data to the echo server");
+		} catch (XBeeException | UnknownHostException e) {
+			System.out.println("Error sending data to the echo server");
 			e.printStackTrace();
 			System.exit(1);
 		} finally {

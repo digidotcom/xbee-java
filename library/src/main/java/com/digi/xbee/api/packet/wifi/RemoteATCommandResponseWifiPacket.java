@@ -13,6 +13,8 @@ package com.digi.xbee.api.packet.wifi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
@@ -21,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.ATCommandStatus;
 import com.digi.xbee.api.models.ATStringCommands;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.ByteUtils;
@@ -50,7 +51,7 @@ import com.digi.xbee.api.utils.HexUtils;
 public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 
 	// Constants.
-	private static final int MIN_API_PAYLOAD_LENGTH = 13; // 1 (Frame type) + 1 (frame ID) + 8 (32-bit address) + 2 (AT command) + 1 (status)
+	private static final int MIN_API_PAYLOAD_LENGTH = 13; // 1 (Frame type) + 1 (frame ID) + 8 (IP address) + 2 (AT command) + 1 (status)
 
 	private static final String ERROR_PAYLOAD_NULL = "Remote AT Command Response (Wi-Fi) packet payload cannot be null.";
 	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete Remote AT Command Response (Wi-Fi) packet.";
@@ -61,7 +62,7 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 	private static final String ERROR_STATUS_NULL = "AT command status cannot be null.";
 
 	// Variables.
-	private final IP32BitAddress sourceAddress;
+	private final Inet4Address sourceAddress;
 
 	private final ATCommandStatus status;
 
@@ -103,8 +104,13 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 		int frameID = payload[index] & 0xFF;
 		index = index + 1;
 
-		// 8 bytes of 32-bit source address.
-		IP32BitAddress sourceAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index + 4, index + 8));
+		// 8 bytes of source address.
+		Inet4Address sourceAddress;
+		try {
+			sourceAddress = (Inet4Address) Inet4Address.getByAddress(Arrays.copyOfRange(payload, index + 4, index + 8));
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException(e);
+		}
 		index = index + 8;
 
 		// 2 bytes of AT command.
@@ -129,7 +135,7 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 	 * {@code RemoteATCommandResponseWifiPacket} object with the given parameters.
 	 *
 	 * @param frameID frame ID.
-	 * @param sourceAddress 32-bit address of the remote radio returning
+	 * @param sourceAddress IP address of the remote radio returning
 	 *                      response.
 	 * @param command The AT command.
 	 * @param status The command status.
@@ -144,8 +150,9 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 	 * @see com.digi.xbee.api.models.ATCommandStatus
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public RemoteATCommandResponseWifiPacket(int frameID, IP32BitAddress sourceAddress,
+	public RemoteATCommandResponseWifiPacket(int frameID, Inet4Address sourceAddress,
 			String command, ATCommandStatus status, byte[] commandValue) {
 		super(APIFrameType.REMOTE_AT_COMMAND_RESPONSE_WIFI);
 
@@ -175,7 +182,7 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(new byte[]{0x00, 0x00, 0x00, 0x00}); // First 4 bytes of the 64-bit source address.
-			os.write(sourceAddress.getValue());
+			os.write(sourceAddress.getAddress());
 			os.write(ByteUtils.stringToByteArray(command));
 			os.write(status.getId());
 			if (commandValue != null)
@@ -205,13 +212,13 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Returns the 32-bit IP source address.
+	 * Returns the IP source address.
 	 *
-	 * @return The 32-bit IP source address.
+	 * @return The IP source address.
 	 *
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getSourceAddress() {
+	public Inet4Address getSourceAddress() {
 		return sourceAddress;
 	}
 
@@ -300,7 +307,7 @@ public class RemoteATCommandResponseWifiPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Source address", "00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getValue())) + " (" + sourceAddress.toString() + ")");
+		parameters.put("Source address", "00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getAddress())) + " (" + sourceAddress.getHostAddress() + ")");
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
 		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(status.getId(), 1)) + " (" + status.getDescription() + ")");
 		if (commandValue != null) {

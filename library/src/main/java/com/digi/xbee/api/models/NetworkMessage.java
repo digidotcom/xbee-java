@@ -11,6 +11,8 @@
  */
 package com.digi.xbee.api.models;
 
+import java.net.Inet4Address;
+
 /**
  * This class represents a network message containing the IP address the 
  * message belongs to, the source and destination ports, the network protocol,
@@ -22,7 +24,7 @@ package com.digi.xbee.api.models;
 public class NetworkMessage {
 
 	// Variables.
-	private final IP32BitAddress ipAddress;
+	private final Inet4Address ipAddress;
 	
 	private final byte[] data;
 	
@@ -49,10 +51,10 @@ public class NetworkMessage {
 	 *                              if {@code data == null} or
 	 *                              if {@code protocol ==  null}.
 	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public NetworkMessage(IP32BitAddress ipAddress, int sourcePort, int destPort, 
+	public NetworkMessage(Inet4Address ipAddress, int sourcePort, int destPort, 
 			NetworkProtocol protocol, byte[] data) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
@@ -78,9 +80,9 @@ public class NetworkMessage {
 	 * 
 	 * @return The IP address this message is associated to.
 	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getIPAddress() {
+	public Inet4Address getIPAddress() {
 		return ipAddress;
 	}
 	

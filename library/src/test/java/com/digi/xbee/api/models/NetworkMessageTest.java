@@ -13,17 +13,20 @@ package com.digi.xbee.api.models;
 
 import static org.junit.Assert.*;
 
+import java.net.Inet4Address;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class NetworkMessageTest {
 
 	// Constants.
 	private final static String DATA = "Data";
 	
+	private final static String IP_ADDRESS = "10.11.12.13";
+	
 	// Variables.
-	private static IP32BitAddress ipAddress;
+	private static Inet4Address ipAddress;
 	
 	private static int sourcePort = 123;
 	private static int destPort = 456;
@@ -31,12 +34,12 @@ public class NetworkMessageTest {
 	private static NetworkProtocol protocol = NetworkProtocol.TCP;
 	
 	@BeforeClass
-	public static void setupOnce() {
-		ipAddress = Mockito.mock(IP32BitAddress.class);
+	public static void setupOnce() throws Exception {
+		ipAddress = (Inet4Address) Inet4Address.getByName(IP_ADDRESS);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the IP address is null.</p>
 	 */
@@ -46,7 +49,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the protocol is null.</p>
 	 */
@@ -56,7 +59,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the destination port is 
 	 * greater than 65535.</p>
@@ -67,7 +70,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the source port is negative.</p>
 	 */
@@ -77,7 +80,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the destination port is 
 	 * greater than 65535.</p>
@@ -88,7 +91,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the destination port is 
 	 * negative.</p>
@@ -99,7 +102,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 * 
 	 * <p>Verify that the {@code NetworkMessage} cannot be created if the data is null.</p>
 	 */
@@ -109,7 +112,7 @@ public class NetworkMessageTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(IP32BitAddress, int, int, NetworkProtocol, byte[])}, 
+	 * Test method for {@link com.digi.xbee.api.models.NetworkMessage#NetworkMessage(Inet4Address, int, int, NetworkProtocol, byte[])}, 
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getIPAddress()},
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getSourcePort()}, 
 	 * {@link com.digi.xbee.api.models.NetworkMessage#getDestPort()}, 

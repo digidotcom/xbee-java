@@ -13,6 +13,7 @@ package com.digi.xbee.api.listeners;
 
 import static org.junit.Assert.*;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -30,7 +31,6 @@ import org.powermock.reflect.Whitebox;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.models.NetworkMessage;
 import com.digi.xbee.api.models.NetworkProtocol;
 import com.digi.xbee.api.models.OperatingMode;
@@ -44,7 +44,7 @@ import com.digi.xbee.api.packet.network.RXIPv4Packet;
 public class INetworkDataReceiveListenerTest {
 	
 	// Constants.
-	private static final IP32BitAddress IP_ADDRESS = new IP32BitAddress("10.10.2.123");
+	private static final String IP_ADDRESS = "10.10.2.123";
 	
 	private static final int SOURCE_PORT = 123;
 	private static final int DEST_PORT = 456;
@@ -65,10 +65,14 @@ public class INetworkDataReceiveListenerTest {
 	private static RXIPv4Packet rxIPv4Packet;
 	private static ATCommandResponsePacket invalidPacket;
 	
+	private static Inet4Address sourceAddress;
+	
 	private DataReader dataReader;
 	
 	@BeforeClass
 	public static void setupOnce() throws Exception {
+		sourceAddress = (Inet4Address) Inet4Address.getByName(IP_ADDRESS);
+		
 		// Mock RX IPV4 Packet.
 		rxIPv4Packet = Mockito.mock(RXIPv4Packet.class);
 		Mockito.when(rxIPv4Packet.getFrameType()).thenReturn(APIFrameType.RX_IPV4);
@@ -76,7 +80,7 @@ public class INetworkDataReceiveListenerTest {
 		Mockito.when(rxIPv4Packet.getDestPort()).thenReturn(DEST_PORT);
 		Mockito.when(rxIPv4Packet.getProtocol()).thenReturn(PROTOCOL);
 		Mockito.when(rxIPv4Packet.getData()).thenReturn(RECEIVED_DATA_BYTES);
-		Mockito.when(rxIPv4Packet.getSourceAddress()).thenReturn(IP_ADDRESS);
+		Mockito.when(rxIPv4Packet.getSourceAddress()).thenReturn(sourceAddress);
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);
@@ -114,11 +118,11 @@ public class INetworkDataReceiveListenerTest {
 	@Test
 	public void testDataReceiveEvent() {
 		// This is the message that should have been created if an RXIPV4 frame would have been received.
-		NetworkMessage networkMessage = new NetworkMessage(IP_ADDRESS, SOURCE_PORT, DEST_PORT, PROTOCOL, RECEIVED_DATA_BYTES);
+		NetworkMessage networkMessage = new NetworkMessage(sourceAddress, SOURCE_PORT, DEST_PORT, PROTOCOL, RECEIVED_DATA_BYTES);
 		
 		receiveNetworkDataListener.networkDataReceived(networkMessage);
 		
-		assertEquals(IP_ADDRESS, receiveNetworkDataListener.getIPAddress());
+		assertEquals(sourceAddress, receiveNetworkDataListener.getIPAddress());
 		assertEquals(SOURCE_PORT, receiveNetworkDataListener.getSourcePort());
 		assertEquals(DEST_PORT, receiveNetworkDataListener.getDestPort());
 		assertEquals(PROTOCOL, receiveNetworkDataListener.getProtocol());
@@ -137,7 +141,7 @@ public class INetworkDataReceiveListenerTest {
 	@Test
 	public void testDataReceiveNotSubscribed() throws Exception {
 		// Whenever a new IP address needs to be instantiated, return the constant one.
-		PowerMockito.whenNew(IP32BitAddress.class).withAnyArguments().thenReturn(IP_ADDRESS);
+		PowerMockito.whenNew(Inet4Address.class).withAnyArguments().thenReturn(sourceAddress);
 		
 		// Fire the private packetReceived method of the dataReader with an RXIPV4Packet packet.
 		Whitebox.invokeMethod(dataReader, PACKET_RECEIVED_METHOD, rxIPv4Packet);
@@ -167,7 +171,7 @@ public class INetworkDataReceiveListenerTest {
 	@Test
 	public void testDataReceiveSubscribedReceive() throws Exception {
 		// Whenever a new IP address needs to be instantiated, return the constant one.
-		PowerMockito.whenNew(IP32BitAddress.class).withAnyArguments().thenReturn(IP_ADDRESS);
+		PowerMockito.whenNew(Inet4Address.class).withAnyArguments().thenReturn(sourceAddress);
 		
 		// Subscribe to listen for network data.
 		dataReader.addNetworkDataReceiveListener(receiveNetworkDataListener);
@@ -183,7 +187,7 @@ public class INetworkDataReceiveListenerTest {
 		Mockito.verify(receiveNetworkDataListener, Mockito.times(1)).networkDataReceived(Mockito.any(NetworkMessage.class));
 		
 		// All the parameters of our listener should be correct.
-		assertEquals(IP_ADDRESS, receiveNetworkDataListener.getIPAddress());
+		assertEquals(sourceAddress, receiveNetworkDataListener.getIPAddress());
 		assertEquals(SOURCE_PORT, receiveNetworkDataListener.getSourcePort());
 		assertEquals(DEST_PORT, receiveNetworkDataListener.getDestPort());
 		assertEquals(PROTOCOL, receiveNetworkDataListener.getProtocol());
@@ -244,7 +248,7 @@ public class INetworkDataReceiveListenerTest {
 		
 		// Variables.
 		private byte[] data = null;
-		private IP32BitAddress ipAddress = null;
+		private Inet4Address ipAddress = null;
 		private int sourcePort = -1;
 		private int destPort = -1;
 		private NetworkProtocol protocol = null;
@@ -275,7 +279,7 @@ public class INetworkDataReceiveListenerTest {
 		 * 
 		 * @return The IP address.
 		 */
-		public IP32BitAddress getIPAddress() {
+		public Inet4Address getIPAddress() {
 			return ipAddress;
 		}
 		

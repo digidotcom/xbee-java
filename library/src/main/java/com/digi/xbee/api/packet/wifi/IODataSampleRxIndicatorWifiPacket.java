@@ -2,6 +2,8 @@ package com.digi.xbee.api.packet.wifi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
@@ -10,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOSample;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
@@ -32,7 +33,7 @@ import com.digi.xbee.api.utils.HexUtils;
 public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 
 	// Constants.
-	private static final int MIN_API_PAYLOAD_LENGTH = 11; /* 1 (Frame type) + 8 (32-bit IP address) + 1 (RSSI) + 1 (receive options)  */
+	private static final int MIN_API_PAYLOAD_LENGTH = 11; /* 1 (Frame type) + 8 (IP address) + 1 (RSSI) + 1 (receive options)  */
 
 	private static final String ERROR_PAYLOAD_NULL = "IO Data Sample Rx Indicator (Wi-Fi) packet payload cannot be null.";
 	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete IO Data Sample Rx Indicator (Wi-Fi) packet.";
@@ -42,7 +43,7 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 	private static final String ERROR_OPTIONS_ILLEGAL = "Receive options must be between 0 and 255.";
 
 	// Variables.
-	private IP32BitAddress sourceAddress;
+	private Inet4Address sourceAddress;
 
 	private final IOSample ioSample;
 
@@ -81,8 +82,13 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 		// payload[0] is the frame type.
 		int index = 1;
 
-		// 8 bytes of 32-bit IP address.
-		IP32BitAddress sourceAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index + 4, index + 8));
+		// 8 bytes of IP address.
+		Inet4Address sourceAddress;
+		try {
+			sourceAddress = (Inet4Address) Inet4Address.getByAddress(Arrays.copyOfRange(payload, index + 4, index + 8));
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException(e);
+		}
 		index = index + 8;
 
 		// RSSI options byte.
@@ -106,7 +112,7 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 	 * {@code IODataSampleRxIndicatorWifiPacket} object with the given
 	 * parameters.
 	 *
-	 * @param sourceAddress 32-bit IP address of the sender.
+	 * @param sourceAddress IP address of the sender.
 	 * @param rssi RSSI in terms of link margin.
 	 * @param receiveOptions Receive options.
 	 * @param data Received RF data.
@@ -118,8 +124,9 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 *
 	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
+	 * @see java.net.Inet4Address
 	 */
-	public IODataSampleRxIndicatorWifiPacket(IP32BitAddress sourceAddress, int rssi,
+	public IODataSampleRxIndicatorWifiPacket(Inet4Address sourceAddress, int rssi,
 			int receiveOptions, byte[] rfData) {
 		super(APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR_WIFI);
 
@@ -150,7 +157,7 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(new byte[]{0x00, 0x00, 0x00, 0x00}); // First 4 bytes of the 64-bit source address.
-			os.write(sourceAddress.getValue());
+			os.write(sourceAddress.getAddress());
 			os.write(rssi);
 			os.write(receiveOptions);
 			if (rfData != null)
@@ -180,16 +187,16 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Sets the 32-bit sender/source IP address.
+	 * Sets the sender/source IP address.
 	 *
-	 * @param sourceAddress The 32-bit sender/source IP address.
+	 * @param sourceAddress The sender/source IP address.
 	 *
 	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 *
 	 * @see #getSourceAddress()
-	 * @see IP32BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public void setSourceAddress(IP32BitAddress sourceAddress) {
+	public void setSourceAddress(Inet4Address sourceAddress) {
 		if (sourceAddress == null)
 			throw new NullPointerException(ERROR_SOURCE_ADDRESS_NULL);
 
@@ -197,14 +204,14 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Retrieves the 32-bit sender/source IP address.
+	 * Retrieves the sender/source IP address.
 	 *
-	 * @return The 32-bit sender/source IP address.
+	 * @return The sender/source IP address.
 	 *
-	 * @see #setSourceAddress(IP32BitAddress)
-	 * @see IP32BitAddress
+	 * @see #setSourceAddress(Inet4Address)
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getSourceAddress() {
+	public Inet4Address getSourceAddress() {
 		return sourceAddress;
 	}
 
@@ -292,7 +299,7 @@ public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Source address", "00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getValue())) + " (" + sourceAddress.toString() + ")");
+		parameters.put("Source address", "00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getAddress())) + " (" + sourceAddress.getHostAddress() + ")");
 		parameters.put("RSSI", HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1)));
 		parameters.put("Receive options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
 		if (ioSample != null) {

@@ -2,14 +2,16 @@ package com.digi.xbee.api.packet.wifi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.IPDevice;
 import com.digi.xbee.api.models.ATStringCommands;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
@@ -35,7 +37,7 @@ import com.digi.xbee.api.utils.HexUtils;
 public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 
 	// Constants.
-	private static final int MIN_API_PAYLOAD_LENGTH = 13; // 1 (Frame type) + 1 (frame ID) + 8 (64-bit address) + 1 (transmit options byte) + 2 (AT command)
+	private static final int MIN_API_PAYLOAD_LENGTH = 13; // 1 (Frame type) + 1 (frame ID) + 8 (IP address) + 1 (transmit options byte) + 2 (AT command)
 
 	private static final String ERROR_PAYLOAD_NULL = "Remote AT Command Request (Wi-Fi) packet payload cannot be null.";
 	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete Remote AT Command Request (Wi-Fi) packet.";
@@ -46,7 +48,7 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	private static final String ERROR_AT_COMMAND_NULL = "AT command cannot be null.";
 
 	// Variables.
-	private final IP32BitAddress destAddress;
+	private final Inet4Address destAddress;
 
 	private final int transmitOptions;
 
@@ -88,8 +90,13 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 		int frameID = payload[index] & 0xFF;
 		index = index + 1;
 
-		// 8 bytes of 32-bit destination address.
-		IP32BitAddress destAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index + 4, index + 8));
+		// 8 bytes of destination address.
+		Inet4Address destAddress;
+		try {
+			destAddress = (Inet4Address) Inet4Address.getByAddress(Arrays.copyOfRange(payload, index + 4, index + 8));
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException(e);
+		}
 		index = index + 8;
 
 		// Options byte.
@@ -113,7 +120,7 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	 * object with the given parameters.
 	 *
 	 * @param frameID The Frame ID.
-	 * @param destAddress 32-bit IP address of the destination device.
+	 * @param destAddress IP address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param command AT command.
 	 * @param parameter AT command parameter as byte array.
@@ -125,11 +132,11 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code command == null}.
 	 *
-	 * @see #RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, String)
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see #RemoteATCommandWifiPacket(int, Inet4Address, int, String, String)
 	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
+	 * @see java.net.Inet4Address
 	 */
-	public RemoteATCommandWifiPacket(int frameID, IP32BitAddress destAddress, int transmitOptions,
+	public RemoteATCommandWifiPacket(int frameID, Inet4Address destAddress, int transmitOptions,
 			String command, byte[] parameter) {
 		super(APIFrameType.REMOTE_AT_COMMAND_REQUEST_WIFI);
 
@@ -155,7 +162,7 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	 * object with the given parameters.
 	 *
 	 * @param frameID The Frame ID.
-	 * @param destAddress 32-bit IP address of the destination device.
+	 * @param destAddress IP address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param command AT command.
 	 * @param parameter AT command parameter as string.
@@ -167,11 +174,11 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code command == null}.
 	 *
-	 * @see #RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see #RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])
 	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
+	 * @see java.net.Inet4Address
 	 */
-	public RemoteATCommandWifiPacket(int frameID, IP32BitAddress destAddress, int transmitOptions,
+	public RemoteATCommandWifiPacket(int frameID, Inet4Address destAddress, int transmitOptions,
 			String command, String parameter) {
 		this(frameID, destAddress, transmitOptions, command, parameter == null ? null : parameter.getBytes());
 	}
@@ -185,7 +192,7 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(new byte[]{0x00, 0x00, 0x00, 0x00}); // First 4 bytes of the 64-bit source address.
-			os.write(destAddress.getValue());
+			os.write(destAddress.getAddress());
 			os.write(transmitOptions);
 			os.write(command.getBytes());
 			if (parameter != null)
@@ -211,17 +218,17 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		return destAddress.equals(IP32BitAddress.BROADCAST_ADDRESS);
+		return destAddress.getHostAddress().equals(IPDevice.BROADCAST_IP);
 	}
 
 	/**
-	 * Retrieves the 32-bit IP destination address.
+	 * Retrieves the IP destination address.
 	 *
-	 * @return The 32-bit IP destination address.
+	 * @return The IP destination address.
 	 *
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getDestinationAddress() {
+	public Inet4Address getDestinationAddress() {
 		return destAddress;
 	}
 
@@ -310,7 +317,7 @@ public class RemoteATCommandWifiPacket extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Destination address", "00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getValue())) + " (" + destAddress.toString() + ")");
+		parameters.put("Destination address", "00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getAddress())) + " (" + destAddress.getHostAddress() + ")");
 		parameters.put("Transmit options", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)));
 		parameters.put("AT Command", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")");
 		if (parameter != null) {

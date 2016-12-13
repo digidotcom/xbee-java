@@ -16,6 +16,8 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
@@ -28,18 +30,29 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.digi.xbee.api.models.IP32BitAddress;
+import com.digi.xbee.api.IPDevice;
 import com.digi.xbee.api.models.NetworkProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.network.RXIPv4Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
+@PrepareForTest({Inet4Address.class, RXIPv4Packet.class})
+@RunWith(PowerMockRunner.class)
 public class RXIPv4PacketTest {
 
+	// Constants.
+	private static final String IP_ADDRESS = "10.10.11.12";
+
+	// Variables.
 	private int frameType = APIFrameType.RX_IPV4.getValue();
-	private IP32BitAddress sourceAddress = new IP32BitAddress("10.10.11.12");
-	private IP32BitAddress sourceAddressBroadcast = IP32BitAddress.BROADCAST_ADDRESS;
+	private Inet4Address sourceAddress;
+	private Inet4Address sourceAddressBroadcast;
 	private int destPort = 0x0025;
 	private int sourcePort = 0x00B3;
 	private NetworkProtocol protocol = NetworkProtocol.TCP;
@@ -49,7 +62,9 @@ public class RXIPv4PacketTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
-	public RXIPv4PacketTest() {
+	public RXIPv4PacketTest() throws Exception {
+		sourceAddress = (Inet4Address) Inet4Address.getByName(IP_ADDRESS);
+		sourceAddressBroadcast = (Inet4Address) Inet4Address.getByName(IPDevice.BROADCAST_IP);
 	}
 
 	/**
@@ -125,7 +140,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[10];
 		payload[0] = (byte)frameType;
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 1, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 1, sourceAddress.getAddress().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -149,7 +164,7 @@ public class RXIPv4PacketTest {
 	public final void testCreatePacketPayloadNotIncludingFrameType() {
 		// Set up the resources for the test.
 		byte[] payload = new byte[9 + data.length];
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 0, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 0, sourceAddress.getAddress().length);
 		payload[4] = (byte)(destPort >> 8);
 		payload[5] = (byte)destPort;
 		payload[6] = (byte)(sourcePort >> 8);
@@ -167,6 +182,34 @@ public class RXIPv4PacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
 	 *
+	 * <p>An {@code IllegalArgumentException} exception must be thrown when
+	 * parsing a byte array with an invalid IP address.</p>
+	 */
+	@Test
+	public final void testCreatePacketPayloadInvalidIP() throws Exception {
+		// Set up the resources for the test.
+		byte[] payload = new byte[11];
+		payload[0] = (byte)frameType;
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 1, sourceAddress.getAddress().length);
+		payload[5] = (byte)(destPort >> 8);
+		payload[6] = (byte)destPort;
+		payload[7] = (byte)(sourcePort >> 8);
+		payload[8] = (byte)sourcePort;
+		payload[9] = (byte)protocol.getID();
+		payload[10] = (byte)status;
+
+		PowerMockito.mockStatic(Inet4Address.class);
+		PowerMockito.when(Inet4Address.getByAddress(Mockito.any(byte[].class))).thenThrow(new UnknownHostException());
+
+		exception.expect(IllegalArgumentException.class);
+
+		// Call the method under test that should throw an IllegalArgumentException.
+		RXIPv4Packet.createPacket(payload);
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 *
 	 * <p>A valid API RX IPv4 packet with the provided options without data
 	 * is created.</p>
 	 */
@@ -175,7 +218,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[11];
 		payload[0] = (byte)frameType;
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 1, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 1, sourceAddress.getAddress().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -209,7 +252,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[11 + data.length];
 		payload[0] = (byte)frameType;
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 1, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 1, sourceAddress.getAddress().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -244,7 +287,7 @@ public class RXIPv4PacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[11 + data.length];
 		payload[0] = (byte)frameType;
-		System.arraycopy(sourceAddressBroadcast.getValue(), 0, payload, 1, sourceAddressBroadcast.getValue().length);
+		System.arraycopy(sourceAddressBroadcast.getAddress(), 0, payload, 1, sourceAddressBroadcast.getAddress().length);
 		payload[5] = (byte)(destPort >> 8);
 		payload[6] = (byte)destPort;
 		payload[7] = (byte)(sourcePort >> 8);
@@ -269,7 +312,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a null destination address. This
 	 * must throw a {@code NullPointerException}.</p>
@@ -287,7 +330,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a negative destination port. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -305,7 +348,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a destination port bigger than
 	 * 65535. This must throw an {@code IllegalArgumentException}.</p>
@@ -323,7 +366,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a negative source port. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -341,7 +384,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a source port bigger than
 	 * 65535. This must throw an {@code IllegalArgumentException}.</p>
@@ -359,7 +402,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a null protocol. This must throw
 	 * a {@code NullPointerException}.</p>
@@ -377,7 +420,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet without data ({@code null}).</p>
 	 */
@@ -403,7 +446,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with data.</p>
 	 */
@@ -427,7 +470,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(IP32BitAddress, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with data (broadcast transmission).</p>
 	 */
@@ -464,7 +507,7 @@ public class RXIPv4PacketTest {
 
 		int expectedLength = 10;
 		byte[] expectedData = new byte[expectedLength];
-		System.arraycopy(sourceAddress.getValue(), 0, expectedData, 0, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, expectedData, 0, sourceAddress.getAddress().length);
 		expectedData[4] = (byte)(destPort >> 8);
 		expectedData[5] = (byte)destPort;
 		expectedData[6] = (byte)(sourcePort >> 8);
@@ -490,7 +533,7 @@ public class RXIPv4PacketTest {
 
 		int expectedLength = 10 + data.length;
 		byte[] expectedData = new byte[expectedLength];
-		System.arraycopy(sourceAddress.getValue(), 0, expectedData, 0, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, expectedData, 0, sourceAddress.getAddress().length);
 		expectedData[4] = (byte)(destPort >> 8);
 		expectedData[5] = (byte)destPort;
 		expectedData[6] = (byte)(sourcePort >> 8);
@@ -522,7 +565,7 @@ public class RXIPv4PacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(5)));
-		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo(HexUtils.prettyHexString(sourceAddress.getValue()) + " (" + sourceAddress.toString() + ")")));
+		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo(HexUtils.prettyHexString(sourceAddress.getAddress()) + " (" + sourceAddress.getHostAddress() + ")")));
 		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")")));
 		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")")));
 		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")")));
@@ -546,7 +589,7 @@ public class RXIPv4PacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(6)));
-		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo(HexUtils.prettyHexString(sourceAddress.getValue()) + " (" + sourceAddress.toString() + ")")));
+		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo(HexUtils.prettyHexString(sourceAddress.getAddress()) + " (" + sourceAddress.getHostAddress() + ")")));
 		assertThat("Returned dest port is not the expected one", packetParams.get("Destination port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")")));
 		assertThat("Returned source port is not the expected one", packetParams.get("Source port"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")")));
 		assertThat("Returned protocol is not the expected one", packetParams.get("Protocol"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")")));
@@ -556,7 +599,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestAddress(IP32BitAddress))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestAddress(Inet4Address)}.
 	 */
 	@Test
 	public final void testSetDestAddressNull() {
@@ -571,14 +614,16 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestAddress(IP32BitAddress))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestAddress(Inet4Address)}.
+	 *
+	 * @throws Exception
 	 */
 	@Test
-	public final void testSetDestAddressNotNull() {
+	public final void testSetDestAddressNotNull() throws Exception {
 		// Set up the resources for the test.
 		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
-		IP32BitAddress newAddress = new IP32BitAddress("192.168.1.30");
+		Inet4Address newAddress = (Inet4Address) Inet4Address.getByName("192.168.1.30");
 
 		// Call the method under test.
 		packet.setSourceAddress(newAddress);
@@ -588,7 +633,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortNegative() {
@@ -603,7 +648,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortBigger() {
@@ -618,7 +663,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortValid() {
@@ -635,7 +680,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortNegative() {
@@ -650,7 +695,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortBigger() {
@@ -665,7 +710,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortValid() {
@@ -682,7 +727,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setProtocol(NetworkProtocol))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setProtocol(NetworkProtocol)}.
 	 */
 	@Test
 	public final void testSetProtocolNull() {
@@ -697,7 +742,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setProtocol(NetworkProtocol))}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setProtocol(NetworkProtocol)}.
 	 */
 	@Test
 	public final void testSetProtocolNotNull() {
@@ -714,7 +759,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getData())}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getData()}.
 	 */
 	@Test
 	public final void testGetDataNullData() {
@@ -732,7 +777,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getData())}.
+	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getData()}.
 	 */
 	@Test
 	public final void testGetDataValidData() {

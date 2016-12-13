@@ -13,13 +13,15 @@ package com.digi.xbee.api.packet.network;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digi.xbee.api.models.IP32BitAddress;
+import com.digi.xbee.api.IPDevice;
 import com.digi.xbee.api.models.NetworkProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
@@ -54,7 +56,7 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 			" or " + OPTIONS_LEAVE_SOCKET_OPEN + ".";
 
 	// Variables.
-	private IP32BitAddress destAddress;
+	private Inet4Address destAddress;
 
 	private int destPort;
 	private int sourcePort;
@@ -96,8 +98,13 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 		int frameID = payload[index] & 0xFF;
 		index = index + 1;
 
-		// 4 bytes of IP 32-bit destination address.
-		IP32BitAddress destAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index, index + 4));
+		// 4 bytes of IP destination address.
+		Inet4Address destAddress;
+		try {
+			destAddress = (Inet4Address) Inet4Address.getByAddress(Arrays.copyOfRange(payload, index, index + 4));
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException(e);
+		}
 		index = index + 4;
 
 		// 2 bytes of destination port.
@@ -129,7 +136,7 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	 * the given parameters.
 	 *
 	 * @param frameID Frame ID.
-	 * @param destAddress 32-bit IP address of the destination device.
+	 * @param destAddress IP address of the destination device.
 	 * @param destPort Destination port number.
 	 * @param sourcePort Source port number.
 	 * @param protocol Protocol used for transmitted data.
@@ -148,10 +155,10 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code protocol == null}.
 	 *
-	 * @see IP32BitAddress
 	 * @see NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public TXIPv4Packet(int frameID, IP32BitAddress destAddress, int destPort, int sourcePort,
+	public TXIPv4Packet(int frameID, Inet4Address destAddress, int destPort, int sourcePort,
 			NetworkProtocol protocol, int transmitOptions, byte[] data) {
 		super(APIFrameType.TX_IPV4);
 
@@ -186,7 +193,7 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(destAddress.getValue());
+			os.write(destAddress.getAddress());
 			os.write(destPort >> 8);
 			os.write(destPort);
 			os.write(sourcePort >> 8);
@@ -216,32 +223,32 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		return destAddress.equals(IP32BitAddress.BROADCAST_ADDRESS);
+		return destAddress.getHostAddress().equals(IPDevice.BROADCAST_IP);
 	}
 
 	/**
-	 * Retrieves the 32-bit destination IP address.
+	 * Retrieves the destination IP address.
 	 *
-	 * @return The 32-bit destination IP address.
+	 * @return The destination IP address.
 	 *
-	 * @see #setDestAddress(IP32BitAddress)
-	 * @see IP32BitAddress
+	 * @see #setDestAddress(Inet4Address)
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getDestAddress() {
+	public Inet4Address getDestAddress() {
 		return destAddress;
 	}
 
 	/**
-	 * Sets the 32-bit destination IP address.
+	 * Sets the destination IP address.
 	 *
-	 * @param destAddress The new 32-bit destination IP address.
+	 * @param destAddress The new destination IP address.
 	 *
 	 * @throws NullPointerException if {@code destAddress == null}.
 	 *
 	 * @see #getDestAddress()
-	 * @see IP32BitAddress
+	 * @see @see java.net.Inet4Address
 	 */
-	public void setDestAddress(IP32BitAddress destAddress) {
+	public void setDestAddress(Inet4Address destAddress) {
 		if (destAddress == null)
 			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
 
@@ -400,7 +407,7 @@ public class TXIPv4Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Destination address", HexUtils.prettyHexString(destAddress.getValue()) + " (" + destAddress.toString() + ")");
+		parameters.put("Destination address", HexUtils.prettyHexString(destAddress.getAddress()) + " (" + destAddress.getHostAddress() + ")");
 		parameters.put("Destination port", HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")");
 		parameters.put("Source port", HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")");
 		parameters.put("Protocol", HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")");

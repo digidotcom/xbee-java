@@ -13,6 +13,7 @@ package com.digi.xbee.api.models;
 
 import static org.junit.Assert.*;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 
 import org.junit.BeforeClass;
@@ -70,8 +71,8 @@ public class XBeePacketsQueueTest {
 	private static XBee16BitAddress xbee16BitAddress1;
 	private static XBee16BitAddress xbee16BitAddress2;
 	
-	private static IP32BitAddress ipAddress1;
-	private static IP32BitAddress ipAddress2;
+	private static Inet4Address ipAddress1;
+	private static Inet4Address ipAddress2;
 	
 	private static ReceivePacket mockedReceivePacket;
 	private static RemoteATCommandResponsePacket mockedRemoteATCommandPacket;
@@ -84,7 +85,7 @@ public class XBeePacketsQueueTest {
 	private static RXIPv4Packet mockedRxIPv4Packet2;
 	
 	@BeforeClass
-	public static void setupOnce() {
+	public static void setupOnce() throws Exception {
 		// Create 3 64-bit addresses.
 		xbee64BitAddress1 = new XBee64BitAddress(ADDRESS_64_1);
 		xbee64BitAddress2 = new XBee64BitAddress(ADDRESS_64_2);
@@ -95,8 +96,8 @@ public class XBeePacketsQueueTest {
 		xbee16BitAddress2 = new XBee16BitAddress(ADDRESS_16_2);
 		
 		// Create a couple of IP addresses.
-		ipAddress1 = new IP32BitAddress(ADDRESS_IP_1);
-		ipAddress2 = new IP32BitAddress(ADDRESS_IP_2);
+		ipAddress1 = (Inet4Address) Inet4Address.getByName(ADDRESS_IP_1);
+		ipAddress2 = (Inet4Address) Inet4Address.getByName(ADDRESS_IP_2);
 		
 		// Create some dummy packets.
 		// ReceivePacket.
@@ -486,7 +487,7 @@ public class XBeePacketsQueueTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addPacket(XBeePacket)} and 
-	 * {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstNetworkDataPacketFrom(IP32BitAddress, int)}.
+	 * {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstNetworkDataPacketFrom(Inet4Address, int)}.
 	 * 
 	 * <p>Verify that when requesting the first network data packet sent from a specific IP address, the 
 	 * queue returns the first network data packet from that IP it finds or null if there is not any 
@@ -871,7 +872,7 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstNetworkDataPacketFrom(IP32BitAddress, int)}.
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstNetworkDataPacketFrom(Inet4Address, int)}.
 	 * 
 	 * <p>Verify that when requesting the first network data packet of the queue sent by a specific 
 	 * IP address with a timeout greater than 0 and the queue does not have any network data 
@@ -1181,7 +1182,7 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipAddressesMatch(XBeePacket, IP32BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipAddressesMatch(XBeePacket, Inet4Address)}.
 	 * 
 	 * <p>Verify that the {@code isDataPacket} method of the {@code XBeePacketsQueue} class works 
 	 * successfully for no API packets.</p>
@@ -1198,7 +1199,7 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipAddressesMatch(XBeePacket, IP32BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipAddressesMatch(XBeePacket, Inet4Address)}.
 	 * 
 	 * <p>Verify that the {@code addressesMatch} method of the {@code XBeePacketsQueue} class works 
 	 * successfully for packets with IP address.</p>

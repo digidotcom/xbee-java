@@ -23,7 +23,6 @@ import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.INetworkDataReceiveListener;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.models.NetworkMessage;
 import com.digi.xbee.api.models.NetworkProtocol;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -47,6 +46,8 @@ import com.digi.xbee.api.utils.HexUtils;
 public class IPDevice extends XBeeDevice {
 
 	// Constants
+	public static final String BROADCAST_IP = "255.255.255.255";
+	
 	private static final String OPERATION_EXCEPTION = "Operation not supported in this module.";
 	
 	protected static final short DEFAULT_SOURCE_PORT = 9750;
@@ -54,7 +55,7 @@ public class IPDevice extends XBeeDevice {
 	protected static final NetworkProtocol DEFAULT_PROTOCOL = NetworkProtocol.TCP;
 	
 	// Variables
-	protected IP32BitAddress ipAddress;
+	protected Inet4Address ipAddress;
 	
 	protected int sourcePort = DEFAULT_SOURCE_PORT;
 	
@@ -161,7 +162,11 @@ public class IPDevice extends XBeeDevice {
 		
 		// Read the module's IP address.
 		byte[] response = getParameter("MY");
-		ipAddress = new IP32BitAddress(response);
+		try {
+			ipAddress = (Inet4Address) Inet4Address.getByAddress(response);
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
 		// Read the source port.
 		try {
 			response = getParameter("C0");
@@ -182,9 +187,9 @@ public class IPDevice extends XBeeDevice {
 	 * 
 	 * @return The IP address of this IP device.
 	 * 
-	 * @see com.digi.xbee.api.models.IP23BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getIPAddress() {
+	public Inet4Address getIPAddress() {
 		return ipAddress;
 	}
 	
@@ -199,7 +204,7 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getDestinationIPAddress()
-	 * @see Inet4Address
+	 * @see java.net.Inet4Address
 	 */
 	public void setDestinationIPAddress(Inet4Address address) throws TimeoutException, XBeeException {
 		if (address == null)
@@ -218,7 +223,7 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #setDestinationIPAddress(Inet4Address)
-	 * @see Inet4Address
+	 * @see java.net.Inet4Address
 	 */
 	public Inet4Address getDestinationIPAddress() throws TimeoutException, XBeeException {
 		try {
@@ -252,7 +257,7 @@ public class IPDevice extends XBeeDevice {
 	
 	/**
 	 * @deprecated Operation not supported in this protocol. Use
-	 *             {@link #setDestinationIPAddress(IP32BitAddress)} instead.
+	 *             {@link #setDestinationIPAddress(Inet4Address)} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */
@@ -460,7 +465,7 @@ public class IPDevice extends XBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendNetworkDataAsync(IP32BitAddress, byte[])}.</p>
+	 * {@link #sendNetworkDataAsync(Inet4Address, byte[])}.</p>
 	 * 
 	 * @param ipAddress The IP address to send network data to.
 	 * @param destPort The destination port of the transmission.
@@ -480,14 +485,14 @@ public class IPDevice extends XBeeDevice {
 	 * 
 	 * @see #getReceiveTimeout()
 	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkData(IP32BitAddress ipAddress, int destPort, 
+	public void sendNetworkData(Inet4Address ipAddress, int destPort, 
 			NetworkProtocol protocol, boolean closeSocket, byte[] data) 
 					throws TimeoutException, XBeeException {
 		if (ipAddress == null)
@@ -527,7 +532,7 @@ public class IPDevice extends XBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendNetworkDataAsync(IP32BitAddress, byte[])}.</p>
+	 * {@link #sendNetworkDataAsync(Inet4Address, byte[])}.</p>
 	 * 
 	 * @param ipAddress The IP address to send network data to.
 	 * @param destPort The destination port of the transmission.
@@ -545,14 +550,14 @@ public class IPDevice extends XBeeDevice {
 	 * 
 	 * @see #getReceiveTimeout()
 	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkData(IP32BitAddress ipAddress, int destPort, NetworkProtocol protocol, byte[] data) 
+	public void sendNetworkData(Inet4Address ipAddress, int destPort, NetworkProtocol protocol, byte[] data) 
 			throws TimeoutException, XBeeException {
 		sendNetworkData(ipAddress, destPort, protocol, false, data);
 	}
@@ -583,13 +588,13 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
 	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkDataAsync(IP32BitAddress ipAddress, int destPort, 
+	public void sendNetworkDataAsync(Inet4Address ipAddress, int destPort, 
 			NetworkProtocol protocol, boolean closeSocket, byte[] data) throws XBeeException {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null");
@@ -638,13 +643,13 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
-	 * @see com.digi.xbee.api.models.IP32BitAddress
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
 	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkDataAsync(IP32BitAddress ipAddress, int destPort, 
+	public void sendNetworkDataAsync(Inet4Address ipAddress, int destPort, 
 			NetworkProtocol protocol, byte[] data) throws TimeoutException, XBeeException {
 		sendNetworkDataAsync(ipAddress, destPort, protocol, false, data);
 	}
@@ -669,14 +674,18 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkData(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(IP32BitAddress, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
+	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
 	 */
 	public void sendBroadcastNetworkData(int destPort, byte[] data) throws TimeoutException, XBeeException {
-		sendNetworkData(IP32BitAddress.BROADCAST_ADDRESS, destPort, NetworkProtocol.UDP, false, data);
+		try {
+			sendNetworkData((Inet4Address) Inet4Address.getByName(BROADCAST_IP), destPort, NetworkProtocol.UDP, false, data);
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
 	}
 	
 	/**
@@ -705,8 +714,8 @@ public class IPDevice extends XBeeDevice {
 	 * 
 	 * @see #getReceiveTimeout()
 	 * @see #readNetworkData(int)
-	 * @see #readNetworkDataFrom(IP32BitAddress)
-	 * @see #readNetworkDataFrom(IP32BitAddress, int)
+	 * @see #readNetworkDataFrom(Inet4Address)
+	 * @see #readNetworkDataFrom(Inet4Address, int)
 	 * @see #setReceiveTimeout(int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
@@ -741,8 +750,8 @@ public class IPDevice extends XBeeDevice {
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * 
 	 * @see #readNetworkData()
-	 * @see #readNetworkDataFrom(IP32BitAddress)
-	 * @see #readNetworkDataFrom(IP32BitAddress, int)
+	 * @see #readNetworkDataFrom(Inet4Address)
+	 * @see #readNetworkDataFrom(Inet4Address, int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
 	 * @see com.digi.xbee.api.models.NetworkMessage
@@ -786,14 +795,14 @@ public class IPDevice extends XBeeDevice {
 	 * @see #getReceiveTimeout()
 	 * @see #readNetworkData()
 	 * @see #readNetworkData(int)
-	 * @see #readNetworkDataFrom(IP32BitAddress, int)
+	 * @see #readNetworkDataFrom(Inet4Address, int)
 	 * @see #setReceiveTimeout(int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see java.net.Inet4Address
 	 */
-	public NetworkMessage readNetworkDataFrom(IP32BitAddress ipAddress) {
+	public NetworkMessage readNetworkDataFrom(Inet4Address ipAddress) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
 		
@@ -827,15 +836,15 @@ public class IPDevice extends XBeeDevice {
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code ipAddress == null}.
 	 * 
-	 * @see #readNetworkDataFrom(IP32BitAddress)
+	 * @see #readNetworkDataFrom(Inet4Address)
 	 * @see #readNetworkData()
 	 * @see #readNetworkData(int)
 	 * @see #startListening(short)
 	 * @see #stopListening()
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see java.net.Inet4Address
 	 */
-	public NetworkMessage readNetworkDataFrom(IP32BitAddress ipAddress, int timeout) {
+	public NetworkMessage readNetworkDataFrom(Inet4Address ipAddress, int timeout) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
 		if (timeout < 0)
@@ -871,10 +880,10 @@ public class IPDevice extends XBeeDevice {
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.XBeeMessage
+	 * @see java.net.Inet4Address
 	 */
-	private NetworkMessage readNetworkDataPacket(IP32BitAddress remoteIPAddress, int timeout) {
+	private NetworkMessage readNetworkDataPacket(Inet4Address remoteIPAddress, int timeout) {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -892,7 +901,7 @@ public class IPDevice extends XBeeDevice {
 		
 		// Obtain the data and IP address from the packet.
 		byte[] data = null;
-		IP32BitAddress ipAddress = null;
+		Inet4Address ipAddress = null;
 		int sourcePort;
 		int destPort;
 		NetworkProtocol protocol = NetworkProtocol.TCP;

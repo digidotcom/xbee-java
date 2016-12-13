@@ -15,12 +15,13 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
+import java.net.Inet4Address;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -31,7 +32,6 @@ import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.utils.ByteUtils;
 
 @RunWith(PowerMockRunner.class)
@@ -50,7 +50,7 @@ public class IPDeviceTest {
 	public ExpectedException exception = ExpectedException.none();
 	
 	// Variables.
-	private IP32BitAddress ipAddress;
+	private Inet4Address ipAddress;
 	
 	private IPDevice ipDevice;
 	
@@ -65,7 +65,7 @@ public class IPDeviceTest {
 		ipDevice = PowerMockito.spy(new IPDevice(mockPort));
 		
 		// Mock an IP address object.
-		ipAddress = PowerMockito.mock(IP32BitAddress.class);
+		ipAddress = PowerMockito.mock(Inet4Address.class);
 	}
 	
 	/**
@@ -79,8 +79,8 @@ public class IPDeviceTest {
 	 */
 	@Test
 	public void testReadDeviceInfoIP() throws Exception {
-		// Whenever an IP32BitAddress class is instantiated, the mocked IP address should be returned.
-		PowerMockito.whenNew(IP32BitAddress.class).withAnyArguments().thenReturn(ipAddress);
+		// Whenever an Inet4Address object is instantiated, the mocked IP address should be returned.
+		PowerMockito.whenNew(Inet4Address.class).withAnyArguments().thenReturn(ipAddress);
 		
 		// Return a valid response when requesting the MY parameter value.
 		Mockito.doReturn(RESPONSE_MY).when(ipDevice).getParameter(PARAMETER_MY);

@@ -16,6 +16,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
+import java.net.Inet4Address;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +35,6 @@ import org.powermock.reflect.Whitebox;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.models.NetworkMessage;
 import com.digi.xbee.api.models.NetworkProtocol;
 import com.digi.xbee.api.models.OperatingMode;
@@ -55,7 +56,7 @@ public class IPDeviceReadDataTest {
 	
 	private XBeePacketsQueue mockXBeePacketsQueue;
 	
-	private IP32BitAddress ipAddress;
+	private Inet4Address ipAddress;
 	private String receivedNetworkData;
 	
 	private int sourcePort = 123;
@@ -65,7 +66,7 @@ public class IPDeviceReadDataTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		ipAddress = new IP32BitAddress("10.101.1.123");
+		ipAddress = (Inet4Address) Inet4Address.getByName("10.101.1.123");
 		receivedNetworkData = "Received network data";
 		
 		mockConnectionInterface = Mockito.mock(SerialPortRxTx.class);
@@ -91,7 +92,7 @@ public class IPDeviceReadDataTest {
 				return new RXIPv4Packet(ipAddress, destPort, sourcePort,
 						protocol, receivedNetworkData.getBytes());
 			}
-		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(Mockito.any(IP32BitAddress.class), Mockito.anyInt());
+		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(Mockito.any(Inet4Address.class), Mockito.anyInt());
 		
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			public XBeePacket answer(InvocationOnMock invocation) throws Exception {
@@ -195,7 +196,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -210,7 +211,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(IP32BitAddress))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -231,7 +232,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -248,7 +249,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -263,7 +264,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -287,7 +288,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -300,11 +301,11 @@ public class IPDeviceReadDataTest {
 		exception.expectMessage(is(equalTo("The connection interface is not open.")));
 		
 		// Call the method under test and verify the result.
-		Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (IP32BitAddress)null, 100);
+		Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (Inet4Address)null, 100);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -318,7 +319,7 @@ public class IPDeviceReadDataTest {
 		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacket(Mockito.anyInt());
 		
 		// Call the method under test.
-		NetworkMessage message = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (IP32BitAddress)null, 100);
+		NetworkMessage message = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (Inet4Address)null, 100);
 		
 		// Verify the result.
 		assertThat("Message must be null", message, is(equalTo(null)));
@@ -327,7 +328,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -337,7 +338,7 @@ public class IPDeviceReadDataTest {
 		receivedNetworkData = "Received message data";
 		
 		// Call the method under test.
-		NetworkMessage readMessage = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (IP32BitAddress)null, 100);
+		NetworkMessage readMessage = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (Inet4Address)null, 100);
 		
 		// Verify the result.
 		assertThat("Message must not be null", readMessage, is(not(equalTo(null))));
@@ -352,7 +353,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetowrkDataPacket(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetowrkDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -374,7 +375,7 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(IP32BitAddress, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */

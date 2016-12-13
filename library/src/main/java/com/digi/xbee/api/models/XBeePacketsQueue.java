@@ -11,6 +11,7 @@
  */
 package com.digi.xbee.api.models;
 
+import java.net.Inet4Address;
 import java.util.LinkedList;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
@@ -391,11 +392,11 @@ public class XBeePacketsQueue {
 	 *         IP address. {@code null} if no network data packets from the 
 	 *         specified IP address are found in the queue.
 	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see com.digi.xbee.api.packet.network.RXIPv4Packet
+	 * @see java.net.Inet4Address
 	 */
-	public XBeePacket getFirstNetworkDataPacketFrom(IP32BitAddress ipAddress, int timeout) {
+	public XBeePacket getFirstNetworkDataPacketFrom(Inet4Address ipAddress, int timeout) {
 		if (timeout > 0) {
 			XBeePacket xbeePacket = getFirstNetworkDataPacketFrom(ipAddress, 0);
 			// Wait for a timeout or until a network data packet with the provided IP address is read.
@@ -486,10 +487,10 @@ public class XBeePacketsQueue {
 	 * @return {@code true} if the IP address of the XBee packet (if it has) 
 	 *         matches the provided one. {@code false} otherwise.
 	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see java.net.Inet4Address
 	 */
-	private boolean ipAddressesMatch(XBeePacket xbeePacket, IP32BitAddress ipAddress) {
+	private boolean ipAddressesMatch(XBeePacket xbeePacket, Inet4Address ipAddress) {
 		if (xbeePacket == null || ipAddress == null 
 				|| !(xbeePacket instanceof XBeeAPIPacket))
 			return false;

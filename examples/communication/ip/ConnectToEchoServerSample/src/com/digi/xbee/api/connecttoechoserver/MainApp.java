@@ -16,8 +16,8 @@ import java.net.UnknownHostException;
 
 import com.digi.xbee.api.CellularDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.models.NetworkMessage;
-import com.digi.xbee.api.models.NetworkProtocol;
+import com.digi.xbee.api.models.IPMessage;
+import com.digi.xbee.api.models.IPProtocol;
 
 /**
  * XBee Java Library Connect to Echo Server sample application.
@@ -43,7 +43,7 @@ public class MainApp {
 	
 	private static final int ECHO_SERVER_PORT = 11001;
 	
-	private static final NetworkProtocol PROTOCOL_TCP = NetworkProtocol.TCP;
+	private static final IPProtocol PROTOCOL_TCP = IPProtocol.TCP;
 	
 	/**
 	 * Application main method.
@@ -64,13 +64,13 @@ public class MainApp {
 			
 			System.out.format("Sending text to %s:%s >> '%s'... ", ECHO_SERVER, ECHO_SERVER_PORT,
 					new String(dataToSend));
-			myDevice.sendNetworkData((Inet4Address) Inet4Address.getByName(ECHO_SERVER), 
+			myDevice.sendIPData((Inet4Address) Inet4Address.getByName(ECHO_SERVER), 
 					ECHO_SERVER_PORT, PROTOCOL_TCP, TEXT.getBytes());
 			
 			System.out.println("Success");
 			
 			// Read the echoed data.
-			NetworkMessage response = myDevice.readNetworkData();
+			IPMessage response = myDevice.readIPData();
 			if (response == null) {
 				System.out.format("Echo response was not received from the server."); 
 				System.exit(1);

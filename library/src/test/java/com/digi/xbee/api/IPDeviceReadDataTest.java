@@ -35,12 +35,12 @@ import org.powermock.reflect.Whitebox;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
-import com.digi.xbee.api.models.NetworkMessage;
-import com.digi.xbee.api.models.NetworkProtocol;
+import com.digi.xbee.api.models.IPMessage;
+import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.packet.XBeePacket;
-import com.digi.xbee.api.packet.network.RXIPv4Packet;
+import com.digi.xbee.api.packet.ip.RXIPv4Packet;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({IPDevice.class, DataReader.class})
@@ -57,17 +57,17 @@ public class IPDeviceReadDataTest {
 	private XBeePacketsQueue mockXBeePacketsQueue;
 	
 	private Inet4Address ipAddress;
-	private String receivedNetworkData;
+	private String receivedIPData;
 	
 	private int sourcePort = 123;
 	private int destPort = 456;
 	
-	private NetworkProtocol protocol = NetworkProtocol.TCP;
+	private IPProtocol protocol = IPProtocol.TCP;
 	
 	@Before
 	public void setUp() throws Exception {
 		ipAddress = (Inet4Address) Inet4Address.getByName("10.101.1.123");
-		receivedNetworkData = "Received network data";
+		receivedIPData = "Received IP data";
 		
 		mockConnectionInterface = Mockito.mock(SerialPortRxTx.class);
 		
@@ -90,16 +90,16 @@ public class IPDeviceReadDataTest {
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			public XBeePacket answer(InvocationOnMock invocation) throws Exception {
 				return new RXIPv4Packet(ipAddress, destPort, sourcePort,
-						protocol, receivedNetworkData.getBytes());
+						protocol, receivedIPData.getBytes());
 			}
-		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(Mockito.any(Inet4Address.class), Mockito.anyInt());
+		}).when(mockXBeePacketsQueue).getFirstIPDataPacketFrom(Mockito.any(Inet4Address.class), Mockito.anyInt());
 		
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			public XBeePacket answer(InvocationOnMock invocation) throws Exception {
 				return new RXIPv4Packet(ipAddress, destPort, sourcePort,
-						protocol, receivedNetworkData.getBytes());
+						protocol, receivedIPData.getBytes());
 			}
-		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacket(Mockito.anyInt());
+		}).when(mockXBeePacketsQueue).getFirstIPDataPacket(Mockito.anyInt());
 		
 		PowerMockito.whenNew(XBeePacketsQueue.class).withAnyArguments().thenReturn(mockXBeePacketsQueue);
 		
@@ -117,10 +117,10 @@ public class IPDeviceReadDataTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkData()}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPData()}.
 	 */
 	@Test
-	public final void testReadNetworkDataInterfaceNotOpenException() {
+	public final void testReadIPDataInterfaceNotOpenException() {
 		// Setup the resources for the test.
 		Mockito.when(ipDevice.isOpen()).thenReturn(false);
 		
@@ -128,7 +128,7 @@ public class IPDeviceReadDataTest {
 		exception.expectMessage(is(equalTo("The connection interface is not open.")));
 		
 		// Call the method under test and verify the result.
-		ipDevice.readNetworkData();
+		ipDevice.readIPData();
 	}
 	
 	/**
@@ -139,105 +139,105 @@ public class IPDeviceReadDataTest {
 	@Test
 	public final void testReadNetowrkData() throws Exception {
 		// Call the method under test.
-		NetworkMessage readMessage = ipDevice.readNetworkData();
+		IPMessage readMessage = ipDevice.readIPData();
 		
 		// Verify the result.
-		PowerMockito.verifyPrivate(ipDevice).invoke("readNetworkDataPacket", null, 3000);
+		PowerMockito.verifyPrivate(ipDevice).invoke("readIPDataPacket", null, 3000);
 		
 		assertThat("IP address must not be null", readMessage.getIPAddress(), is(not(equalTo(null))));
 		assertThat("IP address must be '" + ipAddress + "' and not '" + readMessage.getIPAddress() + "'", readMessage.getIPAddress(), is(equalTo(ipAddress)));
 		assertThat("Source port must be '" + sourcePort + "' and not '" + readMessage.getSourcePort(), readMessage.getSourcePort(), is(equalTo(sourcePort)));
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
-		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
+		assertThat("Received data must be '" + receivedIPData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedIPData)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkData(int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPData(int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataTimeoutNegative() throws Exception {
+	public final void testReadIPDataTimeoutNegative() throws Exception {
 		// Setup the resources for the test.
 		int timeout = -100;
-		NetworkMessage message = new NetworkMessage(ipAddress, sourcePort, destPort, protocol, new byte[0]);
-		PowerMockito.doReturn(message).when(ipDevice, "readNetworkDataPacket", null, timeout);
+		IPMessage message = new IPMessage(ipAddress, sourcePort, destPort, protocol, new byte[0]);
+		PowerMockito.doReturn(message).when(ipDevice, "readIPDataPacket", null, timeout);
 		
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Read timeout must be 0 or greater.")));
 		
 		// Call the method under test and verify the result.
-		ipDevice.readNetworkData(timeout);
+		ipDevice.readIPData(timeout);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkData(int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPData(int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataTimeout() throws Exception {
+	public final void testReadIPDataTimeout() throws Exception {
 		// Setup the resources for the test.
 		int timeout = 100;
 		
 		// Call the method under test.
-		NetworkMessage readMessage = ipDevice.readNetworkData(timeout);
+		IPMessage readMessage = ipDevice.readIPData(timeout);
 		
 		// Verify the result.
-		PowerMockito.verifyPrivate(ipDevice).invoke("readNetworkDataPacket", null, timeout);
+		PowerMockito.verifyPrivate(ipDevice).invoke("readIPDataPacket", null, timeout);
 		
 		assertThat("IP address must not be null", readMessage.getIPAddress(), is(not(equalTo(null))));
 		assertThat("IP address must be '" + ipAddress + "' and not '" + readMessage.getIPAddress() + "'", readMessage.getIPAddress(), is(equalTo(ipAddress)));
 		assertThat("Source port must be '" + sourcePort + "' and not '" + readMessage.getSourcePort(), readMessage.getSourcePort(), is(equalTo(sourcePort)));
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
-		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
+		assertThat("Received data must be '" + receivedIPData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedIPData)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataFromNullIP() throws Exception {
+	public final void testReadIPDataFromNullIP() throws Exception {
 		// Setup the resources for the test.
 		exception.expect(NullPointerException.class);
 		exception.expectMessage(is(equalTo("IP address cannot be null.")));
 
 		// Call the method under test and verify the result.
-		ipDevice.readNetworkDataFrom(null);
+		ipDevice.readIPDataFrom(null);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataFrom(Inet4Address))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataFrom() throws Exception {
+	public final void testReadIPDataFrom() throws Exception {
 		// Call the method under test.
-		NetworkMessage readMessage = ipDevice.readNetworkDataFrom(ipAddress);
+		IPMessage readMessage = ipDevice.readIPDataFrom(ipAddress);
 
 		// Verify the result.
-		PowerMockito.verifyPrivate(ipDevice).invoke("readNetworkDataPacket", ipAddress, 3000);
+		PowerMockito.verifyPrivate(ipDevice).invoke("readIPDataPacket", ipAddress, 3000);
 		
 		assertThat("IP address must not be null", readMessage.getIPAddress(), is(not(equalTo(null))));
 		assertThat("IP address must be '" + ipAddress + "' and not '" + readMessage.getIPAddress() + "'", readMessage.getIPAddress(), is(equalTo(ipAddress)));
 		assertThat("Source port must be '" + sourcePort + "' and not '" + readMessage.getSourcePort(), readMessage.getSourcePort(), is(equalTo(sourcePort)));
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
-		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
+		assertThat("Received data must be '" + receivedIPData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedIPData)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataFromTimeoutNegative() throws Exception {
+	public final void testReadIPDataFromTimeoutNegative() throws Exception {
 		// Setup the resources for the test.
 		int timeout = -100;
 		
@@ -245,55 +245,55 @@ public class IPDeviceReadDataTest {
 		exception.expectMessage(is(equalTo("Read timeout must be 0 or greater.")));
 
 		// Call the method under test and verify the result.
-		ipDevice.readNetworkDataFrom(ipAddress, timeout);
+		ipDevice.readIPDataFrom(ipAddress, timeout);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataFromTimeoutNullIP() throws Exception {
+	public final void testReadIPDataFromTimeoutNullIP() throws Exception {
 		// Setup the resources for the test.
 		exception.expect(NullPointerException.class);
 		exception.expectMessage(is(equalTo("IP address cannot be null.")));
 
 		// Call the method under test and verify the result.
-		ipDevice.readNetworkDataFrom(null, 100);
+		ipDevice.readIPDataFrom(null, 100);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataFrom(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataFrom(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataFromTimeout() throws Exception {
+	public final void testReadIPDataFromTimeout() throws Exception {
 		// Setup the resources for the test.
 		int timeout = 100;
 		
 		// Call the method under test.
-		NetworkMessage readMessage = ipDevice.readNetworkDataFrom(ipAddress, timeout);
+		IPMessage readMessage = ipDevice.readIPDataFrom(ipAddress, timeout);
 		
 		// Verify the result.
-		PowerMockito.verifyPrivate(ipDevice).invoke("readNetworkDataPacket", ipAddress, timeout);
+		PowerMockito.verifyPrivate(ipDevice).invoke("readIPDataPacket", ipAddress, timeout);
 		
 		assertThat("IP address must not be null", readMessage.getIPAddress(), is(not(equalTo(null))));
 		assertThat("IP address must be '" + ipAddress + "' and not '" + readMessage.getIPAddress() + "'", readMessage.getIPAddress(), is(equalTo(ipAddress)));
 		assertThat("Source port must be '" + sourcePort + "' and not '" + readMessage.getSourcePort(), readMessage.getSourcePort(), is(equalTo(sourcePort)));
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
-		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
+		assertThat("Received data must be '" + receivedIPData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedIPData)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataPacketInterfaceNotOpenException() throws Exception {
+	public final void testReadIPDataPacketInterfaceNotOpenException() throws Exception {
 		// Setup the resources for the test.
 		Mockito.when(ipDevice.isOpen()).thenReturn(false);
 		
@@ -301,44 +301,44 @@ public class IPDeviceReadDataTest {
 		exception.expectMessage(is(equalTo("The connection interface is not open.")));
 		
 		// Call the method under test and verify the result.
-		Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (Inet4Address)null, 100);
+		Whitebox.invokeMethod(ipDevice, "readIPDataPacket", (Inet4Address)null, 100);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataPacketNotIPTimeout() throws Exception {
+	public final void testReadIPDataPacketNotIPTimeout() throws Exception {
 		// Setup the resources for the test.
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			public XBeePacket answer(InvocationOnMock invocation) throws Exception {
 				return null;
 			}
-		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacket(Mockito.anyInt());
+		}).when(mockXBeePacketsQueue).getFirstIPDataPacket(Mockito.anyInt());
 		
 		// Call the method under test.
-		NetworkMessage message = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (Inet4Address)null, 100);
+		IPMessage message = Whitebox.invokeMethod(ipDevice, "readIPDataPacket", (Inet4Address)null, 100);
 		
 		// Verify the result.
 		assertThat("Message must be null", message, is(equalTo(null)));
 		
-		Mockito.verify(mockXBeePacketsQueue).getFirstNetworkDataPacket(100);
+		Mockito.verify(mockXBeePacketsQueue).getFirstIPDataPacket(100);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataPacketNotIP() throws Exception {
+	public final void testReadIPDataPacketNotIP() throws Exception {
 		// Setup the resources for the test.
-		receivedNetworkData = "Received message data";
+		receivedIPData = "Received message data";
 		
 		// Call the method under test.
-		NetworkMessage readMessage = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", (Inet4Address)null, 100);
+		IPMessage readMessage = Whitebox.invokeMethod(ipDevice, "readIPDataPacket", (Inet4Address)null, 100);
 		
 		// Verify the result.
 		assertThat("Message must not be null", readMessage, is(not(equalTo(null))));
@@ -347,9 +347,9 @@ public class IPDeviceReadDataTest {
 		assertThat("Source port must be '" + sourcePort + "' and not '" + readMessage.getSourcePort(), readMessage.getSourcePort(), is(equalTo(sourcePort)));
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
-		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
+		assertThat("Received data must be '" + receivedIPData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedIPData)));
 		
-		Mockito.verify(mockXBeePacketsQueue).getFirstNetworkDataPacket(100);
+		Mockito.verify(mockXBeePacketsQueue).getFirstIPDataPacket(100);
 	}
 	
 	/**
@@ -358,34 +358,34 @@ public class IPDeviceReadDataTest {
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataPacketWithIPTimeout() throws Exception {
+	public final void testReadIPDataPacketWithIPTimeout() throws Exception {
 		Mockito.doAnswer(new Answer<XBeePacket>() {
 			public XBeePacket answer(InvocationOnMock invocation) throws Exception {
 				return null;
 			}
-		}).when(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(Mockito.eq(ipAddress), Mockito.anyInt());
+		}).when(mockXBeePacketsQueue).getFirstIPDataPacketFrom(Mockito.eq(ipAddress), Mockito.anyInt());
 		
 		// Call the method under test.
-		NetworkMessage message = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", ipAddress, 100);
+		IPMessage message = Whitebox.invokeMethod(ipDevice, "readIPDataPacket", ipAddress, 100);
 		
 		// Verify the result.
 		assertThat("Message must be null", message, is(equalTo(null)));
 		
-		Mockito.verify(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(ipAddress, 100);
+		Mockito.verify(mockXBeePacketsQueue).getFirstIPDataPacketFrom(ipAddress, 100);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#readNetworkDataPacket(Inet4Address, int))}.
+	 * Test method for {@link com.digi.xbee.api.IPDevice#readIPDataPacket(Inet4Address, int))}.
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testReadNetworkDataPacketWithIP() throws Exception {
+	public final void testReadIPDataPacketWithIP() throws Exception {
 		// Setup the resources for the test.
-		receivedNetworkData = "Received message data";
+		receivedIPData = "Received message data";
 		
 		// Call the method under test.
-		NetworkMessage readMessage = Whitebox.invokeMethod(ipDevice, "readNetworkDataPacket", ipAddress, 100);
+		IPMessage readMessage = Whitebox.invokeMethod(ipDevice, "readIPDataPacket", ipAddress, 100);
 		
 		// Verify the result.
 		assertThat("Message must not be null", readMessage, is(not(equalTo(null))));
@@ -395,8 +395,8 @@ public class IPDeviceReadDataTest {
 		assertThat("Source port must be '" + sourcePort + "' and not '" + readMessage.getSourcePort(), readMessage.getSourcePort(), is(equalTo(sourcePort)));
 		assertThat("Destination port must be '" + destPort + "' and not '" + readMessage.getSourcePort(), readMessage.getDestPort(), is(equalTo(destPort)));
 		assertThat("Protocol port must be '" + protocol.getName() + "' and not '" + readMessage.getProtocol().getName(), readMessage.getProtocol(), is(equalTo(protocol)));
-		assertThat("Received data must be '" + receivedNetworkData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedNetworkData)));
+		assertThat("Received data must be '" + receivedIPData + "' and not '" + readMessage.getDataString() + "'", readMessage.getDataString(), is(equalTo(receivedIPData)));
 		
-		Mockito.verify(mockXBeePacketsQueue).getFirstNetworkDataPacketFrom(ipAddress, 100);
+		Mockito.verify(mockXBeePacketsQueue).getFirstIPDataPacketFrom(ipAddress, 100);
 	}
 }

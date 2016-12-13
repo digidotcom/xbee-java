@@ -9,7 +9,7 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.packet.network;
+package com.digi.xbee.api.packet.ip;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -37,9 +37,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.IPDevice;
-import com.digi.xbee.api.models.NetworkProtocol;
+import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
-import com.digi.xbee.api.packet.network.RXIPv4Packet;
+import com.digi.xbee.api.packet.ip.RXIPv4Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
 @PrepareForTest({Inet4Address.class, RXIPv4Packet.class})
@@ -55,7 +55,7 @@ public class RXIPv4PacketTest {
 	private Inet4Address sourceAddressBroadcast;
 	private int destPort = 0x0025;
 	private int sourcePort = 0x00B3;
-	private NetworkProtocol protocol = NetworkProtocol.TCP;
+	private IPProtocol protocol = IPProtocol.TCP;
 	private int status = 0x00;
 	private byte[] data = "Test".getBytes();
 
@@ -96,7 +96,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A {@code NullPointerException} exception must be thrown when parsing a
 	 * {@code null} byte array.</p>
@@ -113,7 +113,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing an empty byte array.</p>
@@ -130,7 +130,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array shorter than the needed one is provided.</p>
@@ -155,7 +155,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array not including the Frame type.</p>
@@ -180,7 +180,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array with an invalid IP address.</p>
@@ -208,7 +208,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A valid API RX IPv4 packet with the provided options without data
 	 * is created.</p>
@@ -242,7 +242,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A valid API IPv4 IPv4 packet with the provided options and data is
 	 * created.</p>
@@ -277,7 +277,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A valid API IPv4 IPv4 packet with the provided options and data is
 	 * created (broadcast transmission).</p>
@@ -312,7 +312,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a null destination address. This
 	 * must throw a {@code NullPointerException}.</p>
@@ -330,7 +330,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a negative destination port. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -348,7 +348,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a destination port bigger than
 	 * 65535. This must throw an {@code IllegalArgumentException}.</p>
@@ -366,7 +366,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a negative source port. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -384,7 +384,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a source port bigger than
 	 * 65535. This must throw an {@code IllegalArgumentException}.</p>
@@ -402,7 +402,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with a null protocol. This must throw
 	 * a {@code NullPointerException}.</p>
@@ -420,7 +420,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet without data ({@code null}).</p>
 	 */
@@ -446,7 +446,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with data.</p>
 	 */
@@ -470,7 +470,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, NetworkProtocol, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#RXIPv4Packet(Inet4Address, int, int, IPProtocol, byte[])}.
 	 *
 	 * <p>Construct a new RX IPv4 packet with data (broadcast transmission).</p>
 	 */
@@ -494,7 +494,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getAPIData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#getAPIData()}.
 	 *
 	 * <p>Test the get API parameters with a {@code null} received data.</p>
 	 */
@@ -522,7 +522,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getAPIData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#getAPIData()}.
 	 *
 	 * <p>Test the get API parameters with a not-{@code null} received data.</p>
 	 */
@@ -549,7 +549,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getAPIPacketParameters()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#getAPIPacketParameters()}.
 	 *
 	 * <p>Test the get API parameters but with a {@code null} received data.</p>
 	 */
@@ -575,7 +575,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getAPIPacketParameters()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#getAPIPacketParameters()}.
 	 *
 	 * <p>Test the get API parameters but with a not-{@code null} received data.</p>
 	 */
@@ -599,7 +599,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestAddress(Inet4Address)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setDestAddress(Inet4Address)}.
 	 */
 	@Test
 	public final void testSetDestAddressNull() {
@@ -614,7 +614,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestAddress(Inet4Address)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setDestAddress(Inet4Address)}.
 	 *
 	 * @throws Exception
 	 */
@@ -633,7 +633,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortNegative() {
@@ -648,7 +648,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortBigger() {
@@ -663,7 +663,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setDestPort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortValid() {
@@ -680,7 +680,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortNegative() {
@@ -695,7 +695,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortBigger() {
@@ -710,7 +710,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setSourcePort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortValid() {
@@ -727,7 +727,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setProtocol(NetworkProtocol)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setProtocol(IPProtocol)}.
 	 */
 	@Test
 	public final void testSetProtocolNull() {
@@ -742,14 +742,14 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setProtocol(NetworkProtocol)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setProtocol(IPProtocol)}.
 	 */
 	@Test
 	public final void testSetProtocolNotNull() {
 		// Set up the resources for the test.
 		RXIPv4Packet packet = new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
 
-		NetworkProtocol newProtocol = NetworkProtocol.TCP_SSL;
+		IPProtocol newProtocol = IPProtocol.TCP_SSL;
 
 		// Call the method under test.
 		packet.setProtocol(newProtocol);
@@ -759,7 +759,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#getData()}.
 	 */
 	@Test
 	public final void testGetDataNullData() {
@@ -777,7 +777,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#getData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#getData()}.
 	 */
 	@Test
 	public final void testGetDataValidData() {
@@ -793,7 +793,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setData(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setData(byte[])}.
 	 */
 	@Test
 	public final void testSetDataNullData() {
@@ -813,7 +813,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setData(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setData(byte[])}.
 	 */
 	@Test
 	public final void testSetDataValidData() {
@@ -832,7 +832,7 @@ public class RXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.RXIPv4Packet#setData(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.RXIPv4Packet#setData(byte[])}.
 	 */
 	@Test
 	public final void testSetDataAndModifyOriginal() {

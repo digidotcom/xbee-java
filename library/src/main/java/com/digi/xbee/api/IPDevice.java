@@ -22,9 +22,9 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
-import com.digi.xbee.api.listeners.INetworkDataReceiveListener;
-import com.digi.xbee.api.models.NetworkMessage;
-import com.digi.xbee.api.models.NetworkProtocol;
+import com.digi.xbee.api.listeners.IIPDataReceiveListener;
+import com.digi.xbee.api.models.IPMessage;
+import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
@@ -32,8 +32,8 @@ import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.models.XBeeTransmitOptions;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.XBeePacket;
-import com.digi.xbee.api.packet.network.RXIPv4Packet;
-import com.digi.xbee.api.packet.network.TXIPv4Packet;
+import com.digi.xbee.api.packet.ip.RXIPv4Packet;
+import com.digi.xbee.api.packet.ip.TXIPv4Packet;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -52,7 +52,7 @@ public class IPDevice extends XBeeDevice {
 	
 	protected static final short DEFAULT_SOURCE_PORT = 9750;
 	
-	protected static final NetworkProtocol DEFAULT_PROTOCOL = NetworkProtocol.TCP;
+	protected static final IPProtocol DEFAULT_PROTOCOL = IPProtocol.TCP;
 	
 	// Variables
 	protected Inet4Address ipAddress;
@@ -404,24 +404,24 @@ public class IPDevice extends XBeeDevice {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#addNetworkDataListener(com.digi.xbee.api.listeners.INetworkDataReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#addIPDataListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)
 	 */
 	@Override
-	public void addNetworkDataListener(INetworkDataReceiveListener listener) {
-		super.addNetworkDataListener(listener);
+	public void addIPDataListener(IIPDataReceiveListener listener) {
+		super.addIPDataListener(listener);
 	}
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeNetworkDataListener(com.digi.xbee.api.listeners.INetworkDataReceiveListener)
+	 * @see com.digi.xbee.api.AbstractXBeeDevice#removeIPDataListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)
 	 */
 	@Override
-	public void removeNetworkDataListener(INetworkDataReceiveListener listener) {
-		super.removeNetworkDataListener(listener);
+	public void removeIPDataListener(IIPDataReceiveListener listener) {
+		super.removeIPDataListener(listener);
 	}
 	
 	/**
-	 * Starts listening for incoming network transmissions in the provided port.
+	 * Starts listening for incoming IP transmissions in the provided port.
 	 * 
 	 * @param sourcePort Port to listen for incoming transmissions.
 	 * 
@@ -441,7 +441,7 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Stops listening for incoming network transmissions.
+	 * Stops listening for incoming IP transmissions.
 	 * 
 	 * @throws TimeoutException if there is a timeout processing the operation.
 	 * @throws XBeeException if there is any other XBee related exception.
@@ -454,8 +454,8 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided network data to the given IP address and port using 
-	 * the specified network protocol. For TCP and TCP SSL protocols, you can 
+	 * Sends the provided IP data to the given IP address and port using 
+	 * the specified IP protocol. For TCP and TCP SSL protocols, you can 
 	 * also indicate if the socket should be closed when data is sent.
 	 * 
 	 * <p>This method blocks till a success or error response arrives or the 
@@ -465,14 +465,14 @@ public class IPDevice extends XBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendNetworkDataAsync(Inet4Address, byte[])}.</p>
+	 * {@link #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])}.</p>
 	 * 
-	 * @param ipAddress The IP address to send network data to.
+	 * @param ipAddress The IP address to send IP data to.
 	 * @param destPort The destination port of the transmission.
-	 * @param protocol The network protocol used for the transmission.
+	 * @param protocol The IP protocol used for the transmission.
 	 * @param closeSocket {@code true} to close the socket just after the 
 	 *                    transmission. {@code false} to keep it open.
-	 * @param data Byte array containing the network data to be sent.
+	 * @param data Byte array containing the IP data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code destPort < 0} or 
 	 *                                  if {@code destPort > 65535}
@@ -484,16 +484,16 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendBroadcastIPData(int, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
-	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkData(Inet4Address ipAddress, int destPort, 
-			NetworkProtocol protocol, boolean closeSocket, byte[] data) 
+	public void sendIPData(Inet4Address ipAddress, int destPort, 
+			IPProtocol protocol, boolean closeSocket, byte[] data) 
 					throws TimeoutException, XBeeException {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null");
@@ -505,15 +505,15 @@ public class IPDevice extends XBeeDevice {
 		
 		// Check if device is remote.
 		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send network data from a remote device.");
+			throw new OperationNotSupportedException("Cannot send IP data from a remote device.");
 		
 		// The source port value depends on the protocol used in the transmission. For UDP, source port 
 		// value must be the same as 'C0' one. For TCP it must be 0.
 		int sourcePort = this.sourcePort;
-		if (protocol != NetworkProtocol.UDP)
+		if (protocol != IPProtocol.UDP)
 			sourcePort = 0;
 		
-		logger.debug(toString() + "Sending network data to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending IP data to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TXIPv4Packet(getNextFrameID(), ipAddress, destPort, 
 				sourcePort, protocol, closeSocket ? TXIPv4Packet.OPTIONS_CLOSE_SOCKET: TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN, data);
@@ -522,8 +522,8 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided network data to the given IP address and port using 
-	 * the specified network protocol.
+	 * Sends the provided IP data to the given IP address and port using 
+	 * the specified IP protocol.
 	 * 
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
@@ -532,12 +532,12 @@ public class IPDevice extends XBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * <p>For non-blocking operations use the method 
-	 * {@link #sendNetworkDataAsync(Inet4Address, byte[])}.</p>
+	 * {@link #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])}.</p>
 	 * 
-	 * @param ipAddress The IP address to send network data to.
+	 * @param ipAddress The IP address to send IP data to.
 	 * @param destPort The destination port of the transmission.
-	 * @param protocol The network protocol used for the transmission.
-	 * @param data Byte array containing the network data to be sent.
+	 * @param protocol The IP protocol used for the transmission.
+	 * @param data Byte array containing the IP data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code destPort < 0} or 
 	 *                                  if {@code destPort > 65535}
@@ -549,34 +549,34 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendBroadcastIPData(int, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
-	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkData(Inet4Address ipAddress, int destPort, NetworkProtocol protocol, byte[] data) 
+	public void sendIPData(Inet4Address ipAddress, int destPort, IPProtocol protocol, byte[] data) 
 			throws TimeoutException, XBeeException {
-		sendNetworkData(ipAddress, destPort, protocol, false, data);
+		sendIPData(ipAddress, destPort, protocol, false, data);
 	}
 	
 	/**
-	 * Sends the provided network data to the given IP address and port 
-	 * asynchronously using the specified network protocol. For TCP and TCP SSL 
+	 * Sends the provided IP data to the given IP address and port 
+	 * asynchronously using the specified IP protocol. For TCP and TCP SSL 
 	 * protocols, you can also indicate if the socket should be closed when 
 	 * data is sent.
 	 * 
 	 * <p>Asynchronous transmissions do not wait for answer from the remote 
 	 * device or for transmit status packet.</p>
 	 * 
-	 * @param ipAddress The IP address to send network data to.
+	 * @param ipAddress The IP address to send IP data to.
 	 * @param destPort The destination port of the transmission.
-	 * @param protocol The network protocol used for the transmission.
+	 * @param protocol The IP protocol used for the transmission.
 	 * @param closeSocket {@code true} to close the socket just after the 
 	 *                    transmission. {@code false} to keep it open.
-	 * @param data Byte array containing the network data to be sent.
+	 * @param data Byte array containing the IP data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code destPort < 0} or 
 	 *                                  if {@code destPort > 65535}
@@ -587,15 +587,15 @@ public class IPDevice extends XBeeDevice {
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see #sendBroadcastIPData(int, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])
+	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkDataAsync(Inet4Address ipAddress, int destPort, 
-			NetworkProtocol protocol, boolean closeSocket, byte[] data) throws XBeeException {
+	public void sendIPDataAsync(Inet4Address ipAddress, int destPort, 
+			IPProtocol protocol, boolean closeSocket, byte[] data) throws XBeeException {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null");
 		if (data == null)
@@ -605,15 +605,15 @@ public class IPDevice extends XBeeDevice {
 		
 		// Check if device is remote.
 		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send network data from a remote device.");
+			throw new OperationNotSupportedException("Cannot send IP data from a remote device.");
 		
 		// The source port value depends on the protocol used in the transmission. For UDP, source port 
 		// value must be the same as 'C0' one. For TCP it must be 0.
 		int sourcePort = this.sourcePort;
-		if (protocol != NetworkProtocol.UDP)
+		if (protocol != IPProtocol.UDP)
 			sourcePort = 0;
 		
-		logger.debug(toString() + "Sending network data asynchronously to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
+		logger.debug(toString() + "Sending IP data asynchronously to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TXIPv4Packet(getNextFrameID(), ipAddress, destPort, sourcePort, 
 				protocol, closeSocket ? TXIPv4Packet.OPTIONS_CLOSE_SOCKET: TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN, data);
@@ -622,16 +622,16 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Sends the provided network data to the given IP address and port 
+	 * Sends the provided IP data to the given IP address and port 
 	 * asynchronously.
 	 * 
 	 * <p>Asynchronous transmissions do not wait for answer from the remote 
 	 * device or for transmit status packet.</p>
 	 * 
-	 * @param ipAddress The IP address to send network data to.
+	 * @param ipAddress The IP address to send IP data to.
 	 * @param destPort The destination port of the transmission.
-	 * @param protocol The network protocol used for the transmission.
-	 * @param data Byte array containing the network data to be sent.
+	 * @param protocol The IP protocol used for the transmission.
+	 * @param data Byte array containing the IP data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code destPort < 0} or 
 	 *                                  if {@code destPort > 65535}
@@ -642,20 +642,20 @@ public class IPDevice extends XBeeDevice {
 	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #sendBroadcastNetworkData(int, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
-	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see #sendBroadcastIPData(int, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet4Address
 	 */
-	public void sendNetworkDataAsync(Inet4Address ipAddress, int destPort, 
-			NetworkProtocol protocol, byte[] data) throws TimeoutException, XBeeException {
-		sendNetworkDataAsync(ipAddress, destPort, protocol, false, data);
+	public void sendIPDataAsync(Inet4Address ipAddress, int destPort, 
+			IPProtocol protocol, byte[] data) throws TimeoutException, XBeeException {
+		sendIPDataAsync(ipAddress, destPort, protocol, false, data);
 	}
 	
 	/**
-	 * Sends the provided network data to all clients.
+	 * Sends the provided IP data to all clients.
 	 * 
 	 * <p>This method blocks till a success or error transmit status arrives or 
 	 * the configured receive timeout expires.</p>
@@ -664,7 +664,7 @@ public class IPDevice extends XBeeDevice {
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
 	 * @param destPort The destination port of the transmission.
-	 * @param data Byte array containing the network data to be sent.
+	 * @param data Byte array containing the IP data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code destPort < 0} or 
 	 *                                  if {@code destPort > 65535}
@@ -674,97 +674,97 @@ public class IPDevice extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, byte[])
-	 * @see #sendNetworkDataAsync(Inet4Address, int, NetworkProtocol, boolean, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
 	 */
-	public void sendBroadcastNetworkData(int destPort, byte[] data) throws TimeoutException, XBeeException {
+	public void sendBroadcastIPData(int destPort, byte[] data) throws TimeoutException, XBeeException {
 		try {
-			sendNetworkData((Inet4Address) Inet4Address.getByName(BROADCAST_IP), destPort, NetworkProtocol.UDP, false, data);
+			sendIPData((Inet4Address) Inet4Address.getByName(BROADCAST_IP), destPort, IPProtocol.UDP, false, data);
 		} catch (UnknownHostException e) {
 			throw new XBeeException(e);
 		}
 	}
 	
 	/**
-	 * Reads new network data received by this XBee device during the 
+	 * Reads new IP data received by this XBee device during the 
 	 * configured receive timeout.
 	 * 
-	 * <p>This method blocks until new network data is received or the 
+	 * <p>This method blocks until new IP data is received or the 
 	 * configured receive timeout expires.</p>
 	 * 
 	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
-	 * <p>For non-blocking operations, register a {@code INetworkDataReceiveListener} 
-	 * using the method {@link #addNetworkDataListener(INetworkDataReceiveListener)}.</p>
+	 * <p>For non-blocking operations, register a {@code IIPDataReceiveListener} 
+	 * using the method {@link #addIPDataListener(IIPDataReceiveListener)}.</p>
 	 * 
-	 * <p>Before reading network data you need to start listening for incoming 
-	 * network data at a specific port. Use the {@code startListening} method 
+	 * <p>Before reading IP data you need to start listening for incoming 
+	 * IP data at a specific port. Use the {@code startListening} method 
 	 * for that purpose. When finished, you can use the {@code stopListening} 
-	 * method to stop listening for incoming network data.</p>
+	 * method to stop listening for incoming IP data.</p>
 	 * 
-	 * @return A {@code NetworkMessage} object containing the network data and 
+	 * @return A {@code IPMessage} object containing the IP data and 
 	 *         the IP address that sent the data. {@code null} if this did not 
-	 *         receive new network data during the configured receive timeout.
+	 *         receive new IP data during the configured receive timeout.
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #readNetworkData(int)
-	 * @see #readNetworkDataFrom(Inet4Address)
-	 * @see #readNetworkDataFrom(Inet4Address, int)
+	 * @see #readIPData(int)
+	 * @see #readIPDataFrom(Inet4Address)
+	 * @see #readIPDataFrom(Inet4Address, int)
 	 * @see #setReceiveTimeout(int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
-	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 */
-	public NetworkMessage readNetworkData() {
-		return readNetworkDataPacket(null, TIMEOUT_READ_PACKET);
+	public IPMessage readIPData() {
+		return readIPDataPacket(null, TIMEOUT_READ_PACKET);
 	}
 	
 	/**
-	 * Reads new network data received by this XBee device during the provided 
+	 * Reads new IP data received by this XBee device during the provided 
 	 * timeout.
 	 * 
-	 * <p>This method blocks until new network data is received or the provided 
+	 * <p>This method blocks until new IP data is received or the provided 
 	 * timeout expires.</p>
 	 * 
-	 * <p>For non-blocking operations, register a {@code INetworkDataReceiveListener} 
-	 * using the method {@link #addNetworkDataListener(INetworkDataReceiveListener)}.</p>
+	 * <p>For non-blocking operations, register a {@code IIPDataReceiveListener} 
+	 * using the method {@link #addIPDataListener(IIPDataReceiveListener)}.</p>
 	 * 
-	 * <p>Before reading network data you need to start listening for incoming 
-	 * network data at a specific port. Use the {@code startListening} method 
+	 * <p>Before reading IP data you need to start listening for incoming 
+	 * IP data at a specific port. Use the {@code startListening} method 
 	 * for that purpose. When finished, you can use the {@code stopListening} 
-	 * method to stop listening for incoming network data.</p>
+	 * method to stop listening for incoming IP data.</p>
 	 * 
-	 * @param timeout The time to wait for new network data in milliseconds.
+	 * @param timeout The time to wait for new IP data in milliseconds.
 	 * 
-	 * @return A {@code NetworkMessage} object containing the data and the IP 
+	 * @return A {@code IPMessage} object containing the data and the IP 
 	 *         address that sent the data. {@code null} if this device did not 
 	 *         receive new data during {@code timeout} milliseconds.
 	 * 
 	 * @throws IllegalArgumentException if {@code timeout < 0}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * 
-	 * @see #readNetworkData()
-	 * @see #readNetworkDataFrom(Inet4Address)
-	 * @see #readNetworkDataFrom(Inet4Address, int)
+	 * @see #readIPData()
+	 * @see #readIPDataFrom(Inet4Address)
+	 * @see #readIPDataFrom(Inet4Address, int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
-	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 */
-	public NetworkMessage readNetworkData(int timeout) {
+	public IPMessage readIPData(int timeout) {
 		if (timeout < 0)
 			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
 		
-		return readNetworkDataPacket(null, timeout);
+		return readIPDataPacket(null, timeout);
 	}
 	
 	/**
-	 * Reads new network data received from the given IP address during the 
+	 * Reads new IP data received from the given IP address during the 
 	 * configured receive timeout.
 	 * 
 	 * <p>This method blocks until new data from the provided IP address is 
@@ -773,19 +773,19 @@ public class IPDevice extends XBeeDevice {
 	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
 	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
 	 * 
-	 * <p>For non-blocking operations, register a {@code INetworkDataReceiveListener} 
-	 * using the method {@link #addNetworkDataListener(INetworkDataReceiveListener)}.</p>
+	 * <p>For non-blocking operations, register a {@code IIPDataReceiveListener} 
+	 * using the method {@link #addIPDataListener(IIPDataReceiveListener)}.</p>
 	 * 
-	 * <p>Before reading network data you need to start listening for incoming 
-	 * network data at a specific port. Use the {@code startListening} method 
+	 * <p>Before reading IP data you need to start listening for incoming 
+	 * IP data at a specific port. Use the {@code startListening} method 
 	 * for that purpose. When finished, you can use the {@code stopListening} 
-	 * method to stop listening for incoming network data.</p>
+	 * method to stop listening for incoming IP data.</p>
 	 * 
 	 * @param ipAddress The IP address to read data from.
 	 * 
-	 * @return A {@code NetworkMessage} object containing the network data and 
+	 * @return A {@code IPMessage} object containing the IP data and 
 	 *         the IP address of the remote node that sent the data. 
-	 *         {@code null} if this device did not receive new network data 
+	 *         {@code null} if this device did not receive new IP data 
 	 *         from the provided IP address during the configured receive 
 	 *         timeout.
 	 * 
@@ -793,88 +793,88 @@ public class IPDevice extends XBeeDevice {
 	 * @throws NullPointerException if {@code ipAddress == null}.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #readNetworkData()
-	 * @see #readNetworkData(int)
-	 * @see #readNetworkDataFrom(Inet4Address, int)
+	 * @see #readIPData()
+	 * @see #readIPData(int)
+	 * @see #readIPDataFrom(Inet4Address, int)
 	 * @see #setReceiveTimeout(int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
-	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 * @see java.net.Inet4Address
 	 */
-	public NetworkMessage readNetworkDataFrom(Inet4Address ipAddress) {
+	public IPMessage readIPDataFrom(Inet4Address ipAddress) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
 		
-		return readNetworkDataPacket(ipAddress, TIMEOUT_READ_PACKET);
+		return readIPDataPacket(ipAddress, TIMEOUT_READ_PACKET);
 	}
 	
 	/**
-	 * Reads new network data received from the given IP address during the 
+	 * Reads new IP data received from the given IP address during the 
 	 * provided timeout.
 	 * 
-	 * <p>This method blocks until new network data from the provided IP 
+	 * <p>This method blocks until new IP data from the provided IP 
 	 * address is received or the given timeout expires.</p>
 	 * 
-	 * <p>For non-blocking operations, register a {@code INetworkDataReceiveListener} 
-	 * using the method {@link #addNetworkDataListener(INetworkDataReceiveListener)}.</p>
+	 * <p>For non-blocking operations, register a {@code IIPDataReceiveListener} 
+	 * using the method {@link #addIPDataListener(IIPDataReceiveListener)}.</p>
 	 * 
-	 * <p>Before reading network data you need to start listening for incoming 
-	 * network data at a specific port. Use the {@code startListening} method 
+	 * <p>Before reading IP data you need to start listening for incoming 
+	 * IP data at a specific port. Use the {@code startListening} method 
 	 * for that purpose. When finished, you can use the {@code stopListening} 
-	 * method to stop listening for incoming network data.</p>
+	 * method to stop listening for incoming IP data.</p>
 	 * 
 	 * @param ipAddress The IP address to read data from.
-	 * @param timeout The time to wait for new network data in milliseconds.
+	 * @param timeout The time to wait for new IP data in milliseconds.
 	 * 
-	 * @return A {@code NetworkMessage} object containing the network data and 
+	 * @return An {@code IPMessage} object containing the IP data and 
 	 *         the IP address that sent the data. {@code null} if this device 
-	 *         did not receive new network data from the provided IP address 
+	 *         did not receive new IP data from the provided IP address 
 	 *         during {@code timeout} milliseconds.
 	 * 
 	 * @throws IllegalArgumentException if {@code timeout < 0}.
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws NullPointerException if {@code ipAddress == null}.
 	 * 
-	 * @see #readNetworkDataFrom(Inet4Address)
-	 * @see #readNetworkData()
-	 * @see #readNetworkData(int)
+	 * @see #readIPDataFrom(Inet4Address)
+	 * @see #readIPData()
+	 * @see #readIPData(int)
 	 * @see #startListening(int)
 	 * @see #stopListening()
-	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 * @see java.net.Inet4Address
 	 */
-	public NetworkMessage readNetworkDataFrom(Inet4Address ipAddress, int timeout) {
+	public IPMessage readIPDataFrom(Inet4Address ipAddress, int timeout) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
 		if (timeout < 0)
 			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
 		
-		return readNetworkDataPacket(ipAddress, timeout);
+		return readIPDataPacket(ipAddress, timeout);
 	}
 	
 	/**
-	 * Reads a new network data packet received by this IP XBee device during 
+	 * Reads a new IP data packet received by this IP XBee device during 
 	 * the provided timeout.
 	 * 
-	 * <p>This method blocks until new network data is received or the given 
+	 * <p>This method blocks until new IP data is received or the given 
 	 * timeout expires.</p>
 	 * 
 	 * <p>If the provided IP address is {@code null} the method returns 
-	 * the first network data packet read from any IP address.
+	 * the first IP data packet read from any IP address.
 	 * <br>
 	 * If the IP address is not {@code null} the method returns the first 
 	 * data package read from the provided IP address.
 	 * </p>
 	 * 
-	 * @param remoteIPAddress The IP address to get a network data packet from. 
-	 *                        {@code null} to read a network data packet from 
+	 * @param remoteIPAddress The IP address to get a IP data packet from. 
+	 *                        {@code null} to read a IP data packet from 
 	 *                        any IP address.
-	 * @param timeout The time to wait for a network data packet in milliseconds.
+	 * @param timeout The time to wait for a IP data packet in milliseconds.
 	 * 
-	 * @return A {@code NetworkMessage} received by this device, containing the 
-	 *         data and the source IP address that sent the network data. 
-	 *         {@code null} if this device did not receive new network data 
+	 * @return A {@code IPMessage} received by this device, containing the 
+	 *         data and the source IP address that sent the IP data. 
+	 *         {@code null} if this device did not receive new IP data 
 	 *         during {@code timeout} milliseconds, or if any error occurs while
 	 *         trying to get the source of the message.
 	 * 
@@ -883,7 +883,7 @@ public class IPDevice extends XBeeDevice {
 	 * @see com.digi.xbee.api.models.XBeeMessage
 	 * @see java.net.Inet4Address
 	 */
-	private NetworkMessage readNetworkDataPacket(Inet4Address remoteIPAddress, int timeout) {
+	private IPMessage readIPDataPacket(Inet4Address remoteIPAddress, int timeout) {
 		// Check connection.
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
@@ -892,9 +892,9 @@ public class IPDevice extends XBeeDevice {
 		XBeePacket xbeePacket = null;
 		
 		if (remoteIPAddress != null)
-			xbeePacket = xbeePacketsQueue.getFirstNetworkDataPacketFrom(remoteIPAddress, timeout);
+			xbeePacket = xbeePacketsQueue.getFirstIPDataPacketFrom(remoteIPAddress, timeout);
 		else
-			xbeePacket = xbeePacketsQueue.getFirstNetworkDataPacket(timeout);
+			xbeePacket = xbeePacketsQueue.getFirstIPDataPacket(timeout);
 		
 		if (xbeePacket == null)
 			return null;
@@ -904,7 +904,7 @@ public class IPDevice extends XBeeDevice {
 		Inet4Address ipAddress = null;
 		int sourcePort;
 		int destPort;
-		NetworkProtocol protocol = NetworkProtocol.TCP;
+		IPProtocol protocol = IPProtocol.TCP;
 		
 		switch (((XBeeAPIPacket)xbeePacket).getFrameType()) {
 		case RX_IPV4:
@@ -918,7 +918,7 @@ public class IPDevice extends XBeeDevice {
 			return null;
 		}
 		
-		// Create and return the XBee message.
-		return new NetworkMessage(ipAddress, sourcePort, destPort, protocol, data);
+		// Create and return the IP message.
+		return new IPMessage(ipAddress, sourcePort, destPort, protocol, data);
 	}
 }

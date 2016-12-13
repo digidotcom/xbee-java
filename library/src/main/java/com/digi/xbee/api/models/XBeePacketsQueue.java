@@ -21,7 +21,7 @@ import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
-import com.digi.xbee.api.packet.network.RXIPv4Packet;
+import com.digi.xbee.api.packet.ip.RXIPv4Packet;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
@@ -338,35 +338,35 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Returns the first network data packet from the queue waiting up to the 
-	 * specified timeout if necessary for a network data packet to 
+	 * Returns the first IP data packet from the queue waiting up to the 
+	 * specified timeout if necessary for a IP data packet to 
 	 * become available. {@code null} if the queue is empty or there is not 
-	 * any network data packet inside.
+	 * any IP data packet inside.
 	 * 
-	 * @param timeout The time in milliseconds to wait for a network data 
+	 * @param timeout The time in milliseconds to wait for a IP data 
 	 *                packet to become available. 0 to return immediately.
 	 * 
-	 * @return The first network data packet from the queue, {@code null} if 
-	 *         it is empty or no network packets are contained in the queue.
+	 * @return The first IP data packet from the queue, {@code null} if 
+	 *         it is empty or no IP packets are contained in the queue.
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
-	 * @see com.digi.xbee.api.packet.network.RXIPv4Packet
+	 * @see com.digi.xbee.api.packet.ip.RXIPv4Packet
 	 */
-	public XBeePacket getFirstNetworkDataPacket(int timeout) {
+	public XBeePacket getFirstIPDataPacket(int timeout) {
 		if (timeout > 0) {
-			XBeePacket xbeePacket = getFirstNetworkDataPacket(0);
-			// Wait for a timeout or until a network data packet is read.
+			XBeePacket xbeePacket = getFirstIPDataPacket(0);
+			// Wait for a timeout or until a IP data packet is read.
 			Long deadLine = System.currentTimeMillis() + timeout;
 			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
 				sleep(100);
-				xbeePacket = getFirstNetworkDataPacket(0);
+				xbeePacket = getFirstIPDataPacket(0);
 			}
 			return xbeePacket;
 		} else {
 			synchronized (lock) {
 				for (int i = 0; i < packetsList.size(); i++) {
 					XBeePacket xbeePacket = packetsList.get(i);
-					if (isNetworkDataPacket(xbeePacket))
+					if (isIPDataPacket(xbeePacket))
 						return packetsList.remove(i);
 				}
 			}
@@ -375,42 +375,42 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Returns the first network data packet from the queue whose IP address 
+	 * Returns the first IP data packet from the queue whose IP address 
 	 * matches the provided address.
 	 * 
 	 * <p>The methods waits up to the specified timeout if necessary for a 
-	 * network data packet to become available. {@code null} if the 
-	 * queue is empty or there is not any network data packet sent by 
+	 * IP data packet to become available. {@code null} if the 
+	 * queue is empty or there is not any IP data packet sent by 
 	 * the provided IP address.</p>
 	 * 
 	 * @param ipAddress The IP address to look for in the list of packets.
-	 * @param timeout The time in milliseconds to wait for a network data 
+	 * @param timeout The time in milliseconds to wait for a IP data 
 	 *                packet from the specified IP address to become available.
 	 *                0 to return immediately.
 	 * 
-	 * @return The first network packet whose IP address matches the provided 
-	 *         IP address. {@code null} if no network data packets from the 
+	 * @return The first IP packet whose IP address matches the provided 
+	 *         IP address. {@code null} if no IP data packets from the 
 	 *         specified IP address are found in the queue.
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
-	 * @see com.digi.xbee.api.packet.network.RXIPv4Packet
+	 * @see com.digi.xbee.api.packet.ip.RXIPv4Packet
 	 * @see java.net.Inet4Address
 	 */
-	public XBeePacket getFirstNetworkDataPacketFrom(Inet4Address ipAddress, int timeout) {
+	public XBeePacket getFirstIPDataPacketFrom(Inet4Address ipAddress, int timeout) {
 		if (timeout > 0) {
-			XBeePacket xbeePacket = getFirstNetworkDataPacketFrom(ipAddress, 0);
-			// Wait for a timeout or until a network data packet with the provided IP address is read.
+			XBeePacket xbeePacket = getFirstIPDataPacketFrom(ipAddress, 0);
+			// Wait for a timeout or until a IP data packet with the provided IP address is read.
 			Long deadLine = System.currentTimeMillis() + timeout;
 			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
 				sleep(100);
-				xbeePacket = getFirstNetworkDataPacketFrom(ipAddress, 0);
+				xbeePacket = getFirstIPDataPacketFrom(ipAddress, 0);
 			}
 			return xbeePacket;
 		} else {
 			synchronized (lock) {
 				for (int i = 0; i < packetsList.size(); i++) {
 					XBeePacket xbeePacket = packetsList.get(i);
-					if (isNetworkDataPacket(xbeePacket) && ipAddressesMatch(xbeePacket, ipAddress))
+					if (isIPDataPacket(xbeePacket) && ipAddressesMatch(xbeePacket, ipAddress))
 						return packetsList.remove(i);
 				}
 			}
@@ -549,17 +549,17 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Returns whether or not the given XBee packet is a network data packet.
+	 * Returns whether or not the given XBee packet is a IP data packet.
 	 * 
-	 * @param xbeePacket The XBee packet to check if is a network data packet.
+	 * @param xbeePacket The XBee packet to check if is a IP data packet.
 	 * 
-	 * @return {@code true} if the XBee packet is a network data packet, 
+	 * @return {@code true} if the XBee packet is a IP data packet, 
 	 *         {@code false} otherwise.
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
-	 * @see com.digi.xbee.api.packet.network.RXIPv4Packet
+	 * @see com.digi.xbee.api.packet.ip.RXIPv4Packet
 	 */
-	private boolean isNetworkDataPacket(XBeePacket xbeePacket) {
+	private boolean isIPDataPacket(XBeePacket xbeePacket) {
 		if (!(xbeePacket instanceof XBeeAPIPacket))
 			return false;
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();

@@ -33,13 +33,13 @@ import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
-import com.digi.xbee.api.listeners.INetworkDataReceiveListener;
+import com.digi.xbee.api.listeners.IIPDataReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
-import com.digi.xbee.api.models.NetworkMessage;
+import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.SMSMessage;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
@@ -56,7 +56,7 @@ import com.digi.xbee.api.packet.common.ExplicitRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
-import com.digi.xbee.api.packet.network.RXIPv4Packet;
+import com.digi.xbee.api.packet.ip.RXIPv4Packet;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
@@ -90,7 +90,7 @@ public class DataReader extends Thread {
 	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
 	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<IModemStatusReceiveListener>();
 	private ArrayList<IExplicitDataReceiveListener> explicitDataReceiveListeners = new ArrayList<IExplicitDataReceiveListener>();
-	private ArrayList<INetworkDataReceiveListener> networkDataReceiveListeners = new ArrayList<INetworkDataReceiveListener>();
+	private ArrayList<IIPDataReceiveListener> ipDataReceiveListeners = new ArrayList<IIPDataReceiveListener>();
 	private ArrayList<ISMSReceiveListener> smsReceiveListeners = new ArrayList<ISMSReceiveListener>();
 	
 	private Logger logger;
@@ -388,45 +388,45 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given network data receive listener to the list of listeners 
-	 * that will be notified when a network data packet is received.
+	 * Adds the given IP data receive listener to the list of listeners 
+	 * that will be notified when a IP data packet is received.
 	 * 
 	 * <p>If the listener has been already added, this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when new network data packets 
+	 * @param listener Listener to be notified when new IP data packets 
 	 *                 are received.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}.
 	 * 
-	 * @see #removeNetworkDataReceiveListener(INetworkDataReceiveListener)
-	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 * @see #removeIPDataReceiveListener(IIPDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
 	 */
-	public void addNetworkDataReceiveListener(INetworkDataReceiveListener listener) {
+	public void addIPDataReceiveListener(IIPDataReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		
-		synchronized (networkDataReceiveListeners) {
-			if (!networkDataReceiveListeners.contains(listener))
-				networkDataReceiveListeners.add(listener);
+		synchronized (ipDataReceiveListeners) {
+			if (!ipDataReceiveListeners.contains(listener))
+				ipDataReceiveListeners.add(listener);
 		}
 	}
 	
 	/**
-	 * Removes the given network data receive listener from the list of 
-	 * network data receive listeners.
+	 * Removes the given IP data receive listener from the list of 
+	 * IP data receive listeners.
 	 * 
 	 * <p>If the listener is not included in the list, this method does nothing.
 	 * </p>
 	 * 
-	 * @param listener Network data receive listener to remove from the list.
+	 * @param listener IP data receive listener to remove from the list.
 	 * 
-	 * @see #addNetworkDataReceiveListener(INetworkDataReceiveListener)
-	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 * @see #addIPDataReceiveListener(IIPDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
 	 */
-	public void removeNetworkDataReceiveListener(INetworkDataReceiveListener listener) {
-		synchronized (networkDataReceiveListeners) {
-			if (networkDataReceiveListeners.contains(listener))
-				networkDataReceiveListeners.remove(listener);
+	public void removeIPDataReceiveListener(IIPDataReceiveListener listener) {
+		synchronized (ipDataReceiveListeners) {
+			if (ipDataReceiveListeners.contains(listener))
+				ipDataReceiveListeners.remove(listener);
 		}
 	}
 	
@@ -619,7 +619,7 @@ public class DataReader extends Thread {
 				break;
 			case RX_IPV4:
 				RXIPv4Packet rxIPv4Packet = (RXIPv4Packet)apiPacket;
-				notifyNetworkDataReceived(new NetworkMessage(
+				notifyIPDataReceived(new IPMessage(
 						rxIPv4Packet.getSourceAddress(), 
 						rxIPv4Packet.getSourcePort(), 
 						rxIPv4Packet.getDestPort(),
@@ -1002,23 +1002,23 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Notifies subscribed network data receive listeners that a new network 
-	 * data packet has been received in form of a {@code NetworkMessage}.
+	 * Notifies subscribed IP data receive listeners that a new IP data 
+	 * packet has been received in form of a {@code ipMessage}.
 	 *
-	 * @param networkMessage The network message to be sent to subscribed 
-	 *                       network data listeners.
+	 * @param ipMessage The IP message to be sent to subscribed 
+	 *                  IP data listeners.
 	 * 
-	 * @see com.digi.xbee.api.models.NetworkMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 */
-	private void notifyNetworkDataReceived(final NetworkMessage networkMessage) {
+	private void notifyIPDataReceived(final IPMessage ipMessage) {
 		logger.info(connectionInterface.toString() + 
-				"Network data received from {} >> {}.", networkMessage.getIPAddress().getHostAddress(), HexUtils.prettyHexString(networkMessage.getData()));
+				"IP data received from {} >> {}.", ipMessage.getIPAddress().getHostAddress(), HexUtils.prettyHexString(ipMessage.getData()));
 		
 		try {
-			synchronized (networkDataReceiveListeners) {
+			synchronized (ipDataReceiveListeners) {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
-						networkDataReceiveListeners.size()));
-				for (final INetworkDataReceiveListener listener:networkDataReceiveListeners) {
+						ipDataReceiveListeners.size()));
+				for (final IIPDataReceiveListener listener:ipDataReceiveListeners) {
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1029,7 +1029,7 @@ public class DataReader extends Thread {
 							/* Synchronize the listener so it is not called 
 							 twice. That is, let the listener to finish its job. */
 							synchronized (listener) {
-								listener.networkDataReceived(networkMessage);
+								listener.ipDataReceived(ipMessage);
 							}
 						}
 					});

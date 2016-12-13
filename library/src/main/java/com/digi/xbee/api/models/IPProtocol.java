@@ -14,9 +14,9 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates the different network protocols.
+ * Enumerates the different IP protocols.
  */
-public enum NetworkProtocol {
+public enum IPProtocol {
 
 	// Enumeration types.
 	UDP(0, "UDP"),
@@ -28,51 +28,51 @@ public enum NetworkProtocol {
 
 	private String name;
 
-	private static HashMap<Integer, NetworkProtocol> lookupTable = new HashMap<Integer, NetworkProtocol>();
+	private static HashMap<Integer, IPProtocol> lookupTable = new HashMap<Integer, IPProtocol>();
 
 	static {
-		for (NetworkProtocol protocol:values())
+		for (IPProtocol protocol:values())
 			lookupTable.put(protocol.getID(), protocol);
 	}
 
 	/**
-	 * Class constructor. Instantiates a new {@code NetworkProtocol} enumeration
+	 * Class constructor. Instantiates a new {@code IPProtocol} enumeration
 	 * entry with the given parameters.
 	 *
-	 * @param id Network protocol ID.
-	 * @param name Network protocol name.
+	 * @param id IP protocol ID.
+	 * @param name IP protocol name.
 	 */
-	private NetworkProtocol(int id, String name) {
+	private IPProtocol(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
 	/**
-	 * Retrieves the network protocol ID.
+	 * Retrieves the IP protocol ID.
 	 *
-	 * @return Network protocol ID.
+	 * @return IP protocol ID.
 	 */
 	public int getID() {
 		return id;
 	}
 
 	/**
-	 * Retrieves the network protocol name.
+	 * Retrieves the IP protocol name.
 	 *
-	 * @return Network protocol name.
+	 * @return IP protocol name.
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Retrieves the network protocol for the given ID.
+	 * Retrieves the IP protocol for the given ID.
 	 *
-	 * @param id ID to retrieve the network protocol.
+	 * @param id ID to retrieve the IP protocol.
 	 *
-	 * @return The network protocol associated with the given ID.
+	 * @return The IP protocol associated with the given ID.
 	 */
-	public static NetworkProtocol get(int id) {
+	public static IPProtocol get(int id) {
 		return lookupTable.get(id);
 	}
 

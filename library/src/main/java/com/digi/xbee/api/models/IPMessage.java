@@ -14,14 +14,14 @@ package com.digi.xbee.api.models;
 import java.net.Inet4Address;
 
 /**
- * This class represents a network message containing the IP address the 
- * message belongs to, the source and destination ports, the network protocol,
+ * This class represents an IP message containing the IP address the 
+ * message belongs to, the source and destination ports, the IP protocol,
  * and the content (data) of the message. 
  * 
  * <p>This class is used within the XBee Java Library to read data sent to IP 
  * devices.</p>
  */
-public class NetworkMessage {
+public class IPMessage {
 
 	// Variables.
 	private final Inet4Address ipAddress;
@@ -31,16 +31,16 @@ public class NetworkMessage {
 	private final int sourcePort;
 	private final int destPort;
 	
-	private final NetworkProtocol protocol;
+	private final IPProtocol protocol;
 	
 	/**
 	 * Class constructor. Instantiates a new object of type 
-	 * {@code XBeeMessage} with the given parameters.
+	 * {@code IPMessage} with the given parameters.
 	 * 
 	 * @param ipAddress The IP address the message comes from.
 	 * @param sourcePort TCP or UDP source port of the transmission.
 	 * @param destPort TCP or UDP destination port of the transmission.
-	 * @param protocol Network protocol used in the transmission.
+	 * @param protocol IP protocol used in the transmission.
 	 * @param data Byte array containing the data of the message.
 	 * 
 	 * @throws IllegalArgumentException if {@code sourcePort < 0} or
@@ -51,11 +51,11 @@ public class NetworkMessage {
 	 *                              if {@code data == null} or
 	 *                              if {@code protocol ==  null}.
 	 * 
-	 * @see com.digi.xbee.api.models.NetworkProtocol
+	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet4Address
 	 */
-	public NetworkMessage(Inet4Address ipAddress, int sourcePort, int destPort, 
-			NetworkProtocol protocol, byte[] data) {
+	public IPMessage(Inet4Address ipAddress, int sourcePort, int destPort, 
+			IPProtocol protocol, byte[] data) {
 		if (ipAddress == null)
 			throw new NullPointerException("IP address cannot be null.");
 		if (protocol == null)
@@ -109,9 +109,9 @@ public class NetworkMessage {
 	 * 
 	 * @return The protocol used in the transmission
 	 * 
-	 * @see NetworkProtocol
+	 * @see IPProtocol
 	 */
-	public NetworkProtocol getProtocol() {
+	public IPProtocol getProtocol() {
 		return protocol;
 	}
 	

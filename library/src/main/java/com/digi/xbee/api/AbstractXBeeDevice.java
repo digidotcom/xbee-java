@@ -37,7 +37,7 @@ import com.digi.xbee.api.io.IOValue;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
-import com.digi.xbee.api.listeners.INetworkDataReceiveListener;
+import com.digi.xbee.api.listeners.IIPDataReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
@@ -805,30 +805,30 @@ public abstract class AbstractXBeeDevice {
 	
 	/**
 	 * Adds the provided listener to the list of listeners to be notified
-	 * when new network data is received. 
+	 * when new IP data is received. 
 	 * 
 	 * <p>If the listener has been already included this method does nothing.
 	 * </p>
 	 * 
-	 * @param listener Listener to be notified when new network data is 
+	 * @param listener Listener to be notified when new IP data is 
 	 *                 received.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
-	 * @see #removeNetworkDataListener(INetworkDataReceiveListener)
-	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 * @see #removeIPDataListener(IIPDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
 	 */
-	protected void addNetworkDataListener(INetworkDataReceiveListener listener) {
+	protected void addIPDataListener(IIPDataReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		
 		if (dataReader == null)
 			return;
-		dataReader.addNetworkDataReceiveListener(listener);
+		dataReader.addIPDataReceiveListener(listener);
 	}
 	
 	/**
-	 * Removes the provided listener from the list of network data listeners. 
+	 * Removes the provided listener from the list of IP data listeners. 
 	 * 
 	 * <p>If the listener was not in the list this method does nothing.</p>
 	 * 
@@ -836,16 +836,16 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
-	 * @see #addNetworkDataListener(INetworkDataReceiveListener)
-	 * @see com.digi.xbee.api.listeners.INetworkDataReceiveListener
+	 * @see #addIPDataListener(IIPDataReceiveListener)
+	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
 	 */
-	protected void removeNetworkDataListener(INetworkDataReceiveListener listener) {
+	protected void removeIPDataListener(IIPDataReceiveListener listener) {
 		if (listener == null)
 			throw new NullPointerException("Listener cannot be null.");
 		
 		if (dataReader == null)
 			return;
-		dataReader.removeNetworkDataReceiveListener(listener);
+		dataReader.removeIPDataReceiveListener(listener);
 	}
 	
 	

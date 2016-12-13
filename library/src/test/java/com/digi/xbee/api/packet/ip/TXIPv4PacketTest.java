@@ -9,7 +9,7 @@
  * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
  * =======================================================================
  */
-package com.digi.xbee.api.packet.network;
+package com.digi.xbee.api.packet.ip;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -37,9 +37,9 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.IPDevice;
-import com.digi.xbee.api.models.NetworkProtocol;
+import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
-import com.digi.xbee.api.packet.network.TXIPv4Packet;
+import com.digi.xbee.api.packet.ip.TXIPv4Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
 @PrepareForTest({Inet4Address.class, TXIPv4Packet.class})
@@ -56,7 +56,7 @@ public class TXIPv4PacketTest {
 	private Inet4Address destAddressBroadcast;
 	private int destPort = 0x0025;
 	private int sourcePort = 0x00B3;
-	private NetworkProtocol protocol = NetworkProtocol.TCP;
+	private IPProtocol protocol = IPProtocol.TCP;
 	private int transmitOptions = TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN;
 	private byte[] data = "Test".getBytes();
 
@@ -97,7 +97,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A {@code NullPointerException} exception must be thrown when parsing a
 	 * {@code null} byte array.</p>
@@ -114,7 +114,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing an empty byte array.</p>
@@ -131,7 +131,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array shorter than the needed one is provided.</p>
@@ -157,7 +157,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array not including the Frame type.</p>
@@ -183,7 +183,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>An {@code IllegalArgumentException} exception must be thrown when
 	 * parsing a byte array with an invalid IP address.</p>
@@ -212,7 +212,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A valid API TX IPv4 packet with the provided options without data
 	 * is created.</p>
@@ -249,7 +249,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A valid API TX IPv4 packet with the provided options and data is
 	 * created.</p>
@@ -287,7 +287,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#createPacket(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#createPacket(byte[])}.
 	 *
 	 * <p>A valid API TX IPv4 packet with the provided options and data is
 	 * created (broadcast transmission).</p>
@@ -325,7 +325,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a frame ID bigger than 255.
 	 * This must throw an {@code IllegalArgumentException}.</p>
@@ -343,7 +343,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a negative frame ID. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -361,7 +361,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a null destination address. This
 	 * must throw a {@code NullPointerException}.</p>
@@ -379,7 +379,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a negative destination port. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -397,7 +397,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a destination port bigger than
 	 * 65535. This must throw an {@code IllegalArgumentException}.</p>
@@ -415,7 +415,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a negative source port. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -433,7 +433,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a source port bigger than
 	 * 65535. This must throw an {@code IllegalArgumentException}.</p>
@@ -451,7 +451,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with illegal transmit options. This
 	 * must throw an {@code IllegalArgumentException}.</p>
@@ -470,7 +470,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with a null protocol. This must throw
 	 * a {@code NullPointerException}.</p>
@@ -488,7 +488,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with an illegal options. This must
 	 * throw an {@code IllegalArgumentException}.</p>
@@ -507,7 +507,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet without data ({@code null}).</p>
 	 */
@@ -535,7 +535,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with data.</p>
 	 */
@@ -562,7 +562,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, NetworkProtocol, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#TXIPv4Packet(int, Inet4Address, int, int, IPProtocol, int, byte[])}.
 	 *
 	 * <p>Construct a new TX IPv4 packet with data (broadcast transmission).</p>
 	 */
@@ -588,7 +588,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#getAPIData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#getAPIData()}.
 	 *
 	 * <p>Test the get API parameters with a {@code null} received data.</p>
 	 */
@@ -618,7 +618,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#getAPIData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#getAPIData()}.
 	 *
 	 * <p>Test the get API parameters with a not-{@code null} received data.</p>
 	 */
@@ -647,7 +647,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#getAPIPacketParameters()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#getAPIPacketParameters()}.
 	 *
 	 * <p>Test the get API parameters but with a {@code null} received data.</p>
 	 */
@@ -673,7 +673,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#getAPIPacketParameters()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#getAPIPacketParameters()}.
 	 *
 	 * <p>Test the get API parameters but with a not-{@code null} received data.</p>
 	 */
@@ -697,7 +697,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setDestAddress(Inet4Address)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setDestAddress(Inet4Address)}.
 	 */
 	@Test
 	public final void testSetDestAddressNull() {
@@ -712,7 +712,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setDestAddress(Inet4Address)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setDestAddress(Inet4Address)}.
 	 *
 	 * @throws Exception
 	 */
@@ -731,7 +731,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setDestPort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortNegative() {
@@ -746,7 +746,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setDestPort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortBigger() {
@@ -761,7 +761,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setDestPort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setDestPort(int)}.
 	 */
 	@Test
 	public final void testSetDestPortValid() {
@@ -778,7 +778,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setSourcePort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortNegative() {
@@ -793,7 +793,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setSourcePort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortBigger() {
@@ -808,7 +808,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setSourcePort(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setSourcePort(int)}.
 	 */
 	@Test
 	public final void testSetSourcePortValid() {
@@ -825,7 +825,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setProtocol(NetworkProtocol)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setProtocol(IPProtocol)}.
 	 */
 	@Test
 	public final void testSetProtocolNull() {
@@ -840,14 +840,14 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setProtocol(NetworkProtocol)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setProtocol(IPProtocol)}.
 	 */
 	@Test
 	public final void testSetProtocolNotNull() {
 		// Set up the resources for the test.
 		TXIPv4Packet packet = new TXIPv4Packet(frameID, destAddress, destPort, sourcePort, protocol, transmitOptions, data);
 
-		NetworkProtocol newProtocol = NetworkProtocol.TCP_SSL;
+		IPProtocol newProtocol = IPProtocol.TCP_SSL;
 
 		// Call the method under test.
 		packet.setProtocol(newProtocol);
@@ -857,7 +857,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setTransmitOptions(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setTransmitOptions(int)}.
 	 */
 	@Test
 	public final void testSetTransmitOptionsIllegal() {
@@ -873,7 +873,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setTransmitOptions(int))}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setTransmitOptions(int))}.
 	 */
 	@Test
 	public final void testSetTransmitOptionsValid() {
@@ -890,7 +890,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setTransmitOptions(int)}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setTransmitOptions(int)}.
 	 */
 	@Test
 	public final void testSetTransmitOptionsValid2() {
@@ -907,7 +907,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#getData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#getData()}.
 	 */
 	@Test
 	public final void testGetDataNullData() {
@@ -925,7 +925,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#getData()}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#getData()}.
 	 */
 	@Test
 	public final void testGetDataValidData() {
@@ -941,7 +941,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setData(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setData(byte[])}.
 	 */
 	@Test
 	public final void testSetDataNullData() {
@@ -961,7 +961,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setData(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setData(byte[])}.
 	 */
 	@Test
 	public final void testSetDataValidData() {
@@ -980,7 +980,7 @@ public class TXIPv4PacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.network.TXIPv4Packet#setData(byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.ip.TXIPv4Packet#setData(byte[])}.
 	 */
 	@Test
 	public final void testSetDataAndModifyOriginal() {

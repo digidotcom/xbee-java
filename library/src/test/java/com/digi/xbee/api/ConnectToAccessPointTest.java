@@ -132,7 +132,7 @@ public class ConnectToAccessPointTest {
 		currentMillis = System.currentTimeMillis();
 		
 		// Configure the number of ticks (times) the sleep method should be called.
-		int ticks = wifiDevice.getWiFiReceiveTimeout()/100;
+		int ticks = wifiDevice.getAccessPointTimeout()/100;
 		
 		// Prepare the System class to return our fixed currentMillis variable when requested.
 		PowerMockito.mockStatic(System.class);
@@ -175,7 +175,7 @@ public class ConnectToAccessPointTest {
 		currentMillis = System.currentTimeMillis();
 		
 		// Configure the number of ticks (times) the sleep method should be called.
-		int ticks = wifiDevice.getWiFiReceiveTimeout()/100;
+		int ticks = wifiDevice.getAccessPointTimeout()/100;
 		
 		// Prepare the System class to return our fixed currentMillis variable when requested.
 		PowerMockito.mockStatic(System.class);
@@ -219,7 +219,7 @@ public class ConnectToAccessPointTest {
 		currentMillis = System.currentTimeMillis();
 		
 		// Configure the number of ticks (times) the sleep method should be called.
-		int ticks = wifiDevice.getWiFiReceiveTimeout()/100;
+		int ticks = wifiDevice.getAccessPointTimeout()/100;
 		
 		// Prepare the System class to return our fixed currentMillis variable when requested.
 		PowerMockito.mockStatic(System.class);
@@ -439,7 +439,7 @@ public class ConnectToAccessPointTest {
 		currentMillis = System.currentTimeMillis();
 		
 		// Configure the number of ticks (times) the sleep method should be called.
-		int ticks = wifiDevice.getWiFiReceiveTimeout()/100;
+		int ticks = wifiDevice.getAccessPointTimeout()/100;
 		
 		// Prepare the System class to return our fixed currentMillis variable when requested.
 		PowerMockito.mockStatic(System.class);
@@ -483,7 +483,7 @@ public class ConnectToAccessPointTest {
 		currentMillis = System.currentTimeMillis();
 		
 		// Configure the number of ticks (times) the sleep method should be called.
-		int ticks = wifiDevice.getWiFiReceiveTimeout()/100;
+		int ticks = wifiDevice.getAccessPointTimeout()/100;
 		
 		// Prepare the System class to return our fixed currentMillis variable when requested.
 		PowerMockito.mockStatic(System.class);
@@ -529,7 +529,7 @@ public class ConnectToAccessPointTest {
 		currentMillis = System.currentTimeMillis();
 		
 		// Configure the number of ticks (times) the sleep method should be called.
-		int ticks = wifiDevice.getWiFiReceiveTimeout()/100;
+		int ticks = wifiDevice.getAccessPointTimeout()/100;
 		
 		// Prepare the System class to return our fixed currentMillis variable when requested.
 		PowerMockito.mockStatic(System.class);

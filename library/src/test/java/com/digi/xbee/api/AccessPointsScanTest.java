@@ -50,10 +50,10 @@ import com.digi.xbee.api.packet.common.ReceivePacket;
 
 @PrepareForTest({WiFiDevice.class, XBee64BitAddress.class, XBee16BitAddress.class})
 @RunWith(PowerMockRunner.class)
-public class AccessPointsDiscoverTest {
+public class AccessPointsScanTest {
 	
 	// Constants.
-	private static final String METHOD_DISCOVER_ACCESS_POINTS = "discoverAccessPoints";
+	private static final String METHOD_SCAN_ACCESS_POINTS = "scanAccessPoints";
 	private static final String METHOD_PARSE_DISCOVERED_ACCESS_POINT = "parseDiscoveredAccessPoint";
 	private static final String METHOD_GET_SIGNAL_QUALITY = "getSignalQuality";
 	private static final String METHOD_PARSE_DISCOVERED_AP = "parseDiscoveredAccessPoint";
@@ -116,7 +116,7 @@ public class AccessPointsDiscoverTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
 	 * <p>An {@code InterfaceNotOpenException} exception must be thrown when 
 	 * the local device connection is not open.</p>
@@ -124,16 +124,16 @@ public class AccessPointsDiscoverTest {
 	 * @throws XBeeException 
 	 */
 	@Test(expected=InterfaceNotOpenException.class)
-	public final void testDiscoverAccessPointsDeviceNotOpen() throws XBeeException {
+	public final void testScanAccessPointsDeviceNotOpen() throws XBeeException {
 		// Setup the resources for the test.
 		PowerMockito.when(wifiDevice.isOpen()).thenReturn(false);
 		
 		// Call the method under test.
-		wifiDevice.discoverAccessPoints();
+		wifiDevice.scanAccessPoints();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
 	 * <p>An {@code InvalidOperatingModeException} exception must be thrown when 
 	 * the local device operating mode is different than API or API Escaped.</p>
@@ -141,12 +141,12 @@ public class AccessPointsDiscoverTest {
 	 * @throws XBeeException 
 	 */
 	@Test(expected=InvalidOperatingModeException.class)
-	public final void testDiscoverAccessPointsInvalidOperatingMode() throws XBeeException {
+	public final void testScanAccessPointsInvalidOperatingMode() throws XBeeException {
 		// Setup the resources for the test.
 		PowerMockito.when(wifiDevice.getOperatingMode()).thenReturn(OperatingMode.AT);
 		
 		// Call the method under test.
-		wifiDevice.discoverAccessPoints();
+		wifiDevice.scanAccessPoints();
 	}
 	
 	/**
@@ -181,7 +181,7 @@ public class AccessPointsDiscoverTest {
 		PowerMockito.when(mockedAccessPoint.getSSID()).thenReturn("Dummy SSID");
 		accessPointsList.add(mockedAccessPoint);
 		
-		PowerMockito.doReturn(accessPointsList).when(wifiDevice, METHOD_DISCOVER_ACCESS_POINTS);
+		PowerMockito.doReturn(accessPointsList).when(wifiDevice, METHOD_SCAN_ACCESS_POINTS);
 		
 		// Call the method under test.
 		AccessPoint readAccessPoint = wifiDevice.getAccessPoint("Test SSID");
@@ -189,7 +189,7 @@ public class AccessPointsDiscoverTest {
 		// Verify the result.
 		assertThat("The discovered access point should be null", readAccessPoint, is(equalTo(null)));
 		
-		Mockito.verify(wifiDevice, Mockito.times(1)).discoverAccessPoints();
+		Mockito.verify(wifiDevice, Mockito.times(1)).scanAccessPoints();
 	}
 	
 	/**
@@ -216,7 +216,7 @@ public class AccessPointsDiscoverTest {
 		PowerMockito.when(mockedAccessPoint2.getSSID()).thenReturn(testSSID);
 		accessPointsList.add(mockedAccessPoint2);
 		
-		PowerMockito.doReturn(accessPointsList).when(wifiDevice, METHOD_DISCOVER_ACCESS_POINTS);
+		PowerMockito.doReturn(accessPointsList).when(wifiDevice, METHOD_SCAN_ACCESS_POINTS);
 		
 		// Call the method under test.
 		AccessPoint readAccessPoint = wifiDevice.getAccessPoint(testSSID);
@@ -225,19 +225,19 @@ public class AccessPointsDiscoverTest {
 		assertThat("The discovered access point shouldn't be null", readAccessPoint, is(IsNull.notNullValue()));
 		assertThat("The discovered access point's SSID should match the provided one", readAccessPoint.getSSID(), is(equalTo(testSSID)));
 		
-		Mockito.verify(wifiDevice, Mockito.times(1)).discoverAccessPoints();
+		Mockito.verify(wifiDevice, Mockito.times(1)).scanAccessPoints();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
-	 * <p>Verify that {@code discoverAccessPoints()} method throws an {@code XBeeException} 
+	 * <p>Verify that {@code scanAccessPoints()} method throws an {@code XBeeException} 
 	 * if the device is already connected (AS response status is ERROR).</p>
 	 * 
 	 * @throws Exception 
 	 */
 	@Test(expected=XBeeException.class)
-	public final void testDiscoverAccessPointsErrorConnected() throws Exception {
+	public final void testScanAccessPointsErrorConnected() throws Exception {
 		// Setup the resources for the test.
 		asAnswers.clear();
 		asAnswers.add(new ATCommandResponsePacket(1, ATCommandStatus.ERROR, "AS", null));
@@ -259,19 +259,19 @@ public class AccessPointsDiscoverTest {
 		}).when(wifiDevice, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Call the method under test.
-		wifiDevice.discoverAccessPoints();
+		wifiDevice.scanAccessPoints();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
-	 * <p>Verify that {@code discoverAccessPoints()} method throws a {@code TimeoutException} 
+	 * <p>Verify that {@code scanAccessPoints()} method throws a {@code TimeoutException} 
 	 * if it does not receive the end of discovery command after the configured timeout expires.</p>
 	 * 
 	 * @throws Exception 
 	 */
 	@Test(expected=TimeoutException.class)
-	public final void testDiscoverAccessPointsErrorTimeout() throws Exception {
+	public final void testScanAccessPointsErrorTimeout() throws Exception {
 		// Setup the resources for the test.
 		asAnswers.clear();
 		
@@ -293,19 +293,19 @@ public class AccessPointsDiscoverTest {
 		}).when(wifiDevice, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Call the method under test.
-		wifiDevice.discoverAccessPoints();
+		wifiDevice.scanAccessPoints();
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
-	 * <p>Verify that {@code discoverAccessPoints()} method returns an empty list of 
+	 * <p>Verify that {@code scanAccessPoints()} method returns an empty list of 
 	 * access points if only the end answer to AS command is received.</p>
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testDiscoverAccessPointsSuccessEmpty() throws Exception {
+	public final void testScanAccessPointsSuccessEmpty() throws Exception {
 		// Setup the resources for the test.
 		asAnswers.clear();
 		
@@ -330,23 +330,23 @@ public class AccessPointsDiscoverTest {
 		}).when(wifiDevice, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Call the method under test.
-		List<AccessPoint> accessPointsList = wifiDevice.discoverAccessPoints();
+		List<AccessPoint> accessPointsList = wifiDevice.scanAccessPoints();
 		
 		// Verify the result.
 		assertThat("List of access points should be empty", accessPointsList.size(), is(equalTo(0)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
-	 * <p>Verify that {@code discoverAccessPoints()} method returns an empty list of 
+	 * <p>Verify that {@code scanAccessPoints()} method returns an empty list of 
 	 * access points if only the end answer to AS command is received. In this case the 
 	 * end answer has an empty (not null) parameter value.</p>
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testDiscoverAccessPointsSuccessEmptyValueEmpty() throws Exception {
+	public final void testScanAccessPointsSuccessEmptyValueEmpty() throws Exception {
 		// Setup the resources for the test.
 		asAnswers.clear();
 		
@@ -371,22 +371,22 @@ public class AccessPointsDiscoverTest {
 		}).when(wifiDevice, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Call the method under test.
-		List<AccessPoint> accessPointsList = wifiDevice.discoverAccessPoints();
+		List<AccessPoint> accessPointsList = wifiDevice.scanAccessPoints();
 		
 		// Verify the result.
 		assertThat("List of access points should be empty", accessPointsList.size(), is(equalTo(0)));
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#discoverAccessPoints()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#scanAccessPoints()}.
 	 * 
-	 * <p>Verify that {@code discoverAccessPoints()} method returns a list with
+	 * <p>Verify that {@code scanAccessPoints()} method returns a list with
 	 * discovered access points.</p>
 	 * 
 	 * @throws Exception 
 	 */
 	@Test
-	public final void testDiscoverAccessPointsSuccess() throws Exception {
+	public final void testScanAccessPointsSuccess() throws Exception {
 		// Setup the resources for the test.
 		asAnswers.clear();
 		
@@ -427,7 +427,7 @@ public class AccessPointsDiscoverTest {
 		}).when(wifiDevice, METHOD_SLEEP, Mockito.anyInt());
 		
 		// Call the method under test.
-		List<AccessPoint> accessPointsList = wifiDevice.discoverAccessPoints();
+		List<AccessPoint> accessPointsList = wifiDevice.scanAccessPoints();
 		
 		// Verify the result.
 		assertThat("List of access points should contain 2 access points", accessPointsList.size(), is(equalTo(2)));

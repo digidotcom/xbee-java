@@ -197,33 +197,33 @@ public class WiFiDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#setWiFiReceiveTimeout(int)}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#setAccessPointTimeout(int)}.
 	 * 
-	 * <p>Check that the Wi-Fi receive timeout cannot be set if it is negative throwing an 
+	 * <p>Check that the access point timeout cannot be set if it is negative throwing an 
 	 * {@code IllegalArgumentException}.</p>
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void testSetWiFiReceiveTimeoutNegative() {
+	public void testSetAccessPointTimeoutNegative() {
 		// Call the method under test.
-		wifiDevice.setWiFiReceiveTimeout(-50);
+		wifiDevice.setAccessPointTimeout(-50);
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.WiFiDevice#setWiFiReceiveTimeout(int)} and 
-	 * {@link com.digi.xbee.api.WiFiDevice#getWiFiReceiveTimeout()}.
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#setAccessPointTimeout(int)} and 
+	 * {@link com.digi.xbee.api.WiFiDevice#getAccessPointTimeout()}.
 	 * 
-	 * <p>Check that the Wi-Fi receive timeout can be set and get successfully.</p>
+	 * <p>Check that the access point timeout can be set and get successfully.</p>
 	 */
 	@Test
-	public void testSetWiFiReceiveTimeoutSuccess() {
+	public void testSetAccessPointTimeoutSuccess() {
 		// First, verify that the timeout has the default value before changing it. 
-		assertEquals(15000, wifiDevice.getWiFiReceiveTimeout());
+		assertEquals(15000, wifiDevice.getAccessPointTimeout());
 		
 		// Call the method under test (change the timeout).
-		wifiDevice.setWiFiReceiveTimeout(5000);
+		wifiDevice.setAccessPointTimeout(5000);
 		
 		// First, verify that the new valu was set. 
-		assertEquals(5000, wifiDevice.getWiFiReceiveTimeout());
+		assertEquals(5000, wifiDevice.getAccessPointTimeout());
 	}
 	
 	 /**

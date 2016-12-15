@@ -51,7 +51,7 @@ import com.digi.xbee.api.utils.ByteUtils;
 public class WiFiDevice extends IPDevice {
 	
 	// Constants.
-	private final static int DEFAULT_WIFI_RECEIVE_TIMETOUT = 15000; // 15 seconds of timeout to connect, disconnect and discover access points.
+	private final static int DEFAULT_ACCESS_POINT_TIMETOUT = 15000; // 15 seconds of timeout to connect, disconnect and scan access points.
 	
 	private static final String AS_COMMAND = "AS";
 	private static final String ERROR_ALREADY_CONNECTED = "Device is already connected to an access point.";
@@ -59,10 +59,10 @@ public class WiFiDevice extends IPDevice {
 	private static final int DISCOVER_TIMEOUT = 30000;
 	
 	// Variables.
-	private boolean discoveringAccessPoints = false;
-	private boolean discoveringAccessPointsError = false;
+	private boolean scanningAccessPoints = false;
+	private boolean scanningAccessPointsError = false;
 	
-	protected int wifiReceiveTimeout = DEFAULT_WIFI_RECEIVE_TIMETOUT;
+	protected int accessPointTimeout = DEFAULT_ACCESS_POINT_TIMETOUT;
 	
 	/**
 	 * Class constructor. Instantiates a new {@code WiFiDevice} object in 
@@ -189,14 +189,14 @@ public class WiFiDevice extends IPDevice {
 	}
 	
 	/**
-	 * Discovers and reports the access point that matches the supplied SSID.
+	 * Finds and reports the access point that matches the supplied SSID.
 	 * 
 	 * <p>This method blocks until the access point is discovered or the 
-	 * configured Wi-Fi receive timeout expires.</p>
+	 * configured access point timeout expires.</p>
 	 * 
-	 * <p>The Wi-Fi receive timeout is configured using the 
-	 * {@code setWiFiReceiveTimeout} method and can be consulted with 
-	 * {@code getWiFiReceiveTimeout} method.</p>
+	 * <p>The access point timeout is configured using the 
+	 * {@code setAccessPointTimeout} method and can be consulted with 
+	 * {@code getAccessPointTimeout} method.</p>
 	 * 
 	 * @param ssid The SSID of the access point to discover.
 	 * 
@@ -208,9 +208,9 @@ public class WiFiDevice extends IPDevice {
 	 * @throws TimeoutException if there is a timeout getting the access point.
 	 * @throws XBeeException if there is an error sending the discovery command.
 	 * 
-	 * @see #discoverAccessPoints()
-	 * @see #getWiFiReceiveTimeout()
-	 * @see #setWiFiReceiveTimeout(int)
+	 * @see #getAccessPointTimeout()
+	 * @see #scanAccessPoints()
+	 * @see #setAccessPointTimeout(int)
 	 */
 	public AccessPoint getAccessPoint(String ssid) throws XBeeException {
 		if (ssid == null)
@@ -218,7 +218,7 @@ public class WiFiDevice extends IPDevice {
 		
 		logger.debug("{}AS for '{}' access point.", toString(), ssid);
 		
-		List<AccessPoint> accessPointsList = discoverAccessPoints();
+		List<AccessPoint> accessPointsList = scanAccessPoints();
 		
 		for (AccessPoint accessPoint:accessPointsList) {
 			if (accessPoint.getSSID().equals(ssid))
@@ -229,26 +229,26 @@ public class WiFiDevice extends IPDevice {
 	}
 	
 	/**
-	 * Performs a discovery to search for access points in the vicinity.
+	 * Performs a scan to search for access points in the vicinity.
 	 * 
 	 * <p>This method blocks until all the access points are discovered or the 
-	 * configured Wi-Fi receive timeout expires.</p>
+	 * configured access point timeout expires.</p>
 	 * 
-	 * <p>The Wi-Fi receive timeout is configured using the 
-	 * {@code setWiFiReceiveTimeout} method and can be consulted with 
-	 * {@code getWiFiReceiveTimeout} method.</p>
+	 * <p>The access point timeout is configured using the 
+	 * {@code setAccessPointTimeout} method and can be consulted with 
+	 * {@code getAccessPointTimeout} method.</p>
 	 * 
 	 * @return The list of access points discovered.
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
-	 * @throws TimeoutException if there is a timeout discovering the access points.
+	 * @throws TimeoutException if there is a timeout scanning the access points.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getAccessPoint(String)
-	 * @see #getWiFiReceiveTimeout()
-	 * @see #setWiFiReceiveTimeout(int)
+	 * @see #getAccessPointTimeout()
+	 * @see #setAccessPointTimeout(int)
 	 */
-	public List<AccessPoint> discoverAccessPoints() throws XBeeException {
+	public List<AccessPoint> scanAccessPoints() throws XBeeException {
 		// Check if the connection is open.
 		if (!isOpen())
 			throw new InterfaceNotOpenException();
@@ -270,7 +270,7 @@ public class WiFiDevice extends IPDevice {
 				 */
 				@Override
 				public void packetReceived(XBeePacket receivedPacket) {
-					if (!discoveringAccessPoints)
+					if (!scanningAccessPoints)
 						return;
 					
 					try {
@@ -282,12 +282,12 @@ public class WiFiDevice extends IPDevice {
 						
 						// Check for error.
 						if (response.getStatus() == ATCommandStatus.ERROR) {
-							discoveringAccessPointsError = true;
-							discoveringAccessPoints = false;
+							scanningAccessPointsError = true;
+							scanningAccessPoints = false;
 						// Check for end of discovery.
 						} else if (response.getCommandValue() == null 
 								|| response.getCommandValue().length == 0)
-							discoveringAccessPoints = false;
+							scanningAccessPoints = false;
 						else {
 							AccessPoint accessPoint = parseDiscoveredAccessPoint(response.getCommandValue());
 							if (accessPoint != null)
@@ -299,30 +299,30 @@ public class WiFiDevice extends IPDevice {
 				}
 			};
 			
-			logger.debug("{}Start discovering access points.", toString());
+			logger.debug("{}Start scanning access points.", toString());
 			addPacketListener(packetReceiveListener);
 			
 			try {
-				discoveringAccessPoints = true;
+				scanningAccessPoints = true;
 				// Send the active scan command.
 				sendPacketAsync(new ATCommandPacket(getNextFrameID(), AS_COMMAND, ""));
 				
 				// Wait until the discovery process finishes or timeouts.
 				long deadLine = System.currentTimeMillis() + DISCOVER_TIMEOUT;
-				while (discoveringAccessPoints && System.currentTimeMillis() < deadLine)
+				while (scanningAccessPoints && System.currentTimeMillis() < deadLine)
 					sleep(100);
 				
 				// Check if we exited because of a timeout.
-				if (discoveringAccessPoints)
+				if (scanningAccessPoints)
 					throw new TimeoutException();
 				// Check if there was an error in the active scan command (device is already connected).
-				if (discoveringAccessPointsError)
+				if (scanningAccessPointsError)
 					throw new XBeeException(ERROR_ALREADY_CONNECTED);
 			} finally {
-				discoveringAccessPoints = false;
-				discoveringAccessPointsError = false;
+				scanningAccessPoints = false;
+				scanningAccessPointsError = false;
 				removePacketListener(packetReceiveListener);
-				logger.debug("{}Stop discovering access points.", toString());
+				logger.debug("{}Stop scanning access points.", toString());
 			}
 		}
 		
@@ -333,11 +333,11 @@ public class WiFiDevice extends IPDevice {
 	 * Connects to the access point with provided SSID.
 	 * 
 	 * <p>This method blocks until the connection with the access point is 
-	 * established or the configured Wi-Fi receive timeout expires.</p>
+	 * established or the configured access point timeout expires.</p>
 	 * 
-	 * <p>The Wi-Fi receive timeout is configured using the 
-	 * {@code setWiFiReceiveTimeout} method and can be consulted with 
-	 * {@code getWiFiReceiveTimeout} method.</p>
+	 * <p>The access point timeout is configured using the 
+	 * {@code setAccessPointTimeout} method and can be consulted with 
+	 * {@code getAccessPointTimeout} method.</p>
 	 * 
 	 * <p>Once the module is connected to the access point, you can issue 
 	 * the {@link #writeChanges()} method to save the connection settings. This 
@@ -360,10 +360,10 @@ public class WiFiDevice extends IPDevice {
 	 * 
 	 * @see #connect(AccessPoint, String)
 	 * @see #disconnect()
-	 * @see #discoverAccessPoints()
 	 * @see #getAccessPoint(String)
-	 * @see #getWiFiReceiveTimeout()
-	 * @see #setWiFiReceiveTimeout(int)
+	 * @see #getAccessPointTimeout()
+	 * @see #scanAccessPoints()
+	 * @see #setAccessPointTimeout(int)
 	 */
 	public boolean connect(String ssid, String password) 
 			throws TimeoutException, XBeeException {
@@ -381,11 +381,11 @@ public class WiFiDevice extends IPDevice {
 	 * Connects to the provided access point.
 	 * 
 	 * <p>This method blocks until the connection with the access point is 
-	 * established or the configured Wi-Fi receive timeout expires.</p>
+	 * established or the configured access point timeout expires.</p>
 	 * 
-	 * <p>The Wi-Fi receive timeout is configured using the 
-	 * {@code setWiFiReceiveTimeout} method and can be consulted with 
-	 * {@code getWiFiReceiveTimeout} method.</p>
+	 * <p>The access point timeout is configured using the 
+	 * {@code setAccessPointTimeout} method and can be consulted with 
+	 * {@code getAccessPointTimeout} method.</p>
 	 * 
 	 * <p>Once the module is connected to the access point, you can issue 
 	 * the {@code writeSettings} method to save the connection settings. This 
@@ -407,10 +407,10 @@ public class WiFiDevice extends IPDevice {
 	 * 
 	 * @see #connect(String, String)
 	 * @see #disconnect()
-	 * @see #discoverAccessPoints()
 	 * @see #getAccessPoint(String)
-	 * @see #getWiFiReceiveTimeout()
-	 * @see #setWiFiReceiveTimeout(int)
+	 * @see #getAccessPointTimeout()
+	 * @see #scanAccessPoints()
+	 * @see #setAccessPointTimeout(int)
 	 * @see com.digi.xbee.api.models.AccessPoint
 	 */
 	public boolean connect(AccessPoint accessPoint, String password) 
@@ -425,7 +425,7 @@ public class WiFiDevice extends IPDevice {
 			setParameter("PK", password.getBytes());
 		
 		// Wait for the module to connect to the access point.
-		long deadLine = System.currentTimeMillis() + wifiReceiveTimeout;
+		long deadLine = System.currentTimeMillis() + accessPointTimeout;
 		while (System.currentTimeMillis() < deadLine) {
 			sleep(100);
 			// Get the association indication value of the module.
@@ -443,11 +443,11 @@ public class WiFiDevice extends IPDevice {
 	 * Disconnects from the access point the device is connected to.
 	 * 
 	 * <p>This method blocks until the device disconnects totally from the 
-	 * access point or the configured Wi-Fi receive timeout expires.</p>
+	 * access point or the configured access point timeout expires.</p>
 	 * 
-	 * <p>The Wi-Fi receive timeout is configured using the 
-	 * {@code setWiFiReceiveTimeout} method and can be consulted with 
-	 * {@code getWiFiReceiveTimeout} method.</p>
+	 * <p>The access point timeout is configured using the 
+	 * {@code setAccessPointTimeout} method and can be consulted with 
+	 * {@code getAccessPointTimeout} method.</p>
 	 * 
 	 * @return {@code true} if the module disconnected from the access point 
 	 *         successfully, {@code false} otherwise.
@@ -459,13 +459,13 @@ public class WiFiDevice extends IPDevice {
 	 * 
 	 * @see #connect(AccessPoint, String)
 	 * @see #connect(String, String)
-	 * @see #getWiFiReceiveTimeout()
-	 * @see #setWiFiReceiveTimeout(int)
+	 * @see #getAccessPointTimeout()
+	 * @see #setAccessPointTimeout(int)
 	 */
 	public boolean disconnect() throws TimeoutException, XBeeException {
 		executeParameter("NR");
 		// Wait for the module to connect to the access point.
-		long deadLine = System.currentTimeMillis() + wifiReceiveTimeout;
+		long deadLine = System.currentTimeMillis() + accessPointTimeout;
 		while (System.currentTimeMillis() < deadLine) {
 			sleep(100);
 			// Get the association indication value of the module.
@@ -598,32 +598,32 @@ public class WiFiDevice extends IPDevice {
 	}
 	
 	/**
-	 * Returns the Wi-Fi configured timeout for connecting, disconnecting and 
-	 * discovering access points.
+	 * Returns the configured access point timeout for connecting, 
+	 * disconnecting and scanning access points.
 	 * 
-	 * @return The current Wi-Fi receive timeout in milliseconds.
+	 * @return The current access point timeout in milliseconds.
 	 * 
-	 * @see #setWiFiReceiveTimeout(int)
+	 * @see #setAccessPointTimeout(int)
 	 */
-	public int getWiFiReceiveTimeout() {
-		return wifiReceiveTimeout;
+	public int getAccessPointTimeout() {
+		return accessPointTimeout;
 	}
 	
 	/**
-	 * Configures the Wi-Fi timeout in milliseconds connecting, disconnecting 
-	 * and discovering access points.
+	 * Configures the access point timeout in milliseconds for connecting, 
+	 * disconnecting and scanning access points.
 	 *  
-	 * @param wifiReceiveTimeout The new Wi-Fi receive timeout in milliseconds.
+	 * @param accessPointTimeout The new access point timeout in milliseconds.
 	 * 
-	 * @throws IllegalArgumentException if {@code wifiReceiveTimeout < 0}.
+	 * @throws IllegalArgumentException if {@code accessPointTimeout < 0}.
 	 * 
-	 * @see #getWiFiReceiveTimeout()
+	 * @see #getAccessPointTimeout()
 	 */
-	public void setWiFiReceiveTimeout(int wifiReceiveTimeout) {
-		if (wifiReceiveTimeout < 0)
-			throw new IllegalArgumentException("Wi-Fi receive timeout cannot be less than 0.");
+	public void setAccessPointTimeout(int accessPointTimeout) {
+		if (accessPointTimeout < 0)
+			throw new IllegalArgumentException("Access point timeout cannot be less than 0.");
 		
-		this.wifiReceiveTimeout = wifiReceiveTimeout;
+		this.accessPointTimeout = accessPointTimeout;
 	}
 	
 	/**

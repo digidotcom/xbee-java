@@ -179,8 +179,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, String, int)
 	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 */
-	public XBeeDevice(Context context, int baudrate) {
-		super(XBee.createConnectiontionInterface(context, baudrate));
+	public XBeeDevice(Context context, int baudRate) {
+		super(XBee.createConnectiontionInterface(context, baudRate));
 	}
 	
 	/**
@@ -207,8 +207,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
 	 */
-	public XBeeDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
+	public XBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
+		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
 	}
 	
 	/**
@@ -220,7 +220,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @param context The Android application context.
 	 * @param port Serial port name where XBee device is attached to.
-	 * @param baudrate The serial port connection baud rate.
+	 * @param baudRate The serial port connection baud rate.
 	 * 
 	 * @throws NullPointerException If {@code context == null} or
 	 *                              if {@code port == null}.
@@ -234,8 +234,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 */
-	public XBeeDevice(Context context, String port, int baudrate) {
-		super(XBee.createConnectiontionInterface(context, port, baudrate));
+	public XBeeDevice(Context context, String port, int baudRate) {
+		super(XBee.createConnectiontionInterface(context, port, baudRate));
 	}
 	
 	/**
@@ -247,7 +247,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * 
 	 * @param context The Android application context.
 	 * @param port Serial port name where XBee device is attached to.
-	 * @param serialPortParameters The serial port parameters.
+	 * @param parameters The serial port parameters.
 	 * 
 	 * @throws NullPointerException If {@code context == null} or
 	 *                              if {@code port == null} or

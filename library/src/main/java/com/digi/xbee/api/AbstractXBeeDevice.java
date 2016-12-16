@@ -243,8 +243,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
-	public AbstractXBeeDevice(Context context, int baudrate) {
-		this(XBee.createConnectiontionInterface(context, baudrate));
+	public AbstractXBeeDevice(Context context, int baudRate) {
+		this(XBee.createConnectiontionInterface(context, baudRate));
 	}
 	
 	/**
@@ -268,8 +268,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(Context, int)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
 	 */
-	public AbstractXBeeDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
-		this(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
+	public AbstractXBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
+		this(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
 	}
 	
 	/**

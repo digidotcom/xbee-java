@@ -55,7 +55,7 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 * 
 	 * @throws NullPointerException if {@code context == null} or
 	 *                              if {@code port == null}.
-	 * @throws IllegalArgumentException if {@code baudrate < 1}
+	 * @throws IllegalArgumentException if {@code baudRate < 1}
 	 * 
 	 * @see #DEFAULT_DATA_BITS
 	 * @see #DEFAULT_FLOW_CONTROL
@@ -67,8 +67,8 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 * @see #SerialPortDigiAndroid(Context, String, SerialPortParameters, int)
 	 * @see SerialPortParameters
 	 */
-	public SerialPortDigiAndroid(Context context, String port, int baudrate) {
-		super(port, baudrate, DEFAULT_PORT_TIMEOUT);
+	public SerialPortDigiAndroid(Context context, String port, int baudRate) {
+		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
 		
 		this.context = context;
 		this.logger = LoggerFactory.getLogger(SerialPortDigiAndroid.class);
@@ -243,6 +243,8 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
+			break;
+		default:
 			break;
 		}
 	}

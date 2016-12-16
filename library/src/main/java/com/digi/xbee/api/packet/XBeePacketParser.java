@@ -19,6 +19,8 @@ import java.util.Date;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.packet.cellular.RXSMSPacket;
+import com.digi.xbee.api.packet.cellular.TXSMSPacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
 import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
@@ -31,6 +33,8 @@ import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.common.TransmitStatusPacket;
+import com.digi.xbee.api.packet.network.RXIPv4Packet;
+import com.digi.xbee.api.packet.network.TXIPv4Packet;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
@@ -292,6 +296,12 @@ public class XBeePacketParser {
 		case REMOTE_AT_COMMAND_REQUEST:
 			packet = RemoteATCommandPacket.createPacket(payload);
 			break;
+		case TX_SMS:
+			packet = TXSMSPacket.createPacket(payload);
+			break;
+		case TX_IPV4:
+			packet = TXIPv4Packet.createPacket(payload);
+			break;
 		case RX_64:
 			packet = RX64Packet.createPacket(payload);
 			break;
@@ -327,6 +337,12 @@ public class XBeePacketParser {
 			break;
 		case REMOTE_AT_COMMAND_RESPONSE:
 			packet = RemoteATCommandResponsePacket.createPacket(payload);
+			break;
+		case RX_SMS:
+			packet = RXSMSPacket.createPacket(payload);
+			break;
+		case RX_IPV4:
+			packet = RXIPv4Packet.createPacket(payload);
 			break;
 		case GENERIC:
 			packet = GenericXBeePacket.createPacket(payload);

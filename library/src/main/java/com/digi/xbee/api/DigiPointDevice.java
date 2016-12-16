@@ -126,8 +126,8 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see #DigiPointDevice(String, int, int, int, int, int)
 	 * @see #DigiPointDevice(Context, int, AndroidUSBPermissionListener)
 	 */
-	public DigiPointDevice(Context context, int baudrate) {
-		super(XBee.createConnectiontionInterface(context, baudrate));
+	public DigiPointDevice(Context context, int baudRate) {
+		super(XBee.createConnectiontionInterface(context, baudRate));
 	}
 	
 	/**
@@ -149,8 +149,8 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see #DigiPointDevice(Context, int)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
 	 */
-	public DigiPointDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
+	public DigiPointDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
+		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
 	}
 	
 	/**

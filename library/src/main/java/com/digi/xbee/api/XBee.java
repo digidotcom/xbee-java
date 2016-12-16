@@ -127,7 +127,7 @@ public class XBee {
 	 * @throws NullPointerException if {@code context == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 1}.
 	 * 
-	 * @see #createConnectiontionInterface(context, String, SerialPortParameters)
+	 * @see #createConnectiontionInterface(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public static IConnectionInterface createConnectiontionInterface(Context context, String port, int baudRate) {
@@ -150,7 +150,7 @@ public class XBee {
 	 * @throws NullPointerException if {@code context == null} or
 	 *                              if {@code serialPortParameters == null}.
 	 * 
-	 * @see #createConnectiontionInterface(context, String, int)
+	 * @see #createConnectiontionInterface(Context, String, int)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */

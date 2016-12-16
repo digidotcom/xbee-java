@@ -80,7 +80,7 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	 * Class constructor. Instantiates a new {@code AndroidXBeeInterface} object
 	 * with the given parameters.
 	 * 
-	 * <p>This constructor requires that methods calling {@link #connect()}
+	 * <p>This constructor requires that methods calling {@link #open()}
 	 * method to be executed in a thread different than the UI to avoid hangs
 	 * while waiting for USB device permissions.</p>
 	 * 
@@ -104,7 +104,7 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 	 * Class constructor. Instantiates a new {@code AndroidXBeeInterface} object
 	 * with the given parameters.
 	 * 
-	 * <p>This constructor requires all methods calling {@link #connect()} 
+	 * <p>This constructor requires all methods calling {@link #open()} 
 	 * method to be executed in a thread different than the UI to avoid hangs
 	 * while waiting for USB device permissions.</p>
 	 * 

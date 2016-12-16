@@ -132,8 +132,8 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see #ZigBeeDevice(String, int, int, int, int, int)
 	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 */
-	public ZigBeeDevice(Context context, int baudrate) {
-		super(XBee.createConnectiontionInterface(context, baudrate));
+	public ZigBeeDevice(Context context, int baudRate) {
+		super(XBee.createConnectiontionInterface(context, baudRate));
 	}
 	
 	/**
@@ -155,8 +155,8 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
-	public ZigBeeDevice(Context context, int baudrate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudrate, permissionListener));
+	public ZigBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
+		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
 	}
 	
 	/**

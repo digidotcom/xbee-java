@@ -36,8 +36,10 @@ import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.AccessPoint;
 import com.digi.xbee.api.models.IPAddressingMode;
 import com.digi.xbee.api.models.WiFiAssociationIndicationStatus;
+import com.digi.xbee.api.models.WiFiEncryptionType;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({WiFiDevice.class, WiFiAssociationIndicationStatus.class})
@@ -55,6 +57,8 @@ public class WiFiDeviceTest {
 	private static final byte[] RESPONSE_MA = new byte[]{(byte)IPAddressingMode.STATIC.getID()};
 
 	private static final byte[] IP_ADDRESS = new byte[]{0x0A, 0x0B, 0x0C, 0x0D};
+	
+	private static final String METHOD_GET_SIG_QUALITY = "getSignalQuality";
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -507,4 +511,132 @@ public class WiFiDeviceTest {
 		assertEquals(Inet4Address.getByAddress(IP_ADDRESS), wifiDevice.getDNSAddress());
 	}
 
+	/**
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#getConnectedAccessPoint()}.
+	 * 
+	 * <p>Verify that it is not possible to get the connected access point if 
+	 * the the connection of the device is closed.</p>
+	 * 
+	 * @throws XBeeException
+	 */
+	@Test(expected=InterfaceNotOpenException.class)
+	public void testGetConnectedAccessPointErrorConnectionClosed() throws XBeeException {
+		// Return true when checking the access point connection.
+		Mockito.doReturn(true).when(wifiDevice).isConnected();
+		// Throw an interface not open exception when getting any parameter.
+		Mockito.doThrow(new InterfaceNotOpenException()).when(wifiDevice).getParameter(Mockito.anyString());
+		
+		// Get the connected access point.
+		wifiDevice.getConnectedAccessPoint();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#getConnectedAccessPoint()}.
+	 * 
+	 * <p>Verify that it is not possible to get the connected access point if 
+	 * the the operating mode is not API or API escaped.</p>
+	 * 
+	 * @throws XBeeException
+	 */
+	@Test(expected=InvalidOperatingModeException.class)
+	public void testGetConnectedAccessPointErrorInvalidOperatingMode() throws XBeeException {
+		// Return true when checking the access point connection.
+		Mockito.doReturn(true).when(wifiDevice).isConnected();
+		// Throw an invalid operating mode exception when getting any parameter.
+		Mockito.doThrow(new InvalidOperatingModeException()).when(wifiDevice).getParameter(Mockito.anyString());
+		
+		// Get the connected access point.
+		wifiDevice.getConnectedAccessPoint();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#getConnectedAccessPoint()}.
+	 * 
+	 * <p>Verify that it is not possible to get the connected access point when 
+	 * there is an Timeout exception getting the access point values.</p>
+	 * 
+	 * @throws XBeeException
+	 */
+	@Test(expected=TimeoutException.class)
+	public void testGetConnectedAccessPointErrorTimeout() throws XBeeException {
+		// Return true when checking the access point connection.
+		Mockito.doReturn(true).when(wifiDevice).isConnected();
+		// Throw a Timeout exception when getting any parameter.
+		Mockito.doThrow(new TimeoutException()).when(wifiDevice).getParameter(Mockito.anyString());
+		
+		// Get the connected access point.
+		wifiDevice.getConnectedAccessPoint();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#getConnectedAccessPoint()}.
+	 * 
+	 * <p>Verify that it is not possible to get the connected access point if 
+	 * the the connection of the device is closed.</p>
+	 * 
+	 * @throws XBeeException
+	 */
+	@Test(expected=ATCommandException.class)
+	public void testGetConnectedAccessPointErrorInvalidAnswer() throws XBeeException {
+		// Return true when checking the access point connection.
+		Mockito.doReturn(true).when(wifiDevice).isConnected();
+		// Throw an AT command exception when getting any parameter.
+		Mockito.doThrow(new ATCommandException(null)).when(wifiDevice).getParameter(Mockito.anyString());
+		
+		// Get the connected access point.
+		wifiDevice.getConnectedAccessPoint();
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#getConnectedAccessPoint()}.
+	 * 
+	 * <p>Verify that when the device is not connected, the connected access 
+	 * point gotten is null.</p>
+	 * 
+	 * @throws XBeeException
+	 */
+	@Test
+	public void testGetConnectedAccessPointSuccessNotConnected() throws XBeeException {
+		// Return false when checking the access point connection.
+		Mockito.doReturn(false).when(wifiDevice).isConnected();
+		
+		// Verify the returned access point is null.
+		assertNull(wifiDevice.getConnectedAccessPoint());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.WiFiDevice#getConnectedAccessPoint()}.
+	 * 
+	 * <p>Verify that when the device is connected, the connected access 
+	 * point gotten is valid.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetConnectedAccessPointSuccess() throws Exception {
+		String ssid = "SSID";
+		WiFiEncryptionType encryptionType = WiFiEncryptionType.WEP;
+		int channel = 5;
+		int signalQuality = 50;
+		
+		// Return true when checking the access point connection.
+		Mockito.doReturn(true).when(wifiDevice).isConnected();
+		// Return 50% when parsing the signal quality.
+		PowerMockito.doReturn(50).when(wifiDevice, METHOD_GET_SIG_QUALITY, Mockito.anyInt(), Mockito.anyInt());
+		// Prepare all the answers to generate the access point.
+		Mockito.doReturn(ssid.getBytes()).when(wifiDevice).getParameter("ID");
+		Mockito.doReturn(new byte[]{(byte) encryptionType.getID()}).when(wifiDevice).getParameter("EE");
+		Mockito.doReturn(new byte[]{(byte) channel}).when(wifiDevice).getParameter("CH");
+		Mockito.doReturn(new byte[]{(byte) (signalQuality/2)}).when(wifiDevice).getParameter("LM");
+		
+		// Get the connected access point.
+		AccessPoint connectedAP = wifiDevice.getConnectedAccessPoint();
+		
+		// Verify the returned access point is null.
+		assertNotNull(connectedAP);
+		assertEquals(ssid, connectedAP.getSSID());
+		assertEquals(encryptionType, connectedAP.getEncryptionType());
+		assertEquals(channel, connectedAP.getChannel());
+		assertEquals(signalQuality, connectedAP.getSignalQuality());
+	}
 }

@@ -501,6 +501,32 @@ public class WiFiDevice extends IPDevice {
 	}
 	
 	/**
+	 * Returns the access point the Wi-Fi device is connected to.
+	 * 
+	 * @return The access point the Wi-Fi device is connected to or {@code null} 
+	 *         if it is not connected to any access point.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the access point 
+	 *                          values.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see com.digi.xbee.api.models.AccessPoint
+	 */
+	public AccessPoint getConnectedAccessPoint() throws TimeoutException, XBeeException {
+		AccessPoint accessPoint = null;
+		if (isConnected()) {
+			String ssid = new String(getParameter("ID"));
+			WiFiEncryptionType encryptionType = WiFiEncryptionType.get(getParameter("EE")[0]);
+			int channel = getParameter("CH")[0];
+			int signalQuality = getSignalQuality(2, ByteUtils.byteArrayToInt(getParameter("LM")));
+			
+			accessPoint = new AccessPoint(ssid, encryptionType, channel, signalQuality);
+		}
+		
+		return accessPoint;
+	}
+	
+	/**
 	 * Parses the given active scan API data and returns an {@code AccessPoint} 
 	 * object.
 	 * 

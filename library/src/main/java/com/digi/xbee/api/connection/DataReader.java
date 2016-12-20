@@ -1012,7 +1012,7 @@ public class DataReader extends Thread {
 	 */
 	private void notifyNetworkDataReceived(final NetworkMessage networkMessage) {
 		logger.info(connectionInterface.toString() + 
-				"Network data received from {} >> {}.", networkMessage.getIPAddress(), HexUtils.prettyHexString(networkMessage.getData()));
+				"Network data received from {} >> {}.", networkMessage.getIPAddress().getHostAddress(), HexUtils.prettyHexString(networkMessage.getData()));
 		
 		try {
 			synchronized (networkDataReceiveListeners) {

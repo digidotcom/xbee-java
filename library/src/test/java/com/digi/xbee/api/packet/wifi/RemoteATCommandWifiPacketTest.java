@@ -15,6 +15,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -26,17 +28,28 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.digi.xbee.api.IPDevice;
 import com.digi.xbee.api.models.ATStringCommands;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
+@PrepareForTest({Inet4Address.class, RemoteATCommandWifiPacket.class})
+@RunWith(PowerMockRunner.class)
 public class RemoteATCommandWifiPacketTest {
 
+	// Constants.
+	private static final String IP_ADDRESS = "10.10.11.12";
+
+	// Variables.
 	private int frameType = APIFrameType.REMOTE_AT_COMMAND_REQUEST_WIFI.getValue();
 	private int frameID = 0xE7;
-	private IP32BitAddress destAddress = new IP32BitAddress("10.11.12.13");
+	private Inet4Address destAddress;
 	private int transmitOptions = 0x06;
 	private String command = "BD";
 	private byte[] parameter = new byte[]{0x00, 0x6F, 0x6C, 0x61};
@@ -44,7 +57,8 @@ public class RemoteATCommandWifiPacketTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
-	public RemoteATCommandWifiPacketTest() {
+	public RemoteATCommandWifiPacketTest() throws Exception {
+		destAddress = (Inet4Address) Inet4Address.getByName(IP_ADDRESS);
 	}
 
 	/**
@@ -122,7 +136,7 @@ public class RemoteATCommandWifiPacketTest {
 		payload[0] = (byte)frameType;
 		payload[1] = (byte)frameID;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 2, 4);
-		System.arraycopy(destAddress.getValue(), 0, payload, 6, destAddress.getValue().length);
+		System.arraycopy(destAddress.getAddress(), 0, payload, 6, destAddress.getAddress().length);
 		payload[10] = (byte)transmitOptions;
 
 		exception.expect(IllegalArgumentException.class);
@@ -144,13 +158,39 @@ public class RemoteATCommandWifiPacketTest {
 		byte[] payload = new byte[12 + parameter.length];
 		payload[0] = (byte)frameID;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 1, 4);
-		System.arraycopy(destAddress.getValue(), 0, payload, 5, destAddress.getValue().length);
+		System.arraycopy(destAddress.getAddress(), 0, payload, 5, destAddress.getAddress().length);
 		payload[9] = (byte)transmitOptions;
 		System.arraycopy(command.getBytes(), 0, payload, 10, command.getBytes().length);
 		System.arraycopy(parameter, 0, payload, 12, parameter.length);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Payload is not a Remote AT Command Request (Wi-Fi) packet.")));
+
+		// Call the method under test that should throw an IllegalArgumentException.
+		RemoteATCommandWifiPacket.createPacket(payload);
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.RemoteATCommandWifiPacket#createPacket(byte[])}.
+	 *
+	 * <p>An {@code IllegalArgumentException} exception must be thrown when
+	 * parsing a byte array with an invalid IP address.</p>
+	 */
+	@Test
+	public final void testCreatePacketPayloadInvalidIP() throws Exception {
+		// Setup the resources for the test.
+		byte[] payload = new byte[13];
+		payload[0] = (byte)frameType;
+		payload[1] = (byte)frameID;
+		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 2, 4);
+		System.arraycopy(destAddress.getAddress(), 0, payload, 6, destAddress.getAddress().length);
+		payload[10] = (byte)transmitOptions;
+		System.arraycopy(command.getBytes(), 0, payload, 11, command.getBytes().length);
+
+		PowerMockito.mockStatic(Inet4Address.class);
+		PowerMockito.when(Inet4Address.getByAddress(Mockito.any(byte[].class))).thenThrow(new UnknownHostException());
+
+		exception.expect(IllegalArgumentException.class);
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		RemoteATCommandWifiPacket.createPacket(payload);
@@ -169,7 +209,7 @@ public class RemoteATCommandWifiPacketTest {
 		payload[0] = (byte)frameType;
 		payload[1] = (byte)frameID;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 2, 4);
-		System.arraycopy(destAddress.getValue(), 0, payload, 6, destAddress.getValue().length);
+		System.arraycopy(destAddress.getAddress(), 0, payload, 6, destAddress.getAddress().length);
 		payload[10] = (byte)transmitOptions;
 		System.arraycopy(command.getBytes(), 0, payload, 11, command.getBytes().length);
 
@@ -200,7 +240,7 @@ public class RemoteATCommandWifiPacketTest {
 		payload[0] = (byte)frameType;
 		payload[1] = (byte)frameID;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 2, 4);
-		System.arraycopy(destAddress.getValue(), 0, payload, 6, destAddress.getValue().length);
+		System.arraycopy(destAddress.getAddress(), 0, payload, 6, destAddress.getAddress().length);
 		payload[10] = (byte)transmitOptions;
 		System.arraycopy(command.getBytes(), 0, payload, 11, command.getBytes().length);
 		System.arraycopy(parameter, 0, payload, 13, parameter.length);
@@ -220,7 +260,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet but with a frame ID
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -238,7 +278,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet but with a negative
 	 * frame ID. This must throw an {@code IllegalArgumentException}.</p>
@@ -256,7 +296,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet but with a {@code null}
 	 * destination address. This must throw an {@code NullPointerException}.</p>
@@ -274,7 +314,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet but with options
 	 * bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -292,7 +332,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet but with negative
 	 * options. This must throw an {@code IllegalArgumentException}.</p>
@@ -310,7 +350,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet but with a {@code null}
 	 * command. This must throw an {@code NullPointerException}.</p>
@@ -328,7 +368,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet with valid parameters
 	 * but without parameter value ({@code null}).</p>
@@ -354,7 +394,7 @@ public class RemoteATCommandWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, IP32BitAddress, int, String, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#RemoteATCommandWifiPacket(int, Inet4Address, int, String, byte[])}.
 	 *
 	 * <p>Construct a new Remote AT Command Request (Wi-Fi) packet with valid parameters.</p>
 	 */
@@ -438,7 +478,7 @@ public class RemoteATCommandWifiPacketTest {
 		byte[] expectedData = new byte[expectedLength];
 		expectedData[0] = (byte)frameID;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, expectedData, 2, 4);
-		System.arraycopy(destAddress.getValue(), 0, expectedData, 5, destAddress.getValue().length);
+		System.arraycopy(destAddress.getAddress(), 0, expectedData, 5, destAddress.getAddress().length);
 		expectedData[9] = (byte)transmitOptions;
 		System.arraycopy(command.getBytes(), 0, expectedData, 10, command.length());
 
@@ -463,7 +503,7 @@ public class RemoteATCommandWifiPacketTest {
 		byte[] expectedData = new byte[expectedLength];
 		expectedData[0] = (byte)frameID;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, expectedData, 2, 4);
-		System.arraycopy(destAddress.getValue(), 0, expectedData, 5, destAddress.getValue().length);
+		System.arraycopy(destAddress.getAddress(), 0, expectedData, 5, destAddress.getAddress().length);
 		expectedData[9] = (byte)transmitOptions;
 		System.arraycopy(command.getBytes(), 0, expectedData, 10, command.length());
 		System.arraycopy(parameter, 0, expectedData, 12, parameter.length);
@@ -492,7 +532,7 @@ public class RemoteATCommandWifiPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(3)));
-		assertThat("Destination address is not the expected one", packetParams.get("Destination address"), is(equalTo("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getValue())) + " (" + destAddress.toString() + ")")));
+		assertThat("Destination address is not the expected one", packetParams.get("Destination address"), is(equalTo("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getAddress())) + " (" + destAddress.getHostAddress() + ")")));
 		assertThat("Command options are not the expected one", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)))));
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")")));
 		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(nullValue()));
@@ -513,7 +553,7 @@ public class RemoteATCommandWifiPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
-		assertThat("Destination address is not the expected one", packetParams.get("Destination address"), is("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getValue())) + " (" + destAddress.toString() + ")"));
+		assertThat("Destination address is not the expected one", packetParams.get("Destination address"), is("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getAddress())) + " (" + destAddress.getHostAddress() + ")"));
 		assertThat("Command options are not the expected one", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)))));
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")")));
 		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)))));
@@ -536,7 +576,7 @@ public class RemoteATCommandWifiPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(4)));
-		assertThat("Destination address is not the expected one", packetParams.get("Destination address"), is("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getValue())) + " (" + destAddress.toString() + ")"));
+		assertThat("Destination address is not the expected one", packetParams.get("Destination address"), is("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(destAddress.getAddress())) + " (" + destAddress.getHostAddress() + ")"));
 		assertThat("Command options are not the expected one", packetParams.get("Transmit options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(transmitOptions, 1)))));
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(command.getBytes())) + " (" + command + ")")));
 		assertThat("AT Parameter is not the expected one", packetParams.get("Parameter"), is(equalTo(HexUtils.prettyHexString(HexUtils.byteArrayToHexString(parameter)) + " (" + new String(parameter) + ")")));
@@ -560,11 +600,13 @@ public class RemoteATCommandWifiPacketTest {
 	 * Test method for {@link com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket#isBroadcast()}.
 	 *
 	 * <p>Test the is broadcast method.</p>
+	 *
+	 * @throws Exception
 	 */
 	@Test
-	public final void testIsBroadcastTrue() {
+	public final void testIsBroadcastTrue() throws Exception {
 		// Set up the resources for the test.
-		destAddress = IP32BitAddress.BROADCAST_ADDRESS;
+		destAddress = (Inet4Address) Inet4Address.getByName(IPDevice.BROADCAST_IP);
 
 		RemoteATCommandWifiPacket packet = new RemoteATCommandWifiPacket(frameID, destAddress, transmitOptions, command, parameter);
 

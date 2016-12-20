@@ -23,12 +23,11 @@ public interface INetworkDataReceiveListener {
 	/**
 	 * Called when network data is received.
 	 * 
-	 * @param networkMessage An {@code NetworkMessage} object containing the 
-	 *                       data, the {@code IP32BitAddress} that sent the 
-	 *                       data and a flag indicating whether the data was 
-	 *                       sent via broadcast or not.
+	 * @param networkMessage A {@code NetworkMessage} object containing the
+	 *                       data, the IP address that sent the data, the source
+	 *                       and destination ports and the
+	 *                       {@code NetworkProtocol} of the transmission.
 	 * 
-	 * @see com.digi.xbee.api.models.IP32BitAddress
 	 * @see com.digi.xbee.api.models.NetworkMessage
 	 */
 	public void networkDataReceived(NetworkMessage networkMessage);

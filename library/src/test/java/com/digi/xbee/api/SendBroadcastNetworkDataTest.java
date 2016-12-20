@@ -11,12 +11,13 @@
  */
 package com.digi.xbee.api;
 
+import java.net.Inet4Address;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.models.NetworkProtocol;
 
 public class SendBroadcastNetworkDataTest {
@@ -36,14 +37,14 @@ public class SendBroadcastNetworkDataTest {
 		// Instantiate an IPDevice object with a mocked interface.
 		IPDevice ipDevice = PowerMockito.spy(new IPDevice(Mockito.mock(SerialPortRxTx.class)));
 		
-		// Do nothing when the sendNetowrkData(IP32BitAddress, int, NetworkProtocol, boolean, byte[]) method is called.
-		Mockito.doNothing().when(ipDevice).sendNetworkData(Mockito.any(IP32BitAddress.class), Mockito.any(int.class), Mockito.any(NetworkProtocol.class), Mockito.anyBoolean(), Mockito.any(byte[].class));
+		// Do nothing when the sendNetowrkData(Inet4Address, int, NetworkProtocol, boolean, byte[]) method is called.
+		Mockito.doNothing().when(ipDevice).sendNetworkData(Mockito.any(Inet4Address.class), Mockito.any(int.class), Mockito.any(NetworkProtocol.class), Mockito.anyBoolean(), Mockito.any(byte[].class));
 				
 		ipDevice.sendBroadcastNetworkData(PORT, DATA.getBytes());
 		
-		// Verify that the method sendNetworkData(IP32BitAddress, int, NetworkProtocol, boolean, byte[]) was 
+		// Verify that the method sendNetworkData(Inet4Address, int, NetworkProtocol, boolean, byte[]) was 
 		// called with a BROADCAST_ADDRESS and UDP protocol.
-		Mockito.verify(ipDevice, Mockito.times(1)).sendNetworkData(Mockito.eq(IP32BitAddress.BROADCAST_ADDRESS), Mockito.eq(PORT), 
-				Mockito.eq(NetworkProtocol.UDP), Mockito.eq(false), Mockito.eq(DATA.getBytes()));
+		Mockito.verify(ipDevice, Mockito.times(1)).sendNetworkData(Mockito.eq((Inet4Address) Inet4Address.getByName(IPDevice.BROADCAST_IP)), 
+				Mockito.eq(PORT), Mockito.eq(NetworkProtocol.UDP), Mockito.eq(false), Mockito.eq(DATA.getBytes()));
 	}
 }

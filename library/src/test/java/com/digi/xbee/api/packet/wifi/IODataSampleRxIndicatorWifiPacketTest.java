@@ -15,6 +15,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -26,18 +28,28 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.digi.xbee.api.io.IOLine;
 import com.digi.xbee.api.io.IOSample;
-import com.digi.xbee.api.models.IP32BitAddress;
 import com.digi.xbee.api.models.XBeeReceiveOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
+@PrepareForTest({Inet4Address.class, IODataSampleRxIndicatorWifiPacket.class})
+@RunWith(PowerMockRunner.class)
 public class IODataSampleRxIndicatorWifiPacketTest {
 
+	// Constants.
+	private static final String IP_ADDRESS = "10.10.11.12";
+
+	// Variables.
 	private int frameType = APIFrameType.IO_DATA_SAMPLE_RX_INDICATOR_WIFI.getValue();
-	private IP32BitAddress sourceAddress = new IP32BitAddress("10.11.12.13");
+	private Inet4Address sourceAddress;
 	private int rssi = 0x2D;
 	private int receiveOptions = XBeeReceiveOptions.NONE;
 	private int nSamples = 0x01;
@@ -52,7 +64,8 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
-	public IODataSampleRxIndicatorWifiPacketTest() {
+	public IODataSampleRxIndicatorWifiPacketTest() throws Exception {
+		sourceAddress = (Inet4Address) Inet4Address.getByName(IP_ADDRESS);
 	}
 
 	/**
@@ -129,7 +142,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 		byte[] payload = new byte[10];
 		payload[0] = (byte)frameType;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 1, 4);
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 5, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 5, sourceAddress.getAddress().length);
 		payload[9] = (byte)rssi;
 
 		exception.expect(IllegalArgumentException.class);
@@ -150,13 +163,38 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 		// Set up the resources for the test.
 		byte[] payload = new byte[11];
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 0, 4);
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 4, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 4, sourceAddress.getAddress().length);
 		payload[8] = (byte)rssi;
 		payload[9] = (byte)receiveOptions;
 		payload[10] = (byte)nSamples;
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Payload is not a IO Data Sample Rx Indicator (Wi-Fi) packet.")));
+
+		// Call the method under test that should throw an IllegalArgumentException.
+		IODataSampleRxIndicatorWifiPacket.createPacket(payload);
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.network.IODataSampleRxIndicatorWifiPacket#createPacket(byte[])}.
+	 *
+	 * <p>An {@code IllegalArgumentException} exception must be thrown when
+	 * parsing a byte array with an invalid IP address.</p>
+	 */
+	@Test
+	public final void testCreatePacketPayloadInvalidIP() throws Exception {
+		// Set up the resources for the test.
+		byte[] payload = new byte[11];
+		payload[0] = (byte)frameType;
+		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 1, 4);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 5, sourceAddress.getAddress().length);
+		payload[9] = (byte)rssi;
+		payload[10] = (byte)receiveOptions;
+
+		PowerMockito.mockStatic(Inet4Address.class);
+		PowerMockito.when(Inet4Address.getByAddress(Mockito.any(byte[].class))).thenThrow(new UnknownHostException());
+
+		exception.expect(IllegalArgumentException.class);
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		IODataSampleRxIndicatorWifiPacket.createPacket(payload);
@@ -174,7 +212,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 		byte[] payload = new byte[11];
 		payload[0] = (byte)frameType;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 1, 4);
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 5, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 5, sourceAddress.getAddress().length);
 		payload[9] = (byte)rssi;
 		payload[10] = (byte)receiveOptions;
 
@@ -205,7 +243,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 		byte[] payload = new byte[19];
 		payload[0] = (byte)frameType;
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, payload, 1, 4);
-		System.arraycopy(sourceAddress.getValue(), 0, payload, 5, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, payload, 5, sourceAddress.getAddress().length);
 		payload[9] = (byte)rssi;
 		payload[10] = (byte)receiveOptions;
 		payload[11] = (byte)nSamples;
@@ -232,7 +270,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet with a
 	 * {@code null} source address.This must throw a {@code NullPointerException}.</p>
@@ -250,7 +288,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet with an
 	 * RSSI bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -268,7 +306,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet with a
 	 * negative RSSI. This must throw an {@code IllegalArgumentException}.</p>
@@ -286,7 +324,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet with
 	 * options bigger than 255. This must throw an {@code IllegalArgumentException}.</p>
@@ -304,7 +342,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet with
 	 * negative options. This must throw an {@code IllegalArgumentException}.</p>
@@ -322,7 +360,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet without data ({@code null}).</p>
 	 */
@@ -347,7 +385,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(IP32BitAddress, int, int, byte[])}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#IODataSampleRxIndicatorWifiPacket(Inet4Address, int, int, byte[])}.
 	 *
 	 * <p>Construct a new IO Data Sample Rx Indicator (Wi-Fi) packet with data.</p>
 	 */
@@ -384,7 +422,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 		int expectedLength = 10;
 		byte[] expectedData = new byte[expectedLength];
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, expectedData, 0, 4);
-		System.arraycopy(sourceAddress.getValue(), 0, expectedData, 4, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, expectedData, 4, sourceAddress.getAddress().length);
 		expectedData[8] = (byte)rssi;
 		expectedData[9] = (byte)receiveOptions;
 
@@ -408,7 +446,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 		int expectedLength = 10 + data.length;
 		byte[] expectedData = new byte[expectedLength];
 		System.arraycopy(new byte[]{0x00, 0x00, 0x00, 0x00}, 0, expectedData, 0, 4);
-		System.arraycopy(sourceAddress.getValue(), 0, expectedData, 4, sourceAddress.getValue().length);
+		System.arraycopy(sourceAddress.getAddress(), 0, expectedData, 4, sourceAddress.getAddress().length);
 		expectedData[8] = (byte)rssi;
 		expectedData[9] = (byte)receiveOptions;
 		expectedData[10] = (byte)nSamples;
@@ -444,7 +482,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(3)));
-		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getValue())) + " (" + sourceAddress.toString() + ")")));
+		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getAddress())) + " (" + sourceAddress.getHostAddress() + ")")));
 		assertThat("Returned RSSI is not the expected one", packetParams.get("RSSI"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1)))));
 		assertThat("Returned options are not the expected one", packetParams.get("Receive options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)))));
 		assertThat("Returned number of samples are not the expected", packetParams.get("Number of samples"), is(nullValue()));
@@ -468,7 +506,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 
 		// Verify the result.
 		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(8)));
-		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getValue())) + " (" + sourceAddress.toString() + ")")));
+		assertThat("Returned source address is not the expected one", packetParams.get("Source address"), is(equalTo("00 00 00 00 " + HexUtils.prettyHexString(HexUtils.byteArrayToHexString(sourceAddress.getAddress())) + " (" + sourceAddress.getHostAddress() + ")")));
 		assertThat("Returned RSSI is not the expected one", packetParams.get("RSSI"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1)))));
 		assertThat("Returned options are not the expected one", packetParams.get("Receive options"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)))));
 		assertThat("Returned number of samples are not the expected", packetParams.get("Number of samples"), is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(1, 1)))));
@@ -500,7 +538,7 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#setSourceAddress(IP32BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#setSourceAddress(Inet4Address)}.
 	 */
 	@Test
 	public final void testSetSourceAddressNull() {
@@ -517,14 +555,16 @@ public class IODataSampleRxIndicatorWifiPacketTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#setSourceAddress(IP32BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket#setSourceAddress(Inet4Address)}.
+	 *
+	 * @throws Exception
 	 */
 	@Test
-	public final void testSetSourceAddressNotNull() {
+	public final void testSetSourceAddressNotNull() throws Exception {
 		// Set up the resources for the test.
 		IODataSampleRxIndicatorWifiPacket packet = new IODataSampleRxIndicatorWifiPacket(sourceAddress, rssi, receiveOptions, data);
 
-		sourceAddress = new IP32BitAddress("192.168.1.30");
+		sourceAddress = (Inet4Address) Inet4Address.getByName("192.168.1.30");
 
 		// Call the method under test.
 		packet.setSourceAddress(sourceAddress);

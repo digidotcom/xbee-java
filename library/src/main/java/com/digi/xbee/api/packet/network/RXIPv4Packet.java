@@ -13,13 +13,15 @@ package com.digi.xbee.api.packet.network;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digi.xbee.api.models.IP32BitAddress;
+import com.digi.xbee.api.IPDevice;
 import com.digi.xbee.api.models.NetworkProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
@@ -46,7 +48,7 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	private static final String ERROR_PORT_ILLEGAL = "Port must be between 0 and 65535.";
 
 	// Variables.
-	private IP32BitAddress sourceAddress;
+	private Inet4Address sourceAddress;
 
 	private int destPort;
 	private int sourcePort;
@@ -83,8 +85,13 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 		// payload[0] is the frame type.
 		int index = 1;
 
-		// 4 bytes of IP 32-bit source address.
-		IP32BitAddress sourceAddress = new IP32BitAddress(Arrays.copyOfRange(payload, index, index + 4));
+		// 4 bytes of IP source address.
+		Inet4Address sourceAddress;
+		try {
+			sourceAddress = (Inet4Address) Inet4Address.getByAddress(Arrays.copyOfRange(payload, index, index + 4));
+		} catch (UnknownHostException e) {
+			throw new IllegalArgumentException(e);
+		}
 		index = index + 4;
 
 		// 2 bytes of destination port.
@@ -114,7 +121,7 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	 * Class constructor. Instantiates a new {@code RXIPv4Packet} object with
 	 * the given parameters.
 	 *
-	 * @param sourceAddress 32-bit IP address of the source device.
+	 * @param sourceAddress IP address of the source device.
 	 * @param destPort Destination port number.
 	 * @param sourcePort Source port number.
 	 * @param protocol Protocol used for transmitted data.
@@ -128,10 +135,10 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code protocol == null}.
 	 *
-	 * @see IP32BitAddress
 	 * @see NetworkProtocol
+	 * @see java.net.Inet4Address
 	 */
-	public RXIPv4Packet(IP32BitAddress sourceAddress, int destPort,
+	public RXIPv4Packet(Inet4Address sourceAddress, int destPort,
 			int sourcePort, NetworkProtocol protocol, byte[] data) {
 		super(APIFrameType.RX_IPV4);
 
@@ -160,7 +167,7 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(sourceAddress.getValue());
+			os.write(sourceAddress.getAddress());
 			os.write(destPort >> 8);
 			os.write(destPort);
 			os.write(sourcePort >> 8);
@@ -190,32 +197,32 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean isBroadcast() {
-		return sourceAddress.equals(IP32BitAddress.BROADCAST_ADDRESS);
+		return sourceAddress.getHostAddress().equals(IPDevice.BROADCAST_IP);
 	}
 
 	/**
-	 * Retrieves the 32-bit source IP address.
+	 * Retrieves the source IP address.
 	 *
-	 * @return The 32-bit source IP address.
+	 * @return The source IP address.
 	 *
-	 * @see #setSourceAddress(IP32BitAddress)
-	 * @see IP32BitAddress
+	 * @see #setSourceAddress(Inet4Address)
+	 * @see java.net.Inet4Address
 	 */
-	public IP32BitAddress getSourceAddress() {
+	public Inet4Address getSourceAddress() {
 		return sourceAddress;
 	}
 
 	/**
-	 * Sets the 32-bit destination IP address.
+	 * Sets the destination IP address.
 	 *
-	 * @param sourceAddress The new 32-bit destination IP address.
+	 * @param sourceAddress The new destination IP address.
 	 *
 	 * @throws NullPointerException if {@code destAddress == null}.
 	 *
 	 * @see #getSourceAddress()
-	 * @see IP32BitAddress
+	 * @see java.net.Inet4Address
 	 */
-	public void setSourceAddress(IP32BitAddress sourceAddress) {
+	public void setSourceAddress(Inet4Address sourceAddress) {
 		if (sourceAddress == null)
 			throw new NullPointerException(ERROR_SOURCE_ADDR_NULL);
 
@@ -341,7 +348,7 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Source address", HexUtils.prettyHexString(sourceAddress.getValue()) + " (" + sourceAddress.toString() + ")");
+		parameters.put("Source address", HexUtils.prettyHexString(sourceAddress.getAddress()) + " (" + sourceAddress.getHostAddress() + ")");
 		parameters.put("Destination port", HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")");
 		parameters.put("Source port", HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")");
 		parameters.put("Protocol", HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")");

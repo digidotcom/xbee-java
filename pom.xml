@@ -37,6 +37,7 @@
 		<module>examples/communication/ip/ConnectToEchoServerSample</module>
 		<module>examples/communication/ip/ReceiveIPDataSample</module>
 		<module>examples/communication/ip/SendIPDataSample</module>
+		<module>examples/communication/ip/KnockKnockSample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>

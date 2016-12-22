@@ -124,7 +124,8 @@ public class XBee {
 	 * 
 	 * @return The XBee Android connection interface.
 	 * 
-	 * @throws NullPointerException if {@code context == null}.
+	 * @throws NullPointerException if {@code context == null} or
+	 *                              if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudRate < 1}.
 	 * 
 	 * @see #createConnectiontionInterface(Context, String, SerialPortParameters)
@@ -148,6 +149,7 @@ public class XBee {
 	 * @return The XBee Android connection interface.
 	 * 
 	 * @throws NullPointerException if {@code context == null} or
+	 *                              if {@code port == null} or
 	 *                              if {@code serialPortParameters == null}.
 	 * 
 	 * @see #createConnectiontionInterface(Context, String, int)

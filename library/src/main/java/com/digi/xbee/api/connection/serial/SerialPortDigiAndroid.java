@@ -35,8 +35,8 @@ import com.digi.xbee.api.exceptions.InvalidInterfaceException;
 import com.digi.xbee.api.exceptions.PermissionDeniedException;
 
 /**
- * This class to a serial port interface making use of the Digi Android Serial 
- * Port library based on the RxTx implementation.
+ * This class represents a serial port interface making use of the Digi Android
+ * Serial Port library based on the RxTx implementation.
  */
 public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerialPortEventListener {
 	
@@ -64,9 +64,9 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 * @param baudRate Serial port baud rate, the rest of parameters will be 
 	 *                 set by default.
 	 * 
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
 	 * @throws NullPointerException if {@code context == null} or
 	 *                              if {@code port == null}.
-	 * @throws IllegalArgumentException if {@code baudRate < 1}
 	 * 
 	 * @see #DEFAULT_DATA_BITS
 	 * @see #DEFAULT_FLOW_CONTROL
@@ -76,7 +76,6 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 * @see #SerialPortDigiAndroid(Context, String, int, int)
 	 * @see #SerialPortDigiAndroid(Context, String, SerialPortParameters)
 	 * @see #SerialPortDigiAndroid(Context, String, SerialPortParameters, int)
-	 * @see SerialPortParameters
 	 */
 	public SerialPortDigiAndroid(Context context, String port, int baudRate) {
 		super(port, baudRate, DEFAULT_PORT_TIMEOUT);
@@ -95,9 +94,10 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 *                 set by default.
 	 * @param receiveTimeout Serial port receive timeout in milliseconds.
 	 * 
-	 * @throws NullPointerException if {@code port == null}.
 	 * @throws IllegalArgumentException if {@code baudrate < 1} or
 	 *                                  if {@code receiveTimeout < 0}.
+	 * @throws NullPointerException if {@code context == null} or
+	 *                              if {@code port == null}.
 	 * 
 	 * @see #DEFAULT_DATA_BITS
 	 * @see #DEFAULT_FLOW_CONTROL
@@ -106,7 +106,6 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 * @see #SerialPortDigiAndroid(Context, String, int)
 	 * @see #SerialPortDigiAndroid(Context, String, SerialPortParameters)
 	 * @see #SerialPortDigiAndroid(Context, String, SerialPortParameters, int)
-	 * @see SerialPortParameters
 	 */
 	public SerialPortDigiAndroid(Context context, String port, int baudRate, int receiveTimeout) {
 		super(port, baudRate, receiveTimeout);
@@ -148,10 +147,10 @@ public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerial
 	 * @param parameters Serial port parameters to use.
 	 * @param receiveTimeout Serial port receive timeout in milliseconds.
 	 * 
+	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * @throws NullPointerException if {@code context == null} or
 	 *                              if {@code port == null} or
 	 *                              if {@code parameters == null}.
-	 * @throws IllegalArgumentException if {@code receiveTimeout < 0}.
 	 * 
 	 * @see #SerialPortDigiAndroid(Context, String, int)
 	 * @see #SerialPortDigiAndroid(Context, String, int, int)

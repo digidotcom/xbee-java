@@ -55,6 +55,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(String, int, int, int, int, int)
 	 * @see #DigiMeshDevice(Context, int)
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 */
 	public DigiMeshDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -83,6 +85,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(String, SerialPortParameters)
 	 * @see #DigiMeshDevice(Context, int)
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 */
 	public DigiMeshDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -103,6 +107,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(String, int, int, int, int, int)
 	 * @see #DigiMeshDevice(Context, int)
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public DigiMeshDevice(String port, SerialPortParameters serialPortParameters) {
@@ -124,6 +130,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(String, SerialPortParameters)
 	 * @see #DigiMeshDevice(String, int, int, int, int, int)
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 */
 	public DigiMeshDevice(Context context, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, baudRate));
@@ -146,10 +154,67 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(String, SerialPortParameters)
 	 * @see #DigiMeshDevice(String, int, int, int, int, int)
 	 * @see #DigiMeshDevice(Context, int)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
 	 */
 	public DigiMeshDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * <p>This constructor uses the Digi Android Serial Port API based on the
+	 * RxTx library to communicate with the devices.</p>
+	 * 
+	 * @param context The Android application context.
+	 * @param port Serial port name where XBee device is attached to.
+	 * @param baudRate The serial port connection baud rate.
+	 * 
+	 * @throws NullPointerException If {@code context == null} or
+	 *                              if {@code port == null}.
+	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * 
+	 * @see #DigiMeshDevice(IConnectionInterface)
+	 * @see #DigiMeshDevice(String, int)
+	 * @see #DigiMeshDevice(String, SerialPortParameters)
+	 * @see #DigiMeshDevice(String, int, int, int, int, int)
+	 * @see #DigiMeshDevice(Context, int)
+	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
+	 */
+	public DigiMeshDevice(Context context, String port, int baudRate) {
+		super(XBee.createConnectiontionInterface(context, port, baudRate));
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Android with the given parameters.
+	 * 
+	 * <p>This constructor uses the Digi Android Serial Port API based on the
+	 * RxTx library to communicate with the devices.</p>
+	 * 
+	 * @param context The Android application context.
+	 * @param port Serial port name where XBee device is attached to.
+	 * @param parameters The serial port parameters.
+	 * 
+	 * @throws NullPointerException If {@code context == null} or
+	 *                              if {@code port == null} or
+	 *                              if {@code parameters == null}.
+	 * 
+	 * @see #DigiMeshDevice(IConnectionInterface)
+	 * @see #DigiMeshDevice(String, int)
+	 * @see #DigiMeshDevice(String, SerialPortParameters)
+	 * @see #DigiMeshDevice(String, int, int, int, int, int)
+	 * @see #DigiMeshDevice(Context, int)
+	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 */
+	public DigiMeshDevice(Context context, String port, SerialPortParameters parameters) {
+		super(XBee.createConnectiontionInterface(context, port, parameters));
 	}
 	
 	/**
@@ -166,6 +231,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(String, int, int, int, int, int)
 	 * @see #DigiMeshDevice(Context, int)
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #DigiMeshDevice(Context, String, int)
+	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public DigiMeshDevice(IConnectionInterface connectionInterface) {

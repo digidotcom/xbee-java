@@ -219,7 +219,7 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 			context.registerReceiver(mUsbReceiver, filter);
 			usbManager.requestPermission(usbDevice, mPermissionIntent);
 			if (permissionListener == null) {
-				// This should be called when connecting from a thread different then the UI.
+				// This should be called when connecting from a thread different than the UI.
 				while (!permissionsReceived) {
 					try {
 						Thread.sleep(100);

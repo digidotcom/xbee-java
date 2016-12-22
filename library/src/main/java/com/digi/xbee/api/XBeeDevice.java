@@ -280,6 +280,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(String, int, int, int, int, int)
 	 * @see #XBeeDevice(Context, int)
 	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see #XBeeDevice(Context, String, int)
+	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public XBeeDevice(IConnectionInterface connectionInterface) {

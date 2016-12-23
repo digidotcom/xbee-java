@@ -26,6 +26,7 @@ public class CircularByteBufferReadTest {
 	
 	private final static String VARIABLE_READ_INDEX = "readIndex";
 	private final static String VARIABLE_WRITE_INDEX = "writeIndex";
+	private final static String VARIABLE_EMPTY = "empty";
 	
 	// Variables.
 	private CircularByteBuffer circularByteBuffer;
@@ -370,12 +371,39 @@ public class CircularByteBufferReadTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.connection.android.CircularByteBuffer#skip(int)}.
 	 * 
+	 * <p>Verify that when skipping an invalid number of bytes, an {@code IllegalArgumentException} is thrown.</p>
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testSkipInvalidNumBytes() {
+		circularByteBuffer.skip(0);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.android.CircularByteBuffer#skip(int)}.
+	 * 
+	 * <p>Verify that the method returns 0 when the buffer is empty.</p>
+	 */
+	@Test
+	public void testSkipEmpty() {
+		// Create variables for test.
+		int bytesToSkip = 2;
+		
+		// Set internal state.
+		Whitebox.setInternalState(circularByteBuffer, VARIABLE_EMPTY, true);
+		
+		// Perform verifications.
+		assertEquals(circularByteBuffer.skip(bytesToSkip), 0);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.android.CircularByteBuffer#skip(int)}.
+	 * 
 	 * <p>Verify that we can skip some bytes.</p>
 	 */
 	@Test
 	public void testSkipSomeBytes() {
 		// Create variables for test.
-		int bytesToSkip = 30;
+		int bytesToSkip = 75;
 		
 		// Skip bytes.
 		circularByteBuffer.skip(bytesToSkip);
@@ -408,6 +436,28 @@ public class CircularByteBufferReadTest {
 		assertEquals(0, circularByteBuffer.availableToRead());
 		assertEquals(TEST_DATA_SIZE, readIndex);
 		assertEquals(TEST_DATA_SIZE, writeIndex);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.android.CircularByteBuffer#skip(int)}.
+	 * 
+	 * <p>Verify that we can skip more bytes than the buffer.</p>
+	 */
+	@Test
+	public void testSkipMoreBytesThanBuffer() {
+		// Create variables for test.
+		int bytesToSkip = 20;
+		int newReadIndex = 90;
+		
+		Whitebox.setInternalState(circularByteBuffer, VARIABLE_READ_INDEX, newReadIndex);
+		
+		// Skip bytes.
+		int skipped = circularByteBuffer.skip(bytesToSkip);
+		int readIndex = (Integer)Whitebox.getInternalState(circularByteBuffer, VARIABLE_READ_INDEX);
+		
+		// Perform verifications.
+		assertEquals(skipped, bytesToSkip);
+		assertEquals(readIndex, CIRCULAR_BYTE_BUFFER_SIZE - newReadIndex);
 	}
 	
 	/**

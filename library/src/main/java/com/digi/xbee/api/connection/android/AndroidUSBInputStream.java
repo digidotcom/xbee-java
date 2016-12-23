@@ -13,7 +13,6 @@ package com.digi.xbee.api.connection.android;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +32,8 @@ public class AndroidUSBInputStream extends InputStream {
 	private static final int READ_BUFFER_SIZE = 1024;
 	private static final int OFFSET = 2;
 	private static final int READ_TIMEOUT = 100;
+
+	private static final String ERROR_THREAD_NOT_INITIALIZED = "Read thread not initialized, call first 'startReadThread()'";
 
 	// Variables.
 	private UsbDeviceConnection usbConnection;
@@ -95,9 +96,12 @@ public class AndroidUSBInputStream extends InputStream {
 	 */
 	@Override
 	public int read(byte[] buffer, int offset, int length) throws IOException {
-		long deadLine = new Date().getTime() + READ_TIMEOUT;
+		if (readBuffer == null)
+			throw new IOException(ERROR_THREAD_NOT_INITIALIZED);
+
+		long deadLine = System.currentTimeMillis() + READ_TIMEOUT;
 		int readBytes = 0;
-		while (new Date().getTime() < deadLine && readBytes <= 0)
+		while (System.currentTimeMillis() < deadLine && readBytes <= 0)
 			readBytes = readBuffer.read(buffer, offset, length);
 		if (readBytes <= 0)
 			return -1;
@@ -113,6 +117,9 @@ public class AndroidUSBInputStream extends InputStream {
 	 */
 	@Override
 	public int available() throws IOException {
+		if (readBuffer == null)
+			throw new IOException(ERROR_THREAD_NOT_INITIALIZED);
+
 		return readBuffer.availableToRead();
 	}
 
@@ -122,6 +129,9 @@ public class AndroidUSBInputStream extends InputStream {
 	 */
 	@Override
 	public long skip(long byteCount) throws IOException {
+		if (readBuffer == null)
+			throw new IOException(ERROR_THREAD_NOT_INITIALIZED);
+
 		return readBuffer.skip((int)byteCount);
 	}
 
@@ -132,27 +142,30 @@ public class AndroidUSBInputStream extends InputStream {
 	 * @see #stopReadThread()
 	 */
 	public void startReadThread() {
-		readBuffer = new CircularByteBuffer(READ_BUFFER_SIZE);
-		receiveThread = new Thread() {
-			public void run() {
-				working = true;
-				while (working) {
-					byte[] buffer = new byte[1024];
-					int receivedBytes = usbConnection.bulkTransfer(receiveEndPoint, buffer, buffer.length, READ_TIMEOUT) - OFFSET;
-					if (receivedBytes > 0) {
-						byte[] data = new byte[receivedBytes];
-						System.arraycopy(buffer, OFFSET, data, 0, receivedBytes);
-						logger.debug("Message received: " + HexUtils.byteArrayToHexString(data));
-						readBuffer.write(buffer, OFFSET, receivedBytes);
-						// Notify interface so that XBee Reader is notified about data available.
-						synchronized (androidInterface) {
-							androidInterface.notify();
+		if (!working) {
+			readBuffer = new CircularByteBuffer(READ_BUFFER_SIZE);
+			receiveThread = new Thread() {
+				@Override
+				public void run() {
+					working = true;
+					while (working) {
+						byte[] buffer = new byte[1024];
+						int receivedBytes = usbConnection.bulkTransfer(receiveEndPoint, buffer, buffer.length, READ_TIMEOUT) - OFFSET;
+						if (receivedBytes > 0) {
+							byte[] data = new byte[receivedBytes];
+							System.arraycopy(buffer, OFFSET, data, 0, receivedBytes);
+							logger.debug("Message received: " + HexUtils.byteArrayToHexString(data));
+							readBuffer.write(buffer, OFFSET, receivedBytes);
+							// Notify interface so that XBee Reader is notified about data available.
+							synchronized (androidInterface) {
+								androidInterface.notify();
+							}
 						}
 					}
-				}
+				};
 			};
-		};
-		receiveThread.start();
+			receiveThread.start();
+		}
 	}
 
 	/**

@@ -34,6 +34,7 @@
 		<module>examples/communication/explicit/SendBroadcastExplicitDataSample</module>
 		<module>examples/communication/explicit/SendExplicitDataAsyncSample</module>
 		<module>examples/communication/explicit/SendExplicitDataSample</module>
+		<module>examples/communication/ip/ConnectToEchoServerSample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>

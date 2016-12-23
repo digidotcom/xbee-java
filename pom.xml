@@ -65,6 +65,7 @@
 		<slf4j-jdk1.4.version>1.7.12</slf4j-jdk1.4.version>
 		<slf4j-simple.version>1.7.12</slf4j-simple.version>
 		<slf4j-nop.version>1.7.12</slf4j-nop.version>
+		<slf4j-android.version>1.7.12</slf4j-android.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.10.19</mockito.version>
 		<powermock.version>1.6.6</powermock.version>
@@ -72,6 +73,8 @@
 		<asm.plugin.version>5.0.3</asm.plugin.version>
 		<maven.assembly.version>2.5.4</maven.assembly.version>
 		<exec.maven.version>1.4.0</exec.maven.version>
+		<android-sdk.version>5.1.1</android-sdk.version>
+		<android-sdk-addon.version>3</android-sdk-addon.version>
 		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
 		<assemblyId>Release</assemblyId>
 	</properties>
@@ -171,6 +174,16 @@
 			<artifactId>powermock-api-mockito</artifactId>
 			<version>${powermock.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.digi</groupId>
+			<artifactId>android-sdk</artifactId>
+			<version>${android-sdk.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.digi</groupId>
+			<artifactId>android-sdk-addon</artifactId>
+			<version>${android-sdk-addon.version}</version>
 		</dependency>
 	</dependencies>
 	

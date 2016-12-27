@@ -23,18 +23,10 @@ public enum CellularAssociationIndicationStatus {
 
 	// Enumeration entries
 	SUCCESSFULLY_CONNECTED(0x00, "Connected to the Internet."),
-	POWERED_UP(0x20, "Modem powered up and enumerated."),
-	IDENTIFIED(0x21, "Modem identified."),
-	REGISTERING(0x22, "Modem registering."),
-	REGISTERED(0x23, "Modem registered."),
-	SETUP_DEVICE(0xA0, "Setup modem device."),
-	SETUP_USB(0xC0, "Setup modem USB."),
-	POWERUP(0xE0, "Power up modem."),
-	REBOOTING(0xFB, "Rebooting modem."),
-	SHUTTING_DOWN(0xFC, "Shutting down modem."),
-	MANUFACTURING_STATE(0xFD, "Modem in manufacturing state."),
-	UNEXPECTED_STATE(0xFE, "Modem in unexpected state."),
-	POWERED_DOWN(0xFF, "Modem powered down.");
+	REGISTERING_CELLULAR_NETWORK(0x22, "Registering to cellular network"),
+	CONNECTING_INTERNET(0x23, "Connecting to the Internet"),
+	BYPASS_MODE(0x2F, "Bypass mode active"),
+	INITIALIZING(0xFF, "Initializing");
 	
 	// Variables
 	private final int value;

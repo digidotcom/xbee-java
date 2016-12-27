@@ -168,6 +168,25 @@ public class CellularDevice extends IPDevice {
 	}
 	
 	/**
+	 * Returns whether the device is connected to the Internet or not.
+	 * 
+	 * @return {@code true} if the device is connected to the Internet, 
+	 *         {@code false} otherwise.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws TimeoutException if there is a timeout getting the association 
+	 *                          indication status.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getCellularAssociationIndicationStatus()
+	 * @see com.digi.xbee.api.models.CellularAssociationIndicationStatus
+	 */
+	public boolean isConnected() throws TimeoutException, XBeeException {
+		CellularAssociationIndicationStatus status = getCellularAssociationIndicationStatus();
+		return status == CellularAssociationIndicationStatus.SUCCESSFULLY_CONNECTED;
+	}
+	
+	/**
 	 * Returns the IMEI address of this Cellular device.
 	 * 
 	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>

@@ -87,7 +87,7 @@ public class XBeeDeviceInstantiateTest {
 		
 		// Instantiate an XBeeDevice object with a null name.
 		try {
-			new XBeeDevice(null, 9600);
+			new XBeeDevice((String)null, 9600);
 			fail("Device shouldn't have been instantiated correctly.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());

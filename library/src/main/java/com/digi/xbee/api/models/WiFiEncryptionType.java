@@ -15,6 +15,8 @@ import java.util.HashMap;
 
 /**
  * Enumerates the different Wi-Fi encryption types.
+ * 
+ * @since 1.2.0
  */
 public enum WiFiEncryptionType {
 

@@ -29,6 +29,8 @@ import com.digi.xbee.api.utils.HexUtils;
  * transmission parameters.</p>
  *
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
+ * 
+ * @since 1.2.0
  */
 public class IODataSampleRxIndicatorWifiPacket extends XBeeAPIPacket {
 

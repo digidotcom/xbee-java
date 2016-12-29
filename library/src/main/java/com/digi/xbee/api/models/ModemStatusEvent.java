@@ -32,7 +32,9 @@ public enum ModemStatusEvent {
 	STATUS_NETWORK_WOKE_UP (0x0B, "Network Woke Up"),
 	STATUS_NETWORK_WENT_TO_SLEEP (0x0C, "Network Went To Sleep"),
 	STATUS_VOLTAGE_SUPPLY_LIMIT_EXCEEDED (0x0D, "Voltage supply limit exceeded"),
+	/** @since 1.2.0 */
 	STATUS_DEVICE_CLOUD_CONNECTED (0x0E, "Device Cloud connected"),
+	/** @since 1.2.0 */
 	STATUS_DEVICE_CLOUD_DISCONNECTED (0x0F, "Device Cloud disconnected"),
 	STATUS_MODEM_CONFIG_CHANGED_WHILE_JOINING (0x11, " Modem configuration changed while joining"),
 	STATUS_ERROR_STACK (0x80, "Stack error"),

@@ -81,6 +81,8 @@ public class XBee {
 	 * 
 	 * @see #createConnectiontionInterface(Context, int, AndroidUSBPermissionListener)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 * 
+	 * @since 1.2.0
 	 */
 	public static IConnectionInterface createConnectiontionInterface(Context context, int baudRate) {
 		return createConnectiontionInterface(context, baudRate, null);
@@ -106,6 +108,8 @@ public class XBee {
 	 * @see #createConnectiontionInterface(Context, int)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public static IConnectionInterface createConnectiontionInterface(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		return new AndroidXBeeInterface(context, baudRate, permissionListener);
@@ -130,6 +134,8 @@ public class XBee {
 	 * 
 	 * @see #createConnectiontionInterface(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 * 
+	 * @since 1.2.0
 	 */
 	public static IConnectionInterface createConnectiontionInterface(Context context, String port, int baudRate) {
 		return new SerialPortDigiAndroid(context, port, baudRate);
@@ -155,6 +161,8 @@ public class XBee {
 	 * @see #createConnectiontionInterface(Context, String, int)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 * 
+	 * @since 1.2.0
 	 */
 	public static IConnectionInterface createConnectiontionInterface(Context context, String port, SerialPortParameters serialPortParameters) {
 		return new SerialPortDigiAndroid(context, port, serialPortParameters);

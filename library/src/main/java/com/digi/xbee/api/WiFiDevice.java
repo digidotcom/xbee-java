@@ -50,6 +50,8 @@ import com.digi.xbee.api.utils.ByteUtils;
  * @see DigiPointDevice
  * @see Raw802Device
  * @see ZigBeeDevice
+ * 
+ * @since 1.2.0
  */
 public class WiFiDevice extends IPDevice {
 	

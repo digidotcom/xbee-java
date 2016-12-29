@@ -44,6 +44,8 @@ import com.digi.xbee.api.utils.HexUtils;
  * 
  * @see CellularDevice
  * @see WiFiDevice
+ * 
+ * @since 1.2.0
  */
 public class IPDevice extends XBeeDevice {
 

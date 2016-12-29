@@ -18,6 +18,8 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * Enumerates the different association indication status for the Cellular 
  * protocol.
+ * 
+ * @since 1.2.0
  */
 public enum CellularAssociationIndicationStatus {
 

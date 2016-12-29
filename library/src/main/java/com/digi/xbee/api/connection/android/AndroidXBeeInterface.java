@@ -37,6 +37,9 @@ import com.digi.xbee.api.exceptions.InvalidConfigurationException;
 import com.digi.xbee.api.exceptions.InvalidInterfaceException;
 import com.digi.xbee.api.exceptions.PermissionDeniedException;
 
+/**
+ * @since 1.2.0
+ */
 public class AndroidXBeeInterface implements IConnectionInterface {
 
 	// Constants.

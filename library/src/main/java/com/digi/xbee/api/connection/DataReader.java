@@ -400,6 +400,8 @@ public class DataReader extends Thread {
 	 * 
 	 * @see #removeIPDataReceiveListener(IIPDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public void addIPDataReceiveListener(IIPDataReceiveListener listener) {
 		if (listener == null)
@@ -422,6 +424,8 @@ public class DataReader extends Thread {
 	 * 
 	 * @see #addIPDataReceiveListener(IIPDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public void removeIPDataReceiveListener(IIPDataReceiveListener listener) {
 		synchronized (ipDataReceiveListeners) {
@@ -442,6 +446,8 @@ public class DataReader extends Thread {
 	 * 
 	 * @see #removeSMSReceiveListener(ISMSReceiveListener)
 	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public void addSMSReceiveListener(ISMSReceiveListener listener) {
 		if (listener == null)
@@ -464,6 +470,8 @@ public class DataReader extends Thread {
 	 * 
 	 * @see #addSMSReceiveListener(ISMSReceiveListener)
 	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public void removeSMSReceiveListener(ISMSReceiveListener listener) {
 		synchronized (smsReceiveListeners) {
@@ -1009,6 +1017,8 @@ public class DataReader extends Thread {
 	 *                  IP data listeners.
 	 * 
 	 * @see com.digi.xbee.api.models.IPMessage
+	 * 
+	 * @since 1.2.0
 	 */
 	private void notifyIPDataReceived(final IPMessage ipMessage) {
 		logger.info(connectionInterface.toString() + 
@@ -1048,6 +1058,8 @@ public class DataReader extends Thread {
 	 * @param smsMessage The SMS message to be sent to subscribed SMS listeners.
 	 * 
 	 * @see com.digi.xbee.api.models.SMSMessage
+	 * 
+	 * @since 1.2.0
 	 */
 	private void notifySMSReceived(final SMSMessage smsMessage) {
 		logger.info(connectionInterface.toString() + 

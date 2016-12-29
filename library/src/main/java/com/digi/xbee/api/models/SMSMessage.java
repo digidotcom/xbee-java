@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
  * 
  * <p>This class is used within the XBee Java Library to read SMS sent to 
  * Cellular devices.</p>
+ * 
+ * @since 1.2.0
  */
 public class SMSMessage {
 

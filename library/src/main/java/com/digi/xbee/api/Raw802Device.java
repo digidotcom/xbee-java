@@ -136,6 +136,8 @@ public class Raw802Device extends XBeeDevice {
 	 * @see #Raw802Device(Context, int, AndroidUSBPermissionListener)
 	 * @see #Raw802Device(Context, String, int)
 	 * @see #Raw802Device(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public Raw802Device(Context context, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, baudRate));
@@ -161,6 +163,8 @@ public class Raw802Device extends XBeeDevice {
 	 * @see #Raw802Device(Context, String, int)
 	 * @see #Raw802Device(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public Raw802Device(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
@@ -188,6 +192,8 @@ public class Raw802Device extends XBeeDevice {
 	 * @see #Raw802Device(Context, int)
 	 * @see #Raw802Device(Context, int, AndroidUSBPermissionListener)
 	 * @see #Raw802Device(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public Raw802Device(Context context, String port, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, port, baudRate));
@@ -216,6 +222,8 @@ public class Raw802Device extends XBeeDevice {
 	 * @see #Raw802Device(Context, int, AndroidUSBPermissionListener)
 	 * @see #Raw802Device(Context, String, int)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 * 
+	 * @since 1.2.0
 	 */
 	public Raw802Device(Context context, String port, SerialPortParameters parameters) {
 		super(XBee.createConnectiontionInterface(context, port, parameters));

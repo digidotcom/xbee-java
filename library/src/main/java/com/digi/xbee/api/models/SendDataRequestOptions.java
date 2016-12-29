@@ -6,6 +6,8 @@ import com.digi.xbee.api.packet.devicecloud.SendDataRequestPacket;
 
 /**
  * Enumerates the different options for the {@link SendDataRequestPacket}.
+ * 
+ * @since 1.2.0
  */
 public enum SendDataRequestOptions {
 

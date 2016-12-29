@@ -351,6 +351,8 @@ public class XBeePacketsQueue {
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see com.digi.xbee.api.packet.ip.RXIPv4Packet
+	 * 
+	 * @since 1.2.0
 	 */
 	public XBeePacket getFirstIPDataPacket(int timeout) {
 		if (timeout > 0) {
@@ -395,6 +397,8 @@ public class XBeePacketsQueue {
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see com.digi.xbee.api.packet.ip.RXIPv4Packet
 	 * @see java.net.Inet4Address
+	 * 
+	 * @since 1.2.0
 	 */
 	public XBeePacket getFirstIPDataPacketFrom(Inet4Address ipAddress, int timeout) {
 		if (timeout > 0) {
@@ -489,6 +493,8 @@ public class XBeePacketsQueue {
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see java.net.Inet4Address
+	 * 
+	 * @since 1.2.0
 	 */
 	private boolean ipAddressesMatch(XBeePacket xbeePacket, Inet4Address ipAddress) {
 		if (xbeePacket == null || ipAddress == null 
@@ -558,6 +564,8 @@ public class XBeePacketsQueue {
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
 	 * @see com.digi.xbee.api.packet.ip.RXIPv4Packet
+	 * 
+	 * @since 1.2.0
 	 */
 	private boolean isIPDataPacket(XBeePacket xbeePacket) {
 		if (!(xbeePacket instanceof XBeeAPIPacket))

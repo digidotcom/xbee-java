@@ -15,6 +15,8 @@ import java.util.HashMap;
 
 /**
  * Enumerates the different IP addressing modes.
+ * 
+ * @since 1.2.0
  */
 public enum IPAddressingMode {
 

@@ -15,6 +15,8 @@ import java.util.HashMap;
 
 /**
  * Enumerates the different IP protocols.
+ * 
+ * @since 1.2.0
  */
 public enum IPProtocol {
 

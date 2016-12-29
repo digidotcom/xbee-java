@@ -133,6 +133,8 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see #DigiPointDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #DigiPointDevice(Context, String, int)
 	 * @see #DigiPointDevice(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiPointDevice(Context context, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, baudRate));
@@ -158,6 +160,8 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see #DigiPointDevice(Context, String, int)
 	 * @see #DigiPointDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiPointDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
@@ -185,6 +189,8 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see #DigiPointDevice(Context, int)
 	 * @see #DigiPointDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #DigiPointDevice(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiPointDevice(Context context, String port, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, port, baudRate));
@@ -213,6 +219,8 @@ public class DigiPointDevice extends XBeeDevice {
 	 * @see #DigiPointDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #DigiPointDevice(Context, String, int)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiPointDevice(Context context, String port, SerialPortParameters parameters) {
 		super(XBee.createConnectiontionInterface(context, port, parameters));

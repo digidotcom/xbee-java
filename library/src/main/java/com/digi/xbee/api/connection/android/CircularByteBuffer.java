@@ -13,6 +13,8 @@ package com.digi.xbee.api.connection.android;
 
 /**
  * Helper class used to store data bytes as a circular buffer.
+ * 
+ * @since 1.2.0
  */
 public class CircularByteBuffer {
 

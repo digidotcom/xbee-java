@@ -20,6 +20,8 @@ import java.net.Inet4Address;
  * 
  * <p>This class is used within the XBee Java Library to read data sent to IP 
  * devices.</p>
+ * 
+ * @since 1.2.0
  */
 public class IPMessage {
 

@@ -18,6 +18,8 @@ package com.digi.xbee.api.models;
  * 
  * <p>This class is used within the XBee Java Library to list the access points 
  * and connect to a specific one in the Wi-Fi protocol.</p>
+ * 
+ * @since 1.2.0
  */
 public class AccessPoint {
 

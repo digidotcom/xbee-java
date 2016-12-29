@@ -25,6 +25,8 @@ import android.hardware.usb.UsbEndpoint;
 /**
  * This class acts as a wrapper to read data from the USB Interface in Android
  * behaving like an {@code InputputStream} class.
+ * 
+ * @since 1.2.0
  */
 public class AndroidUSBInputStream extends InputStream {
 

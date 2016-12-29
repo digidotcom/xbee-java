@@ -46,6 +46,8 @@ import com.digi.xbee.api.utils.ByteUtils;
  * @see Raw802Device
  * @see WiFiDevice
  * @see ZigBeeDevice
+ * 
+ * @since 1.2.0
  */
 public class CellularDevice extends IPDevice {
 

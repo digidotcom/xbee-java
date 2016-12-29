@@ -16,6 +16,8 @@ import com.digi.xbee.api.models.SMSMessage;
 /**
  * This interface defines the required methods that should be implemented to 
  * behave as an SMS listener and be notified when new SMS is received.
+ * 
+ * @since 1.2.0
  */
 public interface ISMSReceiveListener {
 

@@ -16,6 +16,8 @@ import com.digi.xbee.api.utils.HexUtils;
  * </p>
  *
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
+ * 
+ * @since 1.2.0
  */
 public class FrameErrorPacket extends XBeeAPIPacket {
 

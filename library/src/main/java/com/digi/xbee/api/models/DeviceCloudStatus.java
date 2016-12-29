@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 /**
  * Enumerates the different Device Cloud statuses.
+ * 
+ * @since 1.2.0
  */
 public enum DeviceCloudStatus {
 

@@ -37,6 +37,8 @@ import com.digi.xbee.api.exceptions.PermissionDeniedException;
 /**
  * This class represents a serial port interface making use of the Digi Android
  * Serial Port library based on the RxTx implementation.
+ * 
+ * @since 1.2.0
  */
 public class SerialPortDigiAndroid extends AbstractSerialPort implements ISerialPortEventListener {
 	

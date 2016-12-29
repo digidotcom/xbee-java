@@ -22,6 +22,8 @@ import com.digi.xbee.api.utils.HexUtils;
  *
  * @see DeviceRequestPacket
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
+ * 
+ * @since 1.2.0
  */
 public class DeviceResponsePacket extends XBeeAPIPacket {
 

@@ -242,6 +242,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 * 
+	 * @since 1.2.0
 	 */
 	public AbstractXBeeDevice(Context context, int baudRate) {
 		this(XBee.createConnectiontionInterface(context, baudRate));
@@ -267,6 +269,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see #AbstractXBeeDevice(Context, int)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public AbstractXBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		this(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
@@ -879,6 +883,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #removeIPDataListener(IIPDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	protected void addIPDataListener(IIPDataReceiveListener listener) {
 		if (listener == null)
@@ -900,6 +906,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #addIPDataListener(IIPDataReceiveListener)
 	 * @see com.digi.xbee.api.listeners.IIPDataReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	protected void removeIPDataListener(IIPDataReceiveListener listener) {
 		if (listener == null)
@@ -924,6 +932,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #removeSMSListener(ISMSReceiveListener)
 	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	protected void addSMSListener(ISMSReceiveListener listener) {
 		if (listener == null)
@@ -945,6 +955,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #addSMSListener(ISMSReceiveListener)
 	 * @see com.digi.xbee.api.listeners.ISMSReceiveListener
+	 * 
+	 * @since 1.2.0
 	 */
 	protected void removeSMSListener(ISMSReceiveListener listener) {
 		if (listener == null)

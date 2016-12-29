@@ -132,6 +132,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #DigiMeshDevice(Context, String, int)
 	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiMeshDevice(Context context, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, baudRate));
@@ -157,6 +159,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(Context, String, int)
 	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiMeshDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
@@ -184,6 +188,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(Context, int)
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #DigiMeshDevice(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiMeshDevice(Context context, String port, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, port, baudRate));
@@ -212,6 +218,8 @@ public class DigiMeshDevice extends XBeeDevice {
 	 * @see #DigiMeshDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #DigiMeshDevice(Context, String, int)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 * 
+	 * @since 1.2.0
 	 */
 	public DigiMeshDevice(Context context, String port, SerialPortParameters parameters) {
 		super(XBee.createConnectiontionInterface(context, port, parameters));

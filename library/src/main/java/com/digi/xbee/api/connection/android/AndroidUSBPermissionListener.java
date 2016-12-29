@@ -18,6 +18,8 @@ package com.digi.xbee.api.connection.android;
  * <p>Permissions can be granted or denied, the result is passed within the 
  * {{@link #permissionReceived(boolean)} method to the class implementing it.
  * </p>
+ * 
+ * @since 1.2.0
  */
 public interface AndroidUSBPermissionListener {
 

@@ -25,6 +25,8 @@ import android.hardware.usb.UsbEndpoint;
 /**
  * This class acts as a wrapper to write data to the USB Interface in Android
  * behaving like an {@code OutputStream} class.
+ * 
+ * @since 1.2.0
  */
 public class AndroidUSBOutputStream extends OutputStream {
 

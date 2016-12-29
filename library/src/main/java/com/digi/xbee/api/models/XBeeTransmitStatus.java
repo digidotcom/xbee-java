@@ -49,15 +49,25 @@ public enum XBeeTransmitStatus {
 	IP_PORT_NOT_EXIST (0x77, "TCP connection to given IP address and port doesn't exist. Source port is non-zero so that a new connection is not attempted"),
 	/** @deprecated Use {@link #INVALID_UDP_PORT} instead. */
 	UDP_SRC_PORT_NOT_MATCH_LISTENING_PORT (0x78, "Source port on a UDP transmission doesn't match a listening port on the transmitting module."),
+	/** @since 1.2.0 */
 	INVALID_UDP_PORT(0x78, "Invalid UDP port"),
+	/** @since 1.2.0 */
 	INVALID_TCP_PORT(0x79, "Invalid TCP port"),
+	/** @since 1.2.0 */
 	INVALID_HOST(0x7A, "Invalid host"),
+	/** @since 1.2.0 */
 	INVALID_DATA_MODE(0x7B, "Invalid data mode"),
+	/** @since 1.2.0 */
 	CONNECTION_REFUSED(0x80, "Connection refused"),
+	/** @since 1.2.0 */
 	CONNECTION_LOST(0x81, "Connection lost"),
+	/** @since 1.2.0 */
 	NO_SERVER(0x82, "No server"),
+	/** @since 1.2.0 */
 	SOCKET_CLOSED(0x83, "Socket closed"),
+	/** @since 1.2.0 */
 	UNKNOWN_SERVER(0x84, "Unknown server"),
+	/** @since 1.2.0 */
 	UNKNOWN_ERROR(0x85, "Unknown error"),
 	KEY_NOT_AUTHORIZED (0xBB, "Key not authorized"),
 	UNKNOWN (255, "Unknown");

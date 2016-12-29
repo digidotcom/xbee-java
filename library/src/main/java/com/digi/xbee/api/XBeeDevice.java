@@ -178,6 +178,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #XBeeDevice(Context, String, int)
 	 * @see #XBeeDevice(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public XBeeDevice(Context context, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, baudRate));
@@ -206,6 +208,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, String, int)
 	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
+	 * 
+	 * @since 1.2.0
 	 */
 	public XBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
 		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
@@ -233,6 +237,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, int)
 	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #XBeeDevice(Context, String, SerialPortParameters)
+	 * 
+	 * @since 1.2.0
 	 */
 	public XBeeDevice(Context context, String port, int baudRate) {
 		super(XBee.createConnectiontionInterface(context, port, baudRate));
@@ -261,6 +267,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see #XBeeDevice(Context, String, int)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
+	 * 
+	 * @since 1.2.0
 	 */
 	public XBeeDevice(Context context, String port, SerialPortParameters parameters) {
 		super(XBee.createConnectiontionInterface(context, port, parameters));

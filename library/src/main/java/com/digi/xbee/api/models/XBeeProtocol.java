@@ -35,6 +35,7 @@ public enum XBeeProtocol {
 	XLR_DM(12, "XLR"), // TODO [XLR_DM] XLR device with DigiMesh support.
 	SX(13, "XBee SX"),
 	XLR_MODULE(14, "XLR Module"),
+	/** @since 1.2.0 */
 	CELLULAR(15, "Cellular"),
 	UNKNOWN(99, "Unknown");
 	

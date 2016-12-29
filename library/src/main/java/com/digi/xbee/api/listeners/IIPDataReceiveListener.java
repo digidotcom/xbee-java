@@ -17,6 +17,8 @@ import com.digi.xbee.api.models.IPMessage;
  * This interface defines the required methods that should be implemented to 
  * behave as an IP data listener and be notified when new IP data is 
  * received.
+ * 
+ * @since 1.2.0
  */
 public interface IIPDataReceiveListener {
 

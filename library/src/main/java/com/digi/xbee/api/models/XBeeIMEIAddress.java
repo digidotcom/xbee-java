@@ -22,6 +22,8 @@ import com.digi.xbee.api.utils.HexUtils;
  * <ul>
  *   <li>Cellular</li>
  * </ul>
+ * 
+ * @since 1.2.0
  */
 public class XBeeIMEIAddress {
 

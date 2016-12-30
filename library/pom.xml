@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.digi.xbee</groupId>
-		<artifactId>xbjlib-parent</artifactId>
+		<artifactId>xbee-java-library-parent</artifactId>
 		<version>1.2.0</version>
 		<relativePath>..\pom.xml</relativePath>
 	</parent>
-	<artifactId>xbjlib</artifactId>
+	<artifactId>xbee-java-library</artifactId>
 	<packaging>jar</packaging>
 	
 	<name>XBee Java Library</name>
@@ -73,8 +73,8 @@
 					<source>1.7</source>
 					<version>true</version>
 					<docfilessubdirs>true</docfilessubdirs>
-					<!--<javadocDirectory>${basedir}/src/main/javadoc/</javadocDirectory>-->
-					<!--<overview>${basedir}/src/main/javadoc/overview.html</overview>-->
+					<javadocDirectory>${basedir}/src/main/javadoc/</javadocDirectory>
+					<overview>${basedir}/src/main/javadoc/overview.html</overview>
 					<stylesheetfile>${basedir}/src/main/javadoc/stylesheet.css</stylesheetfile>
 					<windowtitle>${project.name}</windowtitle>
 					<doctitle>${project.name}</doctitle>
@@ -121,4 +121,30 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<!-- Sign profile -->
+		<profile>
+			<id>sign</id>
+			<build>
+				<plugins>
+					<!-- This is needed to sign the jar files for the 
+						 deployment in Maven Central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven.gpg.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

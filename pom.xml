@@ -1,17 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>com.digi.xbee</groupId>
-	<artifactId>xbjlib-parent</artifactId>
+	<artifactId>xbee-java-library-parent</artifactId>
 	<version>1.2.0</version>
 	<packaging>pom</packaging>
 	<name>XBee Java Library Project</name>
 	<inceptionYear>2014</inceptionYear>
+	<description>Set of Java APIs to interact with Digi International's XBee radio frequency modules.</description>
 	<url>https://github.com/digidotcom/XBeeJavaLibrary</url>
+	
 	<organization>
 		<name>Digi International Inc.</name>
 		<url>http://www.digi.com</url>
 	</organization>
+	
 	<licenses>
 		<license>
 			<name>Mozilla Public License, Version 2.0</name>
@@ -19,6 +23,48 @@
 			<distribution>manual</distribution>
 		</license>
 	</licenses>
+	
+	<scm>
+		<url>https://github.com/digidotcom/XBeeJavaLibrary/tree/master</url>
+		<connection>scm:git:git://github.com/digidotcom/XBeeJavaLibrary.git</connection>
+		<developerConnection>scm:git:ssh://github.com:digidotcom/XBeeJavaLibrary.git</developerConnection>
+	</scm>
+	
+	<issueManagement>
+ 		<url>https://github.com/digidotcom/XBeeJavaLibrary/issues</url>
+		<system>GitHub</system>
+	</issueManagement>
+	
+	<developers>
+		<developer>
+			<id>rubenmoral</id>
+			<name>Rubén Moral</name>
+			<email>ruben.moral@digi.com</email>
+			<organization>Digi International Inc.</organization>
+			<organizationUrl>http://www.digi.com</organizationUrl>
+		</developer>
+		<developer>
+			<id>diescalo</id>
+			<name>Diego Escalona</name>
+			<email>diego.escalona@digi.com</email>
+			<organization>Digi International Inc.</organization>
+			<organizationUrl>http://www.digi.com</organizationUrl>
+		</developer>
+		<developer>
+			<id>daescalona</id>
+			<name>David Escalona</name>
+			<email>david.escalona@digi.com</email>
+			<organization>Digi International Inc.</organization>
+			<organizationUrl>http://www.digi.com</organizationUrl>
+		</developer>
+		<developer>
+			<id>tatianaleon</id>
+			<name>Tatiana León</name>
+			<email>tatiana.leon@digi.com</email>
+			<organization>Digi International Inc.</organization>
+			<organizationUrl>http://www.digi.com</organizationUrl>
+		</developer>
+	</developers>
 	
 	<modules>
 		<module>library</module>
@@ -60,6 +106,8 @@
 		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
 		<javadoc.plugin.version>2.10.3</javadoc.plugin.version>
+		<nexus.staging.maven.plugin.version>1.6.7</nexus.staging.maven.plugin.version>
+		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
 		<rxtx.version>2.2</rxtx.version>
 		<slf4j-api.version>1.7.12</slf4j-api.version>
 		<slf4j-jdk1.4.version>1.7.12</slf4j-jdk1.4.version>
@@ -77,6 +125,7 @@
 		<android-sdk-addon.version>3</android-sdk-addon.version>
 		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
 		<assemblyId>Release</assemblyId>
+		
 	</properties>
 	
 	<build>
@@ -125,10 +174,35 @@
 						</dependency>
 					</dependencies>
 				</plugin>
+				<!-- This is needed to stage the library for deployment
+					 in Maven Central -->
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>${nexus.staging.maven.plugin.version}</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>ossrh</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>false</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 	
+	<!-- Distribution Management -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.rxtx</groupId>
@@ -270,6 +344,30 @@
 			</properties>
 		</profile>
 		
+		<!-- Sign profile -->
+		<profile>
+			<id>sign</id>
+			<build>
+				<plugins>
+					<!-- This is needed to sign the jar files for the 
+						 deployment in Maven Central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven.gpg.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 	
 	<!-- Repositories -->

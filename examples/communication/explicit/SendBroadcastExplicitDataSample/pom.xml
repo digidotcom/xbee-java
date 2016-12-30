@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.digi.xbee</groupId>
-		<artifactId>xbjlib-parent</artifactId>
+		<artifactId>xbee-java-library-parent</artifactId>
 		<version>1.2.0</version>
 		<relativePath>../../../../pom.xml</relativePath>
 	</parent>
@@ -36,13 +36,23 @@
 					</arguments>
 				</configuration>
 			</plugin>
+			<!-- This is needed to skip this submodule from staging -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>${nexus.staging.maven.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.digi.xbee</groupId>
-			<artifactId>xbjlib</artifactId>
+			<artifactId>xbee-java-library</artifactId>
 			<version>${project.version}</version>
 			<type>jar</type>
 		</dependency>

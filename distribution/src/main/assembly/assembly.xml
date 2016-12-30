@@ -57,7 +57,7 @@
 		<!-- Include the XBee Java Library jar -->
 		<dependencySet>
 			<includes>
-				<include>com.digi.xbee:xbjlib:jar:*</include>
+				<include>com.digi.xbee:xbee-java-library:jar:*</include>
 			</includes>
 			<outputDirectory>/</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>
@@ -67,7 +67,7 @@
 		<dependencySet>
 			<excludes>
 				<exclude>org.rxtx:rxtx-native:jar:*</exclude>
-				<exclude>com.digi.xbee:xbjlib:jar:*</exclude>
+				<exclude>com.digi.xbee:xbee-java-library:jar:*</exclude>
 			</excludes>
 			<outputDirectory>extra-libs</outputDirectory>
 			<useProjectArtifact>false</useProjectArtifact>

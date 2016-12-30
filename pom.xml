@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.digi.xbee</groupId>
 	<artifactId>xbjlib-parent</artifactId>
-	<version>1.1.1</version>
+	<version>1.2.0</version>
 	<packaging>pom</packaging>
 	<name>XBee Java Library Project</name>
 	<inceptionYear>2014</inceptionYear>

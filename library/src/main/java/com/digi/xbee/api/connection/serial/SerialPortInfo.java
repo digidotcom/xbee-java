@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-2016 Digi International Inc.,
+ * Copyright (c) 2014-2017 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public

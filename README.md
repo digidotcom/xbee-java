@@ -45,7 +45,7 @@ Destination endpoint, Profile ID, and Cluster ID).
 Start Here
 ----------
 The best place to get started is the 
-[XBee Java Library documentation](http://docs.digi.com/display/XBJLIB).
+[XBee Java Library documentation](http://www.digi.com/resources/documentation/digidocs/90001438/Default.htm).
 
 
 How to Contribute

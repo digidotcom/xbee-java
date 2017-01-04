@@ -27,6 +27,14 @@
       local to receive them.
 
 
+  Compatible protocols
+  --------------------
+    * 802.15.4
+    * DigiMesh
+    * Point-to-Multipoint
+    * ZigBee
+
+
   Requirements
   ------------
   To run this example you will need:

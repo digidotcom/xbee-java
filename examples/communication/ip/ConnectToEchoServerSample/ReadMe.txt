@@ -28,6 +28,12 @@
     * The XCTU application (available at www.digi.com/xctu).
 
 
+  Compatible protocols
+  --------------------
+    * Cellular
+    * Wi-Fi
+
+
   Example setup
   -------------
     1) Plug the Internet radio into the XBee adapter and connect it to your 

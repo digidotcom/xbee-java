@@ -29,6 +29,13 @@
     * The XCTU application (available at www.digi.com/xctu).
 
 
+  Compatible protocols
+  --------------------
+    * DigiMesh
+    * Point-to-Multipoint
+    * ZigBee
+
+
   Example setup
   -------------
     1) Plug the ZigBee radios into the XBee adapters and connect them to your

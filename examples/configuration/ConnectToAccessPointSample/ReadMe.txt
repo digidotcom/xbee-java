@@ -25,6 +25,11 @@
     * An access point to connect to.
 
 
+  Compatible protocols
+  --------------------
+    * Wi-Fi
+
+
   Example setup
   -------------
     1) Plug the Wi-Fi radio into the XBee adapter and connect it to your

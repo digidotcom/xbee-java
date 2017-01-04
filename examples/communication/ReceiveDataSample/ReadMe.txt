@@ -29,6 +29,14 @@
     * The XCTU application (available at www.digi.com/xctu).
 
 
+  Compatible protocols
+  --------------------
+    * 802.15.4
+    * DigiMesh
+    * Point-to-Multipoint
+    * ZigBee
+
+
   Example setup
   -------------
     1) Find the 64-bit address labeled on the back of your local XBee device, 

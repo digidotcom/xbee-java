@@ -27,6 +27,12 @@
       Knock Knock jokes.
 
 
+  Compatible protocols
+  --------------------
+    * Cellular
+    * Wi-Fi
+
+
   Requirements
   ------------
   To run this example you will need:

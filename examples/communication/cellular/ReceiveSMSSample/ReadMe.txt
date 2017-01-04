@@ -31,6 +31,11 @@
     * A mobile phone to send the SMS message.
 
 
+  Compatible protocols
+  --------------------
+    * Cellular
+
+
   Example setup
   -------------
     1) Plug the Cellular radio into the XBee adapter and connect it to your

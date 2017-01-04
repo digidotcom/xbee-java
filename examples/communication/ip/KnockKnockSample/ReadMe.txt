@@ -69,9 +69,9 @@
 
     Turnip
 
-  Now, repond with:
+  Now, respond with:
 
     Turnip who?
 
   Finally the server responds with the punch line. You can continue with more
-  jokes by sendind a 'y' or finishing the connection with 'n' and then 'Bye.'.
+  jokes by sending a 'y' or finishing the connection with 'n' and then 'Bye.'.

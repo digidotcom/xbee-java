@@ -72,7 +72,7 @@
        - 16-bit dest. port:               The port number ('C0') of the receiver module,
                                           26 16 by default.
        - 16-bit source port:              00 00
-       - Protocol:                        TCP or UDP.
+       - Protocol:                        TCP
        - Transmit options:                00
        - RF data (ASCII):                 Hello XBee!
 

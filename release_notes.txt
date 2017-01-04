@@ -1,28 +1,44 @@
-                      XBee Java Library
- 
-                  Release Notes (PN 93000776)
-                         Build 1.1.1
-                        7 April, 2016
- 
-              (c) 2014-2016, Digi International
-                     http://www.digi.com
- 
-Introduction
-----------------------------------------------------------------------
+                                XBee Java Library
 
-This document provides the latest release information for the XBee Java 
-Library, which allows customers to easily develop Java applications 
-that communicate with XBee modules.
+                           Release Notes (PN 93000776)
+                                   Build 1.2.0
+                                 4 January, 2017
+ 
+                     (c) 2014-2017, Digi International Inc.
+                               http://www.digi.com
+ 
+ Introduction
+--------------------------------------------------------------------------------
+
+ This document provides the latest release information for the XBee Java 
+ Library, which allows customers to easily develop Java applications 
+ that communicate with XBee modules.
+
+ XBee Java Library v1.2.0, January 2017
+--------------------------------------------------------------------------------
+ 1. Changes with respect to previous version:
+     * Added support for Cellular and Wi-Fi protocols.
+     * Added support for Android.
+     * Added eight examples that demonstrate the new functionality of the API:
+        * Connect to access point example.
+        * Connect to echo server example.
+        * Knock Knock example.
+        * Receive IP data example.
+        * Receive SMS example.
+        * Send IP data example.
+        * Send SMS example.
+        * XBee Manager example.
+     * Minor cosmetic bug fixes.
 
  XBee Java Library v1.1.1, April 2016
-----------------------------------------------------------------------
+--------------------------------------------------------------------------------
  1. Changes with respect to previous version:
      * Added new unit tests.
      * Minor code improvements.
      * Minor bug fixes.
 
  XBee Java Library v1.1.0, May 2015
-----------------------------------------------------------------------
+--------------------------------------------------------------------------------
  1. Changes with respect to previous version:
      * Added support for explicit frames and application layer fields 
        (Source endpoint, Destination endpoint, Profile ID, and Cluster ID).
@@ -35,84 +51,85 @@ that communicate with XBee modules.
      * Minor cosmetic bug fixes.
 
  XBee Java Library v1.0.1, December 2014
-----------------------------------------------------------------------
-1. Changes with respect to previous version:
-    * Included RxTx 2.2 libraries. This allows the use of the library in Linux 
-      on 64 bit JVM.
-    * Added third party license agreements to the README.md file.
-    * Minor cosmetic bug fixes.
+--------------------------------------------------------------------------------
+ 1. Changes with respect to previous version:
+     * Included RxTx 2.2 libraries. This allows the use of the library in Linux 
+       on 64 bit JVM.
+     * Added third party license agreements to the README.md file.
+     * Minor cosmetic bug fixes.
 
  XBee Java Library v1.0.0, November 2014
-----------------------------------------------------------------------
-1. Supported Hardware: 
-    * XBee®/XBee-PRO® RF Module Family
-      * XBee 802.15.4
-      * XBee-PRO 802.15.4
-      * XBee ZB
-      * XBee-PRO ZB
-      * XBee ZB SMT
-      * XBee-PRO ZB SMT
-      * XBee-PRO 900HP
-      * XBee-PRO 900
-      * XBee-PRO DigiMesh 900
-      * XBee DigiMesh 2.4
-      * XBee-PRO DigiMesh 2.4
-      * XBee-PRO 868
-      * XBee 865LP
-      * XBee 868LP
+--------------------------------------------------------------------------------
+ 1. Supported Hardware: 
+     * XBee®/XBee-PRO® RF Module Family
+       * XBee 802.15.4
+       * XBee-PRO 802.15.4
+       * XBee ZB
+       * XBee-PRO ZB
+       * XBee ZB SMT
+       * XBee-PRO ZB SMT
+       * XBee-PRO 900HP
+       * XBee-PRO 900
+       * XBee-PRO DigiMesh 900
+       * XBee DigiMesh 2.4
+       * XBee-PRO DigiMesh 2.4
+       * XBee-PRO 868
+       * XBee 865LP
+       * XBee 868LP
 
-2. Changes with respect to previous version:
-    * Library features:
-      * Support for API and API Escaped operating modes. Application 
-        Transparent (AT) operating mode is not supported by the library.
-      * Management of local (attached to the PC) and remote XBee device objects.
-      * Discovery of remote XBee devices that are associated to the same 
-        network as the local one.
-      * Configuration of local and remote XBee devices:
-        * Configure common parameters with specific setters and getters.
-        * Configure any other parameter with generic methods.
-        * Execute AT commands.
-        * Apply configuration changes.
-        * Write configuration changes.
-        * Reset the device.
-      * Transmission of data to all the XBee devices of the network or to a 
-        specific one.
-      * Reception of data from remote XBee devices:
-        * Data polling.
-        * Data reception callback.
-      * Reception of network status changes related to the local XBee device.
-      * IO lines management:
-        * Configure IO lines
-        * Set IO line value.
-        * Read IO line value.
-        * Receive IO data samples from any remote XBee device of the network.
+ 2. Changes with respect to previous version:
+     * Library features:
+       * Support for API and API Escaped operating modes. Application 
+         Transparent (AT) operating mode is not supported by the library.
+       * Management of local (attached to the PC) and remote XBee device 
+         objects.
+       * Discovery of remote XBee devices that are associated to the same 
+         network as the local one.
+       * Configuration of local and remote XBee devices:
+         * Configure common parameters with specific setters and getters.
+         * Configure any other parameter with generic methods.
+         * Execute AT commands.
+         * Apply configuration changes.
+         * Write configuration changes.
+         * Reset the device.
+       * Transmission of data to all the XBee devices of the network or to a 
+         specific one.
+       * Reception of data from remote XBee devices:
+         * Data polling.
+         * Data reception callback.
+       * Reception of network status changes related to the local XBee device.
+       * IO lines management:
+         * Configure IO lines
+         * Set IO line value.
+         * Read IO line value.
+         * Receive IO data samples from any remote XBee device of the network.
      
-   * Set of examples demonstrating the functionality of the API.
-     * Communication:
-        * Receive data example.
-        * Receive data polling example.
-        * Receive data Modem Status example.
-        * Send data example.
-        * Send asynchronous data example.
-        * Send broadcast data example.
-     * Configuration:
-        * Manage common parameters example.
-        * Reset the module example.
-        * Set and get parameters example.
-     * IO:
-        * IO sampling example.
-        * Local ADC example.
-        * Local DIO example.
-        * Remote ADC example.
-        * Remote DIO example.
-     * Network:
-        * Discover devices example.
+     * Set of examples demonstrating the functionality of the API.
+       * Communication:
+         * Receive data example.
+         * Receive data polling example.
+         * Receive data Modem Status example.
+         * Send data example.
+         * Send asynchronous data example.
+         * Send broadcast data example.
+       * Configuration:
+         * Manage common parameters example.
+         * Reset the module example.
+         * Set and get parameters example.
+       * IO:
+         * IO sampling example.
+         * Local ADC example.
+         * Local DIO example.
+         * Remote ADC example.
+         * Remote DIO example.
+       * Network:
+         * Discover devices example.
      
-   * Comprehensive online documentation including:
-     * Getting Started Guide.
-     * Users Guide.
-     * API Reference Manual.
+     * Comprehensive online documentation including:
+       * Getting Started Guide.
+       * Users Guide.
+       * API Reference Manual.
 
-3. Known issues and limitations:
-    * Serial ports cannot be found by the RxTx library in Linux machines 
-      running a 64-bit JVM.
+ 3. Known issues and limitations:
+     * Serial ports cannot be found by the RxTx library in Linux machines 
+       running a 64-bit JVM.

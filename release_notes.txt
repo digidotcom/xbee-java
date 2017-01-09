@@ -2,9 +2,9 @@
 
                            Release Notes (PN 93000776)
                                    Build 1.2.0
-                                 4 January, 2017
+                                 9 January, 2017
  
-                     (c) 2014-2017, Digi International Inc.
+                     Copyright 2017, Digi International Inc.
                                http://www.digi.com
  
  Introduction

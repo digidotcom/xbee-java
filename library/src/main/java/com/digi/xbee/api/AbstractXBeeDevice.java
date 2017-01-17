@@ -432,7 +432,7 @@ public abstract class AbstractXBeeDevice {
 	public void readDeviceInfo() throws TimeoutException, XBeeException {
 		byte[] response = null;
 		// Get the 64-bit address.
-		if (xbee64BitAddress == null || xbee64BitAddress == XBee64BitAddress.UNKNOWN_ADDRESS) {
+		if (xbee64BitAddress == null || xbee64BitAddress.equals(XBee64BitAddress.UNKNOWN_ADDRESS)) {
 			String addressHigh;
 			String addressLow;
 			
@@ -627,7 +627,7 @@ public abstract class AbstractXBeeDevice {
 		
 		// Only update the 64-bit address if the original is null or unknown.
 		XBee64BitAddress addr64 = device.get64BitAddress();
-		if (addr64 != null && addr64 != XBee64BitAddress.UNKNOWN_ADDRESS
+		if (addr64 != null && !addr64.equals(XBee64BitAddress.UNKNOWN_ADDRESS)
 				&& !addr64.equals(xbee64BitAddress) 
 				&& (xbee64BitAddress == null 
 					|| xbee64BitAddress.equals(XBee64BitAddress.UNKNOWN_ADDRESS))) {

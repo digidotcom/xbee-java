@@ -222,7 +222,75 @@ public class DataReaderGetRemoteXBeeDeviceFromPacketTest {
 		assertThat("The network must contain 1 device and not " + network.getNumberOfDevices(), 
 				network.getNumberOfDevices(), is(equalTo(1)));
 	}
-	
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#getRemoteXBeeDeviceFromPacket(com.digi.xbee.api.packet.XBeeAPIPacket)}.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public final void testGetRemoteXBeeDeviceFromPacketReceivePacketWithUnknown64BitAddress() throws Exception {
+		// Setup the resources for the test.
+		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+
+		XBee64BitAddress addr64 = new XBee64BitAddress("FFFFFFFFFFFFFFFF");
+		XBee16BitAddress addr16 = new XBee16BitAddress("1234");
+		ReceivePacket packet = new ReceivePacket(addr64, addr16, XBeeReceiveOptions.NONE, new byte[0]);
+
+		assertThat("The network must contain 0 device and not " + network.getNumberOfDevices(),
+				network.getNumberOfDevices(), is(equalTo(0)));
+
+		// Call the method under test.
+		RemoteXBeeDevice remoteDevice = dataReader.getRemoteXBeeDeviceFromPacket(packet);
+
+		// Verify the result.
+		assertThat("Returned remote device should not be null", remoteDevice, is(not(equalTo(null))));
+
+		assertThat("Returned remote device must be a ZigBee device", remoteDevice instanceof RemoteZigBeeDevice, is(equalTo(true)));
+		assertThat("Returned remote device 64-bit address must be '" + addr64 + "' and not '" + remoteDevice.get64BitAddress() + "'",
+				remoteDevice.get64BitAddress(), is(equalTo(addr64)));
+		assertThat("Returned remote device 16-bit address must be '" + addr16 + "' and not '" + remoteDevice.get16BitAddress() + "'",
+				remoteDevice.get16BitAddress(), is(equalTo(addr16)));
+		assertThat("Returned remote device NI must be 'null' and not '" + remoteDevice.getNodeID() + "'",
+				remoteDevice.getNodeID(), is(equalTo(null)));
+		assertThat("The network must contain 1 device and not " + network.getNumberOfDevices(),
+				network.getNumberOfDevices(), is(equalTo(1)));
+	}
+
+	/**
+	 * Test method for {@link com.digi.xbee.api.XBeeDevice#getRemoteXBeeDeviceFromPacket(com.digi.xbee.api.packet.XBeeAPIPacket)}.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public final void testGetRemoteXBeeDeviceFromPacketReceivePacketWithUnknown64And16BitAddress() throws Exception {
+		// Setup the resources for the test.
+		Mockito.when(xbeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.ZIGBEE);
+
+		XBee64BitAddress addr64 = new XBee64BitAddress("FFFFFFFFFFFFFFFF");
+		XBee16BitAddress addr16 = new XBee16BitAddress("FFFE");
+		ReceivePacket packet = new ReceivePacket(addr64, addr16, XBeeReceiveOptions.NONE, new byte[0]);
+
+		assertThat("The network must contain 0 device and not " + network.getNumberOfDevices(),
+				network.getNumberOfDevices(), is(equalTo(0)));
+
+		// Call the method under test.
+		RemoteXBeeDevice remoteDevice = dataReader.getRemoteXBeeDeviceFromPacket(packet);
+
+		// Verify the result.
+		assertThat("Returned remote device should not be null", remoteDevice, is(not(equalTo(null))));
+
+		assertThat("Returned remote device must be a ZigBee device", remoteDevice instanceof RemoteZigBeeDevice, is(equalTo(true)));
+		assertThat("Returned remote device 64-bit address must be '" + addr64 + "' and not '" + remoteDevice.get64BitAddress() + "'",
+				remoteDevice.get64BitAddress(), is(equalTo(addr64)));
+		assertThat("Returned remote device 16-bit address must be '" + addr16 + "' and not '" + remoteDevice.get16BitAddress() + "'",
+				remoteDevice.get16BitAddress(), is(equalTo(addr16)));
+		assertThat("Returned remote device NI must be 'null' and not '" + remoteDevice.getNodeID() + "'",
+				remoteDevice.getNodeID(), is(equalTo(null)));
+		assertThat("The network must contain 0 device and not " + network.getNumberOfDevices(),
+				network.getNumberOfDevices(), is(equalTo(0)));
+	}
+
 	/**
 	 * Test method for {@link com.digi.xbee.api.XBeeDevice#getRemoteXBeeDeviceFromPacket(com.digi.xbee.api.packet.XBeeAPIPacket)}.
 	 * 

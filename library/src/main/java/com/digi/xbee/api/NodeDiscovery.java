@@ -482,6 +482,7 @@ class NodeDiscovery {
 		// TODO [XLR_DM] The next version of the XLR will add DigiMesh support.
 		// For the moment only point-to-multipoint is supported in this kind of devices.
 		case XLR_DM:
+		case SX:
 			// Read node identifier.
 			id = ByteUtils.readString(inputStream);
 			// Read parent address.

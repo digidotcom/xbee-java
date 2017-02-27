@@ -477,11 +477,11 @@ public abstract class AbstractXBeeDevice {
 		// Get the 16-bit address. This must be done after obtaining the protocol because 
 		// DigiMesh and Point-to-Multipoint protocols don't have 16-bit addresses.
 		XBeeProtocol protocol = getXBeeProtocol();
-		if (protocol != XBeeProtocol.DIGI_MESH 
-				&& protocol != XBeeProtocol.DIGI_POINT
-				&& protocol != XBeeProtocol.XBEE_WIFI
-				&& protocol != XBeeProtocol.CELLULAR
-				&& protocol != XBeeProtocol.UNKNOWN) {
+		if (protocol == XBeeProtocol.ZIGBEE
+				|| protocol == XBeeProtocol.RAW_802_15_4
+				|| protocol == XBeeProtocol.XTEND
+				|| protocol == XBeeProtocol.SMART_ENERGY
+				|| protocol == XBeeProtocol.ZNET) {
 			response = getParameter("MY");
 			xbee16BitAddress = new XBee16BitAddress(response);
 		}

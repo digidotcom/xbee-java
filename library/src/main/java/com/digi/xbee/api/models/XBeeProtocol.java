@@ -112,6 +112,7 @@ public enum XBeeProtocol {
 	 * 
 	 * @see HardwareVersion
 	 */
+	@SuppressWarnings("deprecation")
 	public static XBeeProtocol determineProtocol(HardwareVersion hardwareVersion, String firmwareVersion) {
 		if (hardwareVersion == null || firmwareVersion == null || hardwareVersion.getValue() < 0x09 
 				|| HardwareVersionEnum.get(hardwareVersion.getValue()) == null)
@@ -225,6 +226,11 @@ public enum XBeeProtocol {
 		case S2D_TH_REG:
 			return ZIGBEE;
 		case CELLULAR:
+		case CELLULAR_CAT1_LTE_VERIZON:
+		case CELLULAR_3G:
+		case CELLULAR_LTE_VERIZON:
+		case CELLULAR_LTE_ATT:
+		case CELLULAR_NBIOT_EUROPE:
 			return CELLULAR;
 		default:
 			return ZIGBEE;

@@ -77,7 +77,11 @@ public class HardwareVersionEnumTest {
 	 */
 	@Test
 	public void testHardwareVersionEnumStaticAccess() {
-		for (HardwareVersionEnum hardwareVersionEnum:hardwareVersionValues)
+		for (HardwareVersionEnum hardwareVersionEnum:hardwareVersionValues) {
+			// Do not check deprecated entry.
+			if (hardwareVersionEnum == HardwareVersionEnum.CELLULAR)
+				continue;
 			assertEquals(hardwareVersionEnum, HardwareVersionEnum.get(hardwareVersionEnum.getValue()));
+		}
 	}
 }

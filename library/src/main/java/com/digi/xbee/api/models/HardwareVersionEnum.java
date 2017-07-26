@@ -78,8 +78,20 @@ public enum HardwareVersionEnum {
 	S2D_TH_REG(0x35, "XB24D: S2D TH Reg"),
 	SX(0x3E, "SX"),
 	XTR(0x3F, "XTR"),
-	/** @since 1.2.0 */
-	CELLULAR(0x40, "CELLULAR");
+	/** 
+	 * @deprecated Use {@link #CELLULAR_CAT1_LTE_VERIZON} instead.
+	 * @since 1.2.0 */
+	CELLULAR(0x40, "CELLULAR"),
+	/** @since 1.2.1 */
+	CELLULAR_CAT1_LTE_VERIZON(0x40, "XBee Cellular Cat 1 LTE Verizon"),
+	/** @since 1.2.1 */
+	CELLULAR_3G(0x44, "XBee Cellular 3G"),
+	/** @since 1.2.1 */
+	CELLULAR_LTE_VERIZON(0x46, "XBee Cellular LTE-M Verizon"),
+	/** @since 1.2.1 */
+	CELLULAR_LTE_ATT(0x47, "XBee Cellular LTE-M AT&T"),
+	/** @since 1.2.1 */
+	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe");
 	
 	// Variables
 	private final int value;

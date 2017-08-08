@@ -75,6 +75,8 @@
 		<module>examples/communication/SendBroadcastDataSample</module>
 		<module>examples/communication/SendDataAsyncSample</module>
 		<module>examples/communication/SendDataSample</module>
+		<module>examples/communication/cellular/ReceiveSMSSample</module>
+		<module>examples/communication/cellular/SendSMSSample</module>
 		<module>examples/communication/explicit/ReceiveExplicitDataPollingSample</module>
 		<module>examples/communication/explicit/ReceiveExplicitDataSample</module>
 		<module>examples/communication/explicit/SendBroadcastExplicitDataSample</module>

@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.digi.xbee</groupId>
+		<artifactId>xbee-java-library-parent</artifactId>
+		<version>1.2.1</version>
+		<relativePath>../../../../pom.xml</relativePath>
+	</parent>
+	<artifactId>send-udp-data-sample</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Send UDP Data Sample</name>
+
+	<properties>
+		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
+	</properties>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<directory>../../../../target/examples/communication/ip/SendUDPDataSample</directory>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec.maven.version}</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-Djava.library.path=${project.build.directory}/../../../${rxtx.native.libs.dir}</argument>
+						<argument>-classpath</argument>
+						<!-- automatically creates the classpath using all project dependencies,
+							 also adding the project build directory -->
+						<classpath/>
+						<argument>com.digi.xbee.api.sendudpdata.MainApp</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+			<!-- This is needed to skip this submodule from staging -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>${nexus.staging.maven.plugin.version}</version>
+				<extensions>true</extensions>
+				<configuration>
+					<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.digi.xbee</groupId>
+			<artifactId>xbee-java-library</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+</project>

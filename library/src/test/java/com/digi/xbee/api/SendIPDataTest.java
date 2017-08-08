@@ -261,7 +261,7 @@ public class SendIPDataTest {
 	@Test
 	public void testSendIPDataSimpleSuccess() throws TimeoutException, XBeeException {
 		// Do nothing when the send IP data expanded method is called.
-		Mockito.doNothing().when(ipDevice).sendIPData(Mockito.any(Inet4Address.class), Mockito.anyInt(), Mockito.any(IPProtocol.class), Mockito.anyBoolean(), Mockito.any(byte[].class));
+		Mockito.doNothing().when(ipDevice).sendIPData(Mockito.any(Inet4Address.class), Mockito.anyInt(), Mockito.any(IPProtocol.class), Mockito.any(byte[].class));
 		
 		ipDevice.sendIPData(ipAddress, PORT, PROTOCOL, DATA.getBytes());
 	}

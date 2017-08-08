@@ -268,7 +268,7 @@ public class CellularDevice extends IPDevice {
 	@Override
 	public void open() throws XBeeException {
 		super.open();
-		if (xbeeProtocol != XBeeProtocol.CELLULAR)
+		if (xbeeProtocol != XBeeProtocol.CELLULAR && xbeeProtocol != XBeeProtocol.CELLULAR_NBIOT)
 			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
 	}
 	

@@ -261,7 +261,7 @@ public class SendIPDataAsyncTest {
 	@Test
 	public void testSendIPDataAsyncSimpleSuccess() throws TimeoutException, XBeeException {
 		// Do nothing when the send IP data async. expanded method is called.
-		Mockito.doNothing().when(ipDevice).sendIPDataAsync(Mockito.any(Inet4Address.class), Mockito.anyInt(), Mockito.any(IPProtocol.class), Mockito.anyBoolean(), Mockito.any(byte[].class));
+		Mockito.doNothing().when(ipDevice).sendIPDataAsync(Mockito.any(Inet4Address.class), Mockito.anyInt(), Mockito.any(IPProtocol.class), Mockito.any(byte[].class));
 		
 		ipDevice.sendIPDataAsync(ipAddress, PORT, PROTOCOL, DATA.getBytes());
 	}

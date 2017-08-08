@@ -600,30 +600,7 @@ public class IPDevice extends XBeeDevice {
 	public void sendIPData(Inet4Address ipAddress, int destPort, 
 			IPProtocol protocol, boolean closeSocket, byte[] data) 
 					throws TimeoutException, XBeeException {
-		if (ipAddress == null)
-			throw new NullPointerException("IP address cannot be null");
-		if (data == null)
-			throw new NullPointerException("Data cannot be null");
-		
-		if (destPort < 0 || destPort > 65535)
-			throw new IllegalArgumentException("Destination port must be between 0 and 65535.");
-		
-		// Check if device is remote.
-		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send IP data from a remote device.");
-		
-		// The source port value depends on the protocol used in the transmission. For UDP, source port 
-		// value must be the same as 'C0' one. For TCP it must be 0.
-		int sourcePort = this.sourcePort;
-		if (protocol != IPProtocol.UDP)
-			sourcePort = 0;
-		
-		logger.debug(toString() + "Sending IP data to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
-		
-		XBeePacket xbeePacket = new TXIPv4Packet(getNextFrameID(), ipAddress, destPort, 
-				sourcePort, protocol, closeSocket ? TXIPv4Packet.OPTIONS_CLOSE_SOCKET: TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN, data);
-		
-		sendAndCheckXBeePacket(xbeePacket, false);
+		sendIPDataImpl(ipAddress, destPort, protocol, closeSocket, data);
 	}
 	
 	/**
@@ -664,7 +641,7 @@ public class IPDevice extends XBeeDevice {
 	 */
 	public void sendIPData(Inet4Address ipAddress, int destPort, IPProtocol protocol, byte[] data) 
 			throws TimeoutException, XBeeException {
-		sendIPData(ipAddress, destPort, protocol, false, data);
+		sendIPDataImpl(ipAddress, destPort, protocol, false, data);
 	}
 	
 	/**
@@ -701,29 +678,7 @@ public class IPDevice extends XBeeDevice {
 	 */
 	public void sendIPDataAsync(Inet4Address ipAddress, int destPort, 
 			IPProtocol protocol, boolean closeSocket, byte[] data) throws XBeeException {
-		if (ipAddress == null)
-			throw new NullPointerException("IP address cannot be null");
-		if (data == null)
-			throw new NullPointerException("Data cannot be null");
-		if (destPort < 0 || destPort > 65535)
-			throw new IllegalArgumentException("Destination port must be between 0 and 65535.");
-		
-		// Check if device is remote.
-		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send IP data from a remote device.");
-		
-		// The source port value depends on the protocol used in the transmission. For UDP, source port 
-		// value must be the same as 'C0' one. For TCP it must be 0.
-		int sourcePort = this.sourcePort;
-		if (protocol != IPProtocol.UDP)
-			sourcePort = 0;
-		
-		logger.debug(toString() + "Sending IP data asynchronously to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
-		
-		XBeePacket xbeePacket = new TXIPv4Packet(getNextFrameID(), ipAddress, destPort, sourcePort, 
-				protocol, closeSocket ? TXIPv4Packet.OPTIONS_CLOSE_SOCKET: TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN, data);
-		
-		sendAndCheckXBeePacket(xbeePacket, true);
+		sendIPDataAsyncImpl(ipAddress, destPort, protocol, closeSocket, data);
 	}
 	
 	/**
@@ -756,7 +711,7 @@ public class IPDevice extends XBeeDevice {
 	 */
 	public void sendIPDataAsync(Inet4Address ipAddress, int destPort, 
 			IPProtocol protocol, byte[] data) throws TimeoutException, XBeeException {
-		sendIPDataAsync(ipAddress, destPort, protocol, false, data);
+		sendIPDataAsyncImpl(ipAddress, destPort, protocol, false, data);
 	}
 	
 	/**
@@ -1025,5 +980,135 @@ public class IPDevice extends XBeeDevice {
 		
 		// Create and return the IP message.
 		return new IPMessage(ipAddress, sourcePort, destPort, protocol, data);
+	}
+	
+	/**
+	 * Sends the provided IP data to the given IP address and port using 
+	 * the specified IP protocol. For TCP and TCP SSL protocols, you can 
+	 * also indicate if the socket should be closed when data is sent.
+	 * 
+	 * <p>This method blocks till a success or error response arrives or the 
+	 * configured receive timeout expires.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * @param ipAddress The IP address to send IP data to.
+	 * @param destPort The destination port of the transmission.
+	 * @param protocol The IP protocol used for the transmission.
+	 * @param closeSocket {@code true} to close the socket just after the 
+	 *                    transmission. {@code false} to keep it open.
+	 * @param data Byte array containing the IP data to be sent.
+	 * 
+	 * @throws IllegalArgumentException if {@code destPort < 0} or 
+	 *                                  if {@code destPort > 65535}
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ipAddress == null} or 
+	 *                              if {@code protocol == null} or 
+	 *                              if {@code data == null}.
+	 * @throws TimeoutException if there is a timeout sending the data.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #sendBroadcastIPData(int, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #setReceiveTimeout(int)
+	 * @see com.digi.xbee.api.models.IPProtocol
+	 * @see java.net.Inet4Address
+	 */
+	private void sendIPDataImpl(Inet4Address ipAddress, int destPort, 
+			IPProtocol protocol, boolean closeSocket, byte[] data) 
+					throws TimeoutException, XBeeException {
+		if (ipAddress == null)
+			throw new NullPointerException("IP address cannot be null");
+		if (protocol == null)
+			throw new NullPointerException("Protocol cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		
+		if (destPort < 0 || destPort > 65535)
+			throw new IllegalArgumentException("Destination port must be between 0 and 65535.");
+		
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send IP data from a remote device.");
+		
+		// The source port value depends on the protocol used in the transmission. For UDP, source port 
+		// value must be the same as 'C0' one. For TCP it must be 0.
+		int sourcePort = this.sourcePort;
+		if (protocol != IPProtocol.UDP)
+			sourcePort = 0;
+		
+		logger.debug(toString() + "Sending IP data to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
+		
+		XBeePacket xbeePacket = new TXIPv4Packet(getNextFrameID(), ipAddress, destPort, 
+				sourcePort, protocol, closeSocket ? TXIPv4Packet.OPTIONS_CLOSE_SOCKET: TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN, data);
+		
+		sendAndCheckXBeePacket(xbeePacket, false);
+	}
+	
+	/**
+	 * Sends the provided IP data to the given IP address and port 
+	 * asynchronously using the specified IP protocol. For TCP and TCP SSL 
+	 * protocols, you can also indicate if the socket should be closed when 
+	 * data is sent.
+	 * 
+	 * <p>Asynchronous transmissions do not wait for answer from the remote 
+	 * device or for transmit status packet.</p>
+	 * 
+	 * @param ipAddress The IP address to send IP data to.
+	 * @param destPort The destination port of the transmission.
+	 * @param protocol The IP protocol used for the transmission.
+	 * @param closeSocket {@code true} to close the socket just after the 
+	 *                    transmission. {@code false} to keep it open.
+	 * @param data Byte array containing the IP data to be sent.
+	 * 
+	 * @throws IllegalArgumentException if {@code destPort < 0} or 
+	 *                                  if {@code destPort > 65535}
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ipAddress == null} or 
+	 *                              if {@code protocol == null} or 
+	 *                              if {@code data == null}.
+	 * @throws TimeoutException if there is a timeout sending the data.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #sendBroadcastIPData(int, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPData(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet4Address, int, IPProtocol, boolean, byte[])
+	 * @see com.digi.xbee.api.models.IPProtocol
+	 * @see java.net.Inet4Address
+	 */
+	private void sendIPDataAsyncImpl(Inet4Address ipAddress, int destPort, 
+			IPProtocol protocol, boolean closeSocket, byte[] data) throws XBeeException {
+		if (ipAddress == null)
+			throw new NullPointerException("IP address cannot be null");
+		if (protocol == null)
+			throw new NullPointerException("Protocol cannot be null");
+		if (data == null)
+			throw new NullPointerException("Data cannot be null");
+		if (destPort < 0 || destPort > 65535)
+			throw new IllegalArgumentException("Destination port must be between 0 and 65535.");
+		
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send IP data from a remote device.");
+		
+		// The source port value depends on the protocol used in the transmission. For UDP, source port 
+		// value must be the same as 'C0' one. For TCP it must be 0.
+		int sourcePort = this.sourcePort;
+		if (protocol != IPProtocol.UDP)
+			sourcePort = 0;
+		
+		logger.debug(toString() + "Sending IP data asynchronously to {}:{} >> {}.", ipAddress, destPort, HexUtils.prettyHexString(data));
+		
+		XBeePacket xbeePacket = new TXIPv4Packet(getNextFrameID(), ipAddress, destPort, sourcePort, 
+				protocol, closeSocket ? TXIPv4Packet.OPTIONS_CLOSE_SOCKET: TXIPv4Packet.OPTIONS_LEAVE_SOCKET_OPEN, data);
+		
+		sendAndCheckXBeePacket(xbeePacket, true);
 	}
 }

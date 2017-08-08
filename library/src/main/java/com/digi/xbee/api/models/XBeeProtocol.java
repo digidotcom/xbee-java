@@ -41,6 +41,8 @@ public enum XBeeProtocol {
 	XLR_MODULE(14, "XLR Module"),
 	/** @since 1.2.0 */
 	CELLULAR(15, "Cellular"),
+	/** @since 1.2.1 */
+	CELLULAR_NBIOT(16, "Cellular NB-IoT"),
 	UNKNOWN(99, "Unknown");
 	
 	// Variables
@@ -230,8 +232,9 @@ public enum XBeeProtocol {
 		case CELLULAR_3G:
 		case CELLULAR_LTE_VERIZON:
 		case CELLULAR_LTE_ATT:
-		case CELLULAR_NBIOT_EUROPE:
 			return CELLULAR;
+		case CELLULAR_NBIOT_EUROPE:
+			return CELLULAR_NBIOT;
 		default:
 			return ZIGBEE;
 		}

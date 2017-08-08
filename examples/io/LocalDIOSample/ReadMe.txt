@@ -34,6 +34,7 @@
   Compatible protocols
   --------------------
     * 802.15.4
+    * Cellular
     * DigiMesh
     * Point-to-Multipoint
     * Wi-Fi

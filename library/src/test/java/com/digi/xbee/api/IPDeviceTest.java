@@ -387,42 +387,6 @@ public class IPDeviceTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#addIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}.
-	 * 
-	 * <p>Verify that the not supported methods of the IP device throw an
-	 * {@code UnsupportedOperationException}</p>.
-	 * 
-	 * @throws Exception
-	 */
-	@SuppressWarnings("deprecation")
-	@Test
-	public void testNotSupportedOperationsAddIOSampleListener() throws Exception {
-		exception.expect(UnsupportedOperationException.class);
-		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
-		
-		// Call the method that should throw the exception.
-		ipDevice.addIOSampleListener(null);
-	}
-	
-	/**
-	 * Test method for {@link com.digi.xbee.api.IPDevice#removeIOSampleListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}.
-	 * 
-	 * <p>Verify that the not supported methods of the IP device throw an
-	 * {@code UnsupportedOperationException}</p>.
-	 * 
-	 * @throws Exception
-	 */
-	@SuppressWarnings("deprecation")
-	@Test
-	public void testNotSupportedOperationRemoveIOSampleListener() throws Exception {
-		exception.expect(UnsupportedOperationException.class);
-		exception.expectMessage(is(equalTo("Operation not supported in this module.")));
-		
-		// Call the method that should throw the exception.
-		ipDevice.removeIOSampleListener(null);
-	}
-	
-	/**
 	 * Test method for {@link com.digi.xbee.api.IPDevice#readData()}.
 	 * 
 	 * <p>Verify that the not supported methods of the IP device throw an

@@ -28,7 +28,6 @@ import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
-import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IIPDataReceiveListener;
 import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.IPProtocol;
@@ -430,26 +429,6 @@ public class IPDevice extends XBeeDevice {
 	 */
 	@Override
 	public void removeDataListener(IDataReceiveListener listener) {
-		// Not supported in IP modules.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in this protocol. This method will
-	 *             raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public void addIOSampleListener(IIOSampleReceiveListener listener) {
-		// Not supported in IP modules.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in this protocol. This method will
-	 *             raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public void removeIOSampleListener(IIOSampleReceiveListener listener) {
 		// Not supported in IP modules.
 		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}

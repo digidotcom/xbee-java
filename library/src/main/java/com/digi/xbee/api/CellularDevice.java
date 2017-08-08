@@ -28,10 +28,9 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOLine;
-import com.digi.xbee.api.io.IOMode;
-import com.digi.xbee.api.io.IOSample;
-import com.digi.xbee.api.io.IOValue;
+import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
+import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.CellularAssociationIndicationStatus;
 import com.digi.xbee.api.models.PowerLevel;
 import com.digi.xbee.api.models.XBee64BitAddress;
@@ -348,6 +347,19 @@ public class CellularDevice extends IPDevice {
 	}
 	
 	/**
+	 * @deprecated Operation not supported in Cellular protocol. Use
+	 *             {@link #getCellularAssociationIndicationStatus()} instead.
+	 *             This method will raise an 
+	 *             {@link UnsupportedOperationException}.
+	 */
+	@Override
+	protected AssociationIndicationStatus getAssociationIndicationStatus()
+			throws TimeoutException, XBeeException {
+		// Not supported in Cellular.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
 	 * @deprecated Cellular protocol does not have an associated 64-bit address.
 	 */
 	@Override
@@ -357,13 +369,22 @@ public class CellularDevice extends IPDevice {
 	}
 	
 	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
+	 * @deprecated Operation not supported in this protocol. This method will
+	 *             raise an {@link UnsupportedOperationException}.
 	 */
 	@Override
-	public int getADCValue(IOLine ioLine) throws TimeoutException,
-			XBeeException {
-		// Not supported in Cellular.
+	public void addIOSampleListener(IIOSampleReceiveListener listener) {
+		// Not supported in IP modules.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in this protocol. This method will
+	 *             raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void removeIOSampleListener(IIOSampleReceiveListener listener) {
+		// Not supported in IP modules.
 		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 	
@@ -384,50 +405,6 @@ public class CellularDevice extends IPDevice {
 	 */
 	@Override
 	public void setDIOChangeDetection(Set<IOLine> lines)
-			throws TimeoutException, XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public IOValue getDIOValue(IOLine ioLine) throws TimeoutException,
-			XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public void setDIOValue(IOLine ioLine, IOValue ioValue)
-			throws TimeoutException, XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public IOMode getIOConfiguration(IOLine ioLine) throws TimeoutException,
-			XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public void setIOConfiguration(IOLine ioLine, IOMode ioMode)
 			throws TimeoutException, XBeeException {
 		// Not supported in Cellular.
 		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
@@ -490,38 +467,6 @@ public class CellularDevice extends IPDevice {
 	@Override
 	public void setPowerLevel(PowerLevel powerLevel) throws TimeoutException,
 			XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public double getPWMDutyCycle(IOLine ioLine) throws TimeoutException, 
-			XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public void setPWMDutyCycle(IOLine ioLine, double dutyCycle)
-			throws TimeoutException, XBeeException {
-		// Not supported in Cellular.
-		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
-	}
-	
-	/**
-	 * @deprecated Operation not supported in Cellular protocol. This method
-	 *             will raise an {@link UnsupportedOperationException}.
-	 */
-	@Override
-	public IOSample readIOSample() throws TimeoutException, XBeeException {
 		// Not supported in Cellular.
 		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}

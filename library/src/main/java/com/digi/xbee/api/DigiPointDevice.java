@@ -17,6 +17,8 @@ package com.digi.xbee.api;
 
 import android.content.Context;
 
+import java.net.Inet6Address;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
@@ -35,14 +37,18 @@ import com.digi.xbee.api.models.XBeeProtocol;
  * This class represents a local DigiPoint device.
  * 
  * @see XBeeDevice
- * @see CellularDevice
+ * @see DigiPointDevice
  * @see DigiMeshDevice
  * @see Raw802Device
  * @see WiFiDevice
  * @see ZigBeeDevice
+ * @see ThreadDevice
  */
 public class DigiPointDevice extends XBeeDevice {
 
+	// Constants
+	private static final String OPERATION_EXCEPTION = "Operation not supported in DigiPoint protocol.";
+	
 	/**
 	 * Class constructor. Instantiates a new {@code DigiPointDevice} object in the 
 	 * given port name and baud rate.
@@ -427,5 +433,36 @@ public class DigiPointDevice extends XBeeDevice {
 	public void sendExplicitDataAsync(XBee64BitAddress address64Bit, XBee16BitAddress address16Bit, int sourceEndpoint,
 			int destEndpoint, int clusterID, int profileID, byte[] data) throws XBeeException {
 		super.sendExplicitDataAsync(address64Bit, address16Bit, sourceEndpoint, destEndpoint, clusterID, profileID, data);
+	}
+	
+	/**
+	 * @deprecated DigiPoint protocol does not have an associated IPv6 address.
+	 */
+	@Override
+	public Inet6Address getIPv6Address() {
+		// DigiPoint protocol does not have IPv6 address.
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in DigiPoint protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public Inet6Address getIPv6DestinationAddress()
+			throws TimeoutException, XBeeException {
+		// Not supported in DigiPoint.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in DigiPoint protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIPv6DestinationAddress(Inet6Address ipv6Address)
+			throws TimeoutException, XBeeException {
+		// Not supported in DigiPoint.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 }

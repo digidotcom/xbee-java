@@ -17,6 +17,8 @@ package com.digi.xbee.api;
 
 import android.content.Context;
 
+import java.net.Inet6Address;
+
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
@@ -46,9 +48,13 @@ import com.digi.xbee.api.utils.HexUtils;
  * @see DigiPointDevice
  * @see Raw802Device
  * @see WiFiDevice
+ * @see ThreadDevice
  */
 public class ZigBeeDevice extends XBeeDevice {
 
+	// Constants
+	private static final String OPERATION_EXCEPTION = "Operation not supported in ZigBee protocol.";
+	
 	/**
 	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object in the 
 	 * given port name and baud rate.
@@ -574,5 +580,36 @@ public class ZigBeeDevice extends XBeeDevice {
 		XBeePacket xbeePacket = new ExplicitAddressingPacket(getNextFrameID(), XBee64BitAddress.UNKNOWN_ADDRESS, 
 				groupID, sourceEndpoint, destEndpoint, clusterID, profileID, 0, XBeeTransmitOptions.ENABLE_MULTICAST, data);
 		sendAndCheckXBeePacket(xbeePacket, true);
+	}
+	
+	/**
+	 * @deprecated ZigBee protocol does not have an associated IPv6 address.
+	 */
+	@Override
+	public Inet6Address getIPv6Address() {
+		// ZigBee protocol does not have IPv6 address.
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in ZigBee protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public Inet6Address getIPv6DestinationAddress()
+			throws TimeoutException, XBeeException {
+		// Not supported in ZigBee.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in ZigBee protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIPv6DestinationAddress(Inet6Address ipv6Address)
+			throws TimeoutException, XBeeException {
+		// Not supported in ZigBee.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 }

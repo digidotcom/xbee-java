@@ -16,6 +16,7 @@
 package com.digi.xbee.api;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.TimeoutException;
@@ -33,6 +34,7 @@ import com.digi.xbee.api.models.XBeeProtocol;
  * @see RemoteDigiPointDevice
  * @see RemoteRaw802Device
  * @see RemoteZigBeeDevice
+ * @see RemoteThreadDevice
  */
 public class RemoteXBeeDevice extends AbstractXBeeDevice {
 
@@ -80,6 +82,49 @@ public class RemoteXBeeDevice extends AbstractXBeeDevice {
 	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String ni) {
 		super(localXBeeDevice, addr64, addr16, ni);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param ipv6Addr The IPv6 address to identify this XBee device.
+	 * 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code ipv6Addr == null}.
+	 * 
+	 * @see java.net.Inet6Address
+	 */
+	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
+		super(localXBeeDevice, ipv6Addr);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param ipv6Addr The IPv6 address to identify this XBee device.
+	 * @param ni The node identifier of this remote XBee device. It might be 
+	 *           {@code null}.
+	 * 
+	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code ipv6Addr == null}.
+	 * 
+	 * @see java.net.Inet6Address
+	 */
+	public RemoteXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr,
+			String ni) {
+		super(localXBeeDevice, ipv6Addr, ni);
 	}
 	
 	/**

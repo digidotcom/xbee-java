@@ -54,6 +54,7 @@ import com.digi.xbee.api.utils.ByteUtils;
  * @see DigiPointDevice
  * @see Raw802Device
  * @see ZigBeeDevice
+ * @see ThreadDevice
  * 
  * @since 1.2.0
  */

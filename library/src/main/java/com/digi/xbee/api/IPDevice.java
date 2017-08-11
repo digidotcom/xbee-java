@@ -16,6 +16,7 @@
 package com.digi.xbee.api;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.UnknownHostException;
 
 import android.content.Context;
@@ -144,7 +145,7 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code IPDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * @param context The Android context.
@@ -166,7 +167,7 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code IPDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * @param context The Android context.
@@ -191,7 +192,7 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code IPDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * <p>This constructor uses the Digi Android Serial Port API based on the
@@ -218,7 +219,7 @@ public class IPDevice extends XBeeDevice {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code IPDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * <p>This constructor uses the Digi Android Serial Port API based on the
@@ -356,6 +357,34 @@ public class IPDevice extends XBeeDevice {
 		} catch (UnknownHostException e) {
 			throw new XBeeException(e);
 		}
+	}
+	
+	/**
+	 * @deprecated This protocol does not have an associated IPv6 address.
+	 */
+	@Override
+	public Inet6Address getIPv6Address() {
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in this protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public Inet6Address getIPv6DestinationAddress()
+			throws TimeoutException, XBeeException {
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in this protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIPv6DestinationAddress(Inet6Address ipv6Address)
+			throws TimeoutException, XBeeException {
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 	
 	/**

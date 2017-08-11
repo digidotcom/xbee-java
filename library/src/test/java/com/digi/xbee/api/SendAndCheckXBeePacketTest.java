@@ -70,11 +70,11 @@ public class SendAndCheckXBeePacketTest {
 		
 		// Mock Tx Status packet SUCCESS.
 		txStatusSuccess = Mockito.mock(TXStatusPacket.class);
-		Mockito.when(transmitStatusSuccess.getTransmitStatus()).thenReturn(XBeeTransmitStatus.SUCCESS);
+		Mockito.when(txStatusSuccess.getTransmitStatus()).thenReturn(XBeeTransmitStatus.SUCCESS);
 		
 		// Mock TX Status packet ERROR.
 		txStatusError = Mockito.mock(TXStatusPacket.class);
-		Mockito.when(transmitStatusError.getTransmitStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
+		Mockito.when(txStatusError.getTransmitStatus()).thenReturn(XBeeTransmitStatus.ADDRESS_NOT_FOUND);
 		
 		// Mock a RemoteXBeeDevice to be used as parameter in the send explicit data command.
 		mockedRemoteDevice = Mockito.mock(RemoteXBeeDevice.class);
@@ -333,7 +333,7 @@ public class SendAndCheckXBeePacketTest {
 	 * Test method for {@link com.digi.xbee.api.XBeeDevice#sendAndCheckXBeePacket(com.digi.xbee.api.packet.XBeePacket, boolean)}.
 	 * 
 	 * <p>Verify that the send and check method fails if there is an IO exception sending the packet and the 
-	 * transmission is synchronous.</p>
+	 * transmission is asynchronous.</p>
 	 * 
 	 * @throws XBeeException 
 	 * @throws TransmitException 

@@ -15,6 +15,8 @@
  */
 package com.digi.xbee.api;
 
+import java.net.Inet6Address;
+
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.AssociationIndicationStatus;
@@ -32,6 +34,9 @@ import com.digi.xbee.api.models.XBeeProtocol;
  */
 public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 
+	// Constants
+	private static final String OPERATION_EXCEPTION = "Operation not supported in ZigBee protocol.";
+	
 	/**
 	 * Class constructor. Instantiates a new {@code RemoteZigBeeDevice} object 
 	 * with the given local {@code ZigBeeDevice} which contains the connection 
@@ -133,5 +138,36 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	@Override
 	public void forceDisassociate() throws TimeoutException, XBeeException {
 		super.forceDisassociate();
+	}
+	
+	/**
+	 * @deprecated ZigBee protocol does not have an associated IPv6 address.
+	 */
+	@Override
+	public Inet6Address getIPv6Address() {
+		// ZigBee protocol does not have IPv6 address.
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in ZigBee protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public Inet6Address getIPv6DestinationAddress()
+			throws TimeoutException, XBeeException {
+		// Not supported in ZigBee.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in ZigBee protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIPv6DestinationAddress(Inet6Address ipv6Address)
+			throws TimeoutException, XBeeException {
+		// Not supported in ZigBee.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 }

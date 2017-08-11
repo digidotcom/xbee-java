@@ -69,7 +69,7 @@ public class IPDeviceTest {
 		ipDevice = PowerMockito.spy(new IPDevice(mockPort));
 		
 		// Mock an IP address object.
-		ipAddress = PowerMockito.mock(Inet4Address.class);
+		ipAddress = (Inet4Address) Inet4Address.getByAddress(RESPONSE_MY);
 	}
 	
 	/**
@@ -83,9 +83,6 @@ public class IPDeviceTest {
 	 */
 	@Test
 	public void testReadDeviceInfoIP() throws Exception {
-		// Whenever an Inet4Address object is instantiated, the mocked IP address should be returned.
-		PowerMockito.whenNew(Inet4Address.class).withAnyArguments().thenReturn(ipAddress);
-		
 		// Return a valid response when requesting the MY parameter value.
 		Mockito.doReturn(RESPONSE_MY).when(ipDevice).getParameter(PARAMETER_MY);
 		// Return a valid response when requesting the C0 parameter value.

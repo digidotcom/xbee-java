@@ -15,6 +15,8 @@
  */
 package com.digi.xbee.api;
 
+import java.net.Inet6Address;
+
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.AssociationIndicationStatus;
@@ -29,9 +31,13 @@ import com.digi.xbee.api.models.XBeeProtocol;
  * @see RemoteDigiMeshDevice
  * @see RemoteDigiPointDevice
  * @see RemoteZigBeeDevice
+ * @see RemoteThreadDevice
  */
 public class RemoteRaw802Device extends RemoteXBeeDevice {
 
+	// Constants
+	private static final String OPERATION_EXCEPTION = "Operation not supported in 802.15.4 protocol.";
+	
 	/**
 	 * Class constructor. Instantiates a new {@code RemoteRaw802Device} object 
 	 * with the given local {@code Raw802Device} which contains the connection 
@@ -167,5 +173,36 @@ public class RemoteRaw802Device extends RemoteXBeeDevice {
 	@Override
 	public AssociationIndicationStatus getAssociationIndicationStatus() throws TimeoutException, XBeeException {
 		return super.getAssociationIndicationStatus();
+	}
+	
+	/**
+	 * @deprecated 802.15.4 protocol does not have an associated IPv6 address.
+	 */
+	@Override
+	public Inet6Address getIPv6Address() {
+		// 802.15.4 protocol does not have IPv6 address.
+		return null;
+	}
+	
+	/**
+	 * @deprecated Operation not supported in 802.15.4 protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public Inet6Address getIPv6DestinationAddress()
+			throws TimeoutException, XBeeException {
+		// Not supported in 802.15.4.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
+	}
+	
+	/**
+	 * @deprecated Operation not supported in 802.15.4 protocol. This method
+	 *             will raise an {@link UnsupportedOperationException}.
+	 */
+	@Override
+	public void setIPv6DestinationAddress(Inet6Address ipv6Address)
+			throws TimeoutException, XBeeException {
+		// Not supported in 802.15.4.
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 }

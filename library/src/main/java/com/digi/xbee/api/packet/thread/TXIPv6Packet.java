@@ -13,11 +13,11 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF 
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package com.digi.xbee.api.packet.ip;
+package com.digi.xbee.api.packet.thread;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -25,36 +25,38 @@ import java.util.LinkedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digi.xbee.api.IPDevice;
 import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
- * This class represents an RX (Receive) IPv4 packet. Packet is built
+ * This class represents a TX (Transmit) IPv6 packet. Packet is built
  * using the parameters of the constructor or providing a valid API payload.
  *
- * @see TXIPv4Packet
+ * @see RXIPv6Packet
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
  * 
- * @since 1.2.0
+ * @since 1.2.1
  */
-public class RXIPv4Packet extends XBeeAPIPacket {
+public class TXIPv6Packet extends XBeeAPIPacket {
 
 	// Constants.
-	private static final int MIN_API_PAYLOAD_LENGTH = 11; /* 1 (Frame type) + 4 (source address) + 2 (dest port) +
-																2 (source port) + 1 (protocol) + 1 (status) */
+	private static final int MIN_API_PAYLOAD_LENGTH = 24; /* 1 (Frame type) + 1 (frame ID) + 16 (dest address) + 2 (dest port) +
+																2 (source port) + 1 (protocol) + 1 (transmit options) */
 
-	private static final String ERROR_PAYLOAD_NULL = "RX IPv4 packet payload cannot be null.";
-	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete RX IPv4 packet.";
-	private static final String ERROR_NOT_RXIPV4 = "Payload is not a RX IPv4 packet.";
-	private static final String ERROR_SOURCE_ADDR_NULL = "Source address cannot be null.";
+	private static final String ERROR_PAYLOAD_NULL = "TX IPv6 packet payload cannot be null.";
+	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete TX IPv6 packet.";
+	private static final String ERROR_NOT_TXIPV6 = "Payload is not a TX IPv6 packet.";
+	private static final String ERROR_DEST_ADDR_NULL = "Destination address cannot be null.";
 	private static final String ERROR_PROTOCOL_NULL = "Protocol cannot be null.";
+	private static final String ERROR_FRAME_ID_ILLEGAL = "Frame ID must be between 0 and 255.";
 	private static final String ERROR_PORT_ILLEGAL = "Port must be between 0 and 65535.";
 
+	private static final String OPERATION_EXCEPTION = "Operation not supported in this module.";
+
 	// Variables.
-	private Inet4Address sourceAddress;
+	private Inet6Address destAddress;
 
 	private int destPort;
 	private int sourcePort;
@@ -66,39 +68,43 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	private Logger logger;
 
 	/**
-	 * Creates a new {@code RXIPv4Packet} object from the given payload.
+	 * Creates a new {@code TXIPv6Packet} object from the given payload.
 	 *
 	 * @param payload The API frame payload. It must start with the frame type
-	 *                corresponding to a RX IPv4 packet ({@code 0xB0}).
+	 *                corresponding to a TX IPv6 packet ({@code 0x1A}).
 	 *                The byte array must be in {@code OperatingMode.API} mode.
 	 *
-	 * @return Parsed RX IPv4 packet.
+	 * @return Parsed TX IPv6 packet.
 	 *
-	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_IPV4.getValue()} or
+	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.TX_IPV6.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
-	public static RXIPv4Packet createPacket(byte[] payload) {
+	public static TXIPv6Packet createPacket(byte[] payload) {
 		if (payload == null)
 			throw new NullPointerException(ERROR_PAYLOAD_NULL);
 
 		if (payload.length < MIN_API_PAYLOAD_LENGTH)
 			throw new IllegalArgumentException(ERROR_INCOMPLETE_PACKET);
 
-		if ((payload[0] & 0xFF) != APIFrameType.RX_IPV4.getValue())
-			throw new IllegalArgumentException(ERROR_NOT_RXIPV4);
+		if ((payload[0] & 0xFF) != APIFrameType.TX_IPV6.getValue())
+			throw new IllegalArgumentException(ERROR_NOT_TXIPV6);
 
 		// payload[0] is the frame type.
 		int index = 1;
 
-		// 4 bytes of IP source address.
-		Inet4Address sourceAddress;
+		// Frame ID byte.
+		int frameID = payload[index] & 0xFF;
+		index = index + 1;
+
+		// 16 bytes of IP destination address.
+		Inet6Address destAddress;
 		try {
-			sourceAddress = (Inet4Address) Inet4Address.getByAddress(Arrays.copyOfRange(payload, index, index + 4));
+			destAddress = (Inet6Address) Inet6Address.getByAddress(Arrays.copyOfRange(payload, index, index + 16));
 		} catch (UnknownHostException e) {
 			throw new IllegalArgumentException(e);
 		}
-		index = index + 4;
+		index = index + 16;
 
 		// 2 bytes of destination port.
 		int destPort = (payload[index] & 0xFF) << 8 | payload[index + 1] & 0xFF;
@@ -112,7 +118,7 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 		IPProtocol protocol = IPProtocol.get(payload[index] & 0xFF);
 		index = index + 1;
 
-		// Status byte, reserved.
+		// Transmit options byte, reserved.
 		index = index + 1;
 
 		// Get data.
@@ -120,49 +126,54 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 		if (index < payload.length)
 			data = Arrays.copyOfRange(payload, index, payload.length);
 
-		return new RXIPv4Packet(sourceAddress, destPort, sourcePort, protocol, data);
+		return new TXIPv6Packet(frameID, destAddress, destPort, sourcePort, protocol, data);
 	}
 
 	/**
-	 * Class constructor. Instantiates a new {@code RXIPv4Packet} object with
+	 * Class constructor. Instantiates a new {@code TXIPv6Packet} object with
 	 * the given parameters.
 	 *
-	 * @param sourceAddress IP address of the source device.
+	 * @param frameID Frame ID.
+	 * @param destAddress IPv6 address of the destination device.
 	 * @param destPort Destination port number.
 	 * @param sourcePort Source port number.
 	 * @param protocol Protocol used for transmitted data.
-	 * @param data Receive data bytes.
+	 * @param data Transmit data bytes.
 	 *
-	 * @throws IllegalArgumentException if {@code destPort < 0} or
+	 * @throws IllegalArgumentException if {@code frameID < 0} or
+	 *                                  if {@code frameID > 255} or
+	 *                                  if {@code destPort < 0} or
 	 *                                  if {@code destPort > 65535} or
 	 *                                  if {@code sourcePort < 0} or
-	 *                                  if {@code sourcePort > 65535} or
-	 *                                  if {@code transmitOptions} are invalid.
-	 * @throws NullPointerException if {@code sourceAddress == null} or
+	 *                                  if {@code sourcePort > 65535}.
+	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code protocol == null}.
 	 *
 	 * @see IPProtocol
-	 * @see java.net.Inet4Address
+	 * @see java.net.Inet6Address
 	 */
-	public RXIPv4Packet(Inet4Address sourceAddress, int destPort,
-			int sourcePort, IPProtocol protocol, byte[] data) {
-		super(APIFrameType.RX_IPV4);
+	public TXIPv6Packet(int frameID, Inet6Address destAddress, int destPort, int sourcePort,
+			IPProtocol protocol, byte[] data) {
+		super(APIFrameType.TX_IPV6);
 
+		if (frameID < 0 || frameID > 255)
+			throw new IllegalArgumentException(ERROR_FRAME_ID_ILLEGAL);
 		if (destPort < 0 || destPort > 65535)
 			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
 		if (sourcePort < 0 || sourcePort > 65535)
 			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
-		if (sourceAddress == null)
-			throw new NullPointerException(ERROR_SOURCE_ADDR_NULL);
+		if (destAddress == null)
+			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
 		if (protocol == null)
 			throw new NullPointerException(ERROR_PROTOCOL_NULL);
 
-		this.sourceAddress = sourceAddress;
+		this.frameID = frameID;
+		this.destAddress = destAddress;
 		this.destPort = destPort;
 		this.sourcePort = sourcePort;
 		this.protocol = protocol;
 		this.data = data;
-		this.logger = LoggerFactory.getLogger(RXIPv4Packet.class);
+		this.logger = LoggerFactory.getLogger(TXIPv6Packet.class);
 	}
 
 	/*
@@ -173,13 +184,13 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(sourceAddress.getAddress());
+			os.write(destAddress.getAddress());
 			os.write(destPort >> 8);
 			os.write(destPort);
 			os.write(sourcePort >> 8);
 			os.write(sourcePort);
 			os.write(protocol.getID());
-			os.write(0x00); // Status byte, reserved.
+			os.write(0x00); // Transmit options byte is always 0 (Reserved).
 			if (data != null)
 				os.write(data);
 		} catch (IOException e) {
@@ -194,45 +205,45 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	 */
 	@Override
 	public boolean needsAPIFrameID() {
-		return false;
+		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.digi.xbee.api.packet.XBeeAPIPacket#isBroadcast()
+	/**
+	 * @deprecated Operation not supported in this protocol. This method will
+	 *             raise an {@link UnsupportedOperationException}.
 	 */
 	@Override
 	public boolean isBroadcast() {
-		return sourceAddress.getHostAddress().equals(IPDevice.BROADCAST_IP);
+		throw new UnsupportedOperationException(OPERATION_EXCEPTION);
 	}
 
 	/**
-	 * Retrieves the source IP address.
+	 * Retrieves the destination IPv6 address.
 	 *
-	 * @return The source IP address.
+	 * @return The destination IPv6 address.
 	 *
-	 * @see #setSourceAddress(Inet4Address)
-	 * @see java.net.Inet4Address
+	 * @see #setDestAddress(Inet6Address)
+	 * @see java.net.Inet6Address
 	 */
-	public Inet4Address getSourceAddress() {
-		return sourceAddress;
+	public Inet6Address getDestAddress() {
+		return destAddress;
 	}
 
 	/**
-	 * Sets the source IP address.
+	 * Sets the destination IPv6 address.
 	 *
-	 * @param sourceAddress The new source IP address.
+	 * @param destAddress The new destination IPv6 address.
 	 *
-	 * @throws NullPointerException if {@code sourceAddress == null}.
+	 * @throws NullPointerException if {@code destAddress == null}.
 	 *
-	 * @see #getSourceAddress()
-	 * @see java.net.Inet4Address
+	 * @see #getDestAddress()
+	 * @see java.net.Inet6Address
 	 */
-	public void setSourceAddress(Inet4Address sourceAddress) {
-		if (sourceAddress == null)
-			throw new NullPointerException(ERROR_SOURCE_ADDR_NULL);
+	public void setDestAddress(Inet6Address destAddress) {
+		if (destAddress == null)
+			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
 
-		this.sourceAddress = sourceAddress;
+		this.destAddress = destAddress;
 	}
 
 	/**
@@ -321,9 +332,18 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Retrieves the received data.
+	 * Retrieves the transmit options.
 	 *
-	 * @return The received data.
+	 * @return Transmit options.
+	 */
+	public int getTransmitOptions() {
+		return 0x00; // Transmit options byte is always 0, reserved.
+	}
+
+	/**
+	 * Retrieves the transmission data.
+	 *
+	 * @return The transmission data.
 	 *
 	 * @see #setData(byte[])
 	 */
@@ -334,9 +354,9 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Sets the new received data.
+	 * Sets the new transmission data.
 	 *
-	 * @param data The received data.
+	 * @param data The transmission data.
 	 *
 	 * @see #getData()
 	 */
@@ -354,11 +374,11 @@ public class RXIPv4Packet extends XBeeAPIPacket {
 	@Override
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-		parameters.put("Source address", HexUtils.prettyHexString(sourceAddress.getAddress()) + " (" + sourceAddress.getHostAddress() + ")");
+		parameters.put("Destination address", HexUtils.prettyHexString(destAddress.getAddress()) + " (" + destAddress.getHostAddress() + ")");
 		parameters.put("Destination port", HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")");
 		parameters.put("Source port", HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")");
 		parameters.put("Protocol", HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")");
-		parameters.put("Status", HexUtils.prettyHexString(HexUtils.integerToHexString(0x00, 1)) + " (Reserved)"); // Status byte is always 0.
+		parameters.put("Transmit options", "00 (Reserved)");
 		if (data != null)
 			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		return parameters;

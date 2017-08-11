@@ -52,6 +52,13 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.packet.thread.CoAPRxResponsePacket;
+import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
+import com.digi.xbee.api.packet.thread.IPv6IODataSampleRxIndicator;
+import com.digi.xbee.api.packet.thread.IPv6RemoteATCommandRequestPacket;
+import com.digi.xbee.api.packet.thread.IPv6RemoteATCommandResponsePacket;
+import com.digi.xbee.api.packet.thread.RXIPv6Packet;
+import com.digi.xbee.api.packet.thread.TXIPv6Packet;
 import com.digi.xbee.api.packet.wifi.IODataSampleRxIndicatorWifiPacket;
 import com.digi.xbee.api.packet.wifi.RemoteATCommandResponseWifiPacket;
 import com.digi.xbee.api.packet.wifi.RemoteATCommandWifiPacket;
@@ -312,11 +319,17 @@ public class XBeePacketParser {
 		case REMOTE_AT_COMMAND_REQUEST:
 			packet = RemoteATCommandPacket.createPacket(payload);
 			break;
+		case IPV6_REMOTE_AT_COMMAND_REQUEST:
+			packet = IPv6RemoteATCommandRequestPacket.createPacket(payload);
+			break;
 		case TX_SMS:
 			packet = TXSMSPacket.createPacket(payload);
 			break;
 		case TX_IPV4:
 			packet = TXIPv4Packet.createPacket(payload);
+			break;
+		case TX_IPV6:
+			packet = TXIPv6Packet.createPacket(payload);
 			break;
 		case SEND_DATA_REQUEST:
 			packet = SendDataRequestPacket.createPacket(payload);
@@ -329,6 +342,9 @@ public class XBeePacketParser {
 			break;
 		case RX_16:
 			packet = RX16Packet.createPacket(payload);
+			break;
+		case RX_IPV6:
+			packet = RXIPv6Packet.createPacket(payload);
 			break;
 		case RX_IO_64:
 			packet = RX64IOPacket.createPacket(payload);
@@ -363,8 +379,14 @@ public class XBeePacketParser {
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			packet = IODataSampleRxIndicatorPacket.createPacket(payload);
 			break;
+		case IPV6_IO_DATA_SAMPLE_RX_INDICATOR:
+			packet = IPv6IODataSampleRxIndicator.createPacket(payload);
+			break;
 		case REMOTE_AT_COMMAND_RESPONSE:
 			packet = RemoteATCommandResponsePacket.createPacket(payload);
+			break;
+		case IPV6_REMOTE_AT_COMMAND_RESPONSE:
+			packet = IPv6RemoteATCommandResponsePacket.createPacket(payload);
 			break;
 		case RX_SMS:
 			packet = RXSMSPacket.createPacket(payload);
@@ -380,6 +402,12 @@ public class XBeePacketParser {
 			break;
 		case DEVICE_RESPONSE_STATUS:
 			packet = DeviceResponseStatusPacket.createPacket(payload);
+			break;
+		case COAP_TX_REQUEST:
+			packet = CoAPTxRequestPacket.createPacket(payload);
+			break;
+		case COAP_RX_RESPONSE:
+			packet = CoAPRxResponsePacket.createPacket(payload);
 			break;
 		case FRAME_ERROR:
 			packet = FrameErrorPacket.createPacket(payload);

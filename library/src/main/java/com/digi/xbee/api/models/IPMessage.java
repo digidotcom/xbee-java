@@ -16,6 +16,7 @@
 package com.digi.xbee.api.models;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 
 /**
  * This class represents an IP message containing the IP address the 
@@ -31,6 +32,7 @@ public class IPMessage {
 
 	// Variables.
 	private final Inet4Address ipAddress;
+	private final Inet6Address ipv6Address;
 	
 	private final byte[] data;
 	
@@ -62,19 +64,75 @@ public class IPMessage {
 	 */
 	public IPMessage(Inet4Address ipAddress, int sourcePort, int destPort, 
 			IPProtocol protocol, byte[] data) {
-		if (ipAddress == null)
+		this(ipAddress, null, sourcePort, destPort, protocol, data);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code IPMessage} with the given parameters.
+	 * 
+	 * @param ipv6Address The IPv6 address the message comes from.
+	 * @param sourcePort TCP or UDP source port of the transmission.
+	 * @param destPort TCP or UDP destination port of the transmission.
+	 * @param protocol IP protocol used in the transmission.
+	 * @param data Byte array containing the data of the message.
+	 * 
+	 * @throws IllegalArgumentException if {@code sourcePort < 0} or
+	 *                                  if {@code sourcePort > 65535} or
+	 *                                  if {@code destPort < 0} or
+	 *                                  if {@code destPort > 65535}.
+	 * @throws NullPointerException if {@code ipv6Address == null} or
+	 *                              if {@code data == null} or
+	 *                              if {@code protocol ==  null}.
+	 * 
+	 * @see com.digi.xbee.api.models.IPProtocol
+	 * @see java.net.Inet4Address
+	 */
+	public IPMessage(Inet6Address ipv6Address, int sourcePort, int destPort, 
+			IPProtocol protocol, byte[] data) {
+		this(null, ipv6Address, sourcePort, destPort, protocol, data);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new object of type 
+	 * {@code IPMessage} with the given parameters.
+	 * 
+	 * @param ipAddress The IP address the message comes from.
+	 * @param ipv6Address The IPv6 address the message comes from.
+	 * @param sourcePort TCP or UDP source port of the transmission.
+	 * @param destPort TCP or UDP destination port of the transmission.
+	 * @param protocol IP protocol used in the transmission.
+	 * @param data Byte array containing the data of the message.
+	 * 
+	 * @throws IllegalArgumentException if {@code sourcePort < 0} or
+	 *                                  if {@code sourcePort > 65535} or
+	 *                                  if {@code destPort < 0} or
+	 *                                  if {@code destPort > 65535}.
+	 * @throws NullPointerException if {@code ipAddress == null && ipv6Address == null} or
+	 *                              if {@code data == null} or
+	 *                              if {@code protocol ==  null}.
+	 * 
+	 * @see com.digi.xbee.api.models.IPProtocol
+	 * @see java.net.Inet4Address
+	 */
+	private IPMessage(Inet4Address ipAddress, Inet6Address ipv6Address, int sourcePort, 
+			int destPort, IPProtocol protocol, byte[] data) {
+		if (ipAddress == null && ipv6Address == null)
 			throw new NullPointerException("IP address cannot be null.");
 		if (protocol == null)
 			throw new NullPointerException("Protocol cannot be null.");
 		if (data == null)
 			throw new NullPointerException("Data cannot be null.");
 		
+		if (ipAddress != null && ipv6Address != null)
+			throw new NullPointerException("There cannot be 2 types of IP addresses (IPv4 and IPv6) for one message.");
 		if (sourcePort < 0 || sourcePort > 65535)
 			throw new IllegalArgumentException("Source port must be between 0 and 65535.");
 		if (destPort < 0 || destPort > 65535)
 			throw new IllegalArgumentException("Destination port must be between 0 and 65535.");
 		
 		this.ipAddress = ipAddress;
+		this.ipv6Address = ipv6Address;
 		this.sourcePort = sourcePort;
 		this.destPort = destPort;
 		this.protocol = protocol;
@@ -90,6 +148,31 @@ public class IPMessage {
 	 */
 	public Inet4Address getIPAddress() {
 		return ipAddress;
+	}
+	
+	/**
+	 * Returns the IPv6 address this message is associated to.
+	 * 
+	 * @return The IPv6 address this message is associated to.
+	 * 
+	 * @see java.net.Inet6Address
+	 */
+	public Inet6Address getIPv6Address() {
+		return ipv6Address;
+	}
+	
+	/**
+	 * Returns the IPv6 address this message is associated to.
+	 * 
+	 * @return The IPv6 address this message is associated to.
+	 * 
+	 * @see java.net.Inet6Address
+	 */
+	public String getHostAddress() {
+		if (ipAddress == null)
+			return ipv6Address.getHostAddress();
+		else
+			return ipAddress.getHostAddress();
 	}
 	
 	/**

@@ -16,6 +16,8 @@
 package com.digi.xbee.api;
 
 import java.io.IOException;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
@@ -55,6 +57,7 @@ import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.HardwareVersion;
 import com.digi.xbee.api.models.PowerLevel;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
+import com.digi.xbee.api.models.RestFulStatusEnum;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.OperatingMode;
@@ -73,6 +76,10 @@ import com.digi.xbee.api.packet.common.TransmitStatusPacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.packet.thread.CoAPRxResponsePacket;
+import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
+import com.digi.xbee.api.packet.thread.IPv6RemoteATCommandRequestPacket;
+import com.digi.xbee.api.packet.thread.IPv6RemoteATCommandResponsePacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -132,6 +139,8 @@ public abstract class AbstractXBeeDevice {
 	
 	protected XBee16BitAddress xbee16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
 	protected XBee64BitAddress xbee64BitAddress = XBee64BitAddress.UNKNOWN_ADDRESS;
+	
+	protected Inet6Address ipv6Address = null;
 	
 	protected int currentFrameID = 0xFF;
 	protected int receiveTimeout = DEFAULT_RECEIVE_TIMETOUT;
@@ -385,6 +394,73 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param ipv6Addr The IPv6 address to identify this XBee device.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code ipv6Addr == null}.
+	 * 
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see java.net.Inet6Address
+	 */
+	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
+		this(localXBeeDevice, ipv6Addr, null);
+	}
+	
+	/**
+	 * Class constructor. Instantiates a new {@code RemoteXBeeDevice} object 
+	 * with the given local {@code XBeeDevice} which contains the connection 
+	 * interface to be used.
+	 * 
+	 * @param localXBeeDevice The local XBee device that will behave as 
+	 *                        connection interface to communicate with this 
+	 *                        remote XBee device.
+	 * @param ipv6Addr The IPv6 address to identify this XBee device.
+	 * @param id The node identifier of this XBee device. It might be 
+	 *           {@code null}.
+	 * 
+	 * @throws IllegalArgumentException If {@code localXBeeDevice.isRemote() == true}.
+	 * @throws NullPointerException if {@code localXBeeDevice == null} or
+	 *                              if {@code ipv6Addr == null}.
+	 * 
+	 * @see #AbstractXBeeDevice(IConnectionInterface)
+	 * @see #AbstractXBeeDevice(String, int)
+	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
+	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
+	 * @see #AbstractXBeeDevice(Context, int)
+	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
+	 * @see java.net.Inet6Address
+	 */
+	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String id) {
+		if (localXBeeDevice == null)
+			throw new NullPointerException("Local XBee device cannot be null.");
+		if (ipv6Addr == null)
+			throw new NullPointerException("XBee IPv6 address of the device cannot be null.");
+		if (localXBeeDevice.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
+		
+		this.localXBeeDevice = localXBeeDevice;
+		this.connectionInterface = localXBeeDevice.getConnectionInterface();
+		this.ipv6Address = ipv6Addr;
+		this.nodeID = id;
+		this.logger = LoggerFactory.getLogger(this.getClass());
+		logger.debug(toString() + "Using the connection interface {}.", 
+				connectionInterface.getClass().getSimpleName());
+	}
+	
+	/**
 	 * Returns the connection interface associated to this XBee device.
 	 * 
 	 * @return XBee device's connection interface.
@@ -513,6 +589,19 @@ public abstract class AbstractXBeeDevice {
 	 */
 	public XBee64BitAddress get64BitAddress() {
 		return xbee64BitAddress;
+	}
+	
+	/**
+	 * Returns the IPv6 address of this IPv6 device.
+	 * 
+	 * <p>To refresh this value use the {@link #readDeviceInfo()} method.</p>
+	 * 
+	 * @return The IPv6 address of this IPv6 device.
+	 * 
+	 * @see java.net.Inet6Address
+	 */
+	public Inet6Address getIPv6Address() {
+		return ipv6Address;
 	}
 	
 	/**
@@ -1017,16 +1106,21 @@ public abstract class AbstractXBeeDevice {
 			// Create the corresponding AT command packet depending on if the device is local or remote.
 			XBeePacket packet;
 			if (isRemote()) {
-				XBee16BitAddress remote16BitAddress = get16BitAddress();
-				if (remote16BitAddress == null)
-					remote16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
-				
 				int remoteATCommandOptions = RemoteATCommandOptions.OPTION_NONE;
 				if (isApplyConfigurationChangesEnabled())
 					remoteATCommandOptions |= RemoteATCommandOptions.OPTION_APPLY_CHANGES;
 				
-				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), 
-						remote16BitAddress, remoteATCommandOptions, command.getCommand(), command.getParameter());
+				if (getXBeeProtocol() == XBeeProtocol.THREAD) {
+					packet = new IPv6RemoteATCommandRequestPacket(getNextFrameID(), ipv6Address,
+							remoteATCommandOptions, command.getCommand(), command.getParameter());
+				} else{
+					XBee16BitAddress remote16BitAddress = get16BitAddress();
+					if (remote16BitAddress == null)
+						remote16BitAddress = XBee16BitAddress.UNKNOWN_ADDRESS;
+					
+					packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), 
+							remote16BitAddress, remoteATCommandOptions, command.getCommand(), command.getParameter());
+				}
 			} else {
 				if (isApplyConfigurationChangesEnabled())
 					packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
@@ -1051,6 +1145,9 @@ public abstract class AbstractXBeeDevice {
 					response = new ATCommandResponse(command, r.getCommandValue(), r.getStatus());
 				} else if (answerPacket instanceof RemoteATCommandResponsePacket) {
 					RemoteATCommandResponsePacket r = (RemoteATCommandResponsePacket)answerPacket;
+					response = new ATCommandResponse(command, r.getCommandValue(), r.getStatus());
+				} else if (answerPacket instanceof IPv6RemoteATCommandResponsePacket) {
+					IPv6RemoteATCommandResponsePacket r = (IPv6RemoteATCommandResponsePacket)answerPacket;
 					response = new ATCommandResponse(command, r.getCommandValue(), r.getStatus());
 				}
 				
@@ -1423,6 +1520,146 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
+	 * Sends the provided {@code CoAPTxRequestPacket} and determines if the 
+	 * transmission status and CoAP RX Response are success for synchronous 
+	 * transmissions.
+	 * 
+	 * <p>If the status or the CoAP response are not successful, an 
+	 * {@code TransmitException} is thrown.</p>
+	 * 
+	 * @param packet The {@code CoAPTxRequestPacket} to be sent.
+	 * @param asyncTransmission Determines whether the transmission must be 
+	 *                          asynchronous.
+	 * 
+	 * @return A byte array containing the RfData of the CoAP RX Response 
+	 *         packet, if that field is not empty. In other cases, it will 
+	 *         return {@code null}.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code packet == null}.
+	 * @throws TransmitException if {@code packet} is not an instance of 
+	 *                           {@code TransmitStatusPacket} or 
+	 *                           if {@code packet} is not an instance of 
+	 *                           {@code TXStatusPacket} or 
+	 *                           if its transmit status is different than 
+	 *                           {@code XBeeTransmitStatus.SUCCESS}.
+	 * @throws XBeeException if CoAP response packet is not received or it is 
+	 *                       not successful or if there is any other XBee 
+	 *                       related error.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 */
+	protected byte[] sendAndCheckCoAPPacket(CoAPTxRequestPacket packet,
+			boolean asyncTransmission) throws TransmitException, XBeeException {
+		// Add listener to read CoAP response (when sending a CoAP transmission, 
+		// a transmit status and a CoAP response are received by the sender)
+		ArrayList<CoAPRxResponsePacket> coapResponsePackets = new ArrayList<CoAPRxResponsePacket>();
+		IPacketReceiveListener listener = createCoAPResponseListener(coapResponsePackets);
+		addPacketListener(listener);
+		
+		// Send the XBee packet.
+		XBeePacket receivedPacket = null;
+		try {
+			if (asyncTransmission)
+				sendXBeePacketAsync(packet);
+			else
+				receivedPacket = sendXBeePacket(packet);
+		} catch (IOException e) {
+			throw new XBeeException("Error writing in the communication interface.", e);
+		}
+		
+		// If the transmission is async. we are done.
+		if (asyncTransmission)
+			return null;
+		
+		if (receivedPacket == null)
+			throw new TransmitException(null);
+		
+		// Verify Transmit status.
+		XBeeTransmitStatus status = null;
+		if (receivedPacket instanceof TXStatusPacket)
+			status = ((TXStatusPacket)receivedPacket).getTransmitStatus();
+		
+		if (status == null || 
+				(status != XBeeTransmitStatus.SUCCESS && status != XBeeTransmitStatus.SELF_ADDRESSED)) 
+			throw new TransmitException(status);
+		
+		// Verify CoAP response (only expect one CoAP RX Response packet).
+		CoAPRxResponsePacket coapRxPacket = null;
+		try {
+			coapRxPacket = waitForCoAPRxResponsePacket(coapResponsePackets);
+		} finally {
+			// Always remove the packet listener from the list.
+			removePacketListener(listener);
+		}
+		if (coapRxPacket == null)
+			throw new XBeeException("CoAP response was null.");
+		return coapRxPacket.getRfData();
+	}
+	
+	/**
+	 * Returns the CoAP packet listener corresponding to the provided sent CoAP 
+	 * packet. 
+	 * 
+	 * <p>The listener will filter CoAP Rx Response packets (0x9C) and storing 
+	 * them in the provided responseList array.</p>
+	 * 
+	 * @param coapResponsePackets List of CoAP Rx Response packets received.
+	 * 
+	 * @return A CoAP packet receive listener.
+	 * 
+	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
+	 * @see com.digi.xbee.api.packet.thread.CoAPRxResponsePacket
+	 */
+	private IPacketReceiveListener createCoAPResponseListener(final ArrayList<CoAPRxResponsePacket> coapResponsePackets) {
+		IPacketReceiveListener listener = new IPacketReceiveListener() {
+			
+			@Override
+			public void packetReceived(XBeePacket receivedPacket) {
+				if (receivedPacket instanceof CoAPRxResponsePacket) {
+					coapResponsePackets.add((CoAPRxResponsePacket)receivedPacket);
+					coapResponsePackets.notifyAll();
+				}
+			}
+		};
+		return listener;
+	}
+	
+	/**
+	 * Returns the CoAP Rx Response packet that comes in through the serial 
+	 * port in the given timeout.
+	 * 
+	 * @param coapResponsePackets List of packets where the received packet will be stored.
+	 * 
+	 * @return CoAP Rx Response packet received.
+	 * 
+	 * @throws XBeeException if CoAP response packet is not received or it is 
+	 *                       not successful or if there is any other XBee 
+	 *                       related error.
+	 */
+	private CoAPRxResponsePacket waitForCoAPRxResponsePacket(ArrayList<CoAPRxResponsePacket> coapResponsePackets) throws XBeeException {
+		synchronized (coapResponsePackets) {
+			try {
+				coapResponsePackets.wait(receiveTimeout);
+			} catch (InterruptedException e) {}
+		}
+		
+		if (!coapResponsePackets.isEmpty()) {
+			RestFulStatusEnum responseStatus = coapResponsePackets.get(0).getStatus();
+			if (responseStatus != RestFulStatusEnum.SUCCESS
+					&& responseStatus != RestFulStatusEnum.CREATED
+					&& responseStatus != RestFulStatusEnum.ACCEPTED
+					&& responseStatus != RestFulStatusEnum.NON_AUTHORITATIVE
+					&& responseStatus != RestFulStatusEnum.NO_CONTENT
+					&& responseStatus != RestFulStatusEnum.RESET_CONTENT)
+				throw new XBeeException("CoAP response had an unexpected status: " + responseStatus.toString());
+		} else {
+			throw new XBeeException("CoAP response was not received.");
+		}
+		return coapResponsePackets.get(0);
+	}
+	
+	/**
 	 * Sets the configuration of the given IO line of this XBee device.
 	 * 
 	 * @param ioLine The IO line to configure.
@@ -1773,6 +2010,46 @@ public abstract class AbstractXBeeDevice {
 		System.arraycopy(dl, 0, address, dh.length, dl.length);
 		
 		return new XBee64BitAddress(address);
+	}
+	
+	/**
+	 * Sets the destination IPv6 address.
+	 * 
+	 * @param ipv6Address Destination IPv6 address.
+	 * 
+	 * @throws NullPointerException if {@code address == null}.
+	 * @throws TimeoutException if there is a timeout setting the destination
+	 *                          address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getDestinationIPAddress()
+	 * @see java.net.Inet6Address
+	 */
+	public void setIPv6DestinationAddress(Inet6Address ipv6Address) throws TimeoutException, XBeeException {
+		if (ipv6Address == null)
+			throw new NullPointerException("Destination IPv6 address cannot be null.");
+		
+		setParameter("DL", ipv6Address.getAddress());
+	}
+	
+	/**
+	 * Returns the destination IPv6 address.
+	 * 
+	 * @return The configured destination IPv6 address.
+	 * 
+	 * @throws TimeoutException if there is a timeout reading the destination
+	 *                          address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #setDestinationIPAddress(Inet6Address)
+	 * @see java.net.Inet6Address
+	 */
+	public Inet6Address getIPv6DestinationAddress() throws TimeoutException, XBeeException {
+		try {
+			return (Inet6Address) Inet6Address.getByAddress(getParameter("DL"));
+		} catch (UnknownHostException e) {
+			throw new XBeeException(e);
+		}
 	}
 	
 	/**

@@ -27,6 +27,7 @@ public enum IPProtocol {
 	// Enumeration types.
 	UDP(0, "UDP"),
 	TCP(1, "TCP"),
+	COAP(3, "CoAP"),
 	TCP_SSL(4, "TCP SSL");
 
 	// Variables.

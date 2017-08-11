@@ -16,6 +16,7 @@
 package com.digi.xbee.api.connection;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.RemoteDigiMeshDevice;
 import com.digi.xbee.api.RemoteDigiPointDevice;
 import com.digi.xbee.api.RemoteRaw802Device;
+import com.digi.xbee.api.RemoteThreadDevice;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.RemoteZigBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
@@ -51,6 +53,7 @@ import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.models.XBeePacketsQueue;
+import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
@@ -65,6 +68,8 @@ import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.packet.thread.IPv6IODataSampleRxIndicator;
+import com.digi.xbee.api.packet.thread.RXIPv6Packet;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -604,6 +609,10 @@ public class DataReader extends Thread {
 				RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
 				notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
 				break;
+			case IPV6_IO_DATA_SAMPLE_RX_INDICATOR:
+				IPv6IODataSampleRxIndicator ioSampleIPv6Packet = (IPv6IODataSampleRxIndicator)apiPacket;
+				notifyIOSampleReceived(remoteDevice, ioSampleIPv6Packet.getIOSample());
+				break;
 			case MODEM_STATUS:
 				ModemStatusPacket modemStatusPacket = (ModemStatusPacket)apiPacket;
 				notifyModemStatusReceived(modemStatusPacket.getStatus());
@@ -637,6 +646,15 @@ public class DataReader extends Thread {
 						rxIPv4Packet.getDestPort(),
 						rxIPv4Packet.getProtocol(),
 						rxIPv4Packet.getData()));
+				break;
+			case RX_IPV6:
+				RXIPv6Packet rxIPv6Packet = (RXIPv6Packet)apiPacket;
+				notifyIPDataReceived(new IPMessage(
+						rxIPv6Packet.getSourceAddress(), 
+						rxIPv6Packet.getSourcePort(), 
+						rxIPv6Packet.getDestPort(),
+						rxIPv6Packet.getProtocol(),
+						rxIPv6Packet.getData()));
 				break;
 			case RX_SMS:
 				RXSMSPacket rxSMSPacket = (RXSMSPacket)apiPacket;
@@ -688,10 +706,11 @@ public class DataReader extends Thread {
 		RemoteXBeeDevice remoteDevice = null;
 		XBee64BitAddress addr64 = null;
 		XBee16BitAddress addr16 = null;
+		Inet6Address addrIPv6 = null;
 		
 		XBeeNetwork network = xbeeDevice.getNetwork();
 		// There are protocols that do not support the network feature.
-		if (network == null)
+		if (network == null && xbeeDevice.getXBeeProtocol() != XBeeProtocol.THREAD)
 			return null;
 		
 		switch(apiType) {
@@ -715,11 +734,27 @@ public class DataReader extends Thread {
 			addr16 = rx16Packet.get16bitSourceAddress();
 			remoteDevice = network.getDevice(addr16);
 			break;
+		case RX_IPV6:
+			RXIPv6Packet rxIPv6Packet = (RXIPv6Packet)apiPacket;
+			addrIPv6 = rxIPv6Packet.getSourceAddress();
+			if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.THREAD)
+				remoteDevice = new RemoteThreadDevice(xbeeDevice, addrIPv6);
+			else
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, addrIPv6);
+			break;
 		case IO_DATA_SAMPLE_RX_INDICATOR:
 			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
 			addr64 = ioSamplePacket.get64bitSourceAddress();
 			addr16 = ioSamplePacket.get16bitSourceAddress();
 			remoteDevice = network.getDevice(addr64);
+			break;
+		case IPV6_IO_DATA_SAMPLE_RX_INDICATOR:
+			IPv6IODataSampleRxIndicator ioSampleIPv6Packet = (IPv6IODataSampleRxIndicator)apiPacket;
+			addrIPv6 = ioSampleIPv6Packet.getSourceAddress();
+			if (xbeeDevice.getXBeeProtocol() == XBeeProtocol.THREAD)
+				remoteDevice = new RemoteThreadDevice(xbeeDevice, addrIPv6);
+			else
+				remoteDevice = new RemoteXBeeDevice(xbeeDevice, addrIPv6);
 			break;
 		case RX_IO_64:
 			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
@@ -1030,7 +1065,7 @@ public class DataReader extends Thread {
 	 */
 	private void notifyIPDataReceived(final IPMessage ipMessage) {
 		logger.info(connectionInterface.toString() + 
-				"IP data received from {} >> {}.", ipMessage.getIPAddress().getHostAddress(), HexUtils.prettyHexString(ipMessage.getData()));
+				"IP data received from {} >> {}.", ipMessage.getHostAddress(), HexUtils.prettyHexString(ipMessage.getData()));
 		
 		try {
 			synchronized (ipDataReceiveListeners) {

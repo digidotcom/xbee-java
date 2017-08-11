@@ -59,9 +59,11 @@ import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
+import com.digi.xbee.api.listeners.IIPDataReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
+import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.SpecialByte;
@@ -89,6 +91,8 @@ public class DataReaderTest {
 	private XBeePacket MODEM_STATUS_PACKET;
 	private XBeePacket EXPLICIT_INDICATOR_DIGI_PACKET;
 	private XBeePacket EXPLICIT_INDICATOR_PACKET;
+	private XBeePacket RX_IPV6_PACKET;
+	private XBeePacket IPV6_IO_PACKET;
 	
 	private XBeePacket PACKET_TO_BE_RECEIVED;
 	
@@ -223,6 +227,8 @@ public class DataReaderTest {
 		MODEM_STATUS_PACKET = parser.parsePacket(new byte[]{0x7E, 0x00, 0x02, (byte)0x8A, 0x11, 0x64}, OperatingMode.API);
 		EXPLICIT_INDICATOR_DIGI_PACKET = parser.parsePacket(new byte[]{0x7E, 0x00, 0x16, (byte)0x91, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFE, (byte)0xE8, (byte)0xE8, 0x00, 0x11, (byte)0xC1, 0x05, 0x01, 0x44, 0x41, 0x54, 0x41, (byte)0xB7}, OperatingMode.API);
 		EXPLICIT_INDICATOR_PACKET = parser.parsePacket(new byte[]{0x7E, 0x00, 0x16, (byte)0x91, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFE, (byte)0xC5, (byte)0xB7, 0x00, 0x55, 0x00, 0x01, 0x01, 0x44, 0x41, 0x54, 0x41, (byte)0x8C}, OperatingMode.API);
+		IPV6_IO_PACKET = parser.parsePacket(new byte[]{0x7E, 0x00, 0x20, (byte)0xA7, (byte)0xFD, (byte)0xB3, (byte)0x88, (byte)0xAC, (byte)0xD3, (byte)0xA8, 0x00, 0x00, (byte)0x86, 0x50, (byte)0xD7, 0x0B, (byte)0xE8, (byte)0xB5, 0x41, 0x4C, 0x01, 0x00, 0x02, 0x00, 0x00, 0x02, 0x6D, 0x09, 0x73, (byte)0x98, 0x00, 0x20, 0x71, 0x35, 0x02, (byte)0xC9}, OperatingMode.API);
+		RX_IPV6_PACKET = parser.parsePacket(new byte[]{0x7E, 0x00, 0x29, (byte)0x9A, (byte)0xFD, (byte)0xB3, (byte)0x88, (byte)0xAC, (byte)0xD3, (byte)0xA8, 0x00, 0x00, (byte)0x86, 0x50, (byte)0xD7, 0x0B, (byte)0xE8, (byte)0xB5, 0x41, 0x4C, (byte)0xFD, (byte)0xB3, (byte)0x88, (byte)0xAC, (byte)0xD3, (byte)0xA8, 0x00, 0x00, 0x51, 0x44, (byte)0x90, (byte)0xF0, 0x05, (byte)0xA6, (byte)0x94, (byte)0xBC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x61, 0x61, (byte)0xF3}, OperatingMode.API);
 		
 		PACKET_TO_BE_RECEIVED = NOT_SPECIFIC_PACKET;
 		
@@ -959,6 +965,106 @@ public class DataReaderTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 */
+	@Test
+	public final void testAddIPDataReceiveListenerNullListener() {
+		// Setup the resources for the test.
+		IIPDataReceiveListener l = null;
+		DataReader reader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		
+		exception.expect(NullPointerException.class);
+		exception.expectMessage(is(equalTo("Listener cannot be null.")));
+		
+		// Call the method under test.
+		reader.addIPDataReceiveListener(l);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 */
+	@Test
+	public final void testAddIPDataReceiveListener() {
+		// Setup the resources for the test.
+		IIPDataReceiveListener l = Mockito.mock(IIPDataReceiveListener.class);
+		DataReader reader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		
+		// Call the method under test.
+		reader.addIPDataReceiveListener(l);
+		
+		// Verify the result.
+		ArrayList<IIPDataReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		assertThat(list.size(), is(equalTo(1)));
+		assertThat(list.contains(l), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 */
+	@Test
+	public final void testAddIPDataReceiveListenerExistingListener() {
+		// Setup the resources for the test.
+		IIPDataReceiveListener l = Mockito.mock(IIPDataReceiveListener.class);
+		DataReader reader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		
+		reader.addIPDataReceiveListener(l);
+		
+		ArrayList<IIOSampleReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		assertThat(list.size(), is(equalTo(1)));
+		assertThat(list.contains(l), is(equalTo(true)));
+		
+		// Call the method under test.
+		reader.addIPDataReceiveListener(l);
+		
+		// Verify the result.
+		list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		assertThat(list.size(), is(equalTo(1)));
+		assertThat(list.contains(l), is(equalTo(true)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 */
+	@Test
+	public final void testRemoveIPDataReceiveListenerNonAdded() {
+		// Setup the resources for the test.
+		IIPDataReceiveListener l = Mockito.mock(IIPDataReceiveListener.class);
+		IIPDataReceiveListener l1 = Mockito.mock(IIPDataReceiveListener.class);
+		DataReader reader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		
+		reader.addIPDataReceiveListener(l);
+		
+		// Call the method under test.
+		reader.removeIPDataReceiveListener(l1);
+		
+		// Verify the result.
+		ArrayList<IIPDataReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		assertThat(list.size(), is(equalTo(1)));
+		assertThat(list.contains(l), is(equalTo(true)));
+		assertThat(list.contains(l1), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 */
+	@Test
+	public final void testRemoveIPDataReceiveListener() {
+		// Setup the resources for the test.
+		IIPDataReceiveListener l = Mockito.mock(IIPDataReceiveListener.class);
+		DataReader reader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		
+		reader.addIPDataReceiveListener(l);
+		
+		// Call the method under test.
+		reader.removeIPDataReceiveListener(l);
+		
+		// Verify the result.
+		ArrayList<IIPDataReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		assertThat(list.size(), is(equalTo(0)));
+		assertThat(list.contains(l), is(equalTo(false)));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
 	 */
 	@Test
@@ -1052,6 +1158,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = NOT_SPECIFIC_PACKET;
 		
 		// Call the method under test.
@@ -1070,6 +1179,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1094,6 +1204,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = NOT_SPECIFIC_PACKET;
 		
 		// Call the method under test.
@@ -1112,6 +1225,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1136,6 +1250,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = NOT_SPECIFIC_PACKET;
 		
 		// Call the method under test.
@@ -1154,6 +1271,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1178,6 +1296,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = AT_CMD_RESPONSE;
 		
 		// Call the method under test.
@@ -1196,6 +1317,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1220,6 +1342,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RMT_AT_CMD_RESPONSE;
 		
 		// Call the method under test.
@@ -1238,6 +1363,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1262,6 +1388,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RX_64_PACKET;
 		
 		// Call the method under test.
@@ -1280,6 +1409,53 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 */
+	@Test
+	public final void testDataReaderReceivePacketRXIPv6DataPacket() throws Exception {
+		// Setup the resources for the test.
+		DataReader dataReader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
+		dataReader.addPacketReceiveListener(packetListener);
+		
+		IDataReceiveListener dataListener = Mockito.mock(IDataReceiveListener.class);
+		dataReader.addDataReceiveListener(dataListener);
+		
+		IIOSampleReceiveListener ioListener = Mockito.mock(IIOSampleReceiveListener.class);
+		dataReader.addIOSampleReceiveListener(ioListener);
+		
+		IModemStatusReceiveListener modemListener = Mockito.mock(IModemStatusReceiveListener.class);
+		dataReader.addModemStatusReceiveListener(modemListener);
+		
+		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
+		dataReader.addExplicitDataReceiveListener(explicitListener);
+		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
+		PACKET_TO_BE_RECEIVED = RX_IPV6_PACKET;
+		
+		// Call the method under test.
+		dataReader.start();
+		
+		waitForInitialization(dataReader.getId());
+		testCI.notifyData();
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
+			Thread.sleep(30);
+		
+		// Verify the result.
+		Mockito.verify(mockQueue, Mockito.times(1)).addPacket(PACKET_TO_BE_RECEIVED);
+		Mockito.verify(packetListener, Mockito.times(1)).packetReceived(PACKET_TO_BE_RECEIVED);
+		
+		Mockito.verify(dataListener, Mockito.times(0)).dataReceived(Mockito.any(XBeeMessage.class));
+		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
+		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
+		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(1)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1304,6 +1480,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RX_16_PACKET;
 		
 		// Call the method under test.
@@ -1322,6 +1501,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1346,6 +1526,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RX_PACKET;
 		
 		// Call the method under test.
@@ -1364,6 +1547,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1388,6 +1572,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RX_IO_64_PACKET;
 		
 		// Call the method under test.
@@ -1406,6 +1593,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(1)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1430,6 +1618,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RX_IO_16_PACKET;
 		
 		// Call the method under test.
@@ -1448,6 +1639,53 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(1)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 */
+	@Test
+	public final void testDataReaderReceivePacketRXIOIPv6DataPacket() throws Exception {
+		// Setup the resources for the test.
+		DataReader dataReader = new DataReader(testCI, OperatingMode.API, mockDevice);
+		IPacketReceiveListener packetListener = Mockito.mock(IPacketReceiveListener.class);
+		dataReader.addPacketReceiveListener(packetListener);
+		
+		IDataReceiveListener dataListener = Mockito.mock(IDataReceiveListener.class);
+		dataReader.addDataReceiveListener(dataListener);
+		
+		IIOSampleReceiveListener ioListener = Mockito.mock(IIOSampleReceiveListener.class);
+		dataReader.addIOSampleReceiveListener(ioListener);
+		
+		IModemStatusReceiveListener modemListener = Mockito.mock(IModemStatusReceiveListener.class);
+		dataReader.addModemStatusReceiveListener(modemListener);
+		
+		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
+		dataReader.addExplicitDataReceiveListener(explicitListener);
+		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
+		PACKET_TO_BE_RECEIVED = IPV6_IO_PACKET;
+		
+		// Call the method under test.
+		dataReader.start();
+		
+		waitForInitialization(dataReader.getId());
+		testCI.notifyData();
+		while (dataReader.isRunning() || !testCI.transmissionFinished)
+			Thread.sleep(30);
+		
+		// Verify the result.
+		Mockito.verify(mockQueue, Mockito.times(1)).addPacket(PACKET_TO_BE_RECEIVED);
+		Mockito.verify(packetListener, Mockito.times(1)).packetReceived(PACKET_TO_BE_RECEIVED);
+		
+		Mockito.verify(dataListener, Mockito.times(0)).dataReceived(Mockito.any(XBeeMessage.class));
+		Mockito.verify(ioListener, Mockito.times(1)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
+		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
+		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1472,6 +1710,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = RX_IO_PACKET;
 		
 		// Call the method under test.
@@ -1490,6 +1731,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(1)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1514,6 +1756,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = MODEM_STATUS_PACKET;
 		
 		// Call the method under test.
@@ -1532,6 +1777,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(1)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(0)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1556,6 +1802,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = EXPLICIT_INDICATOR_DIGI_PACKET;
 		
 		// Call the method under test.
@@ -1574,6 +1823,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(1)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**
@@ -1598,6 +1848,9 @@ public class DataReaderTest {
 		IExplicitDataReceiveListener explicitListener = Mockito.mock(IExplicitDataReceiveListener.class);
 		dataReader.addExplicitDataReceiveListener(explicitListener);
 		
+		IIPDataReceiveListener ipListener = Mockito.mock(IIPDataReceiveListener.class);
+		dataReader.addIPDataReceiveListener(ipListener);
+		
 		PACKET_TO_BE_RECEIVED = EXPLICIT_INDICATOR_PACKET;
 		
 		// Call the method under test.
@@ -1616,6 +1869,7 @@ public class DataReaderTest {
 		Mockito.verify(ioListener, Mockito.times(0)).ioSampleReceived(Mockito.any(RemoteXBeeDevice.class), Mockito.any(IOSample.class));
 		Mockito.verify(modemListener, Mockito.times(0)).modemStatusEventReceived(Mockito.any(ModemStatusEvent.class));
 		Mockito.verify(explicitListener, Mockito.times(1)).explicitDataReceived(Mockito.any(ExplicitXBeeMessage.class));
+		Mockito.verify(ipListener, Mockito.times(0)).ipDataReceived(Mockito.any(IPMessage.class));
 	}
 	
 	/**

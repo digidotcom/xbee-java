@@ -43,6 +43,8 @@ public enum XBeeProtocol {
 	CELLULAR(15, "Cellular"),
 	/** @since 1.2.1 */
 	CELLULAR_NBIOT(16, "Cellular NB-IoT"),
+	/** @since 1.2.1 */
+	THREAD(17, "Thread"),
 	UNKNOWN(99, "Unknown");
 	
 	// Variables
@@ -226,7 +228,10 @@ public enum XBeeProtocol {
 		case S2D_SMT_REG:
 		case S2D_TH_PRO:
 		case S2D_TH_REG:
-			return ZIGBEE;
+			if (firmwareVersion.startsWith("8"))
+				return THREAD;
+			else
+				return ZIGBEE;
 		case CELLULAR:
 		case CELLULAR_CAT1_LTE_VERIZON:
 		case CELLULAR_3G:

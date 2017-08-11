@@ -18,6 +18,7 @@ package com.digi.xbee.api.models;
 import static org.junit.Assert.*;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.util.ArrayList;
 
 import org.junit.BeforeClass;
@@ -43,6 +44,7 @@ import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.packet.thread.RXIPv6Packet;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({System.class, XBeePacketsQueue.class})
@@ -58,12 +60,16 @@ public class XBeePacketsQueueTest {
 	private final static String ADDRESS_16_2 = "4567";
 	private final static String ADDRESS_IP_1 = "10.101.1.123";
 	private final static String ADDRESS_IP_2 = "192.168.1.123";
+	private final static String ADDRESS_IPV6_1 = "FDB3:0001:0002:0000:0004:0005:0006:0007";
+	private final static String ADDRESS_IPV6_2 = "FDB3:0002:0003:0000:0005:0006:0007:0008";
 	private final static String METHOD_SLEEP = "sleep";
 	private final static String METHOD_IS_DATA_PACKET = "isDataPacket";
 	private final static String METHOD_IS_EXPLICIT_DATA_PACKET = "isExplicitDataPacket";
 	private final static String METHOD_IS_IP_DATA_PACKET = "isIPDataPacket";
+	private final static String METHOD_IS_IPV6_DATA_PACKET = "isIPv6DataPacket";
 	private final static String METHOD_ADDRESSES_MATCH = "addressesMatch";
 	private final static String METHOD_IP_ADDRESSES_MATCH = "ipAddressesMatch";
+	private final static String METHOD_IPV6_ADDRESSES_MATCH = "ipv6AddressesMatch";
 	
 	// Variables.
 	private long currentMillis = 0;
@@ -78,6 +84,9 @@ public class XBeePacketsQueueTest {
 	private static Inet4Address ipAddress1;
 	private static Inet4Address ipAddress2;
 	
+	private static Inet6Address ipv6Address1;
+	private static Inet6Address ipv6Address2;
+	
 	private static ReceivePacket mockedReceivePacket;
 	private static RemoteATCommandResponsePacket mockedRemoteATCommandPacket;
 	private static RX64IOPacket mockedRxIO64Packet;
@@ -87,6 +96,8 @@ public class XBeePacketsQueueTest {
 	private static ExplicitRxIndicatorPacket mockedExplicitRxIndicatorPacket;
 	private static RXIPv4Packet mockedRxIPv4Packet;
 	private static RXIPv4Packet mockedRxIPv4Packet2;
+	private static RXIPv6Packet mockedRxIPv6Packet;
+	private static RXIPv6Packet mockedRxIPv6Packet2;
 	
 	@BeforeClass
 	public static void setupOnce() throws Exception {
@@ -102,6 +113,10 @@ public class XBeePacketsQueueTest {
 		// Create a couple of IP addresses.
 		ipAddress1 = (Inet4Address) Inet4Address.getByName(ADDRESS_IP_1);
 		ipAddress2 = (Inet4Address) Inet4Address.getByName(ADDRESS_IP_2);
+		
+		// Create a couple of IPv6 addresses.
+		ipv6Address1 = (Inet6Address) Inet6Address.getByName(ADDRESS_IPV6_1);
+		ipv6Address2 = (Inet6Address) Inet6Address.getByName(ADDRESS_IPV6_2);
 		
 		// Create some dummy packets.
 		// ReceivePacket.
@@ -130,6 +145,11 @@ public class XBeePacketsQueueTest {
 		Mockito.when(mockedRxIPv4Packet.getFrameType()).thenReturn(APIFrameType.RX_IPV4);
 		mockedRxIPv4Packet2 = Mockito.mock(RXIPv4Packet.class);
 		Mockito.when(mockedRxIPv4Packet2.getFrameType()).thenReturn(APIFrameType.RX_IPV4);
+		// RXIPv6Packet.
+		mockedRxIPv6Packet = Mockito.mock(RXIPv6Packet.class);
+		Mockito.when(mockedRxIPv6Packet.getFrameType()).thenReturn(APIFrameType.RX_IPV6);
+		mockedRxIPv6Packet2 = Mockito.mock(RXIPv6Packet.class);
+		Mockito.when(mockedRxIPv6Packet2.getFrameType()).thenReturn(APIFrameType.RX_IPV6);
 	}
 	
 	/**
@@ -623,6 +643,84 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addPacket(XBeePacket)} and 
+	 * {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstIPv6DataPacket(int)}.
+	 * 
+	 * <p>Verify that when requesting the first IPv6 data packet of the queue, 
+	 * it returns the first IPv6 data packet it finds or null if there is not 
+	 * any IPv6 data packet in the queue.</p>
+	 */
+	@Test
+	public void testGetFirstIPv6DataPacket() {
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = new XBeePacketsQueue(5);
+		
+		// Add 2 dummy packets.
+		for (int i = 0; i < 2; i ++)
+			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Add a IPv6 data packet.
+		xbeePacketsQueue.addPacket(mockedRxIPv6Packet);
+		
+		// Add a data packet.
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		
+		// Add a dummy packet again.
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Request the first IPv6 data packet from the queue and verify it is our IPv6 data packet.
+		assertEquals(mockedRxIPv6Packet, xbeePacketsQueue.getFirstIPv6DataPacket(0));
+		
+		// Request another IPv6 data packet from the queue, verify it is null 
+		// (there are no more IPv6 data packets in the list).
+		assertNull(xbeePacketsQueue.getFirstIPv6DataPacket(0));
+		
+		// Verify the queue length is 4.
+		assertEquals(4, xbeePacketsQueue.getCurrentSize());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addPacket(XBeePacket)} and 
+	 * {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstIPv6DataPacketFrom(Inet6Address, int)}.
+	 * 
+	 * <p>Verify that when requesting the first IPv6 data packet sent from a 
+	 * specific IPv6 address, the queue returns the first IPv6 data packet 
+	 * from that IPv6 it finds or null if there is not any IPv6 data packet 
+	 * sent by that IPv6 in the queue.</p>.
+	 */
+	@Test
+	public void testGetFirstIPv6DataPacketFrom() {
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = new XBeePacketsQueue(5);
+		
+		// Add 2 dummy packets.
+		for (int i = 0; i < 2; i ++)
+			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Add a IPv6 data packet from the mocked IPv6 address.
+		Mockito.when(mockedRxIPv6Packet.getSourceAddress()).thenReturn(ipv6Address1);
+		xbeePacketsQueue.addPacket(mockedRxIPv6Packet);
+		
+		// Add another IPv6 data packet from a different IPv6 address.
+		Mockito.when(mockedRxIPv6Packet2.getSourceAddress()).thenReturn(ipv6Address2);
+		xbeePacketsQueue.addPacket(mockedRxIPv6Packet2);
+		
+		// Add a packet again.
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		// Request the first IPv6 data packet from the queue sent by the IPv6 
+		// address and verify it is our IPv6 data Packet.
+		assertEquals(mockedRxIPv6Packet, xbeePacketsQueue.getFirstIPv6DataPacketFrom(ipv6Address1, 0));
+		
+		// Request another explicit data packet from the queue sent by the mocked remote device, 
+		// verify it is null (there are no more explicit data packets sent by that device).
+		assertNull(xbeePacketsQueue.getFirstIPv6DataPacketFrom(ipv6Address1, 0));
+		
+		// Verify the queue length is 4.
+		assertEquals(4, xbeePacketsQueue.getCurrentSize());
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstDataPacket(int)}.
 	 * 
 	 * <p>Verify that when requesting the first data packet of the queue with a timeout greater than 
@@ -818,6 +916,53 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstIPv6DataPacket(int)}.
+	 * 
+	 * <p>Verify that when requesting the first IPv6 data packet of the queue 
+	 * with a timeout greater than  0 and the queue does not have any IPv6 data 
+	 * packet, the timeout elapses and a null IPv6 data packet is received.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testGetFirstIPv6DataPacketTimeout() throws Exception {
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue(5));
+		
+		// Add some dummy packets (non-IP data packets).
+		for (int i = 0; i < 3; i ++)
+			xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		xbeePacketsQueue.addPacket(mockedRx64Packet);
+		
+		// Get the current time.
+		currentMillis = System.currentTimeMillis();
+		
+		// Prepare the System class to return our fixed currentMillis variable when requested.
+		PowerMockito.mockStatic(System.class);
+		PowerMockito.when(System.currentTimeMillis()).thenReturn(currentMillis);
+		
+		// When the sleep method is called, add 100ms to the currentMillis variable.
+		PowerMockito.doAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) throws Exception {
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
+				return null;
+			}
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
+		
+		// Request the first IPv6 data packet with 5s of timeout.
+		XBeePacket xbeePacket = xbeePacketsQueue.getFirstIPv6DataPacket(5000);
+		
+		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the IPv6 data 
+		// packet retrieved is null (there was not any IPv6 data packet in the queue).
+		PowerMockito.verifyPrivate(xbeePacketsQueue, Mockito.times(50)).invoke(METHOD_SLEEP, 100);
+		assertNull(xbeePacket);
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstExplicitDataPacketFrom(RemoteXBeeDevice, int)}.
 	 * 
 	 * <p>Verify that when requesting the first explicit data packet of the queue sent by a specific 
@@ -925,6 +1070,61 @@ public class XBeePacketsQueueTest {
 		
 		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the IP data packet 
 		// retrieved is null (there was not any IP data packet from that IP address in the queue).
+		PowerMockito.verifyPrivate(xbeePacketsQueue, Mockito.times(50)).invoke(METHOD_SLEEP, 100);
+		assertNull(xbeePacket);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#getFirstIPv6DataPacketFrom(Inet6Address, int)}.
+	 * 
+	 * <p>Verify that when requesting the first IPv6 data packet of the queue 
+	 * sent by a specific IPv6 address with a timeout greater than 0 and the 
+	 * queue does not have any IPv6 data packet sent by that IPv6, the timeout 
+	 * elapses and a null IPv6 data packet is received.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetFirstIPv6DataPacketFromTimeout() throws Exception {
+		// Configure 2 non-IPv6 data packets.
+		Mockito.when(mockedRemoteATCommandPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress2);
+		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress3);
+		
+		// Configure a IPv6 data packet with a different IPv6 address.
+		Mockito.when(mockedRxIPv6Packet.getSourceAddress()).thenReturn(ipv6Address2);
+		
+		// Create an XBeePacketsQueue of 5 slots.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue(5));
+		
+		// Fill the queue with some non-IPv6 packets.
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		xbeePacketsQueue.addPacket(mockedRemoteATCommandPacket);
+		xbeePacketsQueue.addPacket(Mockito.mock(XBeePacket.class));
+		xbeePacketsQueue.addPacket(mockedReceivePacket);
+		xbeePacketsQueue.addPacket(mockedRxIPv6Packet);
+		
+		// Get the current time.
+		currentMillis = System.currentTimeMillis();
+		
+		// Prepare the System class to return our fixed currentMillis variable when requested.
+		PowerMockito.mockStatic(System.class);
+		PowerMockito.when(System.currentTimeMillis()).thenReturn(currentMillis);
+		
+		// When the sleep method is called, add 100ms to the currentMillis variable.
+		PowerMockito.doAnswer(new Answer<Object>() {
+			public Object answer(InvocationOnMock invocation) throws Exception {
+				Object[] args = invocation.getArguments();
+				int sleepTime = (Integer)args[0];
+				changeMillisToReturn(sleepTime);
+				return null;
+			}
+		}).when(xbeePacketsQueue, METHOD_SLEEP, Mockito.anyInt());
+		
+		// Request the first IPv6 data packet from our IPv6 address with 5s of timeout.
+		XBeePacket xbeePacket = xbeePacketsQueue.getFirstIPv6DataPacketFrom(ipv6Address1, 5000);
+		
+		// Verify that the sleep method was called 50 times (50 * 100ms = 5s) and the IPv6 data packet 
+		// retrieved is null (there was not any IPv6 data packet from that IPv6 address in the queue).
 		PowerMockito.verifyPrivate(xbeePacketsQueue, Mockito.times(50)).invoke(METHOD_SLEEP, 100);
 		assertNull(xbeePacket);
 	}
@@ -1083,6 +1283,59 @@ public class XBeePacketsQueueTest {
 	}
 	
 	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#isIPv6DataPacket(XBeePacket)}.
+	 * 
+	 * <p>Verify that the {@code isIPv6DataPacket} method of the {@code XBeePacketsQueue} 
+	 * class works successfully for IPv6 data packets.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testIsIPv6DataPacketTrue() throws Exception {
+		ArrayList<XBeePacket> ipv6DataPackets = new ArrayList<XBeePacket>();
+		
+		// Add a IP data packet to the list.
+		ipv6DataPackets.add(mockedRxIPv6Packet);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify that packets contained in the IPv6 data packets list are actually IPv6 data packets.
+		for (XBeePacket packet:ipv6DataPackets)
+			assertTrue((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IS_IPV6_DATA_PACKET, packet));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#isIPv6DataPacket(XBeePacket)}.
+	 * 
+	 * <p>Verify that the {@code isIPv6DataPacket} method of the {@code XBeePacketsQueue} 
+	 * class works successfully for non-IPv6 data packets.</p>
+	 * 
+	 * @throws Exception 
+	 */
+	@Test
+	public void testIsIPv6DataPacketFalse() throws Exception {
+		ArrayList<XBeePacket> noIPv6DataPackets = new ArrayList<XBeePacket>();
+		
+		// Fill the list of no-IPv6 data packets.
+		noIPv6DataPackets.add(mockedRemoteATCommandPacket);
+		noIPv6DataPackets.add(mockedRxIO64Packet);
+		noIPv6DataPackets.add(mockedRxIO16Packet);
+		noIPv6DataPackets.add(mockedReceivePacket);
+		noIPv6DataPackets.add(mockedRx64Packet);
+		noIPv6DataPackets.add(mockedRx16Packet);
+		noIPv6DataPackets.add(mockedExplicitRxIndicatorPacket);
+		noIPv6DataPackets.add(mockedRxIPv4Packet);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify that packets contained in the non-IPv6 data packets list are actually non-IPv6 data packets.
+		for (XBeePacket packet:noIPv6DataPackets)
+			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IS_IPV6_DATA_PACKET, packet));
+	}
+	
+	/**
 	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addressesMatch(XBeePacket, RemoteXBeeDevice)}.
 	 * 
 	 * <p>Verify that the {@code isDataPacket} method of the {@code XBeePacketsQueue} class works 
@@ -1188,8 +1441,8 @@ public class XBeePacketsQueueTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipAddressesMatch(XBeePacket, Inet4Address)}.
 	 * 
-	 * <p>Verify that the {@code isDataPacket} method of the {@code XBeePacketsQueue} class works 
-	 * successfully for no API packets.</p>
+	 * <p>Verify that the {@code ipAddressesMatch} method of the {@code XBeePacketsQueue} 
+	 * class returns false for no API packets.</p>
 	 * 
 	 * @throws Exception 
 	 */
@@ -1205,7 +1458,7 @@ public class XBeePacketsQueueTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipAddressesMatch(XBeePacket, Inet4Address)}.
 	 * 
-	 * <p>Verify that the {@code addressesMatch} method of the {@code XBeePacketsQueue} class works 
+	 * <p>Verify that the {@code ipAddressesMatch} method of the {@code XBeePacketsQueue} class works 
 	 * successfully for packets with IP address.</p>
 	 * 
 	 * @throws Exception 
@@ -1229,6 +1482,52 @@ public class XBeePacketsQueueTest {
 		Mockito.when(mockedRxIPv4Packet.getSourceAddress()).thenReturn(ipAddress2);
 		for (XBeePacket packet:ipPackets)
 			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IP_ADDRESSES_MATCH, packet, ipAddress1));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipv6AddressesMatch(XBeePacket, Inet6Address)}.
+	 * 
+	 * <p>Verify that the {@code ipv6AddressesMatch} method of the {@code XBeePacketsQueue} 
+	 * class returns false for no API packets.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testIPv6AddressesMatchNoAPIPacket() throws Exception {
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify that the 'ipv6AddressesMatch' method returns false for no API packets.
+		assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IPV6_ADDRESSES_MATCH, Mockito.mock(XBeePacket.class), ipv6Address1));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#ipv6AddressesMatch(XBeePacket, Inet6Address)}.
+	 * 
+	 * <p>Verify that the {@code ipv6AddressesMatch} method of the {@code XBeePacketsQueue} class works 
+	 * successfully for packets with IPv6 address.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testIPv6AddressesMatch() throws Exception {
+		ArrayList<XBeePacket> ipPackets = new ArrayList<XBeePacket>();
+		
+		// Fill the list of API packets.
+		ipPackets.add(mockedRxIPv6Packet);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify the addresses match.
+		Mockito.when(mockedRxIPv6Packet.getSourceAddress()).thenReturn(ipv6Address1);
+		for (XBeePacket packet:ipPackets)
+			assertTrue((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IPV6_ADDRESSES_MATCH, packet, ipv6Address1));
+		
+		// Verify the addresses don't match.
+		Mockito.when(mockedRxIPv6Packet.getSourceAddress()).thenReturn(ipv6Address2);
+		for (XBeePacket packet:ipPackets)
+			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_IPV6_ADDRESSES_MATCH, packet, ipv6Address1));
 	}
 	
 	/**

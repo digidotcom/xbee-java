@@ -16,6 +16,7 @@
 package com.digi.xbee.api.models;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.util.LinkedList;
 
 import com.digi.xbee.api.RemoteXBeeDevice;
@@ -30,6 +31,7 @@ import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.packet.thread.RXIPv6Packet;
 
 /**
  * This class represents a queue of XBee packets used for sequential packets 
@@ -381,6 +383,45 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
+	 * Returns the first IPv6 data packet from the queue waiting up to the 
+	 * specified timeout if necessary for a IPv6 data packet to 
+	 * become available. {@code null} if the queue is empty or there is not 
+	 * any IPv6 data packet inside.
+	 * 
+	 * @param timeout The time in milliseconds to wait for a IPv6 data 
+	 *                packet to become available. 0 to return immediately.
+	 * 
+	 * @return The first IPv6 data packet from the queue, {@code null} if 
+	 *         it is empty or no IPv6 packets are contained in the queue.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.ip.RXIPv6Packet
+	 * 
+	 * @since 1.2.1
+	 */
+	public XBeePacket getFirstIPv6DataPacket(int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstIPv6DataPacket(0);
+			// Wait for a timeout or until a IP data packet is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstIPv6DataPacket(0);
+			}
+			return xbeePacket;
+		} else {
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isIPv6DataPacket(xbeePacket))
+						return packetsList.remove(i);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns the first IP data packet from the queue whose IP address 
 	 * matches the provided address.
 	 * 
@@ -419,6 +460,52 @@ public class XBeePacketsQueue {
 				for (int i = 0; i < packetsList.size(); i++) {
 					XBeePacket xbeePacket = packetsList.get(i);
 					if (isIPDataPacket(xbeePacket) && ipAddressesMatch(xbeePacket, ipAddress))
+						return packetsList.remove(i);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the first IPv6 data packet from the queue whose IPv6 address 
+	 * matches the provided address.
+	 * 
+	 * <p>The methods waits up to the specified timeout if necessary for a 
+	 * IPv6 data packet to become available. {@code null} if the 
+	 * queue is empty or there is not any IPv6 data packet sent by 
+	 * the provided IPv6 address.</p>
+	 * 
+	 * @param ipv6Address The IPv6 address to look for in the list of packets.
+	 * @param timeout The time in milliseconds to wait for a IPv6 data 
+	 *                packet from the specified IPv6 address to become available.
+	 *                0 to return immediately.
+	 * 
+	 * @return The first IPv6 packet whose IPv6 address matches the provided 
+	 *         IPv6 address. {@code null} if no IPv6 data packets from the 
+	 *         specified IPv6 address are found in the queue.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.ip.RXIPv6Packet
+	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
+	 */
+	public XBeePacket getFirstIPv6DataPacketFrom(Inet6Address ipv6Address, int timeout) {
+		if (timeout > 0) {
+			XBeePacket xbeePacket = getFirstIPv6DataPacketFrom(ipv6Address, 0);
+			// Wait for a timeout or until a IPv6 data packet with the provided IPv6 address is read.
+			Long deadLine = System.currentTimeMillis() + timeout;
+			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
+				sleep(100);
+				xbeePacket = getFirstIPv6DataPacketFrom(ipv6Address, 0);
+			}
+			return xbeePacket;
+		} else {
+			synchronized (lock) {
+				for (int i = 0; i < packetsList.size(); i++) {
+					XBeePacket xbeePacket = packetsList.get(i);
+					if (isIPv6DataPacket(xbeePacket) && ipv6AddressesMatch(xbeePacket, ipv6Address))
 						return packetsList.remove(i);
 				}
 			}
@@ -517,6 +604,39 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
+	 * Returns whether or not the IPv6 address of the XBee packet matches the 
+	 * provided one. 
+	 * 
+	 * @param xbeePacket The XBee packet to compare its IPv6 address with the 
+	 *                   provided one.
+	 * @param ipv6Address The IP address to be compared with the XBee packet's 
+	 *                    one.
+	 * 
+	 * @return {@code true} if the Iv6P address of the XBee packet (if it has) 
+	 *         matches the provided one. {@code false} otherwise.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
+	 */
+	private boolean ipv6AddressesMatch(XBeePacket xbeePacket, Inet6Address ipv6Address) {
+		if (xbeePacket == null || ipv6Address == null 
+				|| !(xbeePacket instanceof XBeeAPIPacket))
+			return false;
+		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
+		switch (packetType) {
+		case RX_IPV6:
+			if (((RXIPv6Packet)xbeePacket).getSourceAddress().equals(ipv6Address))
+				return true;
+			break;
+		default:
+			return false;
+		}
+		return false;
+	}
+	
+	/**
 	 * Returns whether or not the given XBee packet is a data packet.
 	 * 
 	 * @param xbeePacket The XBee packet to check if is data packet.
@@ -576,6 +696,26 @@ public class XBeePacketsQueue {
 			return false;
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
 		return packetType == APIFrameType.RX_IPV4;
+	}
+	
+	/**
+	 * Returns whether or not the given XBee packet is a IPv6 data packet.
+	 * 
+	 * @param xbeePacket The XBee packet to check if is a IPv6 data packet.
+	 * 
+	 * @return {@code true} if the XBee packet is a IPv6 data packet, 
+	 *         {@code false} otherwise.
+	 * 
+	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.ip.RXIPv6Packet
+	 * 
+	 * @since 1.2.1
+	 */
+	private boolean isIPv6DataPacket(XBeePacket xbeePacket) {
+		if (!(xbeePacket instanceof XBeeAPIPacket))
+			return false;
+		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
+		return packetType == APIFrameType.RX_IPV6;
 	}
 	
 	/**

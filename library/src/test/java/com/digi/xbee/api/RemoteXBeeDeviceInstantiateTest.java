@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.Inet6Address;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -49,9 +51,34 @@ public class RemoteXBeeDeviceInstantiateTest {
 			assertEquals(NullPointerException.class, e.getClass());
 		}
 		
-		// Instantiate a remote XBeeDevice object with a null XBee64Bitaddress.
+		// Instantiate a remote XBeeDevice object with a null XBee64BitAddress.
 		try {
-			new RemoteXBeeDevice(Mockito.mock(XBeeDevice.class), null);
+			new RemoteXBeeDevice(Mockito.mock(XBeeDevice.class), (XBee64BitAddress)null);
+			fail("Remote device shouldn't have been instantiated correctly.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, Inet6Address)}.
+	 * 
+	 * <p>Verify that a remote XBeeDevice object is not correctly instantiated when the local 
+	 * XBee device associated is null or the remote Inet6Address is null.</p>
+	 */
+	@Test
+	public void testInstantiateRemoteXBeeDeviceBadParametersIPv6() {
+		// Instantiate a remote XBeeDevice object with a null local XBeeDevice.
+		try {
+			new RemoteXBeeDevice(null, PowerMockito.mock(Inet6Address.class));
+			fail("Remote device shouldn't have been instantiated correctly.");
+		} catch (Exception e) {
+			assertEquals(NullPointerException.class, e.getClass());
+		}
+		
+		// Instantiate a remote XBeeDevice object with a null Inet6Address.
+		try {
+			new RemoteXBeeDevice(Mockito.mock(XBeeDevice.class), (Inet6Address)null);
 			fail("Remote device shouldn't have been instantiated correctly.");
 		} catch (Exception e) {
 			assertEquals(NullPointerException.class, e.getClass());
@@ -77,6 +104,30 @@ public class RemoteXBeeDeviceInstantiateTest {
 		
 		// Verify the 64-bit address and connection interface are the expected.
 		assertEquals(mockedAddress, remoteXBeeDevice.get64BitAddress());
+		assertEquals(mockedInterface, remoteXBeeDevice.getConnectionInterface());
+		// Verify the device is remote.
+		assertTrue(remoteXBeeDevice.isRemote());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, Inet6Address)}.
+	 * 
+	 * <p>Verify that a remote XBeeDevice object can be instantiated correctly.</p>
+	 */
+	@Test
+	public void testInstantiateRemoteXBeeDeviceSuccessIPv6() {
+		// Mock the necessary objects to instantiate a remote XBee device.
+		IConnectionInterface mockedInterface = Mockito.mock(IConnectionInterface.class);
+		XBeeDevice mockedLocalDevice = Mockito.mock(XBeeDevice.class);
+		Mockito.when(mockedLocalDevice.getConnectionInterface()).thenReturn(mockedInterface);
+		
+		Inet6Address mockedAddress = PowerMockito.mock(Inet6Address.class);
+		
+		// Instantiate the remote XBee device.
+		RemoteXBeeDevice remoteXBeeDevice = new RemoteXBeeDevice(mockedLocalDevice, mockedAddress);
+		
+		// Verify the IPv6 address and connection interface are the expected.
+		assertEquals(mockedAddress, remoteXBeeDevice.getIPv6Address());
 		assertEquals(mockedInterface, remoteXBeeDevice.getConnectionInterface());
 		// Verify the device is remote.
 		assertTrue(remoteXBeeDevice.isRemote());

@@ -240,7 +240,7 @@ public class RXIPv6PacketTest {
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned dest address is not the expected one", packet.getDestinationAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
 		assertThat("Returned source address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
@@ -276,7 +276,7 @@ public class RXIPv6PacketTest {
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(payload.length)));
-		assertThat("Returned dest address is not the expected one", packet.getDestinationAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
 		assertThat("Returned source address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
@@ -334,7 +334,7 @@ public class RXIPv6PacketTest {
 		destPort = -6;
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Destination port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
@@ -352,7 +352,7 @@ public class RXIPv6PacketTest {
 		destPort = 66200;
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Destination port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
@@ -370,7 +370,7 @@ public class RXIPv6PacketTest {
 		sourcePort = -6;
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Source port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
@@ -388,7 +388,7 @@ public class RXIPv6PacketTest {
 		sourcePort = 66200;
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Source port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
@@ -429,7 +429,7 @@ public class RXIPv6PacketTest {
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
-		assertThat("Returned dest address is not the expected one", packet.getDestinationAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
 		assertThat("Returned source address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
@@ -453,7 +453,7 @@ public class RXIPv6PacketTest {
 
 		// Verify the result.
 		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
-		assertThat("Returned dest address is not the expected one", packet.getDestinationAddress(), is(equalTo(destAddress)));
+		assertThat("Returned dest address is not the expected one", packet.getDestAddress(), is(equalTo(destAddress)));
 		assertThat("Returned source address is not the expected one", packet.getSourceAddress(), is(equalTo(sourceAddress)));
 		assertThat("Returned dest port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
 		assertThat("Returned source port is not the expected one", packet.getDestPort(), is(equalTo(destPort)));
@@ -615,14 +615,14 @@ public class RXIPv6PacketTest {
 		packet.setSourceAddress(newAddress);
 
 		// Verify the result.
-		assertThat("Dest address is not the expected one", packet.getSourceAddress(), is(equalTo(newAddress)));
+		assertThat("Source address is not the expected one", packet.getSourceAddress(), is(equalTo(newAddress)));
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.thread.RXIPv6Packet#setDestinationAddress(Inet6Address)}.
+	 * Test method for {@link com.digi.xbee.api.packet.thread.RXIPv6Packet#setDestAddress(Inet6Address)}.
 	 */
 	@Test
-	public final void testSetDestinationAddressNull() {
+	public final void testSetDestAddressNull() {
 		// Set up the resources for the test.
 		RXIPv6Packet packet = new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
 
@@ -630,26 +630,26 @@ public class RXIPv6PacketTest {
 		exception.expectMessage(is(equalTo("Destination address cannot be null.")));
 
 		// Call the method under test that should throw a NullPointerException.
-		packet.setDestinationAddress(null);
+		packet.setDestAddress(null);
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.packet.thread.RXIPv6Packet#setDestinationAddress(Inet6Address)}.
+	 * Test method for {@link com.digi.xbee.api.packet.thread.RXIPv6Packet#setDestAddress(Inet6Address)}.
 	 *
 	 * @throws Exception
 	 */
 	@Test
-	public final void testSetDestinationAddressNotNull() throws Exception {
+	public final void testSetDestAddressNotNull() throws Exception {
 		// Set up the resources for the test.
 		RXIPv6Packet packet = new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
 
 		Inet6Address newAddress = (Inet6Address) Inet6Address.getByName("FDB3:0001:0002:0000:0004:0005:0006:0088");
 
 		// Call the method under test.
-		packet.setDestinationAddress(newAddress);
+		packet.setDestAddress(newAddress);
 
 		// Verify the result.
-		assertThat("Dest address is not the expected one", packet.getDestinationAddress(), is(equalTo(newAddress)));
+		assertThat("Dest address is not the expected one", packet.getDestAddress(), is(equalTo(newAddress)));
 	}
 
 	/**
@@ -661,7 +661,7 @@ public class RXIPv6PacketTest {
 		RXIPv6Packet packet = new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Destination port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		packet.setDestPort(-1);
@@ -676,7 +676,7 @@ public class RXIPv6PacketTest {
 		RXIPv6Packet packet = new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Destination port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		packet.setDestPort(65536);
@@ -708,7 +708,7 @@ public class RXIPv6PacketTest {
 		RXIPv6Packet packet = new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Source port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		packet.setSourcePort(-1);
@@ -723,7 +723,7 @@ public class RXIPv6PacketTest {
 		RXIPv6Packet packet = new RXIPv6Packet(destAddress, sourceAddress, destPort, sourcePort, protocol, data);
 
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("Port must be between 0 and 65535.")));
+		exception.expectMessage(is(equalTo("Source port must be between 0 and 65535.")));
 
 		// Call the method under test that should throw an IllegalArgumentException.
 		packet.setSourcePort(65536);

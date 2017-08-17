@@ -32,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.utils.HexUtils;
 
@@ -45,7 +46,7 @@ public class IPv6RemoteATCommandRequestPacketTest {
 	private int frameID = 0xE7;
 	private Inet6Address ipv6address;
 	private String command = "NI";
-	private int transmitOptions = 0x02;
+	private int transmitOptions = RemoteATCommandOptions.OPTION_APPLY_CHANGES;
 	private byte[] parameter = "hello".getBytes();
 	private String parameterStr = "hello";
 

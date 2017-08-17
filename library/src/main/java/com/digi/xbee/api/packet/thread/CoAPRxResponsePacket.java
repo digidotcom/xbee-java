@@ -29,6 +29,7 @@ import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.RestFulStatusEnum;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
+import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -77,7 +78,7 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 
 	private RestFulStatusEnum restFulStatus;
 
-	private byte[] rfData;
+	private byte[] data;
 
 	private Logger logger;
 
@@ -85,7 +86,7 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 	 * Creates a new {@code CoAPRxResponsePacket} object from the given payload.
 	 *
 	 * @param payload The API frame payload. It must start with the frame type
-	 *                corresponding to a TX IPv6 packet ({@code 0x9C}).
+	 *                corresponding to a CoAP Rx Response packet ({@code 0x9C}).
 	 *                The byte array must be in {@code OperatingMode.API} mode.
 	 *
 	 * @return Parsed CoAP Tx Request packet.
@@ -207,7 +208,7 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 		this.sourcePort = sourcePort;
 		this.protocol = protocol;
 		this.restFulStatus = restFulStatus;
-		this.rfData = rfData;
+		this.data = rfData;
 		this.logger = LoggerFactory.getLogger(CoAPRxResponsePacket.class);
 	}
 
@@ -221,14 +222,12 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 		try {
 			os.write(destAddress.getAddress());
 			os.write(sourceAddress.getAddress());
-			os.write(destPort >> 8);
-			os.write(destPort);
-			os.write(sourcePort >> 8);
-			os.write(sourcePort);
+			os.write(ByteUtils.shortToByteArray((short)destPort));
+			os.write(ByteUtils.shortToByteArray((short)sourcePort));
 			os.write(protocol.getID());
-			os.write(restFulStatus.getID());
-			if (rfData != null)
-				os.write(rfData);
+			os.write(ByteUtils.shortToByteArray((short)restFulStatus.getID()));
+			if (data != null)
+				os.write(data);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -428,13 +427,13 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 	 *
 	 * @param data The transmission data.
 	 *
-	 * @see #getRfData()
+	 * @see #getData()
 	 */
-	public void setRfData(byte[] rfData) {
+	public void setData(byte[] rfData) {
 		if (rfData == null)
-			this.rfData = null;
+			this.data = null;
 		else
-			this.rfData = Arrays.copyOf(rfData, rfData.length);
+			this.data = Arrays.copyOf(rfData, rfData.length);
 	}
 
 	/**
@@ -442,12 +441,12 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 	 *
 	 * @return The transmission data.
 	 *
-	 * @see #setRfData(byte[])
+	 * @see #setData(byte[])
 	 */
-	public byte[] getRfData() {
-		if (rfData == null)
+	public byte[] getData() {
+		if (data == null)
 			return null;
-		return Arrays.copyOf(rfData, rfData.length);
+		return Arrays.copyOf(data, data.length);
 	}
 
 	/*
@@ -464,9 +463,9 @@ public class CoAPRxResponsePacket extends XBeeAPIPacket {
 		parameters.put("Destination port", HexUtils.prettyHexString(HexUtils.integerToHexString(destPort, 2)) + " (" + destPort + ")");
 		parameters.put("Source port", HexUtils.prettyHexString(HexUtils.integerToHexString(sourcePort, 2)) + " (" + sourcePort + ")");
 		parameters.put("Protocol", HexUtils.prettyHexString(HexUtils.integerToHexString(protocol.getID(), 1)) + " (" + protocol.getName() + ")");
-		parameters.put("RESTful Response Code", HexUtils.prettyHexString(HexUtils.integerToHexString(restFulStatus.getID(), 2)));
-		if (rfData != null)
-			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));
+		parameters.put("RESTful Response Code", HexUtils.prettyHexString(HexUtils.integerToHexString(restFulStatus.getID(), 2)) + " (" + restFulStatus.getDescription() + ")");
+		if (data != null)
+			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		return parameters;
 	}
 }

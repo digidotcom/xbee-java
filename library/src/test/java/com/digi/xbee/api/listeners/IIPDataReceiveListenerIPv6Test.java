@@ -88,7 +88,7 @@ public class IIPDataReceiveListenerIPv6Test {
 		Mockito.when(rxIPv6Packet.getProtocol()).thenReturn(PROTOCOL);
 		Mockito.when(rxIPv6Packet.getData()).thenReturn(RECEIVED_DATA_BYTES);
 		Mockito.when(rxIPv6Packet.getSourceAddress()).thenReturn(sourceAddress);
-		Mockito.when(rxIPv6Packet.getDestinationAddress()).thenReturn(destAddress);
+		Mockito.when(rxIPv6Packet.getDestAddress()).thenReturn(destAddress);
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);

@@ -76,10 +76,10 @@ public enum HTTPMethodEnum {
 	}
 	
 	/**
-	 * Returns the HTTP method associated to the given ID.
+	 * Returns the HTTP method associated to the given value.
 	 * 
 	 * @param value HTTP method value to retrieve.
-	 * @return The HTTP method for the given ID, null if not exists.
+	 * @return The HTTP method for the given value, {@code null} if not exists.
 	 */
 	public static HTTPMethodEnum get(int value) {
 		return lookupTable.get(value);

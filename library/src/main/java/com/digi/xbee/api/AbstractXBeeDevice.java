@@ -414,6 +414,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(Context, int)
 	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
 		this(localXBeeDevice, ipv6Addr, null);
@@ -442,6 +444,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(Context, int)
 	 * @see #AbstractXBeeDevice(Context, int, AndroidUSBPermissionListener)
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String id) {
 		if (localXBeeDevice == null)
@@ -599,6 +603,8 @@ public abstract class AbstractXBeeDevice {
 	 * @return The IPv6 address of this IPv6 device.
 	 * 
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public Inet6Address getIPv6Address() {
 		return ipv6Address;
@@ -1524,7 +1530,7 @@ public abstract class AbstractXBeeDevice {
 	 * transmission status and CoAP RX Response are success for synchronous 
 	 * transmissions.
 	 * 
-	 * <p>If the status or the CoAP response are not successful, an 
+	 * <p>If the status or the CoAP response is not successful, an 
 	 * {@code TransmitException} is thrown.</p>
 	 * 
 	 * @param packet The {@code CoAPTxRequestPacket} to be sent.
@@ -1547,7 +1553,9 @@ public abstract class AbstractXBeeDevice {
 	 *                       not successful or if there is any other XBee 
 	 *                       related error.
 	 * 
-	 * @see com.digi.xbee.api.packet.XBeePacket
+	 * @see com.digi.xbee.api.packet.thread.CoAPTxRequestPacket
+	 * 
+	 * @since 1.2.1
 	 */
 	protected byte[] sendAndCheckCoAPPacket(CoAPTxRequestPacket packet,
 			boolean asyncTransmission) throws TransmitException, XBeeException {
@@ -1557,7 +1565,7 @@ public abstract class AbstractXBeeDevice {
 		IPacketReceiveListener listener = createCoAPResponseListener(coapResponsePackets);
 		addPacketListener(listener);
 		
-		// Send the XBee packet.
+		// Send the CoAP Tx Request packet.
 		XBeePacket receivedPacket = null;
 		try {
 			if (asyncTransmission)
@@ -1594,7 +1602,7 @@ public abstract class AbstractXBeeDevice {
 		}
 		if (coapRxPacket == null)
 			throw new XBeeException("CoAP response was null.");
-		return coapRxPacket.getRfData();
+		return coapRxPacket.getData();
 	}
 	
 	/**
@@ -1610,6 +1618,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see com.digi.xbee.api.listeners.IPacketReceiveListener
 	 * @see com.digi.xbee.api.packet.thread.CoAPRxResponsePacket
+	 * 
+	 * @since 1.2.1
 	 */
 	private IPacketReceiveListener createCoAPResponseListener(final ArrayList<CoAPRxResponsePacket> coapResponsePackets) {
 		IPacketReceiveListener listener = new IPacketReceiveListener() {
@@ -1636,6 +1646,8 @@ public abstract class AbstractXBeeDevice {
 	 * @throws XBeeException if CoAP response packet is not received or it is 
 	 *                       not successful or if there is any other XBee 
 	 *                       related error.
+	 * 
+	 * @since 1.2.1
 	 */
 	private CoAPRxResponsePacket waitForCoAPRxResponsePacket(ArrayList<CoAPRxResponsePacket> coapResponsePackets) throws XBeeException {
 		synchronized (coapResponsePackets) {
@@ -2017,13 +2029,15 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @param ipv6Address Destination IPv6 address.
 	 * 
-	 * @throws NullPointerException if {@code address == null}.
-	 * @throws TimeoutException if there is a timeout setting the destination
-	 *                          address.
+	 * @throws NullPointerException if {@code ipv6Address == null}.
+	 * @throws TimeoutException if there is a timeout setting the IPv6 
+	 *                          destination address.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #getDestinationIPAddress()
+	 * @see #getIPv6DestinationAddress()
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public void setIPv6DestinationAddress(Inet6Address ipv6Address) throws TimeoutException, XBeeException {
 		if (ipv6Address == null)
@@ -2037,12 +2051,14 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The configured destination IPv6 address.
 	 * 
-	 * @throws TimeoutException if there is a timeout reading the destination
-	 *                          address.
+	 * @throws TimeoutException if there is a timeout reading the IPv6 
+	 *                          destination address.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #setDestinationIPAddress(Inet6Address)
+	 * @see #setIPv6DestinationAddress(Inet6Address)
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public Inet6Address getIPv6DestinationAddress() throws TimeoutException, XBeeException {
 		try {

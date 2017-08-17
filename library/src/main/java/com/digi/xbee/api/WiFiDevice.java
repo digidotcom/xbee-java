@@ -48,13 +48,13 @@ import com.digi.xbee.api.utils.ByteUtils;
 /**
  * This class represents a local Wi-Fi device.
  * 
- * @see XBeeDevice
  * @see CellularDevice
- * @see DigiMeshDevice
  * @see DigiPointDevice
+ * @see DigiMeshDevice
  * @see Raw802Device
- * @see ZigBeeDevice
  * @see ThreadDevice
+ * @see XBeeDevice
+ * @see ZigBeeDevice
  * 
  * @since 1.2.0
  */

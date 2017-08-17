@@ -90,8 +90,6 @@ public class IPv6RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.IPV6_REMOTE_AT_COMMAND_RESPONSE.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
-	 *                                  if {@code frameID < 0} or
-	 *                                  if {@code frameID > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static IPv6RemoteATCommandResponsePacket createPacket(byte[] payload) {
@@ -230,7 +228,7 @@ public class IPv6RemoteATCommandResponsePacket extends XBeeAPIPacket {
 		try {
 			data.write(sourceAddress.getAddress());
 			data.write(ByteUtils.stringToByteArray(command));
-			data.write(status.getId());
+			data.write(status.getId() & 0xFF);
 			if (commandValue != null)
 				data.write(commandValue);
 		} catch (IOException e) {
@@ -291,9 +289,10 @@ public class IPv6RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	/**
 	 * Sets the AT command response value as String.
 	 * 
-	 * @param parameter The AT command response value as String.
+	 * @param commandValue The AT command response value as String.
 	 * 
 	 * @see #getCommandValue()
+	 * @see #getCommandValueAsString()
 	 */
 	public void setCommandValue(String commandValue) {
 		if (commandValue == null)
@@ -303,21 +302,23 @@ public class IPv6RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Sets the AT response response value.
+	 * Sets the AT command response response value as byte array.
 	 * 
-	 * @param commandValue The AT command response value.
+	 * @param commandValue The AT command response value as byte array.
 	 * 
 	 * @see #getCommandValue()
+	 * @see #getCommandValueAsString()
 	 */
 	public void setCommandValue(byte[] commandValue) {
 		this.commandValue = commandValue;
 	}
 
 	/**
-	 * Retrieves the AT command response value.
+	 * Retrieves the AT command response value as byte array.
 	 * 
-	 * @return The AT command response value.
+	 * @return The AT command response value as byte array.
 	 * 
+	 * @see #getCommandValueAsString()
 	 * @see #setCommandValue(String commandValue)
 	 * @see #setCommandValue(byte[] commandValue)
 	 */
@@ -331,6 +332,7 @@ public class IPv6RemoteATCommandResponsePacket extends XBeeAPIPacket {
 	 * @return The AT command response value as String, {@code null} if no 
 	 *         value is set.
 	 * 
+	 * @see #getCommandValue()
 	 * @see #setCommandValue(String commandValue)
 	 * @see #setCommandValue(byte[] commandValue)
 	 */

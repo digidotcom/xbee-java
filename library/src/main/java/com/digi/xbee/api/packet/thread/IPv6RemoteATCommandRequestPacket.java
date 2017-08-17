@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.ATStringCommands;
+import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.ByteUtils;
@@ -53,9 +54,6 @@ import com.digi.xbee.api.utils.HexUtils;
 public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 
 	// Constants.
-	private static final int OPTIONS_APPLY_CHANGES = 2;
-	private static final int OPTIONS_DONT_APPLY_CHANGES = 0;
-
 	private static final int MIN_API_PAYLOAD_LENGTH = 21; // 1 (Frame type) + 1 (frame ID) + 16 (IPv6 destination address) + 1 (transmit options byte) + 2 (AT command)
 
 	private static final String ERROR_PAYLOAD_NULL = "IPv6 Remote AT command packet payload cannot be null.";
@@ -64,8 +62,8 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	private static final String ERROR_DEST_ADDR_NULL = "Destination address cannot be null.";
 	private static final String ERROR_AT_CMD_NULL = "AT command cannot be null.";
 	private static final String ERROR_FRAME_ID_ILLEGAL = "Frame ID must be between 0 and 255.";
-	private static final String ERROR_OPTIONS_INVALID = "Transmit options can only be " + OPTIONS_APPLY_CHANGES +
-			" or " + OPTIONS_DONT_APPLY_CHANGES + ".";
+	private static final String ERROR_OPTIONS_INVALID = "Transmit options can only be " + RemoteATCommandOptions.OPTION_APPLY_CHANGES +
+			" or " + RemoteATCommandOptions.OPTION_NONE + ".";
 
 	private static final String OPERATION_EXCEPTION = "Operation not supported in this module.";
 
@@ -92,10 +90,6 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.IPV6_REMOTE_AT_COMMAND_REQUEST.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
-	 *                                  if {@code frameID < 0} or
-	 *                                  if {@code frameID > 255} or
-	 *                                  if {@code transmitOptions < 0} or
-	 *                                  if {@code transmitOptions > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static IPv6RemoteATCommandRequestPacket createPacket(byte[] payload) {
@@ -153,13 +147,13 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
-	 *                                  if {@code transmitOptions != }{@value #OPTIONS_APPLY_CHANGES} or
-	 *                                  if {@code transmitOptions != }{@value #OPTIONS_DONT_APPLY_CHANGES}.
+	 *                                  if {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES} or
+	 *                                  if {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code command == null}.
 	 * 
 	 * @see java.net.Inet6Address
-	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 */
 	public IPv6RemoteATCommandRequestPacket(int frameID, Inet6Address destAddress, 
 			int transmitOptions, String command, String parameter) {
@@ -171,7 +165,7 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 			throw new NullPointerException(ERROR_AT_CMD_NULL);
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException(ERROR_FRAME_ID_ILLEGAL);
-		if (transmitOptions != OPTIONS_APPLY_CHANGES && transmitOptions != OPTIONS_DONT_APPLY_CHANGES)
+		if (transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES && transmitOptions != RemoteATCommandOptions.OPTION_NONE)
 			throw new IllegalArgumentException(ERROR_OPTIONS_INVALID);
 
 		this.frameID = frameID;
@@ -184,24 +178,24 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Class constructor. Instantiates a new {@code RemoteATCommandRequest} 
+	 * Class constructor. Instantiates a new {@code IPv6RemoteATCommandRequestPacket} 
 	 * object with the given parameters.
 	 * 
 	 * @param frameID Frame ID.
 	 * @param destAddress IPv6 address of the destination device.
 	 * @param transmitOptions Bitfield of supported transmission options.
 	 * @param command AT command.
-	 * @param parameter AT command parameter.
+	 * @param parameter AT command parameter as byte array.
 	 * 
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
-	 *                                  if {@code transmitOptions != }{@value #OPTIONS_APPLY_CHANGES} or
-	 *                                  if {@code transmitOptions != }{@value #OPTIONS_DONT_APPLY_CHANGES}.
+	 *                                  if {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES} or
+	 *                                  if {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code command == null}.
 	 * 
 	 * @see java.net.Inet6Address
-	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 */
 	public IPv6RemoteATCommandRequestPacket(int frameID, Inet6Address destAddress, 
 			int transmitOptions, String command, byte[] parameter) {
@@ -213,7 +207,7 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 			throw new NullPointerException(ERROR_AT_CMD_NULL);
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException(ERROR_FRAME_ID_ILLEGAL);
-		if (transmitOptions != OPTIONS_APPLY_CHANGES && transmitOptions != OPTIONS_DONT_APPLY_CHANGES)
+		if (transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES && transmitOptions != RemoteATCommandOptions.OPTION_NONE)
 			throw new IllegalArgumentException(ERROR_OPTIONS_INVALID);
 
 		this.frameID = frameID;
@@ -233,7 +227,7 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {
 			data.write(destAddress.getAddress());
-			data.write(transmitOptions);
+			data.write(transmitOptions & 0xFF);
 			data.write(ByteUtils.stringToByteArray(command));
 			if (parameter != null)
 				data.write(parameter);
@@ -277,7 +271,7 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	 * 
 	 * @return Transmit options bitfield.
 	 * 
-	 * @see com.digi.xbee.api.models.XBeeTransmitOptions
+	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 */
 	public int getTransmitOptions() {
 		return transmitOptions;
@@ -298,6 +292,8 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	 * @param parameter The AT command parameter as String.
 	 * 
 	 * @see #getParameter()
+	 * @see #getParameterAsString()
+	 * @see #setParameter(byte[])
 	 */
 	public void setParameter(String parameter) {
 		if (parameter == null)
@@ -307,21 +303,24 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Sets the AT command parameter.
+	 * Sets the AT command parameter as byte array.
 	 * 
-	 * @param parameter The AT command parameter.
+	 * @param parameter The AT command parameter as byte array.
 	 * 
 	 * @see #getParameter()
+	 * @see #getParameterAsString()
+	 * @see #setParameter(String)
 	 */
 	public void setParameter(byte[] parameter) {
 		this.parameter = parameter;
 	}
 
 	/**
-	 * Returns the AT command parameter.
+	 * Returns the AT command parameter as byte array.
 	 * 
-	 * @return The AT command parameter.
+	 * @return The AT command parameter as byte array.
 	 * 
+	 * @see #getParameterAsString()
 	 * @see #setParameter(String parameter)
 	 * @see #setParameter(byte[] parameter)
 	 */
@@ -334,7 +333,8 @@ public class IPv6RemoteATCommandRequestPacket extends XBeeAPIPacket {
 	 * 
 	 * @return The AT command parameter as String, {@code null} if not 
 	 *         parameter is set.
-	 *         
+	 * 
+	 * @see #getParameter()
 	 * @see #setParameter(String parameter)
 	 * @see #setParameter(byte[] parameter)
 	 */

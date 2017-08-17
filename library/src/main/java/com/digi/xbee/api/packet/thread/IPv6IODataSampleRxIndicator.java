@@ -96,9 +96,9 @@ public class IPv6IODataSampleRxIndicator extends XBeeAPIPacket {
 	// Constants.
 	private static final int MIN_API_PAYLOAD_LENGTH = 17; // 1 (Frame type) + 16 (IPv6 source address)
 	
-	private static final String ERROR_PAYLOAD_NULL = "IO Data Sample RX Indicator packet payload cannot be null.";
-	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete IO Data Sample RX Indicator packet.";
-	private static final String ERROR_NOT_IORXIPV6 = "Payload is not a IO Data Sample RX Indicator packet.";
+	private static final String ERROR_PAYLOAD_NULL = "IPv6 IO Data Sample RX Indicator packet payload cannot be null.";
+	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete IPv6 IO Data Sample RX Indicator packet.";
+	private static final String ERROR_NOT_IORXIPV6 = "Payload is not an IPv6 IO Data Sample RX Indicator packet.";
 	private static final String ERROR_SOURCE_ADDR_NULL = "Source address cannot be null.";
 
 	private static final String OPERATION_EXCEPTION = "Operation not supported in this module.";
@@ -117,10 +117,11 @@ public class IPv6IODataSampleRxIndicator extends XBeeAPIPacket {
 	 * given payload.
 	 * 
 	 * @param payload The API frame payload. It must start with the frame type 
-	 *                corresponding to a IPv6 IO Data Sample RX Indicator packet ({@code 0xA7}).
-	 *                The byte array must be in {@code OperatingMode.API} mode.
+	 *                corresponding to a IPv6 IO Data Sample RX Indicator 
+	 *                packet ({@code 0xA7}). The byte array must be in 
+	 *                {@code OperatingMode.API} mode.
 	 * 
-	 * @return Parsed IO Data Sample Rx Indicator packet.
+	 * @return Parsed IPv6 IO Data Sample Rx Indicator packet.
 	 * 
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.IPV6_IO_DATA_SAMPLE_RX_INDICATOR.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH}.
@@ -166,7 +167,6 @@ public class IPv6IODataSampleRxIndicator extends XBeeAPIPacket {
 	 * 
 	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 * 
-	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
 	 * @see java.net.Inet6Address
 	 */
 	public IPv6IODataSampleRxIndicator(Inet6Address sourceAddress, byte[] rfData) {

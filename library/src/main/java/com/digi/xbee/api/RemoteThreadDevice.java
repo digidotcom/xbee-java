@@ -30,10 +30,10 @@ import com.digi.xbee.api.utils.ByteUtils;
 /**
  * This class represents a remote Thread device.
  * 
- * @see RemoteXBeeDevice
  * @see RemoteDigiMeshDevice
  * @see RemoteDigiPointDevice
  * @see RemoteRaw802Device
+ * @see RemoteXBeeDevice
  * @see RemoteZigBeeDevice
  * 
  * @since 1.2.1
@@ -45,7 +45,7 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	
 	/**
 	 * Class constructor. Instantiates a new {@code RemoteThreadDevice} object 
-	 * with the given local {@code ZigBeeDevice} which contains the connection 
+	 * with the given local {@code ThreadDevice} which contains the connection 
 	 * interface to be used.
 	 * 
 	 * @param localXBeeDevice The local Thread device that will behave as 
@@ -55,12 +55,15 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	 * 
 	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code addr64 == null}.
+	 *                              if {@code ipv6addr == null}.
 	 * 
-	 * @see com.digi.xbee.api.models.XBee64BitAddress
+	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address)
+	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address, String)
+	 * @see com.digi.xbee.api.ThreadDevice
+	 * @see java.net.Inet6Address
 	 */
-	public RemoteThreadDevice(ThreadDevice localXBeeDevice, Inet6Address ipv6addr) {
-		super(localXBeeDevice, ipv6addr);
+	public RemoteThreadDevice(ThreadDevice localXBeeDevice, Inet6Address ipv6Addr) {
+		super(localXBeeDevice, ipv6Addr);
 	}
 	
 	/**
@@ -76,12 +79,15 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true} or 
 	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.THREAD}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code addr64 == null}.
+	 *                              if {@code ipv6addr == null}.
 	 * 
-	 * @see com.digi.xbee.api.models.XBee64BitAddress
+	 * @see #RemoteThreadDevice(ThreadDevice, Inet6Address)
+	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address, String)
+	 * @see com.digi.xbee.api.XBeeDevice
+	 * @see java.net.Inet6Address
 	 */
-	public RemoteThreadDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6addr) {
-		super(localXBeeDevice, ipv6addr);
+	public RemoteThreadDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
+		super(localXBeeDevice, ipv6Addr);
 		
 		// Verify the local device has Thread protocol.
 		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.THREAD)
@@ -103,13 +109,15 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	 * @throws IllegalArgumentException if {@code localXBeeDevice.isRemote() == true} or 
 	 *                                  if {@code localXBeeDevice.getXBeeProtocol() != XBeeProtocol.THREAD}.
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
-	 *                              if {@code addr64 == null}.
+	 *                              if {@code ipv6Address == null}.
 	 * 
-	 * @see com.digi.xbee.api.models.XBee16BitAddress
-	 * @see com.digi.xbee.api.models.XBee64BitAddress
+	 * @see #RemoteThreadDevice(ThreadDevice, Inet6Address)
+	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address)
+	 * @see com.digi.xbee.api.XBeeDevice
+	 * @see java.net.Inet6Address
 	 */
-	public RemoteThreadDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Address, String ni) {
-		super(localXBeeDevice, ipv6Address, ni);
+	public RemoteThreadDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String ni) {
+		super(localXBeeDevice, ipv6Addr, ni);
 		
 		// Verify the local device has Thread protocol.
 		if (localXBeeDevice.getXBeeProtocol() != XBeeProtocol.THREAD)
@@ -174,7 +182,7 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	
 	/**
 	 * @deprecated Operation not supported in this protocol. Use
-	 *             {@link #getDestinationIPAddress()} instead.
+	 *             {@link #getIPv6DestinationAddress()} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */
@@ -187,7 +195,7 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	
 	/**
 	 * @deprecated Operation not supported in this protocol. Use
-	 *             {@link #setDestinationIPAddress(Inet6Address)} instead.
+	 *             {@link #setIPv6DestinationAddress(Inet6Address)} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */

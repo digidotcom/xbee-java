@@ -27,11 +27,11 @@ import com.digi.xbee.api.models.XBeeProtocol;
 /**
  * This class represents a remote 802.15.4 device.
  * 
- * @see RemoteXBeeDevice
  * @see RemoteDigiMeshDevice
  * @see RemoteDigiPointDevice
- * @see RemoteZigBeeDevice
  * @see RemoteThreadDevice
+ * @see RemoteXBeeDevice
+ * @see RemoteZigBeeDevice
  */
 public class RemoteRaw802Device extends RemoteXBeeDevice {
 

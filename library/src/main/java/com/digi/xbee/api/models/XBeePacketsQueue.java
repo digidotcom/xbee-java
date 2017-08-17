@@ -395,14 +395,14 @@ public class XBeePacketsQueue {
 	 *         it is empty or no IPv6 packets are contained in the queue.
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
-	 * @see com.digi.xbee.api.packet.ip.RXIPv6Packet
+	 * @see com.digi.xbee.api.packet.thread.RXIPv6Packet
 	 * 
 	 * @since 1.2.1
 	 */
 	public XBeePacket getFirstIPv6DataPacket(int timeout) {
 		if (timeout > 0) {
 			XBeePacket xbeePacket = getFirstIPv6DataPacket(0);
-			// Wait for a timeout or until a IP data packet is read.
+			// Wait for a timeout or until a IPv6 data packet is read.
 			Long deadLine = System.currentTimeMillis() + timeout;
 			while (xbeePacket == null && deadLine > System.currentTimeMillis()) {
 				sleep(100);
@@ -486,7 +486,7 @@ public class XBeePacketsQueue {
 	 *         specified IPv6 address are found in the queue.
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
-	 * @see com.digi.xbee.api.packet.ip.RXIPv6Packet
+	 * @see com.digi.xbee.api.packet.thread.RXIPv6Packet
 	 * @see java.net.Inet6Address
 	 * 
 	 * @since 1.2.1
@@ -604,13 +604,13 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Returns whether or not the IPv6 address of the XBee packet matches the 
-	 * provided one. 
+	 * Returns whether the IPv6 address of the XBee packet matches the 
+	 * provided one or not. 
 	 * 
 	 * @param xbeePacket The XBee packet to compare its IPv6 address with the 
 	 *                   provided one.
-	 * @param ipv6Address The IP address to be compared with the XBee packet's 
-	 *                    one.
+	 * @param ipv6Address The IPv6 address to be compared with the XBee 
+	 *                    packet's one.
 	 * 
 	 * @return {@code true} if the Iv6P address of the XBee packet (if it has) 
 	 *         matches the provided one. {@code false} otherwise.
@@ -699,15 +699,15 @@ public class XBeePacketsQueue {
 	}
 	
 	/**
-	 * Returns whether or not the given XBee packet is a IPv6 data packet.
+	 * Returns whether the given XBee packet is an IPv6 data packet or not.
 	 * 
-	 * @param xbeePacket The XBee packet to check if is a IPv6 data packet.
+	 * @param xbeePacket The XBee packet to check if is an IPv6 data packet.
 	 * 
-	 * @return {@code true} if the XBee packet is a IPv6 data packet, 
+	 * @return {@code true} if the XBee packet is an IPv6 data packet, 
 	 *         {@code false} otherwise.
 	 * 
 	 * @see com.digi.xbee.api.packet.XBeePacket
-	 * @see com.digi.xbee.api.packet.ip.RXIPv6Packet
+	 * @see com.digi.xbee.api.packet.thread.RXIPv6Packet
 	 * 
 	 * @since 1.2.1
 	 */

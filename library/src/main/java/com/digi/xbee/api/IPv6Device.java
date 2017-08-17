@@ -29,6 +29,7 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IIPDataReceiveListener;
+import com.digi.xbee.api.models.HTTPMethodEnum;
 import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -92,9 +93,9 @@ public class IPv6Device extends XBeeDevice {
 	 * @param port Serial port name where IPv6 device is attached to.
 	 * @param baudRate Serial port baud rate to communicate with the device.
 	 * @param dataBits Serial port data bits.
-	 * @param stopBits Serial port data bits.
-	 * @param parity Serial port data bits.
-	 * @param flowControl Serial port data bits.
+	 * @param stopBits Serial port stop bits.
+	 * @param parity Serial port parity.
+	 * @param flowControl Serial port flow control.
 	 * 
 	 * @throws IllegalArgumentException if {@code baudRate < 0} or
 	 *                                  if {@code dataBits < 0} or
@@ -510,40 +511,14 @@ public class IPv6Device extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #getReceiveTimeout()
-	 * @see #sendIPData(Inet6Address, int, IPProtocol, byte[])
 	 * @see #sendIPDataAsync(Inet6Address, int, IPProtocol, byte[])
-	 * @see #sendIPDataAsync(Inet6Address, int, IPProtocol, boolean, byte[])
 	 * @see #setReceiveTimeout(int)
 	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet6Address
 	 */
 	public void sendIPData(Inet6Address ipv6Address, int destPort, 
 			IPProtocol protocol, byte[] data) throws TimeoutException, XBeeException {
-		if (ipv6Address == null)
-			throw new NullPointerException("IPv6 address cannot be null");
-		if (data == null)
-			throw new NullPointerException("Data cannot be null");
-		
-		if (destPort < 0 || destPort > 65535)
-			throw new IllegalArgumentException("Destination port must be between 0 and 65535.");
-		
-		// Check if device is remote.
-		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send IPv6 data from a remote device.");
-		
-		// The source port value depends on the protocol used in the transmission. For UDP, source port 
-		// value must be the same as 'C0' one. For TCP it must be 0.
-		int sourcePort = this.sourcePort;
-		if (protocol != IPProtocol.UDP)
-			sourcePort = 0;
-		
-		logger.debug(toString() + "Sending IPv6 data to {}:{} >> {}.", ipv6Address,
-				destPort, HexUtils.prettyHexString(data));
-		
-		XBeePacket xbeePacket = new TXIPv6Packet(getNextFrameID(), ipv6Address, destPort, 
-				sourcePort, protocol, data);
-		
-		sendAndCheckXBeePacket(xbeePacket, false);
+		sendIPData(ipv6Address, destPort, protocol, data, false);
 	}
 	
 	/**
@@ -570,13 +545,60 @@ public class IPv6Device extends XBeeDevice {
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
 	 * @see #sendIPData(Inet6Address, int, IPProtocol, byte[])
-	 * @see #sendIPData(Inet6Address, int, IPProtocol, boolean, byte[])
-	 * @see #sendIPDataAsync(Inet6Address, int, IPProtocol, byte[])
 	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet6Address
 	 */
 	public void sendIPDataAsync(Inet6Address ipv6Address, int destPort, 
 			IPProtocol protocol, byte[] data) throws XBeeException {
+		sendIPData(ipv6Address, destPort, protocol, data, true);
+	}
+	
+	/**
+	 * Sends the provided IPv6 data to the given IPv6 address and port using 
+	 * the specified IPv6 protocol. For TCP and TCP SSL protocols, you can 
+	 * also indicate if the socket should be closed when data is sent.
+	 * 
+	 * <p>Transmissions can be performed synchronously or asynchronously. 
+	 * Synchronous operation blocks till a success or error response arrives 
+	 * or the configured receive timeout expires. Asynchronous transmissions 
+	 * do not wait for answer from the remote device or for transmit status 
+	 * packet.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For synchronous operations use this method:</p>
+	 * <ul>
+	 *   <li>{@link #sendIPData(Inet6Address, int, IPProtocol, byte[])}.</li>
+	 * </ul>
+	 * <p>For asynchronous operations use this one:</p>
+	 * <ul>
+	 *   <li>{@link #sendIPDataAsync(Inet6Address, int, IPProtocol, byte[])}.</li>
+	 * </ul>
+	 * 
+	 * @param ipv6Address The IPv6 address to send IPv6 data to.
+	 * @param destPort The destination port of the transmission.
+	 * @param protocol The IPv6 protocol used for the transmission.
+	 * @param data Byte array containing the IPv6 data to be sent.
+	 * 
+	 * @throws IllegalArgumentException if {@code destPort < 0} or 
+	 *                                  if {@code destPort > 65535}
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ipv6Address == null} or 
+	 *                              if {@code protocol == null} or 
+	 *                              if {@code data == null}.
+	 * @throws TimeoutException if there is a timeout sending the data.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #sendIPData(Inet6Address, int, IPProtocol, byte[])
+	 * @see #sendIPDataAsync(Inet6Address, int, IPProtocol, byte[])
+	 * @see #setReceiveTimeout(int)
+	 * @see com.digi.xbee.api.models.IPProtocol
+	 * @see java.net.Inet6Address
+	 */
+	private void sendIPData(Inet6Address ipv6Address, int destPort, 
+			IPProtocol protocol, byte[] data, boolean async) throws XBeeException {
 		if (ipv6Address == null)
 			throw new NullPointerException("IPv6 address cannot be null");
 		if (data == null)
@@ -594,13 +616,17 @@ public class IPv6Device extends XBeeDevice {
 		if (protocol != IPProtocol.UDP)
 			sourcePort = 0;
 		
-		logger.debug(toString() + "Sending IPv6 data asynchronously to {}:{} >> {}.", ipv6Address,
-				destPort, HexUtils.prettyHexString(data));
+		if (async)
+			logger.debug(toString() + "Sending IPv6 data asynchronously to {}:{} >> {}.", ipv6Address,
+					destPort, HexUtils.prettyHexString(data));
+		else
+			logger.debug(toString() + "Sending IPv6 data to {}:{} >> {}.", ipv6Address,
+					destPort, HexUtils.prettyHexString(data));
 		
 		XBeePacket xbeePacket = new TXIPv6Packet(getNextFrameID(), ipv6Address, destPort,
 				sourcePort, protocol, data);
 		
-		sendAndCheckXBeePacket(xbeePacket, true);
+		sendAndCheckXBeePacket(xbeePacket, async);
 	}
 	
 	/**
@@ -782,8 +808,8 @@ public class IPv6Device extends XBeeDevice {
 	 * data package read from the provided IPv6 address.
 	 * </p>
 	 * 
-	 * @param remoteIPAddress The IPv6 address to get a IPv6 data packet from. 
-	 *                        {@code null} to read a IPv6 data packet from 
+	 * @param remoteIPAddress The IPv6 address to get an IPv6 data packet from. 
+	 *                        {@code null} to read an IPv6 data packet from 
 	 *                        any IPv6 address.
 	 * @param timeout The time to wait for a IPv6 data packet in milliseconds.
 	 * 
@@ -795,7 +821,7 @@ public class IPv6Device extends XBeeDevice {
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * 
-	 * @see com.digi.xbee.api.models.XBeeMessage
+	 * @see com.digi.xbee.api.models.IPMessage
 	 * @see java.net.Inet6Address
 	 */
 	private IPMessage readIPDataPacket(Inet6Address remoteIPAddress, int timeout) {

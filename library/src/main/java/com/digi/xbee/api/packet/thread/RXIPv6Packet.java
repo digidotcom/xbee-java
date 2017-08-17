@@ -29,12 +29,13 @@ import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.ByteUtils;
 
 /**
  * This class represents an RX (Receive) IPv6 packet. Packet is built
  * using the parameters of the constructor or providing a valid API payload.
  *
- * @see TXIPv6PacketTest
+ * @see TXIPv6Packet
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
  * 
  * @since 1.2.1
@@ -51,7 +52,8 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 	private static final String ERROR_DEST_ADDR_NULL = "Destination address cannot be null.";
 	private static final String ERROR_SOURCE_ADDR_NULL = "Source address cannot be null.";
 	private static final String ERROR_PROTOCOL_NULL = "Protocol cannot be null.";
-	private static final String ERROR_PORT_ILLEGAL = "Port must be between 0 and 65535.";
+	private static final String ERROR_DEST_PORT_ILLEGAL = "Destination port must be between 0 and 65535.";
+	private static final String ERROR_SOURCE_PORT_ILLEGAL = "Source port must be between 0 and 65535.";
 
 	private static final String OPERATION_EXCEPTION = "Operation not supported in this module.";
 
@@ -149,8 +151,7 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 	 * @throws IllegalArgumentException if {@code destPort < 0} or
 	 *                                  if {@code destPort > 65535} or
 	 *                                  if {@code sourcePort < 0} or
-	 *                                  if {@code sourcePort > 65535} or
-	 *                                  if {@code transmitOptions} are invalid.
+	 *                                  if {@code sourcePort > 65535}
 	 * @throws NullPointerException if {@code destAddress == null} or
 	 *                              if {@code sourceAddress == null}
 	 *                              if {@code protocol == null}.
@@ -163,9 +164,9 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 		super(APIFrameType.RX_IPV6);
 
 		if (destPort < 0 || destPort > 65535)
-			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
+			throw new IllegalArgumentException(ERROR_DEST_PORT_ILLEGAL);
 		if (sourcePort < 0 || sourcePort > 65535)
-			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
+			throw new IllegalArgumentException(ERROR_SOURCE_PORT_ILLEGAL);
 		if (destAddress == null)
 			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
 		if (sourceAddress == null)
@@ -192,11 +193,9 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 		try {
 			os.write(destAddress.getAddress());
 			os.write(sourceAddress.getAddress());
-			os.write(destPort >> 8);
-			os.write(destPort);
-			os.write(sourcePort >> 8);
-			os.write(sourcePort);
-			os.write(protocol.getID());
+			os.write(ByteUtils.shortToByteArray((short)destPort));
+			os.write(ByteUtils.shortToByteArray((short)sourcePort));
+			os.write(protocol.getID() & 0xFF);
 			os.write(0x00); // Status byte, reserved.
 			if (data != null)
 				os.write(data);
@@ -232,21 +231,21 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 	 * @see #setDestAddress(Inet6Address)
 	 * @see java.net.Inet6Address
 	 */
-	public Inet6Address getDestinationAddress() {
+	public Inet6Address getDestAddress() {
 		return destAddress;
 	}
 
 	/**
 	 * Sets the destination IPv6 address.
 	 *
-	 * @param sourceAddress The new destination IPv6 address.
+	 * @param destAddress The new destination IPv6 address.
 	 *
 	 * @throws NullPointerException if {@code destAddress == null}.
 	 *
-	 * @see #getSourceAddress()
+	 * @see #getDestAddress()
 	 * @see java.net.Inet6Address
 	 */
-	public void setDestinationAddress(Inet6Address destAddress) {
+	public void setDestAddress(Inet6Address destAddress) {
 		if (destAddress == null)
 			throw new NullPointerException(ERROR_DEST_ADDR_NULL);
 
@@ -268,9 +267,9 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 	/**
 	 * Sets the destination IPv6 address.
 	 *
-	 * @param sourceAddress The new destination IPv6 address.
+	 * @param sourceAddress The new source IPv6 address.
 	 *
-	 * @throws NullPointerException if {@code destAddress == null}.
+	 * @throws NullPointerException if {@code sourceAddress == null}.
 	 *
 	 * @see #getSourceAddress()
 	 * @see java.net.Inet6Address
@@ -305,7 +304,7 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 	 */
 	public void setDestPort(int destPort) {
 		if (destPort < 0 || destPort > 65535)
-			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
+			throw new IllegalArgumentException(ERROR_DEST_PORT_ILLEGAL);
 
 		this.destPort = destPort;
 	}
@@ -333,7 +332,7 @@ public class RXIPv6Packet extends XBeeAPIPacket {
 	 */
 	public void setSourcePort(int sourcePort) {
 		if (sourcePort < 0 || sourcePort > 65535)
-			throw new IllegalArgumentException(ERROR_PORT_ILLEGAL);
+			throw new IllegalArgumentException(ERROR_SOURCE_PORT_ILLEGAL);
 
 		this.sourcePort = sourcePort;
 	}

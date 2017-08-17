@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
+import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -185,11 +186,9 @@ public class TXIPv6Packet extends XBeeAPIPacket {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
 			os.write(destAddress.getAddress());
-			os.write(destPort >> 8);
-			os.write(destPort);
-			os.write(sourcePort >> 8);
-			os.write(sourcePort);
-			os.write(protocol.getID());
+			os.write(ByteUtils.shortToByteArray((short)destPort));
+			os.write(ByteUtils.shortToByteArray((short)sourcePort));
+			os.write(protocol.getID() & 0xFF);
 			os.write(0x00); // Transmit options byte is always 0 (Reserved).
 			if (data != null)
 				os.write(data);

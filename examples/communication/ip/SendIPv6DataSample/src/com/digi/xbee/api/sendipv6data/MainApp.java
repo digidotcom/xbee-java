@@ -26,8 +26,8 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * XBee Java Library Send IPv6 Data sample application.
  *
- * <p>This example sends IP data to another Thread device specified by its IPv6
- * address and port number.</p>
+ * <p>This example sends IPv6 data to another Thread device specified by its 
+ * IPv6 address and port number.</p>
  *
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>

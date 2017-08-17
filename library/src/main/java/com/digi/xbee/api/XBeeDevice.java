@@ -61,9 +61,12 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * This class represents a local XBee device.
  * 
- * @see DigiMeshDevice
+ * @see CellularDevice
  * @see DigiPointDevice
+ * @see DigiMeshDevice
  * @see Raw802Device
+ * @see ThreadDevice
+ * @see WiFiDevice
  * @see ZigBeeDevice
  */
 public class XBeeDevice extends AbstractXBeeDevice {

@@ -33,8 +33,8 @@ import com.digi.xbee.api.models.XBeeProtocol;
  * @see RemoteDigiMeshDevice
  * @see RemoteDigiPointDevice
  * @see RemoteRaw802Device
- * @see RemoteZigBeeDevice
  * @see RemoteThreadDevice
+ * @see RemoteZigBeeDevice
  */
 public class RemoteXBeeDevice extends AbstractXBeeDevice {
 

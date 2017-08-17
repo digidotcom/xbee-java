@@ -39,13 +39,13 @@ import com.digi.xbee.api.utils.HexUtils;
 /**
  * This class represents a local 802.15.4 device.
  * 
- * @see XBeeDevice
  * @see CellularDevice
- * @see 802.15.4Device
  * @see DigiPointDevice
- * @see WiFiDevice
- * @see ZigBeeDevice
+ * @see DigiMeshDevice
  * @see ThreadDevice
+ * @see WiFiDevice
+ * @see XBeeDevice
+ * @see ZigBeeDevice
  */
 public class Raw802Device extends XBeeDevice {
 

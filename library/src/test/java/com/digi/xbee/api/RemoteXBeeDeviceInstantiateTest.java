@@ -16,6 +16,7 @@
 package com.digi.xbee.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -127,7 +128,7 @@ public class RemoteXBeeDeviceInstantiateTest {
 		RemoteXBeeDevice remoteXBeeDevice = new RemoteXBeeDevice(mockedLocalDevice, mockedAddress);
 		
 		// Verify the IPv6 address and connection interface are the expected.
-		assertEquals(mockedAddress, remoteXBeeDevice.getIPv6Address());
+		assertSame(mockedAddress, remoteXBeeDevice.getIPv6Address());
 		assertEquals(mockedInterface, remoteXBeeDevice.getConnectionInterface());
 		// Verify the device is remote.
 		assertTrue(remoteXBeeDevice.isRemote());

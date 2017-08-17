@@ -1,3 +1,18 @@
+/**
+ * Copyright 2017, Digi International Inc.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, you can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES 
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF 
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR 
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES 
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN 
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF 
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package com.digi.xbee.api;
 
 import java.net.Inet6Address;
@@ -12,6 +27,7 @@ import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.HTTPMethodEnum;
+import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.models.ThreadAssociationIndicationStatus;
 import com.digi.xbee.api.models.XBeeProtocol;
 import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
@@ -23,13 +39,13 @@ import android.content.Context;
 /**
  * This class represents a local Thread device.
  * 
- * @see XBeeDevice
- * @see DigiMeshDevice
+ * @see CellularDevice
  * @see DigiPointDevice
+ * @see DigiMeshDevice
  * @see Raw802Device
  * @see WiFiDevice
+ * @see XBeeDevice
  * @see ZigBeeDevice
- * @see CellularDevice
  * 
  * @since 1.2.1
  */
@@ -116,7 +132,7 @@ public class ThreadDevice extends IPv6Device {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code ThreadDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * @param context The Android context.
@@ -138,7 +154,7 @@ public class ThreadDevice extends IPv6Device {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code ThreadDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * @param context The Android context.
@@ -163,7 +179,7 @@ public class ThreadDevice extends IPv6Device {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code ThreadDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * <p>This constructor uses the Digi Android Serial Port API based on the
@@ -190,7 +206,7 @@ public class ThreadDevice extends IPv6Device {
 	}
 	
 	/**
-	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Class constructor. Instantiates a new {@code ThreadDevice} object for
 	 * Android with the given parameters.
 	 * 
 	 * <p>This constructor uses the Digi Android Serial Port API based on the
@@ -321,7 +337,7 @@ public class ThreadDevice extends IPv6Device {
 	 * <p>For non-blocking operations use the method 
 	 * {@link #sendCoAPDataAsync(Inet6Address, String, HTTPMethodEnum, byte[])}.</p>
 	 * 
-	 * @param ipv6Address The IPv6 address to send IPv6 data to.
+	 * @param ipv6Address The IPv6 address to send CoAP IPv6 data to.
 	 * @param uri Uniform Resource Identifier. Every CoAP message must have a 
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
@@ -336,7 +352,7 @@ public class ThreadDevice extends IPv6Device {
 	 *              IO operation (HTTP method must be set to POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
-	 * @param data Byte array containing the IPv6 data to be sent.
+	 * @param data Byte array containing the CoAP IPv6 data to be sent.
 	 * 
 	 * @return A byte array containing the response, if any. Otherwise, {@code null}.
 	 * 
@@ -359,7 +375,7 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public byte[] sendCoAPData(Inet6Address ipv6Address, String uri,
 			HTTPMethodEnum method, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		return sendCoAPData(ipv6Address, uri, method, true, data);
+		return sendCoAPData(ipv6Address, uri, method, true, data, false);
 	}
 	
 	/**
@@ -376,7 +392,7 @@ public class ThreadDevice extends IPv6Device {
 	 * {@link #sendCoAPDataAsync(Inet6Address, String, HTTPMethodEnum, 
 	 * boolean, byte[])}.</p>
 	 * 
-	 * @param ipv6Address The IPv6 address to send IPv6 data to.
+	 * @param ipv6Address The IPv6 address to send CoAP IPv6 data to.
 	 * @param uri Uniform Resource Identifier. Every CoAP message must have a 
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
@@ -393,7 +409,7 @@ public class ThreadDevice extends IPv6Device {
 	 * @param method HTTP method used for the transmission.
 	 * @param applyChanges {@code true} to apply the changes after sending the 
 	 *                     packet, {@code false} otherwise.
-	 * @param data Byte array containing the IPv6 data to be sent.
+	 * @param data Byte array containing the CoAP IPv6 data to be sent.
 	 * 
 	 * @return A byte array containing the response, if any. Otherwise, {@code null}.
 	 * 
@@ -416,31 +432,7 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public byte[] sendCoAPData(Inet6Address ipv6Address, String uri, HTTPMethodEnum method,
 			boolean applyChanges, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		if (ipv6Address == null)
-			throw new NullPointerException("IPv6 address cannot be null");
-		if (uri == null)
-			throw new NullPointerException("Uri cannot be null");
-		if (method == null)
-			throw new NullPointerException("HTTP method cannot be null");
-		
-		// If AT command uri is used but no AT command is specified throw an error.
-		if (uri.startsWith(CoAPTxRequestPacket.URI_AT_COMMAND) 
-			&& uri.length() < CoAPTxRequestPacket.URI_AT_COMMAND.length() + 3)
-			throw new IllegalArgumentException("AT command URI must contain an AT command.");
-		
-		// Check if device is remote.
-		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send IPv6 data from a remote device.");
-		
-		logger.debug(toString() + "Sending CoAP IPv6 data to {} >> {}.", ipv6Address,
-				HexUtils.prettyHexString(data));
-		
-		CoAPTxRequestPacket coAPPacket = new CoAPTxRequestPacket(getNextFrameID(),
-				applyChanges ? CoAPTxRequestPacket.OPTIONS_APPLY_CHANGES: CoAPTxRequestPacket.OPTIONS_DEFAULT,
-				method, ipv6Address, uri, data);
-		
-		// Check for a transmit status and CoAP RX Response.
-		return sendAndCheckCoAPPacket(coAPPacket, false);
+		return sendCoAPData(ipv6Address, uri, method, applyChanges, data, false);
 	}
 	
 	/**
@@ -453,7 +445,7 @@ public class ThreadDevice extends IPv6Device {
 	 * <p>For blocking operations use the method 
 	 * {@link #sendCoAPData(Inet6Address, String, HTTPMethodEnum, byte[])}.</p>
 	 * 
-	 * @param ipv6Address The IPv6 address to send IPv6 data to.
+	 * @param ipv6Address The IPv6 address to send CoAP IPv6 data to.
 	 * @param uri Uniform Resource Identifier. Every CoAP message must have a 
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
@@ -468,7 +460,7 @@ public class ThreadDevice extends IPv6Device {
 	 *              IO operation (POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
-	 * @param data Byte array containing the IPv6 data to be sent.
+	 * @param data Byte array containing the CoAP IPv6 data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code uri} starts with "XB/AT" and 
 	 *                                  its length is lesser than 8 (XB/AT/XX).
@@ -489,7 +481,7 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public void sendCoAPDataAsync(Inet6Address ipv6Address, String uri,
 			HTTPMethodEnum method, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		sendCoAPDataAsync(ipv6Address, uri, method, true, data);
+		sendCoAPData(ipv6Address, uri, method, true, data, true);
 	}
 	
 	/**
@@ -502,7 +494,7 @@ public class ThreadDevice extends IPv6Device {
 	 * <p>For blocking operations use the method 
 	 * {@link #sendCoAPData(Inet6Address, String, HTTPMethodEnum, boolean, byte[])}.</p>
 	 * 
-	 * @param ipv6Address The IPv6 address to send IPv6 data to.
+	 * @param ipv6Address The IPv6 address to send CoAP IPv6 data to.
 	 * @param uri Uniform Resource Identifier. Every CoAP message must have a 
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
@@ -519,7 +511,7 @@ public class ThreadDevice extends IPv6Device {
 	 * @param method HTTP method used for the transmission.
 	 * @param applyChanges {@code true} to apply the changes after sending the 
 	 *                     packet, {@code false} otherwise.
-	 * @param data Byte array containing the IPv6 data to be sent.
+	 * @param data Byte array containing the CoAP IPv6 data to be sent.
 	 * 
 	 * @throws IllegalArgumentException if {@code uri} starts with "XB/AT" and 
 	 *                                  its length is lesser than 8 (XB/AT/XX).
@@ -540,6 +532,77 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public void sendCoAPDataAsync(Inet6Address ipv6Address, String uri, HTTPMethodEnum method,
 			boolean applyChanges, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
+		sendCoAPData(ipv6Address, uri, method, applyChanges, data, true);
+	}
+	
+	/**
+	 * Sends the provided CoAP IPv6 data to the given IPv6 address and port 
+	 * using the specified IPv6 protocol.
+	 * 
+	 * <p>CoAP transmissions can be performed synchronously or asynchronously. 
+	 * Synchronous operations block till a success or error response arrives 
+	 * or the configured receive timeout expires. Asynchronous transmissions
+	 * do not wait for answer from the remote device or for transmit status 
+	 * packet.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For synchronous operations use these methods:</p>
+	 * <ul>
+	 *   <li>{@link #sendCoAPData(Inet6Address, String, HTTPMethodEnum, byte[])}.</li>
+	 *   <li>{@link #sendCoAPData(Inet6Address, String, HTTPMethodEnum, boolean, byte[])}.</li>
+	 * </ul>
+	 * <p>For asynchronous operations use these ones:</p>
+	 * <ul>
+	 *   <li>{@link #sendCoAPDataAsync(Inet6Address, String, HTTPMethodEnum, byte[])}.</li>
+	 *   <li>{@link #sendCoAPDataAsync(Inet6Address, String, HTTPMethodEnum, boolean, byte[])}.</li>
+	 * </ul>
+	 * 
+	 * @param ipv6Address The IPv6 address to send CoAP IPv6 data to.
+	 * @param uri Uniform Resource Identifier. Every CoAP message must have a 
+	 *            valid URI string and must meet the following criteria. There 
+	 *            are built-in CoAP URIs:
+	 *            <ul>
+	 *              <li><b>CoAPTxRequestPacket.URI_DATA_TRANSMISSION:</b> "XB/TX" 
+	 *              for data transmissions (PUT)</li>
+	 *              <li><b>CoAPTxRequestPacket.URI_AT_COMMAND:</b> "XB/AT" for 
+	 *              AT Command operation (PUT or GET). After the URI, an AT command 
+	 *              needs to be specified, for example: 
+	 *              CoAPTxRequestPacket.URI_AT_COMMAND + "/NI"</li>
+	 *              <li><b>CoAPTxRequestPacket.URI_IO_SAMPLING:</b> "XB/IO" for 
+	 *              IO operation (POST)</li>
+	 *            </ul>
+	 * @param method HTTP method used for the transmission.
+	 * @param applyChanges {@code true} to apply the changes after sending the 
+	 *                     packet, {@code false} otherwise.
+	 * @param data Byte array containing the CoAP IPv6 data to be sent.
+	 * @param async {@code true} to make an asynchronous transmission, {@code false} 
+	 *              to block till a success or error response arrives or the 
+	 *              configured receive timeout expires .
+	 * 
+	 * @return A byte array containing the response, if any. Otherwise, {@code null}.
+	 * 
+	 * @throws IllegalArgumentException if {@code uri} starts with "XB/AT" and 
+	 *                                  its length is lesser than 8 (XB/AT/XX).
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code ipv6Address == null} or 
+	 *                              if {@code uri == null} or 
+	 *                              if {@code method == null}.
+	 * @throws TimeoutException if there is a timeout sending the data.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #sendCoAPData(Inet6Address, String, HTTPMethodEnum, byte[])
+	 * @see #sendCoAPData(Inet6Address, String, HTTPMethodEnum, boolean, byte[])
+	 * @see #sendCoAPDataAsync(Inet6Address, String, HTTPMethodEnum, byte[])
+	 * @see #sendCoAPDataAsync(Inet6Address, String, HTTPMethodEnum, boolean, byte[])
+	 * @see #setReceiveTimeout(int)
+	 * @see com.digi.xbee.api.models.HTTPMethodEnum
+	 * @see java.net.Inet6Address
+	 */
+	private byte[] sendCoAPData(Inet6Address ipv6Address, String uri, HTTPMethodEnum method,
+			boolean applyChanges, byte[] data, boolean async) throws TimeoutException, IllegalArgumentException, XBeeException {
 		if (ipv6Address == null)
 			throw new NullPointerException("IPv6 address cannot be null");
 		if (uri == null)
@@ -554,16 +617,20 @@ public class ThreadDevice extends IPv6Device {
 		
 		// Check if device is remote.
 		if (isRemote())
-			throw new OperationNotSupportedException("Cannot send IPv6 data from a remote device.");
+			throw new OperationNotSupportedException("Cannot send CoAP IPv6 data from a remote device.");
 		
-		logger.debug(toString() + "Sending CoAP IPv6 data asynchronously to {} >> {}.", ipv6Address,
-				HexUtils.prettyHexString(data));
+		if (async)
+			logger.debug(toString() + "Sending CoAP IPv6 data asynchronously to {} >> {}.", ipv6Address,
+					HexUtils.prettyHexString(data));
+		else
+			logger.debug(toString() + "Sending CoAP IPv6 data to {} >> {}.", ipv6Address,
+					HexUtils.prettyHexString(data));
 		
 		CoAPTxRequestPacket coAPPacket = new CoAPTxRequestPacket(getNextFrameID(),
-				applyChanges ? CoAPTxRequestPacket.OPTIONS_APPLY_CHANGES: CoAPTxRequestPacket.OPTIONS_DEFAULT,
+				applyChanges ? RemoteATCommandOptions.OPTION_APPLY_CHANGES: RemoteATCommandOptions.OPTION_NONE,
 				method, ipv6Address, uri, data);
 		
 		// Check for a transmit status and CoAP RX Response.
-		sendAndCheckCoAPPacket(coAPPacket, true);
+		return sendAndCheckCoAPPacket(coAPPacket, async);
 	}
 }

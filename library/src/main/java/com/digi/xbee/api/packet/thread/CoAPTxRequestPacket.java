@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.digi.xbee.api.models.HTTPMethodEnum;
+import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
@@ -45,10 +46,10 @@ import com.digi.xbee.api.utils.HexUtils;
  * specified by the {@link HTTPMethodEnum} enumerator.</p>
  * 
  * <p>The URI field is a string that must be {@value #URI_DATA_TRANSMISSION} for
- * data transmission (PUT) or {@value #URI_AT_COMMAND} for AT Command operations
- * (PUT or GET).</p>
+ * data transmission (PUT), {@value #URI_AT_COMMAND} for AT Command operations
+ * (PUT or GET) or {@value #URI_IO_SAMPLING} for IO operation (POST).</p>
  * 
- * <p>The packet also include an optional payload. For data transmission, it
+ * <p>The packet also includes an optional payload. For data transmission, it
  * should contain the data to send; for AT Command operations, empty to query
  * the setting (GET) or the new value (PUT).</p>
  * 
@@ -69,15 +70,8 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	/** URI for IO operation (POST). */
 	public static final String URI_IO_SAMPLING = "XB/IO";
 
-	/** This option should only be used if remote AT commands have to be applied. */
-	public static final int OPTIONS_APPLY_CHANGES = 2;
-
-	/** This option has to be set unless URI XB/AT/XX is used and remote 
-	 * AT command has to be applied. */
-	public static final int OPTIONS_DEFAULT = 0;
-
-	private static final int MIN_API_PAYLOAD_LENGTH = 24; /* 1 (Frame type) + 1 (frame ID) + 1 (transmit options) + 
-																1 (RESTful method) + 16 (dest address) + 1 (URI length) + 5 (URI) */
+	private static final int MIN_API_PAYLOAD_LENGTH = 26; /* 1 (Frame type) + 1 (frame ID) + 1 (transmit options) + 
+															 1 (RESTful method) + 16 (dest address) + 1 (URI length) + 5 (URI) */
 
 	private static final String ERROR_PAYLOAD_NULL = "CoAP Tx Request packet payload cannot be null.";
 	private static final String ERROR_INCOMPLETE_PACKET = "Incomplete CoAP Tx Request packet.";
@@ -86,8 +80,8 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	private static final String ERROR_METHOD_NULL = "HTTP Method cannot be null.";
 	private static final String ERROR_URI_NULL = "URI cannot be null.";
 	private static final String ERROR_FRAME_ID_ILLEGAL = "Frame ID must be between 0 and 255.";
-	private static final String ERROR_OPTIONS_INVALID = "Transmit options can only be " + OPTIONS_DEFAULT +
-			" or " + OPTIONS_APPLY_CHANGES + ".";
+	private static final String ERROR_OPTIONS_INVALID = "Transmit options can only be " + RemoteATCommandOptions.OPTION_NONE +
+			" or " + RemoteATCommandOptions.OPTION_APPLY_CHANGES + ".";
 
 	private static final String OPERATION_EXCEPTION = "Operation not supported in this module.";
 
@@ -108,7 +102,7 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 * Creates a new {@code CoAPTxRequestPacket} object from the given payload.
 	 *
 	 * @param payload The API frame payload. It must start with the frame type
-	 *                corresponding to a TX IPv6 packet ({@code 0x1C}).
+	 *                corresponding to a CoAP Tx Request packet ({@code 0x1C}).
 	 *                The byte array must be in {@code OperatingMode.API} mode.
 	 *
 	 * @return Parsed CoAP Tx Request packet.
@@ -182,13 +176,14 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 *
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
-	 *                                  if {@code uri contains }{@value #URI_AT_COMMAND} and {@code transmitOptions == }{@value #OPTIONS_DEFAULT} or
-	 *                                  if {@code uri does not contain }{@value #URI_AT_COMMAND} and {@code transmitOptions == }{@value #OPTIONS_DEFAULT}.
+	 *                                  if {@code uri contains }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE} or {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES}
+	 *                                  if {@code uri does not contain }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
 	 * @throws NullPointerException if {@code method == null} or 
 	 *                              if {@code destAddress == null} or
 	 *                              if {@code uri == null}.
 	 *
 	 * @see com.digi.xbee.api.models.HTTPMethodEnum
+	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 * @see java.net.Inet6Address
 	 */
 	public CoAPTxRequestPacket(int frameID, int transmitOptions, HTTPMethodEnum method,
@@ -197,7 +192,8 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException(ERROR_FRAME_ID_ILLEGAL);
-		if (!(transmitOptions == OPTIONS_DEFAULT || transmitOptions == OPTIONS_APPLY_CHANGES))
+		if ((uri != null && !uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE) 
+				|| (uri != null && uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE && transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES))
 			throw new IllegalArgumentException(ERROR_OPTIONS_INVALID);
 		if (method == null)
 			throw new NullPointerException(ERROR_METHOD_NULL);
@@ -223,10 +219,10 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	protected byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(transmitOptions);
-			os.write(method.getValue());
+			os.write(transmitOptions & 0xFF);
+			os.write(method.getValue() & 0xFF);
 			os.write(destAddress.getAddress());
-			os.write(uri.length());
+			os.write(uri.length() & 0xFF);
 			os.write(uri.getBytes());
 			if (payload != null)
 				os.write(payload);
@@ -259,12 +255,15 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 * 
 	 * @param options The transmit options bitfield.
 	 * 
+	 * @throws IllegalArgumentException if {@code uri contains }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE} or {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES}
+	 *                                  if {@code uri does not contain }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
+	 * 
 	 * @see #getTransmitOptions()
-	 * @see com.digi.xbee.api.models.CoAPTransmitOptions
+	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 */
 	public void setTransmitOptions(int transmitOptions) {
-		if ((uri != null && !uri.contains(URI_AT_COMMAND) && transmitOptions != OPTIONS_DEFAULT) 
-				|| (uri != null && uri.contains(URI_AT_COMMAND) && transmitOptions != OPTIONS_DEFAULT && transmitOptions != OPTIONS_APPLY_CHANGES))
+		if ((uri != null && !uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE) 
+				|| (uri != null && uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE && transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES))
 			throw new IllegalArgumentException(ERROR_OPTIONS_INVALID);
 
 		this.transmitOptions = transmitOptions;
@@ -276,7 +275,7 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 * @return Transmit options bitfield.
 	 * 
 	 * @see #setTransmitOptions(int)
-	 * @see com.digi.xbee.api.models.CoAPTransmitOptions
+	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 */
 	public int getTransmitOptions() {
 		return transmitOptions;
@@ -343,6 +342,8 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 * 
 	 * @param uri URI.
 	 * 
+	 * @throws NullPointerException if {@code uri == null}.
+	 * 
 	 * @see #getURI()
 	 */
 	public void setURI(String uri) {
@@ -366,9 +367,9 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	/**
 	 * Sets the new transmission data.
 	 *
-	 * @param data The transmission data.
+	 * @param payload The transmission data.
 	 *
-	 * @see #getData()
+	 * @see #getPayload()
 	 */
 	public void setPayload(byte[] payload) {
 		if (payload == null)
@@ -382,7 +383,7 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 *
 	 * @return The transmission data.
 	 *
-	 * @see #setData(byte[])
+	 * @see #setPayload(byte[])
 	 */
 	public byte[] getPayload() {
 		if (payload == null)
@@ -405,7 +406,7 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 		parameters.put("URI length", HexUtils.prettyHexString(HexUtils.integerToHexString(uri.length(), 1)) + " (" + uri.length() + ")");
 		parameters.put("URI", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(uri.getBytes())) + " (" + uri + ")");
 		if (payload != null)
-			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(payload)));
+			parameters.put("Payload", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(payload)));
 		return parameters;
 	}
 }

@@ -86,7 +86,9 @@ public class IPMessage {
 	 *                              if {@code protocol ==  null}.
 	 * 
 	 * @see com.digi.xbee.api.models.IPProtocol
-	 * @see java.net.Inet4Address
+	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public IPMessage(Inet6Address ipv6Address, int sourcePort, int destPort, 
 			IPProtocol protocol, byte[] data) {
@@ -107,13 +109,17 @@ public class IPMessage {
 	 * @throws IllegalArgumentException if {@code sourcePort < 0} or
 	 *                                  if {@code sourcePort > 65535} or
 	 *                                  if {@code destPort < 0} or
-	 *                                  if {@code destPort > 65535}.
+	 *                                  if {@code destPort > 65535} or
+	 *                                  if {@code ipAddress != null} and {@code ipv6Address != null}.
 	 * @throws NullPointerException if {@code ipAddress == null && ipv6Address == null} or
 	 *                              if {@code data == null} or
 	 *                              if {@code protocol ==  null}.
 	 * 
 	 * @see com.digi.xbee.api.models.IPProtocol
 	 * @see java.net.Inet4Address
+	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	private IPMessage(Inet4Address ipAddress, Inet6Address ipv6Address, int sourcePort, 
 			int destPort, IPProtocol protocol, byte[] data) {
@@ -125,7 +131,7 @@ public class IPMessage {
 			throw new NullPointerException("Data cannot be null.");
 		
 		if (ipAddress != null && ipv6Address != null)
-			throw new NullPointerException("There cannot be 2 types of IP addresses (IPv4 and IPv6) for one message.");
+			throw new IllegalArgumentException("There cannot be 2 types of IP addresses (IPv4 and IPv6) for one message.");
 		if (sourcePort < 0 || sourcePort > 65535)
 			throw new IllegalArgumentException("Source port must be between 0 and 65535.");
 		if (destPort < 0 || destPort > 65535)
@@ -140,9 +146,9 @@ public class IPMessage {
 	}
 	
 	/**
-	 * Returns the IP address this message is associated to.
+	 * Returns the IPv4 address this message is associated to.
 	 * 
-	 * @return The IP address this message is associated to.
+	 * @return The IPv6 address this message is associated to.
 	 * 
 	 * @see java.net.Inet4Address
 	 */
@@ -156,17 +162,22 @@ public class IPMessage {
 	 * @return The IPv6 address this message is associated to.
 	 * 
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public Inet6Address getIPv6Address() {
 		return ipv6Address;
 	}
 	
 	/**
-	 * Returns the IPv6 address this message is associated to.
+	 * Returns the IPv4 or IPv6 address this message is associated to.
 	 * 
-	 * @return The IPv6 address this message is associated to.
+	 * @return The IPv4 or IPv6 address this message is associated to.
 	 * 
+	 * @see java.net.Inet4Address
 	 * @see java.net.Inet6Address
+	 * 
+	 * @since 1.2.1
 	 */
 	public String getHostAddress() {
 		if (ipAddress == null)

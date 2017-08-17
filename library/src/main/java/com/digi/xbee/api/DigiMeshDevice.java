@@ -35,13 +35,13 @@ import com.digi.xbee.api.models.XBeeProtocol;
 /**
  * This class represents a local DigiMesh device.
  * 
- * @see XBeeDevice
- * @see DigiMeshDevice
+ * @see CellularDevice
  * @see DigiPointDevice
  * @see Raw802Device
- * @see WiFiDevice
- * @see ZigBeeDevice
  * @see ThreadDevice
+ * @see WiFiDevice
+ * @see XBeeDevice
+ * @see ZigBeeDevice
  */
 public class DigiMeshDevice extends XBeeDevice {
 

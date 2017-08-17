@@ -43,13 +43,13 @@ import com.digi.xbee.api.utils.ByteUtils;
 /**
  * This class represents a local Cellular device.
  * 
- * @see XBeeDevice
- * @see DigiMeshDevice
  * @see DigiPointDevice
+ * @see DigiMeshDevice
  * @see Raw802Device
- * @see WiFiDevice
- * @see ZigBeeDevice
  * @see ThreadDevice
+ * @see WiFiDevice
+ * @see XBeeDevice
+ * @see ZigBeeDevice
  * 
  * @since 1.2.0
  */

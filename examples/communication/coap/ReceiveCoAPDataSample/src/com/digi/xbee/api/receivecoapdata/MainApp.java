@@ -19,9 +19,9 @@ import com.digi.xbee.api.ThreadDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 
 /**
- * XBee Java Library Receive IPv6 Data sample application.
+ * XBee Java Library Receive CoAP Data sample application.
  *
- * <p>This example registers a listener to manage the received IPv6 data.</p>
+ * <p>This example registers a listener to manage the received CoAP data.</p>
  *
  * <p>For a complete description on the example, refer to the 'ReadMe.txt' file
  * included in the root directory.</p>

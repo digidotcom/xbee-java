@@ -77,6 +77,8 @@
 		<module>examples/communication/SendDataSample</module>
 		<module>examples/communication/cellular/ReceiveSMSSample</module>
 		<module>examples/communication/cellular/SendSMSSample</module>
+		<module>examples/communication/coap/ReceiveCoAPDataSample</module>
+		<module>examples/communication/coap/SendCoAPDataSample</module>
 		<module>examples/communication/explicit/ReceiveExplicitDataPollingSample</module>
 		<module>examples/communication/explicit/ReceiveExplicitDataSample</module>
 		<module>examples/communication/explicit/SendBroadcastExplicitDataSample</module>
@@ -84,7 +86,9 @@
 		<module>examples/communication/explicit/SendExplicitDataSample</module>
 		<module>examples/communication/ip/ConnectToEchoServerSample</module>
 		<module>examples/communication/ip/ReceiveIPDataSample</module>
+		<module>examples/communication/ip/ReceiveIPv6DataSample</module>
 		<module>examples/communication/ip/SendIPDataSample</module>
+		<module>examples/communication/ip/SendIPv6DataSample</module>
 		<module>examples/communication/ip/KnockKnockSample</module>
 		<module>examples/communication/ip/SendUDPDataSample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>

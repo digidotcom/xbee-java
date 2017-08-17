@@ -38,7 +38,7 @@ public class XBee {
 	 * 
 	 * @return The serial port connection interface.
 	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
+	 * @throws IllegalArgumentException if {@code baudRate < 0}.
 	 * @throws NullPointerException if {@code port == null}.
 	 * 
 	 * @see #createConnectiontionInterface(String, SerialPortParameters)

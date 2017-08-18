@@ -379,7 +379,8 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public byte[] sendCoAPData(Inet6Address ipv6Address, String uri,
 			HTTPMethodEnum method, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		return sendCoAPData(ipv6Address, uri, method, true, data, false);
+		boolean applyChanges = uri.startsWith(CoAPTxRequestPacket.URI_AT_COMMAND);
+		return sendCoAPData(ipv6Address, uri, method, applyChanges, data, false);
 	}
 	
 	/**
@@ -485,7 +486,8 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public void sendCoAPDataAsync(Inet6Address ipv6Address, String uri,
 			HTTPMethodEnum method, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		sendCoAPData(ipv6Address, uri, method, true, data, true);
+		boolean applyChanges = uri.startsWith(CoAPTxRequestPacket.URI_AT_COMMAND);
+		sendCoAPData(ipv6Address, uri, method, applyChanges, data, true);
 	}
 	
 	/**

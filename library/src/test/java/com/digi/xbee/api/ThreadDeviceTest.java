@@ -20,6 +20,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +38,7 @@ import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.ThreadAssociationIndicationStatus;
 import com.digi.xbee.api.models.XBee64BitAddress;
 
@@ -407,5 +409,93 @@ public class ThreadDeviceTest {
 		
 		// Check the connection.
 		assertFalse(threadDevice.isConnected());
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.ThreadDevice#sendIPData(Inet6Address, int, IPProtocol, byte[])
+	 * 
+	 * <p>Verify that TCP protocol is not supported when sending IPv6 data synchronously.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendIPDataProtocolIllegalTCP() throws Exception {
+		// Set up the resources for the test.
+		Inet6Address address = (Inet6Address) Inet6Address.getByName("FDB3:0001:0002:0000:0004:0005:0006:0007");
+		byte[] data = "Hello XBee".getBytes();
+		int destPort = 1234;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo(String.format("Protocol mus be %s or %s.", 
+				IPProtocol.UDP.getName(), IPProtocol.COAP.getName()))));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		threadDevice.sendIPData(address, destPort, IPProtocol.TCP, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.ThreadDevice#sendIPData(Inet6Address, int, IPProtocol, byte[])
+	 * 
+	 * <p>Verify that TCP SSL protocol is not supported when sending IPv6 data synchronously.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendIPDataProtocolIllegalTCPSSL() throws Exception {
+		// Set up the resources for the test.
+		Inet6Address address = (Inet6Address) Inet6Address.getByName("FDB3:0001:0002:0000:0004:0005:0006:0007");
+		byte[] data = "Hello XBee".getBytes();
+		int destPort = 1234;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo(String.format("Protocol mus be %s or %s.", 
+				IPProtocol.UDP.getName(), IPProtocol.COAP.getName()))));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		threadDevice.sendIPData(address, destPort, IPProtocol.TCP_SSL, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.ThreadDevice#sendIPDataAsync(Inet6Address, int, IPProtocol, byte[])
+	 * 
+	 * <p>Verify that TCP protocol is not supported when sending IPv6 data asynchronously.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendIPDataAsyncProtocolIllegalTCP() throws Exception {
+		// Set up the resources for the test.
+		Inet6Address address = (Inet6Address) Inet6Address.getByName("FDB3:0001:0002:0000:0004:0005:0006:0007");
+		byte[] data = "Hello XBee".getBytes();
+		int destPort = 1234;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo(String.format("Protocol mus be %s or %s.", 
+				IPProtocol.UDP.getName(), IPProtocol.COAP.getName()))));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		threadDevice.sendIPDataAsync(address, destPort, IPProtocol.TCP, data);
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.ThreadDevice#sendIPDataAsync(Inet6Address, int, IPProtocol, byte[])
+	 * 
+	 * <p>Verify that TCP SSL protocol is not supported when sending IPv6 data asynchronously.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendIPDataAsyncProtocolIllegalTCPSSL() throws Exception {
+		// Set up the resources for the test.
+		Inet6Address address = (Inet6Address) Inet6Address.getByName("FDB3:0001:0002:0000:0004:0005:0006:0007");
+		byte[] data = "Hello XBee".getBytes();
+		int destPort = 1234;
+		
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage(is(equalTo(String.format("Protocol mus be %s or %s.", 
+				IPProtocol.UDP.getName(), IPProtocol.COAP.getName()))));
+		
+		// Call the method under test that should throw an IllegalArgumentException.
+		threadDevice.sendIPDataAsync(address, destPort, IPProtocol.TCP_SSL, data);
 	}
 }

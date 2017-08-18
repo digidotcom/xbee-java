@@ -27,6 +27,7 @@ import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.AssociationIndicationStatus;
 import com.digi.xbee.api.models.HTTPMethodEnum;
+import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.models.ThreadAssociationIndicationStatus;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -53,6 +54,9 @@ public class ThreadDevice extends IPv6Device {
 
 	// Constants
 	private static final String OPERATION_EXCEPTION = "Operation not supported in Thread protocol.";
+	
+	private static final String ERROR_PROTOCOL_ILLEGAL = String.format("Protocol must be %s or %s.", 
+			IPProtocol.UDP.getName(), IPProtocol.COAP.getName());
 	
 	/**
 	 * Class constructor. Instantiates a new {@code ThreadDevice} object in 
@@ -632,5 +636,30 @@ public class ThreadDevice extends IPv6Device {
 		
 		// Check for a transmit status and CoAP RX Response.
 		return sendAndCheckCoAPPacket(coAPPacket, async);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.IPv6Device#sendIPData(java.net.Inet6Address, int, com.digi.xbee.api.models.IPProtocol, byte[])
+	 */
+	@Override
+	public void sendIPData(Inet6Address ipv6Address, int destPort,
+			IPProtocol protocol, byte[] data) throws TimeoutException,
+			XBeeException {
+		if (protocol != IPProtocol.UDP || protocol != IPProtocol.COAP)
+			throw new IllegalArgumentException(ERROR_PROTOCOL_ILLEGAL);
+		super.sendIPData(ipv6Address, destPort, protocol, data);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.IPv6Device#sendIPDataAsync(java.net.Inet6Address, int, com.digi.xbee.api.models.IPProtocol, byte[])
+	 */
+	@Override
+	public void sendIPDataAsync(Inet6Address ipv6Address, int destPort,
+			IPProtocol protocol, byte[] data) throws XBeeException {
+		if (protocol != IPProtocol.UDP || protocol != IPProtocol.COAP)
+			throw new IllegalArgumentException(ERROR_PROTOCOL_ILLEGAL);
+		super.sendIPDataAsync(ipv6Address, destPort, protocol, data);
 	}
 }

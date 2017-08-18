@@ -29,7 +29,6 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IIPDataReceiveListener;
-import com.digi.xbee.api.models.HTTPMethodEnum;
 import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.XBee16BitAddress;
@@ -264,7 +263,6 @@ public class IPv6Device extends XBeeDevice {
 		super(connectionInterface);
 	}
 	
-	
 	/**
 	 * @deprecated This protocol does not support the network functionality.
 	 */
@@ -313,7 +311,7 @@ public class IPv6Device extends XBeeDevice {
 	
 	/**
 	 * @deprecated Operation not supported in this protocol. Use
-	 *             {@link #getDestinationIPAddress()} instead.
+	 *             {@link #getIPv6DestinationAddress()} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */
@@ -326,7 +324,7 @@ public class IPv6Device extends XBeeDevice {
 	
 	/**
 	 * @deprecated Operation not supported in this protocol. Use
-	 *             {@link #setDestinationIPAddress(Inet6Address)} instead.
+	 *             {@link #setIPv6DestinationAddress(Inet6Address)} instead.
 	 *             This method will raise an 
 	 *             {@link UnsupportedOperationException}.
 	 */
@@ -484,8 +482,7 @@ public class IPv6Device extends XBeeDevice {
 	
 	/**
 	 * Sends the provided IPv6 data to the given IPv6 address and port using 
-	 * the specified IPv6 protocol. For TCP and TCP SSL protocols, you can 
-	 * also indicate if the socket should be closed when data is sent.
+	 * the specified IPv6 protocol.
 	 * 
 	 * <p>This method blocks till a success or error response arrives or the 
 	 * configured receive timeout expires.</p>
@@ -523,9 +520,7 @@ public class IPv6Device extends XBeeDevice {
 	
 	/**
 	 * Sends the provided IPv6 data to the given IPv6 address and port 
-	 * asynchronously using the specified IPv6 protocol. For TCP and TCP SSL 
-	 * protocols, you can also indicate if the socket should be closed when 
-	 * data is sent.
+	 * asynchronously using the specified IPv6 protocol.
 	 * 
 	 * <p>Asynchronous transmissions do not wait for answer from the remote 
 	 * device or for transmit status packet.</p>
@@ -555,8 +550,7 @@ public class IPv6Device extends XBeeDevice {
 	
 	/**
 	 * Sends the provided IPv6 data to the given IPv6 address and port using 
-	 * the specified IPv6 protocol. For TCP and TCP SSL protocols, you can 
-	 * also indicate if the socket should be closed when data is sent.
+	 * the specified IPv6 protocol.
 	 * 
 	 * <p>Transmissions can be performed synchronously or asynchronously. 
 	 * Synchronous operation blocks till a success or error response arrives 
@@ -580,6 +574,8 @@ public class IPv6Device extends XBeeDevice {
 	 * @param destPort The destination port of the transmission.
 	 * @param protocol The IPv6 protocol used for the transmission.
 	 * @param data Byte array containing the IPv6 data to be sent.
+	 * @param async Boolean that should be set to {@code true} if the 
+	 *        transmission should be asynchronous, and {@code false} otherwise.
 	 * 
 	 * @throws IllegalArgumentException if {@code destPort < 0} or 
 	 *                                  if {@code destPort > 65535}

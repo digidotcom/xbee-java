@@ -52,6 +52,10 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.packet.thread.CoAPPassthruRxRequestPacket;
+import com.digi.xbee.api.packet.thread.CoAPPassthruRxResponsePacket;
+import com.digi.xbee.api.packet.thread.CoAPPassthruTxRequestPacket;
+import com.digi.xbee.api.packet.thread.CoAPPassthruTxResponsePacket;
 import com.digi.xbee.api.packet.thread.CoAPRxResponsePacket;
 import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
 import com.digi.xbee.api.packet.thread.IPv6IODataSampleRxIndicator;
@@ -408,6 +412,18 @@ public class XBeePacketParser {
 			break;
 		case COAP_RX_RESPONSE:
 			packet = CoAPRxResponsePacket.createPacket(payload);
+			break;
+		case COAP_PASSTHRU_TX_REQUEST:
+			packet = CoAPPassthruTxRequestPacket.createPacket(payload);
+			break;
+		case COAP_PASSTHRU_TX_RESPONSE:
+			packet = CoAPPassthruTxResponsePacket.createPacket(payload);
+			break;
+		case COAP_PASSTHRU_RX_REQUEST:
+			packet = CoAPPassthruRxRequestPacket.createPacket(payload);
+			break;
+		case COAP_PASSTHRU_RX_RESPONSE:
+			packet = CoAPPassthruRxResponsePacket.createPacket(payload);
 			break;
 		case FRAME_ERROR:
 			packet = FrameErrorPacket.createPacket(payload);

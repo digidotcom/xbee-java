@@ -32,6 +32,7 @@ import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.TransmitException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.CoAPURI;
 import com.digi.xbee.api.models.HTTPMethodEnum;
 import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
 
@@ -75,7 +76,7 @@ public class SendCoAPDataTest {
 	 */
 	@Test(expected=NullPointerException.class)
 	public void testSendCoAPDataAddressNull() throws TimeoutException, IllegalArgumentException, XBeeException {
-		threadDevice.sendCoAPData(null, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(null, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -104,7 +105,7 @@ public class SendCoAPDataTest {
 	 */
 	@Test(expected=NullPointerException.class)
 	public void testSendCoAPDataMethodNull() throws TimeoutException, IllegalArgumentException, XBeeException {
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				null, DATA);
 	}
 	
@@ -120,7 +121,7 @@ public class SendCoAPDataTest {
 	@Test(expected=NullPointerException.class)
 	public void testSendCoAPDataAddressNullWithApplyChanges() 
 			throws TimeoutException, IllegalArgumentException, XBeeException {
-		threadDevice.sendCoAPData(null, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(null, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, false, DATA);
 	}
 	
@@ -151,7 +152,7 @@ public class SendCoAPDataTest {
 	@Test(expected=NullPointerException.class)
 	public void testSendCoAPDataMethodNullWithApplyChanges() 
 			throws TimeoutException, IllegalArgumentException, XBeeException {
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				null, false, DATA);
 	}
 	
@@ -167,7 +168,7 @@ public class SendCoAPDataTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void testSendCoAPDataIllegalArgument() 
 			throws TimeoutException, IllegalArgumentException, XBeeException {
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_AT_COMMAND + "/G", 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_AT_COMMAND + "/G", 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -186,7 +187,7 @@ public class SendCoAPDataTest {
 		// Return that the XBee device is remote when asked.
 		Mockito.when(threadDevice.isRemote()).thenReturn(true);
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -205,7 +206,7 @@ public class SendCoAPDataTest {
 		// Throw an Interface not open exception when sending and checking any packet.
 		Mockito.doThrow(new InterfaceNotOpenException()).when(threadDevice).sendAndCheckCoAPPacket(Mockito.any(CoAPTxRequestPacket.class), Mockito.eq(false));
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -224,7 +225,7 @@ public class SendCoAPDataTest {
 		// Throw an invalid operating mode exception when sending and checking any packet.
 		Mockito.doThrow(new InvalidOperatingModeException()).when(threadDevice).sendAndCheckCoAPPacket(Mockito.any(CoAPTxRequestPacket.class), Mockito.eq(false));
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -244,7 +245,7 @@ public class SendCoAPDataTest {
 		// Throw a timeout exception when sending and checking any packet.
 		Mockito.doThrow(new TimeoutException()).when(threadDevice).sendAndCheckCoAPPacket(Mockito.any(CoAPTxRequestPacket.class), Mockito.eq(false));
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -264,7 +265,7 @@ public class SendCoAPDataTest {
 		// Throw a transmit exception when sending and checking any packet.
 		Mockito.doThrow(new TransmitException(null)).when(threadDevice).sendAndCheckCoAPPacket(Mockito.any(CoAPTxRequestPacket.class), Mockito.eq(false));
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -284,7 +285,7 @@ public class SendCoAPDataTest {
 		// Throw an XBee exception when sending and checking any packet.
 		Mockito.doThrow(new XBeeException()).when(threadDevice).sendAndCheckCoAPPacket(Mockito.any(CoAPTxRequestPacket.class), Mockito.eq(false));
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 	}
 	
@@ -304,7 +305,7 @@ public class SendCoAPDataTest {
 		// Do nothing when sending and checking any packet.
 		Mockito.doReturn(new byte[]{0x00}).when(threadDevice).sendAndCheckCoAPPacket(Mockito.any(CoAPTxRequestPacket.class), Mockito.eq(false));
 		
-		threadDevice.sendCoAPData(ipv6Address, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, 
+		threadDevice.sendCoAPData(ipv6Address, CoAPURI.URI_DATA_TRANSMISSION, 
 				HTTPMethodEnum.PUT, DATA);
 		
 		// Verify the sendAndCheckCoAPPacket(CoAPTxRequestPacket, boolean) method was called.

@@ -26,6 +26,7 @@ import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.AssociationIndicationStatus;
+import com.digi.xbee.api.models.CoAPURI;
 import com.digi.xbee.api.models.HTTPMethodEnum;
 import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
@@ -346,13 +347,13 @@ public class ThreadDevice extends IPv6Device {
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
 	 *            <ul>
-	 *              <li><b>CoAPTxRequestPacket.URI_DATA_TRANSMISSION:</b> "XB/TX" 
+	 *              <li><b>CoAPURI.URI_DATA_TRANSMISSION:</b> "XB/TX" 
 	 *              for data transmissions (HTTP method must be set to PUT)</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_AT_COMMAND:</b> "XB/AT" for 
+	 *              <li><b>CoAPURI.URI_AT_COMMAND:</b> "XB/AT" for 
 	 *              AT Command operation (HTTP method must be set to PUT or GET). 
 	 *              After the URI, an AT command needs to be specified, for example: 
-	 *              CoAPTxRequestPacket.URI_AT_COMMAND + "/NI"</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_IO_SAMPLING:</b> "XB/IO" for 
+	 *              CoAPURI.URI_AT_COMMAND + "/NI"</li>
+	 *              <li><b>CoAPURI.URI_IO_SAMPLING:</b> "XB/IO" for 
 	 *              IO operation (HTTP method must be set to POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
@@ -379,7 +380,7 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public byte[] sendCoAPData(Inet6Address ipv6Address, String uri,
 			HTTPMethodEnum method, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		boolean applyChanges = uri.startsWith(CoAPTxRequestPacket.URI_AT_COMMAND);
+		boolean applyChanges = uri.startsWith(CoAPURI.URI_AT_COMMAND);
 		return sendCoAPData(ipv6Address, uri, method, applyChanges, data, false);
 	}
 	
@@ -402,13 +403,13 @@ public class ThreadDevice extends IPv6Device {
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
 	 *            <ul>
-	 *              <li><b>CoAPTxRequestPacket.URI_DATA_TRANSMISSION:</b> "XB/TX" 
+	 *              <li><b>CoAPURI.URI_DATA_TRANSMISSION:</b> "XB/TX" 
 	 *              for data transmissions (HTTP method must be set to PUT)</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_AT_COMMAND:</b> "XB/AT" for 
+	 *              <li><b>CoAPURI.URI_AT_COMMAND:</b> "XB/AT" for 
 	 *              AT Command operation (HTTP method must be set to PUT or GET). 
 	 *              After the URI, an AT command needs to be specified, for example: 
-	 *              CoAPTxRequestPacket.URI_AT_COMMAND + "/NI"</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_IO_SAMPLING:</b> "XB/IO" for 
+	 *              CoAPURI.URI_AT_COMMAND + "/NI"</li>
+	 *              <li><b>CoAPURI.URI_IO_SAMPLING:</b> "XB/IO" for 
 	 *              IO operation (HTTP method must be set to POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
@@ -455,13 +456,13 @@ public class ThreadDevice extends IPv6Device {
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
 	 *            <ul>
-	 *              <li><b>CoAPTxRequestPacket.URI_DATA_TRANSMISSION:</b> "XB/TX" 
+	 *              <li><b>CoAPURI.URI_DATA_TRANSMISSION:</b> "XB/TX" 
 	 *              for data transmissions (PUT)</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_AT_COMMAND:</b> "XB/AT" for 
+	 *              <li><b>CoAPURI.URI_AT_COMMAND:</b> "XB/AT" for 
 	 *              AT Command operation (PUT or GET). After the URI, an AT command 
 	 *              needs to be specified, for example: 
-	 *              CoAPTxRequestPacket.URI_AT_COMMAND + "/NI"</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_IO_SAMPLING:</b> "XB/IO" for 
+	 *              CoAPURI.URI_AT_COMMAND + "/NI"</li>
+	 *              <li><b>CoAPURI.URI_IO_SAMPLING:</b> "XB/IO" for 
 	 *              IO operation (POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
@@ -486,7 +487,7 @@ public class ThreadDevice extends IPv6Device {
 	 */
 	public void sendCoAPDataAsync(Inet6Address ipv6Address, String uri,
 			HTTPMethodEnum method, byte[] data) throws TimeoutException, IllegalArgumentException, XBeeException {
-		boolean applyChanges = uri.startsWith(CoAPTxRequestPacket.URI_AT_COMMAND);
+		boolean applyChanges = uri.startsWith(CoAPURI.URI_AT_COMMAND);
 		sendCoAPData(ipv6Address, uri, method, applyChanges, data, true);
 	}
 	
@@ -505,13 +506,13 @@ public class ThreadDevice extends IPv6Device {
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
 	 *            <ul>
-	 *              <li><b>CoAPTxRequestPacket.URI_DATA_TRANSMISSION:</b> "XB/TX" 
+	 *              <li><b>CoAPURI.URI_DATA_TRANSMISSION:</b> "XB/TX" 
 	 *              for data transmissions (PUT)</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_AT_COMMAND:</b> "XB/AT" for 
+	 *              <li><b>CoAPURI.URI_AT_COMMAND:</b> "XB/AT" for 
 	 *              AT Command operation (PUT or GET). After the URI, an AT command 
 	 *              needs to be specified, for example: 
-	 *              CoAPTxRequestPacket.URI_AT_COMMAND + "/NI"</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_IO_SAMPLING:</b> "XB/IO" for 
+	 *              CoAPURI.URI_AT_COMMAND + "/NI"</li>
+	 *              <li><b>CoAPURI.URI_IO_SAMPLING:</b> "XB/IO" for 
 	 *              IO operation (POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
@@ -570,13 +571,13 @@ public class ThreadDevice extends IPv6Device {
 	 *            valid URI string and must meet the following criteria. There 
 	 *            are built-in CoAP URIs:
 	 *            <ul>
-	 *              <li><b>CoAPTxRequestPacket.URI_DATA_TRANSMISSION:</b> "XB/TX" 
+	 *              <li><b>CoAPURI.URI_DATA_TRANSMISSION:</b> "XB/TX" 
 	 *              for data transmissions (PUT)</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_AT_COMMAND:</b> "XB/AT" for 
+	 *              <li><b>CoAPURI.URI_AT_COMMAND:</b> "XB/AT" for 
 	 *              AT Command operation (PUT or GET). After the URI, an AT command 
 	 *              needs to be specified, for example: 
-	 *              CoAPTxRequestPacket.URI_AT_COMMAND + "/NI"</li>
-	 *              <li><b>CoAPTxRequestPacket.URI_IO_SAMPLING:</b> "XB/IO" for 
+	 *              CoAPURI.URI_AT_COMMAND + "/NI"</li>
+	 *              <li><b>CoAPURI.URI_IO_SAMPLING:</b> "XB/IO" for 
 	 *              IO operation (POST)</li>
 	 *            </ul>
 	 * @param method HTTP method used for the transmission.
@@ -617,8 +618,8 @@ public class ThreadDevice extends IPv6Device {
 			throw new NullPointerException("HTTP method cannot be null");
 		
 		// If AT command uri is used but no AT command is specified throw an error.
-		if (uri.startsWith(CoAPTxRequestPacket.URI_AT_COMMAND) 
-			&& uri.length() < CoAPTxRequestPacket.URI_AT_COMMAND.length() + 3)
+		if (uri.startsWith(CoAPURI.URI_AT_COMMAND) 
+			&& uri.length() < CoAPURI.URI_AT_COMMAND.length() + 3)
 			throw new IllegalArgumentException("AT command URI must contain an AT command.");
 		
 		// Check if device is remote.

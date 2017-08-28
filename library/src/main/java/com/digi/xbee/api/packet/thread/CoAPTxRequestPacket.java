@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.models.CoAPURI;
 import com.digi.xbee.api.models.HTTPMethodEnum;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -45,9 +46,10 @@ import com.digi.xbee.api.utils.HexUtils;
  * <p>The method indicates the HTTP function used for the transmission. It is 
  * specified by the {@link HTTPMethodEnum} enumerator.</p>
  * 
- * <p>The URI field is a string that must be {@value #URI_DATA_TRANSMISSION} for
- * data transmission (PUT), {@value #URI_AT_COMMAND} for AT Command operations
- * (PUT or GET) or {@value #URI_IO_SAMPLING} for IO operation (POST).</p>
+ * <p>The URI field is a string that must be {@value CoAPURI#URI_DATA_TRANSMISSION} 
+ * for data transmission (PUT), {@value CoAPURI#URI_AT_COMMAND} for AT Command 
+ * operations (PUT or GET) or {@value CoAPURI#URI_IO_SAMPLING} for IO 
+ * operation (POST).</p>
  * 
  * <p>The packet also includes an optional payload. For data transmission, it
  * should contain the data to send; for AT Command operations, empty to query
@@ -61,15 +63,6 @@ import com.digi.xbee.api.utils.HexUtils;
 public class CoAPTxRequestPacket extends XBeeAPIPacket {
 
 	// Constants.
-	/** URI for data transmissions (PUT). */
-	public static final String URI_DATA_TRANSMISSION = "XB/TX";
-
-	/** URI for AT Command operation (PUT or GET). */
-	public static final String URI_AT_COMMAND = "XB/AT";
-
-	/** URI for IO operation (POST). */
-	public static final String URI_IO_SAMPLING = "XB/IO";
-
 	private static final int MIN_API_PAYLOAD_LENGTH = 26; /* 1 (Frame type) + 1 (frame ID) + 1 (transmit options) + 
 															 1 (RESTful method) + 16 (dest address) + 1 (URI length) + 5 (URI) */
 
@@ -176,8 +169,8 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	 *
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255} or
-	 *                                  if {@code uri contains }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE} or {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES}
-	 *                                  if {@code uri does not contain }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
+	 *                                  if {@code uri contains }{@value CoAPURI#URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE} or {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES}
+	 *                                  if {@code uri does not contain }{@value CoAPURI#URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
 	 * @throws NullPointerException if {@code method == null} or 
 	 *                              if {@code destAddress == null} or
 	 *                              if {@code uri == null}.
@@ -192,8 +185,8 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException(ERROR_FRAME_ID_ILLEGAL);
-		if ((uri != null && !uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE) 
-				|| (uri != null && uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE && transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES))
+		if ((uri != null && !uri.contains(CoAPURI.URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE) 
+				|| (uri != null && uri.contains(CoAPURI.URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE && transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES))
 			throw new IllegalArgumentException(ERROR_OPTIONS_INVALID);
 		if (method == null)
 			throw new NullPointerException(ERROR_METHOD_NULL);
@@ -253,17 +246,17 @@ public class CoAPTxRequestPacket extends XBeeAPIPacket {
 	/**
 	 * Sets the transmit options bifield.
 	 * 
-	 * @param options The transmit options bitfield.
+	 * @param transmitOptions The transmit options bitfield.
 	 * 
-	 * @throws IllegalArgumentException if {@code uri contains }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE} or {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES}
-	 *                                  if {@code uri does not contain }{@value #URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
+	 * @throws IllegalArgumentException if {@code uri contains }{@value CoAPURI#URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE} or {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_APPLY_CHANGES}
+	 *                                  if {@code uri does not contain }{@value CoAPURI#URI_AT_COMMAND} and {@code transmitOptions != }{@value RemoteATCommandOptions#OPTION_NONE}.
 	 * 
 	 * @see #getTransmitOptions()
 	 * @see com.digi.xbee.api.models.RemoteATCommandOptions
 	 */
 	public void setTransmitOptions(int transmitOptions) {
-		if ((uri != null && !uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE) 
-				|| (uri != null && uri.contains(URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE && transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES))
+		if ((uri != null && !uri.contains(CoAPURI.URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE) 
+				|| (uri != null && uri.contains(CoAPURI.URI_AT_COMMAND) && transmitOptions != RemoteATCommandOptions.OPTION_NONE && transmitOptions != RemoteATCommandOptions.OPTION_APPLY_CHANGES))
 			throw new IllegalArgumentException(ERROR_OPTIONS_INVALID);
 
 		this.transmitOptions = transmitOptions;

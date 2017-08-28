@@ -20,8 +20,8 @@ import java.net.UnknownHostException;
 
 import com.digi.xbee.api.ThreadDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.models.CoAPURI;
 import com.digi.xbee.api.models.HTTPMethodEnum;
-import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -46,7 +46,7 @@ public class MainApp {
 
 	private static final HTTPMethodEnum METHOD = HTTPMethodEnum.PUT;
 
-	private static final String URI = CoAPTxRequestPacket.URI_DATA_TRANSMISSION;
+	private static final String URI = CoAPURI.URI_DATA_TRANSMISSION;
 
 	private static final String DATA_TO_SEND = "Hello XBee!";
 

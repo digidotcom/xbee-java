@@ -39,6 +39,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.digi.xbee.api.models.CoAPURI;
 import com.digi.xbee.api.models.HTTPMethodEnum;
 import com.digi.xbee.api.models.RemoteATCommandOptions;
 import com.digi.xbee.api.packet.APIFrameType;
@@ -58,7 +59,7 @@ public class CoAPTxRequestPacketTest {
 	private int options = RemoteATCommandOptions.OPTION_NONE;
 	private Inet6Address destAddress;
 	private HTTPMethodEnum method = HTTPMethodEnum.GET;
-	private String uriData = CoAPTxRequestPacket.URI_DATA_TRANSMISSION;
+	private String uriData = CoAPURI.URI_DATA_TRANSMISSION;
 	private byte[] data = "Test".getBytes();
 
 	@Rule
@@ -588,7 +589,7 @@ public class CoAPTxRequestPacketTest {
 	@Test
 	public final void testSetTransmitOptionsATURIOptionsIllegal() {
 		// Set up the resources for the test.
-		CoAPTxRequestPacket packet = new CoAPTxRequestPacket(frameID, options, method, destAddress, CoAPTxRequestPacket.URI_AT_COMMAND, data);
+		CoAPTxRequestPacket packet = new CoAPTxRequestPacket(frameID, options, method, destAddress, CoAPURI.URI_AT_COMMAND, data);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Transmit options can only be " +
@@ -605,7 +606,7 @@ public class CoAPTxRequestPacketTest {
 	@Test
 	public final void testSetTransmitOptionsTXURIOptionsIllegal() {
 		// Set up the resources for the test.
-		CoAPTxRequestPacket packet = new CoAPTxRequestPacket(frameID, options, method, destAddress, CoAPTxRequestPacket.URI_DATA_TRANSMISSION, data);
+		CoAPTxRequestPacket packet = new CoAPTxRequestPacket(frameID, options, method, destAddress, CoAPURI.URI_DATA_TRANSMISSION, data);
 
 		exception.expect(IllegalArgumentException.class);
 		exception.expectMessage(is(equalTo("Transmit options can only be " +

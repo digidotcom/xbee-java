@@ -1,8 +1,8 @@
                                 XBee Java Library
 
                            Release Notes (PN 93000776)
-                                   Build 1.2.0
-                                 9 January, 2017
+                                   Build 1.2.1
+                                 29 August, 2017
  
                      Copyright 2017, Digi International Inc.
                                http://www.digi.com
@@ -13,6 +13,17 @@
  This document provides the latest release information for the XBee Java 
  Library, which allows customers to easily develop Java applications 
  that communicate with XBee modules.
+
+ XBee Java Library v1.2.1, August 2017
+--------------------------------------------------------------------------------
+ 1. Changes with respect to previous version:
+     * Added support for Cellular NB-IoT and Thread protocols.
+     * Added five examples that demonstrate the new functionality of the API:
+        * Send UDP data example.
+        * Send IPv6 data example.
+        * Receive IPv6 data example.
+        * Send CoAP data example.
+        * Receive CoAP data example.
 
  XBee Java Library v1.2.0, January 2017
 --------------------------------------------------------------------------------

@@ -12,8 +12,8 @@ also available in source code format.
 
 The main features of the library include:
 
-* Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint, Wi-Fi and 
-Cellular XBee devices.
+* Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint, Wi-Fi,  
+Cellular, Cellular NB-IoT and Thread XBee devices.
 * Support for API and API escaped operating modes.
 * Support for Android.
 * Management of local (attached to the PC) and remote XBee device objects.
@@ -31,7 +31,7 @@ device.
 * Reception of data from remote XBee devices:
   * Data polling.
   * Data reception callback.
-* Transmission and reception of IP and SMS messages.
+* Transmission and reception of IP, IPv6, CoAP and SMS messages.
 * Reception of network status changes related to the local XBee device.
 * IO lines management:
   * Configure IO lines.

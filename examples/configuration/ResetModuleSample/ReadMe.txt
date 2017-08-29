@@ -32,6 +32,7 @@
     * Point-to-Multipoint
     * Wi-Fi
     * ZigBee
+    * Thread
 
 
   Example setup

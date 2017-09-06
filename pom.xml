@@ -51,6 +51,13 @@
 			<organizationUrl>http://www.digi.com</organizationUrl>
 		</developer>
 		<developer>
+			<id>hgonzaledigi</id>
+			<name>Héctor González</name>
+			<email>hector.gonzalez@digi.com</email>
+			<organization>Digi International Inc.</organization>
+			<organizationUrl>http://www.digi.com</organizationUrl>
+		</developer>
+		<developer>
 			<id>daescalona</id>
 			<name>David Escalona</name>
 			<email>david.escalona@digi.com</email>
@@ -113,7 +120,6 @@
 		<maven.jar.plugin.version>2.6</maven.jar.plugin.version>
 		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
 		<javadoc.plugin.version>2.10.3</javadoc.plugin.version>
-		<nexus.staging.maven.plugin.version>1.6.7</nexus.staging.maven.plugin.version>
 		<maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
 		<rxtx.version>2.2</rxtx.version>
 		<slf4j-api.version>1.7.12</slf4j-api.version>
@@ -181,32 +187,15 @@
 						</dependency>
 					</dependencies>
 				</plugin>
-				<!-- This is needed to stage the library for deployment
-					 in Maven Central -->
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>${nexus.staging.maven.plugin.version}</version>
-					<extensions>true</extensions>
-					<configuration>
-						<serverId>ossrh</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<autoReleaseAfterClose>false</autoReleaseAfterClose>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 	
 	<!-- Distribution Management -->
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>bintray-repo</id>
+			<url>https://api.bintray.com/maven/digidotcom/maven/XBeeJavaLibrary</url>
 		</repository>
 	</distributionManagement>
 

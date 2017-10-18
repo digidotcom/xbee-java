@@ -91,7 +91,13 @@ public enum HardwareVersionEnum {
 	/** @since 1.2.1 */
 	CELLULAR_LTE_ATT(0x47, "XBee Cellular LTE-M AT&T"),
 	/** @since 1.2.1 */
-	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe");
+	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe"),
+	// TODO: Add the since annotation in the next version of the library.
+	CELLULAR_3_CAT1_LTE_ATT(0x49, "XBee Cellular 3 Cat 1 LTE AT&T"),
+	// TODO: Add the since annotation in the next version of the library.
+	CELLULAR_3_LTE_M_VERIZON(0x4A, "XBee Cellular 3 LTE-M Verizon"),
+	// TODO: Add the since annotation in the next version of the library.
+	CELLULAR_3_LTE_M_ATT(0x4B, "XBee Cellular 3 LTE-M AT&T");
 	
 	// Variables
 	private final int value;

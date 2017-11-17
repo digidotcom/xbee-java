@@ -243,6 +243,12 @@ public enum XBeeProtocol {
 			return CELLULAR;
 		case CELLULAR_NBIOT_EUROPE:
 			return CELLULAR_NBIOT;
+		case MINI_HAWK:
+		case HAWK_SMT:
+		case HAWK_TH:
+			return ZIGBEE;
+		case XB8X:
+			return DIGI_MESH;
 		default:
 			return ZIGBEE;
 		}

@@ -84,8 +84,16 @@ public enum HardwareVersionEnum {
 	CELLULAR(0x40, "CELLULAR"),
 	/** @since 1.2.1 */
 	CELLULAR_CAT1_LTE_VERIZON(0x40, "XBee Cellular Cat 1 LTE Verizon"),
+	// TODO: Add the since annotation in the next version of the library.
+	MINI_HAWK(0x41, "MINI-HAWK"),
+	// TODO: Add the since annotation in the next version of the library.
+	HAWK_SMT(0x42, "HAWK SMT"),
+	// TODO: Add the since annotation in the next version of the library.
+	HAWK_TH(0x43, "HAWK TH"),
 	/** @since 1.2.1 */
 	CELLULAR_3G(0x44, "XBee Cellular 3G"),
+	// TODO: Add the since annotation in the next version of the library.
+	XB8X(0x45, "XB8X"),
 	/** @since 1.2.1 */
 	CELLULAR_LTE_VERIZON(0x46, "XBee Cellular LTE-M Verizon"),
 	/** @since 1.2.1 */

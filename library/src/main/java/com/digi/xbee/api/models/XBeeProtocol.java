@@ -246,7 +246,12 @@ public enum XBeeProtocol {
 		case XBEE3:
 		case XBEE3_SMT:
 		case XBEE3_TH:
-			return ZIGBEE;
+			if (firmwareVersion.startsWith("2"))
+				return RAW_802_15_4;
+			else if (firmwareVersion.startsWith("3"))
+				return DIGI_MESH;
+			else
+				return ZIGBEE;
 		case XB8X:
 			return DIGI_MESH;
 		default:

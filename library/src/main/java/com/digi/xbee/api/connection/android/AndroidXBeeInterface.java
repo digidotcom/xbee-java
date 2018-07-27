@@ -48,7 +48,15 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 
 	// Constants.
 	private static final int VID = 0x0403;
-	private static final int PID = 0x6001;
+	private static final int[] FTDI_PIDS = {
+			0x6001, // FT232 and FT245
+			//0x6010, // FT2232
+			//0x6011, // FT4232
+			//0x6014, // FT232H
+			0x6015, // FT-X series
+			//0x601C, //FT4222H
+	};
+	
 	private static final int BASE_CLOCK = 48000000;
 
 	private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
@@ -387,9 +395,16 @@ public class AndroidXBeeInterface implements IConnectionInterface {
 		UsbDevice usbDevice = null;
 		HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
 		for (UsbDevice device:deviceList.values()) {
-			if ((device.getProductId() == PID) && (device.getVendorId() == VID)) {
-				usbDevice = device;
-				logger.info("USB XBee Android device found: " + usbDevice.getDeviceName());
+			if (device.getVendorId() == VID) {
+				for (int pid:FTDI_PIDS) {
+					if (device.getProductId() == pid) {
+						usbDevice = device;
+						logger.info("USB XBee Android device found: " + usbDevice.getDeviceName());
+						break;
+					}
+				}
+			}
+			if (usbDevice != null) {
 				break;
 			}
 		}

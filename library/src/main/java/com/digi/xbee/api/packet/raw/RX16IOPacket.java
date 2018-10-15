@@ -68,7 +68,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 * @throws IllegalArgumentException if {@code payload[0] != APIFrameType.RX_16.getValue()} or
 	 *                                  if {@code payload.length < }{@value #MIN_API_PAYLOAD_LENGTH} or
 	 *                                  if {@code rssi < 0} or
-	 *                                  if {@code rssi > 100} or
+	 *                                  if {@code rssi > 255} or
 	 *                                  if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
@@ -117,7 +117,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 * @param rfData Received RF data.
 	 * 
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
-	 *                                  if {@code rssi > 100} or
+	 *                                  if {@code rssi > 255} or
 	 *                                  if {@code receiveOptions < 0} or
 	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress16 == null}.
@@ -130,8 +130,8 @@ public class RX16IOPacket extends XBeeAPIPacket {
 		
 		if (sourceAddress16 == null)
 			throw new NullPointerException("16-bit source address cannot be null.");
-		if (rssi < 0 || rssi > 100)
-			throw new IllegalArgumentException("RSSI value must be between 0 and 100.");
+		if (rssi < 0 || rssi > 255)
+			throw new IllegalArgumentException("RSSI value must be between 0 and 255.");
 		if (receiveOptions < 0 || receiveOptions > 255)
 			throw new IllegalArgumentException("Receive options value must be between 0 and 255.");
 		

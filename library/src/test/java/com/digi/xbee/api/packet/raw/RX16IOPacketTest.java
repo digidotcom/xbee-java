@@ -327,19 +327,19 @@ public class RX16IOPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.raw.RX16IOPacket#RX16IOPacket(XBee16BitAddress, int, int, byte[])}.
 	 * 
-	 * <p>Construct a new RX16 IO packet but with a RSSI bigger than 100. 
+	 * <p>Construct a new RX16 IO packet but with a RSSI bigger than 255. 
 	 * This must throw an {@code IllegalArgumentException}.</p>
 	 */
 	@Test
-	public final void testCreateRX16IOPacketRssiBiggerThan100() {
+	public final void testCreateRX16IOPacketRssiBiggerThan255() {
 		// Setup the resources for the test.
 		XBee16BitAddress source16Addr = new XBee16BitAddress("D817");
-		int rssi = 725;
+		int rssi = 256;
 		int options = 40;
 		byte[] data = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
 		
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("RSSI value must be between 0 and 100.")));
+		exception.expectMessage(is(equalTo("RSSI value must be between 0 and 255.")));
 		
 		// Call the method under test that should throw a NullPointerException.
 		new RX16IOPacket(source16Addr, rssi, options, data);
@@ -360,7 +360,7 @@ public class RX16IOPacketTest {
 		byte[] data = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
 		
 		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(is(equalTo("RSSI value must be between 0 and 100.")));
+		exception.expectMessage(is(equalTo("RSSI value must be between 0 and 255.")));
 		
 		// Call the method under test that should throw a NullPointerException.
 		new RX16IOPacket(source16Addr, rssi, options, data);

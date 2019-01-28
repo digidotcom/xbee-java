@@ -1460,7 +1460,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @return The next Frame ID.
 	 */
-	protected int getNextFrameID() {
+	protected synchronized int getNextFrameID() {
 		if (isRemote())
 			return localXBeeDevice.getNextFrameID();
 		if (currentFrameID == 0xff) {

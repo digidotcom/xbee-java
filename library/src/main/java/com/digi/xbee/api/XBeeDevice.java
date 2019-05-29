@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,16 +30,19 @@ import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
 import com.digi.xbee.api.exceptions.TimeoutException;
 import com.digi.xbee.api.exceptions.XBeeException;
+import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
 import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
+import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
 import com.digi.xbee.api.models.APIOutputMode;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.RelayInterface;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
@@ -56,6 +59,7 @@ import com.digi.xbee.api.packet.common.TransmitPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
+import com.digi.xbee.api.packet.relay.UserDataRelayPacket;
 import com.digi.xbee.api.utils.HexUtils;
 
 /**
@@ -653,7 +657,17 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	public void removeModemStatusListener(IModemStatusReceiveListener listener) {
 		super.removeModemStatusListener(listener);
 	}
-	
+
+	@Override
+	public void addUserDataRelayListener(IUserDataRelayReceiveListener listener) {
+		super.addUserDataRelayListener(listener);
+	}
+
+	@Override
+	public void removeUserDataRelayListener(IUserDataRelayReceiveListener listener) {
+		super.removeUserDataRelayListener(listener);
+	}
+
 	/**
 	 * Sends asynchronously the provided data to the XBee device of the network 
 	 * corresponding to the given 64-bit address.
@@ -1437,7 +1451,38 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		sendExplicitData(XBee64BitAddress.BROADCAST_ADDRESS, sourceEndpoint, destEndpoint, clusterID, profileID, data);
 	}
-	
+
+	/**
+	 * Sends the given data to the give relay interface.
+	 *
+	 * @param destInterface Destination relay interface.
+	 * @param data Data to send.
+	 *
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws TimeoutException if there is a timeout sending the data.
+	 * @throws XBeeException if there is any XBee related exception sending the
+	 *                       User Data Relay message.
+	 *
+	 * @see RelayInterface
+	 *
+	 * @since 1.3.0
+	 */
+	public void sendUserDataRelay(RelayInterface destInterface, byte[] data) throws TimeoutException, XBeeException {
+		if (destInterface == null)
+			throw new NullPointerException("Destination interface cannot be null.");
+
+		// Check if device is remote.
+		if (isRemote())
+			throw new OperationNotSupportedException("Cannot send User Data Relay messages from a remote device.");
+
+		logger.debug(toString() + "Sending User Data Relay to {} >> {}.", destInterface.getDescription(),
+				HexUtils.prettyHexString(data));
+
+		XBeePacket xbeePacket = new UserDataRelayPacket(getNextFrameID(), destInterface, data);
+		// Send the packet asynchronously since User Data Relay frames do not receive any transmit status.
+		sendAndCheckXBeePacket(xbeePacket, true);
+	}
+
 	/**
 	 * Sends the given XBee packet and registers the given packet listener 
 	 * (if not {@code null}) to be notified when the answers is received.

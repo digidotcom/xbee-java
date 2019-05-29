@@ -40,6 +40,8 @@ device.
   * Receive IO data samples from any remote XBee device on the network.
 * Support for explicit frames and application layer fields (Source endpoint, 
 Destination endpoint, Profile ID, and Cluster ID).
+* Support for User Data Relay frames, allowing the communication between
+different interfaces (Serial, Bluetooth Low Energy and MicroPython).
 
 
 Start Here

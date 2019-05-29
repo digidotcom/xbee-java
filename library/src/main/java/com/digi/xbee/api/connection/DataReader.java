@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,12 +43,14 @@ import com.digi.xbee.api.listeners.IIPDataReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
+import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.SMSMessage;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.models.UserDataRelayMessage;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
 import com.digi.xbee.api.models.XBeeMessage;
@@ -68,6 +70,7 @@ import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
 import com.digi.xbee.api.packet.raw.RX64Packet;
+import com.digi.xbee.api.packet.relay.UserDataRelayOutputPacket;
 import com.digi.xbee.api.packet.thread.IPv6IODataSampleRxIndicator;
 import com.digi.xbee.api.packet.thread.RXIPv6Packet;
 import com.digi.xbee.api.utils.HexUtils;
@@ -92,15 +95,16 @@ public class DataReader extends Thread {
 	
 	private volatile OperatingMode mode;
 	
-	private ArrayList<IDataReceiveListener> dataReceiveListeners = new ArrayList<IDataReceiveListener>();
+	private ArrayList<IDataReceiveListener> dataReceiveListeners = new ArrayList<>();
 	// The packetReceiveListeners requires to be a HashMap with an associated integer. The integer is used to determine 
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
-	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
-	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
-	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<IModemStatusReceiveListener>();
-	private ArrayList<IExplicitDataReceiveListener> explicitDataReceiveListeners = new ArrayList<IExplicitDataReceiveListener>();
-	private ArrayList<IIPDataReceiveListener> ipDataReceiveListeners = new ArrayList<IIPDataReceiveListener>();
-	private ArrayList<ISMSReceiveListener> smsReceiveListeners = new ArrayList<ISMSReceiveListener>();
+	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<>();
+	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<>();
+	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<>();
+	private ArrayList<IExplicitDataReceiveListener> explicitDataReceiveListeners = new ArrayList<>();
+	private ArrayList<IIPDataReceiveListener> ipDataReceiveListeners = new ArrayList<>();
+	private ArrayList<ISMSReceiveListener> smsReceiveListeners = new ArrayList<>();
+	private ArrayList<IUserDataRelayReceiveListener> dataRelayReceiveListeners = new ArrayList<>();
 	
 	private Logger logger;
 	
@@ -488,7 +492,54 @@ public class DataReader extends Thread {
 				smsReceiveListeners.remove(listener);
 		}
 	}
-	
+
+	/**
+	 * Adds the given User Data Relay receive listener to the list of listeners
+	 * that will be notified when a User Data Relay packet is received.
+	 *
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 *
+	 * @param listener Listener to be notified when new User Data Relay packet
+	 *                 is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}.
+	 *
+	 * @see #removeUserDataRelayReceiveListener(IUserDataRelayReceiveListener)
+	 * @see IUserDataRelayReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void addUserDataRelayReceiveListener(IUserDataRelayReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null");
+
+		synchronized (dataRelayReceiveListeners) {
+			if (!dataRelayReceiveListeners.contains(listener))
+				dataRelayReceiveListeners.add(listener);
+		}
+	}
+
+	/**
+	 * Removes the given User Data Relay receive listener from the list of User
+	 * Data Relay receive listeners.
+	 *
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 *
+	 * @param listener User Data Relay receive listener to remove from the list.
+	 *
+	 * @see #addUserDataRelayReceiveListener(IUserDataRelayReceiveListener)
+	 * @see IUserDataRelayReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void removeUserDataRelayReceiveListener(IUserDataRelayReceiveListener listener) {
+		synchronized (dataRelayReceiveListeners) {
+			if (dataRelayReceiveListeners.contains(listener))
+				dataRelayReceiveListeners.remove(listener);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -659,6 +710,10 @@ public class DataReader extends Thread {
 			case RX_SMS:
 				RXSMSPacket rxSMSPacket = (RXSMSPacket)apiPacket;
 				notifySMSReceived(new SMSMessage(rxSMSPacket.getPhoneNumber(), rxSMSPacket.getData()));
+				break;
+			case USER_DATA_RELAY_OUTPUT:
+				UserDataRelayOutputPacket relayPacket = (UserDataRelayOutputPacket)apiPacket;
+				notifyUserDataRelayReceived(new UserDataRelayMessage(relayPacket.getSourceInterface(), relayPacket.getData()));
 				break;
 			default:
 				break;
@@ -1124,6 +1179,46 @@ public class DataReader extends Thread {
 							 twice. That is, let the listener to finish its job. */
 							synchronized (listener) {
 								listener.smsReceived(smsMessage);
+							}
+						}
+					});
+				}
+				executor.shutdown();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Notifies subscribed User Data Relay receive listeners that a new User
+	 * Data Relay packet has been received in form of a
+	 * {@code UserDataRelayMessage}.
+	 *
+	 * @param relayMessage The User Data Relay message to be sent to subscribed
+	 *                     User Data Relay listeners.
+	 *
+	 * @see UserDataRelayMessage
+	 *
+	 * @since 1.3.0
+	 */
+	private void notifyUserDataRelayReceived(final UserDataRelayMessage relayMessage) {
+		logger.info(connectionInterface.toString() +
+				"User Data Relay received from {} >> {}.", relayMessage.getSourceInterface().getDescription(),
+				HexUtils.prettyHexString(relayMessage.getData()));
+
+		try {
+			synchronized (dataRelayReceiveListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS,
+						dataRelayReceiveListeners.size()));
+				for (final IUserDataRelayReceiveListener listener : dataRelayReceiveListeners) {
+					executor.execute(new Runnable() {
+						@Override
+						public void run() {
+							/* Synchronize the listener so it is not called
+							 twice. That is, let the listener to finish its job. */
+							synchronized (listener) {
+								listener.userDataRelayReceived(relayMessage);
 							}
 						}
 					});

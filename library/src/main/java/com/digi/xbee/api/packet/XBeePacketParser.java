@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,6 +52,8 @@ import com.digi.xbee.api.packet.raw.RX64Packet;
 import com.digi.xbee.api.packet.raw.TX16Packet;
 import com.digi.xbee.api.packet.raw.TX64Packet;
 import com.digi.xbee.api.packet.raw.TXStatusPacket;
+import com.digi.xbee.api.packet.relay.UserDataRelayOutputPacket;
+import com.digi.xbee.api.packet.relay.UserDataRelayPacket;
 import com.digi.xbee.api.packet.thread.CoAPRxResponsePacket;
 import com.digi.xbee.api.packet.thread.CoAPTxRequestPacket;
 import com.digi.xbee.api.packet.thread.IPv6IODataSampleRxIndicator;
@@ -337,6 +339,9 @@ public class XBeePacketParser {
 		case DEVICE_RESPONSE:
 			packet = DeviceResponsePacket.createPacket(payload);
 			break;
+		case USER_DATA_RELAY:
+			packet = UserDataRelayPacket.createPacket(payload);
+			break;
 		case RX_64:
 			packet = RX64Packet.createPacket(payload);
 			break;
@@ -390,6 +395,9 @@ public class XBeePacketParser {
 			break;
 		case RX_SMS:
 			packet = RXSMSPacket.createPacket(payload);
+			break;
+		case USER_DATA_RELAY_OUTPUT:
+			packet = UserDataRelayOutputPacket.createPacket(payload);
 			break;
 		case RX_IPV4:
 			packet = RXIPv4Packet.createPacket(payload);

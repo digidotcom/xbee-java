@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -50,6 +50,7 @@ import com.digi.xbee.api.listeners.IIPDataReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
+import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
@@ -1017,7 +1018,6 @@ public abstract class AbstractXBeeDevice {
 		dataReader.removeIPDataReceiveListener(listener);
 	}
 	
-	
 	/**
 	 * Adds the provided listener to the list of listeners to be notified
 	 * when new SMS is received. 
@@ -1065,7 +1065,56 @@ public abstract class AbstractXBeeDevice {
 			return;
 		dataReader.removeSMSReceiveListener(listener);
 	}
-	
+
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new User Data Relay message is received.
+	 *
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Listener to be notified when new User Data Relay message
+	 *                 is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #removeUserDataRelayListener(IUserDataRelayReceiveListener)
+	 * @see IUserDataRelayReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void addUserDataRelayListener(IUserDataRelayReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.addUserDataRelayReceiveListener(listener);
+	}
+
+	/**
+	 * Removes the provided listener from the list of User Data Relay listeners.
+	 *
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 *
+	 * @param listener Listener to be removed from the list of listeners.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #addUserDataRelayListener(IUserDataRelayReceiveListener)
+	 * @see IUserDataRelayReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void removeUserDataRelayListener(IUserDataRelayReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.removeUserDataRelayReceiveListener(listener);
+	}
+
 	/**
 	 * Sends the given AT command and waits for answer or until the configured 
 	 * receive timeout expires.

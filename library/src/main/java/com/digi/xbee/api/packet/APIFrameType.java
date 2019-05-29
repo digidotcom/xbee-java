@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,6 +43,7 @@ public enum APIFrameType {
 	TX_IPV4 (0x20, "TX IPv4"),
 	SEND_DATA_REQUEST (0x28, "Send Data Request"),
 	DEVICE_RESPONSE (0x2A, "Device Response"),
+	USER_DATA_RELAY (0x2D, "User Data Relay"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),
 	RX_IO_64 (0x82, "IO Data Sample RX 64-bit Address Indicator"),
@@ -62,6 +63,7 @@ public enum APIFrameType {
 	COAP_RX_RESPONSE (0x9C, "CoAP Rx Response"),
 	RX_SMS (0x9F, "RX SMS"),
 	IPV6_IO_DATA_SAMPLE_RX_INDICATOR(0xA7, "IPv6 IO Data Sample Rx Indicator"),
+	USER_DATA_RELAY_OUTPUT (0xAD, "User Data Relay Output"),
 	RX_IPV4 (0xB0, "RX IPv4"),
 	SEND_DATA_RESPONSE (0xB8, "Send Data Response"),
 	DEVICE_REQUEST (0xB9, "Device Request"),

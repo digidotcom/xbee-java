@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +18,7 @@ package com.digi.xbee.api.sendudpdata;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
-import com.digi.xbee.api.NBIoTDevice;
+import com.digi.xbee.api.CellularDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.IPProtocol;
 import com.digi.xbee.api.utils.HexUtils;
@@ -59,8 +59,8 @@ public class MainApp {
 		System.out.println(" |  XBee Java Library Send UDP Data Sample  |");
 		System.out.println(" +------------------------------------------+\n");
 
-		// For XBee Cellular modules, use the CellularDevice class instead.
-		NBIoTDevice myDevice = new NBIoTDevice(PORT, BAUD_RATE);
+		// For XBee Wi-Fi modules, use the WiFiDevice class instead.
+		CellularDevice myDevice = new CellularDevice(PORT, BAUD_RATE);
 		byte[] dataToSend = DATA_TO_SEND.getBytes();
 
 		try {

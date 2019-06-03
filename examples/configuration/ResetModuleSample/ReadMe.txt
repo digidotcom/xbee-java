@@ -27,7 +27,6 @@
   --------------------
     * 802.15.4
     * Cellular
-    * Cellular NB-IoT
     * DigiMesh
     * Point-to-Multipoint
     * Wi-Fi

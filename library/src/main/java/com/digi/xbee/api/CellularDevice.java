@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -269,7 +269,7 @@ public class CellularDevice extends IPDevice {
 	@Override
 	public void open() throws XBeeException {
 		super.open();
-		if (xbeeProtocol != XBeeProtocol.CELLULAR && xbeeProtocol != XBeeProtocol.CELLULAR_NBIOT)
+		if (xbeeProtocol != XBeeProtocol.CELLULAR)
 			throw new XBeeDeviceException("XBee device is not a " + getXBeeProtocol().getDescription() + " device, it is a " + xbeeProtocol.getDescription() + " device.");
 	}
 	

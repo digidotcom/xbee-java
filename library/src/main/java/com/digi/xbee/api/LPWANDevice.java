@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,6 +36,9 @@ import android.content.Context;
  * @see XBeeDevice
  * 
  * @since 1.2.1
+ * 
+ * @deprecated There won't be distinction between LPWAN and Cellular devices in
+ *             the future.
  */
 public class LPWANDevice extends CellularDevice {
 	

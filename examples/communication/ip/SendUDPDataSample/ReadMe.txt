@@ -5,9 +5,9 @@
 
   The application sends UDP data to the specified IP address and port number.
 
-  NOTE: This example uses the NB-IoT device (NBIoTDevice) class, but it can be 
-        applied to other Internet capable XBee device classes such as 
-        CellularDevice.
+  NOTE: This example uses the Cellular device (CellularDevice) class, but it
+        can be applied to other Internet capable XBee device classes such as 
+        WiFiDevice.
 
 
   Files
@@ -22,7 +22,7 @@
   ------------
   To run this example you will need:
 
-    * One XBee NB-IoT radio in API mode and its corresponding carrier board 
+    * One XBee Cellular in API mode and its corresponding carrier board 
       (XBIB or equivalent).
     * The XCTU application (available at www.digi.com/xctu).
 
@@ -30,7 +30,6 @@
   Compatible protocols
   --------------------
     * Cellular
-    * Cellular NB-IoT
     * Wi-Fi
 
 
@@ -55,7 +54,7 @@
   -------------------
   First, build and launch the application. As soon as the application is 
   executed, it will send the UDP packet to the specified IP address and port
-  number. If the transmission was sent succesfully, the following message will
+  number. If the transmission was sent successfully, the following message will
   be printed out in the console:
   
     Sending data to 192.168.1.2:9750 >> 48 65 6C 6C 6F 20 58 42 65 65 21 | Hello XBee!... Success

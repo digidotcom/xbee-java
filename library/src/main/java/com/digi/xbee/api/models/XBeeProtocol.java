@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -41,7 +41,9 @@ public enum XBeeProtocol {
 	XLR_MODULE(14, "XLR Module"),
 	/** @since 1.2.0 */
 	CELLULAR(15, "Cellular"),
-	/** @since 1.2.1 */
+	/**
+	 * @deprecated Use {@link #CELLULAR} instead. 
+	 * @since 1.2.1 */
 	CELLULAR_NBIOT(16, "Cellular NB-IoT"),
 	/** @since 1.2.1 */
 	THREAD(17, "Thread"),
@@ -237,12 +239,11 @@ public enum XBeeProtocol {
 		case CELLULAR_3G:
 		case CELLULAR_LTE_VERIZON:
 		case CELLULAR_LTE_ATT:
+		case CELLULAR_NBIOT_EUROPE:
 		case CELLULAR_3_CAT1_LTE_ATT:
 		case CELLULAR_3_LTE_M_VERIZON:
 		case CELLULAR_3_LTE_M_ATT:
 			return CELLULAR;
-		case CELLULAR_NBIOT_EUROPE:
-			return CELLULAR_NBIOT;
 		case XBEE3:
 		case XBEE3_SMT:
 		case XBEE3_TH:

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,6 +20,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -35,6 +36,8 @@ import com.digi.xbee.api.models.XBeeProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({NBIoTDevice.class})
+@Deprecated
+@Ignore("Ignoring deprecated test.")
 public class NBIoTDeviceTest {
 	
 	@Rule

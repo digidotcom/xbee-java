@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import java.net.Inet4Address;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,6 +37,8 @@ import com.digi.xbee.api.models.IPProtocol;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({IPDevice.class})
+@Deprecated
+@Ignore("Ignoring deprecated test.")
 public class LPWANDeviceTest {
 	
 	@Rule

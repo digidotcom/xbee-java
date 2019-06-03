@@ -47,6 +47,20 @@ public enum XBeeTransmitStatus {
 	BROADCAST_ERROR_APS_EE0 (0x2E, "Attempted broadcast with APS transmission, but EE=0"),
 	SOFTWARE_ERROR (0x31, "A software error occurred"),
 	RESOURCE_ERROR (0x32, "Resource error lack of free buffers, timers, etc."),
+	/** @since 1.3.0 */
+	COAP_URI_LENGTH (0x40, "CoAP message URI requires a nonzero length URI string terminated with a zero byte"),
+	/** @since 1.3.0 */
+	UNRECOGNIZED_DIGI_FRAME (0x41, "Unrecognized Digi API Frame type"),
+	/** @since 1.3.0 */
+	BADLY_COAP_REQUEST (0x42, "Client made a badly formed CoAP request"),
+	/** @since 1.3.0 */
+	SERVER_FAILED_COAP (0x43, "Server failed to handle CoAP request, perhaps due to a lack of internal resources.  The client may try again"),
+	/** @since 1.3.0 */
+	COAP_INVALID_STATUS (0x44, "CoAP Invalid Status"),
+	/** @since 1.3.0 */
+	COAP_MESSAGE_TIMEOUT (0x45, "CoAP Message Timeout, Server did not respond within the expected time"),
+	/** @since 1.3.0 */
+	COAP_MESSAGE_RESET (0x46, "CoAP Message Reset"),
 	PAYLOAD_TOO_LARGE (0x74, "Data payload too large"),
 	INDIRECT_MESSAGE_UNREQUESTED (0x75, "Indirect message unrequested"),
 	SOCKET_CREATION_FAILED (0x76, "Attempt to create a client socket failed"),
@@ -61,6 +75,10 @@ public enum XBeeTransmitStatus {
 	INVALID_HOST(0x7A, "Invalid host"),
 	/** @since 1.2.0 */
 	INVALID_DATA_MODE(0x7B, "Invalid data mode"),
+	/** @since 1.3.0 */
+	INVALID_INTERFACE(0x7C, "Invalid interface"),
+	/** @since 1.3.0 */
+	NOT_ACCEPT_FRAMES(0x7D, "Interface not accepting frames"),
 	/** @since 1.2.0 */
 	CONNECTION_REFUSED(0x80, "Connection refused"),
 	/** @since 1.2.0 */

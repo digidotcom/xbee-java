@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,7 +43,7 @@ public class CellularAssociationIndicationStatusTest {
 	@Test
 	public void testAssociationIndicationStatusValues() {
 		for (CellularAssociationIndicationStatus associationIndicationStatus:associationIndicationStatusValues)
-			assertTrue(associationIndicationStatus.getValue() >= 0);
+			assertTrue(associationIndicationStatus.getValue() >= -1);
 	}
 	
 	/**
@@ -94,7 +94,7 @@ public class CellularAssociationIndicationStatusTest {
 	 */
 	@Test
 	public void testAssociationIndicationStatusStaticInvalidAccess() {
-		assertNull(CellularAssociationIndicationStatus.get(0xAA));
+		assertEquals(CellularAssociationIndicationStatus.get(0xAA), CellularAssociationIndicationStatus.UNKNOWN);
 	}
 	
 	/**

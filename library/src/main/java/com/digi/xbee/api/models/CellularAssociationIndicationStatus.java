@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,8 +31,14 @@ public enum CellularAssociationIndicationStatus {
 	SUCCESSFULLY_CONNECTED(0x00, "Connected to the Internet."),
 	REGISTERING_CELLULAR_NETWORK(0x22, "Registering to cellular network"),
 	CONNECTING_INTERNET(0x23, "Connecting to the Internet"),
+	MISSING_CORRUPT(0x24, "The cellular component is missing, corrupt, or otherwise in error"),
+	REGISTRATION_DENIED(0x25, "Cellular network registration denied"),
+	AIRPLANE_MODE(0x2A, "Airplane mode"),
+	DIRECT_USB_MODE(0x2B, "Direct USB mode"),
+	PSM_LOW_POWER(0x2C, "The cellular component is in the PSM low-power state"),
 	BYPASS_MODE(0x2F, "Bypass mode active"),
-	INITIALIZING(0xFF, "Initializing");
+	INITIALIZING(0xFF, "Initializing"),
+	UNKNOWN(-1, "Unknown");
 	
 	// Variables
 	private final int value;
@@ -85,10 +91,13 @@ public enum CellularAssociationIndicationStatus {
 	 *              retrieve.
 	 * 
 	 * @return The Cellular association indication status of the associated 
-	 *         value, {@code null} if it could not be found in the table.
+	 *         value, {@code UNKNOWN} if the identifier is not in the 
+	 *         enumeration.
 	 */
 	public static CellularAssociationIndicationStatus get(int value) {
-		return lookupTable.get(value);
+		if (lookupTable.get(value) != null)
+			return lookupTable.get(value);
+		return UNKNOWN;
 	}
 	
 	/*

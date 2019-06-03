@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,17 +95,21 @@ public enum HardwareVersionEnum {
 	// TODO: Add the since annotation in the next version of the library.
 	XB8X(0x45, "XB8X"),
 	/** @since 1.2.1 */
-	CELLULAR_LTE_VERIZON(0x46, "XBee Cellular LTE-M Verizon"),
+	CELLULAR_LTE_VERIZON(0x46, "XBee Cellular LTE-M Verizon"),  // Abandoned
 	/** @since 1.2.1 */
 	CELLULAR_LTE_ATT(0x47, "XBee Cellular LTE-M AT&T"),
 	/** @since 1.2.1 */
-	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe"),
-	// TODO: Add the since annotation in the next version of the library.
-	CELLULAR_3_CAT1_LTE_ATT(0x49, "XBee Cellular 3 Cat 1 LTE AT&T"),
-	// TODO: Add the since annotation in the next version of the library.
-	CELLULAR_3_LTE_M_VERIZON(0x4A, "XBee Cellular 3 LTE-M Verizon"),
-	// TODO: Add the since annotation in the next version of the library.
-	CELLULAR_3_LTE_M_ATT(0x4B, "XBee Cellular 3 LTE-M AT&T");
+	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe"),  // Never released
+	/** @since 1.3.0 */
+	CELLULAR_3_CAT1_LTE_ATT(0x49, "XBee3 Cellular Cat 1 LTE AT&T"),
+	/** @since 1.3.0 */
+	CELLULAR_3_LTE_M_VERIZON(0x4A, "XBee3 Cellular LTE-M Verizon"),  // Abandoned
+	/** @since 1.3.0 */
+	CELLULAR_3_LTE_M_ATT(0x4B, "XBee3 Cellular LTE-M AT&T (u-blox)"),
+	/** @since 1.3.0 */
+	CELLULAR_3_LTE_M_ATT_TELIT(0x4C, "XBee3 Cellular LTE-M AT&T (Telit)"),  // Never released
+	/** @since 1.3.0 */
+	CELLULAR_3_CAT1_LTE_VERIZON(0x4D, "XBee3 Cellular Cat 1 LTE Verizon");
 	
 	// Variables
 	private final int value;

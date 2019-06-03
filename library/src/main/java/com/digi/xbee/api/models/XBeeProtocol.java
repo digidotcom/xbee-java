@@ -243,6 +243,8 @@ public enum XBeeProtocol {
 		case CELLULAR_3_CAT1_LTE_ATT:
 		case CELLULAR_3_LTE_M_VERIZON:
 		case CELLULAR_3_LTE_M_ATT:
+		case CELLULAR_3_LTE_M_ATT_TELIT:
+		case CELLULAR_3_CAT1_LTE_VERIZON:
 			return CELLULAR;
 		case XBEE3:
 		case XBEE3_SMT:

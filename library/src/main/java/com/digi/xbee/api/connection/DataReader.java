@@ -911,6 +911,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						dataReceiveListeners.size()));
 				for (final IDataReceiveListener listener:dataReceiveListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -951,6 +954,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						packetReceiveListeners.size()));
 				for (final IPacketReceiveListener listener:packetReceiveListeners.keySet()) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1002,6 +1008,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						ioSampleReceiveListeners.size()));
 				for (final IIOSampleReceiveListener listener:ioSampleReceiveListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1040,6 +1049,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						modemStatusListeners.size()));
 				for (final IModemStatusReceiveListener listener:modemStatusListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1085,6 +1097,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						explicitDataReceiveListeners.size()));
 				for (final IExplicitDataReceiveListener listener:explicitDataReceiveListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1127,6 +1142,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						ipDataReceiveListeners.size()));
 				for (final IIPDataReceiveListener listener:ipDataReceiveListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1168,6 +1186,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
 						smsReceiveListeners.size()));
 				for (final ISMSReceiveListener listener:smsReceiveListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -1212,6 +1233,9 @@ public class DataReader extends Thread {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS,
 						dataRelayReceiveListeners.size()));
 				for (final IUserDataRelayReceiveListener listener : dataRelayReceiveListeners) {
+					// Ensure that the reader is running to avoid a RejectedExecutionException.
+					if (!running)
+						break;
 					executor.execute(new Runnable() {
 						@Override
 						public void run() {

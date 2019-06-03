@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -73,6 +73,8 @@ public enum XBeeTransmitStatus {
 	UNKNOWN_SERVER(0x84, "Unknown server"),
 	/** @since 1.2.0 */
 	UNKNOWN_ERROR(0x85, "Unknown error"),
+	/** @since 1.3.0 */
+	INVALID_TLS_CONFIGURATION(0x86, "Invalid TLS configuration"),
 	KEY_NOT_AUTHORIZED (0xBB, "Key not authorized"),
 	UNKNOWN (255, "Unknown");
 	

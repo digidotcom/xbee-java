@@ -41,8 +41,11 @@ public enum APIFrameType {
 	COAP_TX_REQUEST (0x1C, "CoAP Tx Request"),
 	TX_SMS (0x1F, "TX SMS"),
 	TX_IPV4 (0x20, "TX IPv4"),
+	/** @since 1.3.0 */
+	TX_REQUEST_TLS_PROFILE (0x23, "TX Request with TLS Profile"),
 	SEND_DATA_REQUEST (0x28, "Send Data Request"),
 	DEVICE_RESPONSE (0x2A, "Device Response"),
+	/** @since 1.3.0 */
 	USER_DATA_RELAY (0x2D, "User Data Relay"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),
@@ -63,6 +66,7 @@ public enum APIFrameType {
 	COAP_RX_RESPONSE (0x9C, "CoAP Rx Response"),
 	RX_SMS (0x9F, "RX SMS"),
 	IPV6_IO_DATA_SAMPLE_RX_INDICATOR(0xA7, "IPv6 IO Data Sample Rx Indicator"),
+	/** @since 1.3.0 */
 	USER_DATA_RELAY_OUTPUT (0xAD, "User Data Relay Output"),
 	RX_IPV4 (0xB0, "RX IPv4"),
 	SEND_DATA_RESPONSE (0xB8, "Send Data Response"),

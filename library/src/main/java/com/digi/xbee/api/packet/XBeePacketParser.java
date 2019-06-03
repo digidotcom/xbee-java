@@ -45,6 +45,7 @@ import com.digi.xbee.api.packet.devicecloud.SendDataRequestPacket;
 import com.digi.xbee.api.packet.devicecloud.SendDataResponsePacket;
 import com.digi.xbee.api.packet.ip.RXIPv4Packet;
 import com.digi.xbee.api.packet.ip.TXIPv4Packet;
+import com.digi.xbee.api.packet.ip.TXTLSProfilePacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
 import com.digi.xbee.api.packet.raw.RX64IOPacket;
@@ -329,6 +330,9 @@ public class XBeePacketParser {
 			break;
 		case TX_IPV4:
 			packet = TXIPv4Packet.createPacket(payload);
+			break;
+		case TX_REQUEST_TLS_PROFILE:
+			packet = TXTLSProfilePacket.createPacket(payload);
 			break;
 		case TX_IPV6:
 			packet = TXIPv6Packet.createPacket(payload);

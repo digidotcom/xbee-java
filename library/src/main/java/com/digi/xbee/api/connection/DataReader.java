@@ -569,7 +569,7 @@ public class DataReader extends Thread {
 							try {
 								XBeePacket packet = parser.parsePacket(connectionInterface.getInputStream(), mode);
 								packetReceived(packet);
-							} catch (InvalidPacketException e) {
+							} catch (Exception e) {
 								logger.error("Error parsing the API packet.", e);
 							}
 						}

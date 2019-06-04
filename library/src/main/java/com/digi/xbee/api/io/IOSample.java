@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,9 @@
  */
 package com.digi.xbee.api.io;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -115,6 +118,9 @@ public class IOSample {
 	// Variables.
 	private final byte[] ioSamplePayload;
 	
+	private ByteArrayOutputStream rawMask;
+	private ByteArrayOutputStream rawSample;
+	
 	private int digitalHSBMask;
 	private int digitalLSBMask;
 	private int digitalMask;
@@ -144,6 +150,8 @@ public class IOSample {
 			throw new IllegalArgumentException("IO sample payload must be longer than 4.");
 		
 		this.ioSamplePayload = ioSamplePayload;
+		rawMask = new ByteArrayOutputStream();
+		rawSample = new ByteArrayOutputStream();
 		if (ioSamplePayload.length % 2 != 0)
 			parseRawIOSample();
 		else
@@ -159,11 +167,13 @@ public class IOSample {
 		
 		// Obtain the digital mask.                 // Available digital IOs in 802.15.4
 		digitalHSBMask = ioSamplePayload[1] & 0x01;	// 0 0 0 0 0 0 0 1
+		rawMask.write(ioSamplePayload[1] & 0xFF);
 		digitalLSBMask = ioSamplePayload[2] & 0xFF;	// 1 1 1 1 1 1 1 1
+		rawMask.write(ioSamplePayload[2] & 0xFF);
 		// Combine the masks.
 		digitalMask = (digitalHSBMask << 8) + digitalLSBMask;
 		// Obtain the analog mask.                                                          // Available analog IOs in 802.15.4
-		analogMask = ((ioSamplePayload[1] << 8) + (ioSamplePayload[2] & 0xFF)) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
+		analogMask = (((ioSamplePayload[1] & 0xFF) << 8) + (ioSamplePayload[2] & 0xFF)) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
 		
 		// Read the digital values (if any). There are 9 possible digital lines in 
 		// 802.15.4 protocol. The digital mask indicates if there is any digital 
@@ -171,7 +181,9 @@ public class IOSample {
 		if (digitalMask > 0) {
 			// Obtain the digital values.
 			digitalHSBValues = ioSamplePayload[3] & 0x7F;
+			rawSample.write(ioSamplePayload[3] & 0xFF);
 			digitalLSBValues = ioSamplePayload[4] & 0xFF;
+			rawSample.write(ioSamplePayload[4] & 0xFF);
 			// Combine the values.
 			digitalValues = (digitalHSBValues << 8) + digitalLSBValues;
 			
@@ -198,6 +210,8 @@ public class IOSample {
 			}
 			// 802.15.4 protocol does not provide power supply value, so get just the ADC data.
 			analogValuesMap.put(IOLine.getDIO(adcIndex - 9), ((ioSamplePayload[dataIndex] & 0xFF) << 8) + (ioSamplePayload[dataIndex + 1] & 0xFF));
+			rawSample.write(ioSamplePayload[dataIndex] & 0xFF);
+			rawSample.write(ioSamplePayload[dataIndex + 1] & 0xFF);
 			// Increase the data index to read the next analog values.
 			dataIndex += 2;
 			adcIndex += 1;
@@ -213,11 +227,14 @@ public class IOSample {
 		
 		// Obtain the digital masks.                // Available digital IOs
 		digitalHSBMask = ioSamplePayload[1] & 0x7F;	// 0 1 1 1 1 1 1 1
+		rawMask.write(ioSamplePayload[1] & 0xFF);
 		digitalLSBMask = ioSamplePayload[2] & 0xFF;	// 1 1 1 1 1 1 1 1
+		rawMask.write(ioSamplePayload[2] & 0xFF);
 		// Combine the masks.
 		digitalMask = (digitalHSBMask << 8) + digitalLSBMask;
 		// Obtain the analog mask.                  // Available analog IOs
 		analogMask = ioSamplePayload[3] & 0xBF;		// 1 0 1 1 1 1 1 1
+		rawMask.write(ioSamplePayload[3] & 0xFF);
 		
 		// Read the digital values (if any). There are 16 possible digital lines.
 		// The digital mask indicates if there is any digital line enabled to read 
@@ -225,7 +242,9 @@ public class IOSample {
 		if (digitalMask > 0) {
 			// Obtain the digital values.
 			digitalHSBValues = ioSamplePayload[4] & 0x7F;
+			rawSample.write(ioSamplePayload[4] & 0xFF);
 			digitalLSBValues = ioSamplePayload[5] & 0xFF;
+			rawSample.write(ioSamplePayload[5] & 0xFF);
 			// Combine the values.
 			digitalValues = (digitalHSBValues << 8) + digitalLSBValues;
 			
@@ -256,6 +275,8 @@ public class IOSample {
 				powerSupplyVoltage = ((ioSamplePayload[dataIndex] & 0xFF) << 8) + (ioSamplePayload[dataIndex + 1] & 0xFF);
 			else
 				analogValuesMap.put(IOLine.getDIO(adcIndex), ((ioSamplePayload[dataIndex] & 0xFF) << 8) + (ioSamplePayload[dataIndex + 1] & 0xFF));
+			rawSample.write(ioSamplePayload[dataIndex] & 0xFF);
+			rawSample.write(ioSamplePayload[dataIndex + 1] & 0xFF);
 			// Increase the data index to read the next analog values.
 			dataIndex += 2;
 			adcIndex += 1;
@@ -528,6 +549,76 @@ public class IOSample {
 		if (!ByteUtils.isBitEnabled(analogMask, 7))
 			throw new OperationNotSupportedException();
 		return powerSupplyVoltage;
+	}
+	
+	/**
+	 * Returns the raw mask of the IO sample.
+	 * 
+	 * @return The raw mask of the IO sample.
+	 * 
+	 * @since 1.3.0
+	 */
+	byte[] getRawMask() {
+		return rawMask.toByteArray();
+	}
+	
+	/**
+	 * Returns the raw sample of the IO sample.
+	 * 
+	 * @return The raw sample of the IO sample.
+	 * 
+	 * @since 1.3.0
+	 */
+	byte[] getRawSample() {
+		return rawSample.toByteArray();
+	}
+	
+	/**
+	 * Parses the IO samples contained in the given payload.
+	 * 
+	 * @param samplePayload The payload corresponding to one or multiple IO
+	 *                      samples.
+	 * 
+	 * @return List of IO samples.
+	 * 
+	 * @since 1.3.0
+	 */
+	public static ArrayList<IOSample> parseIOSamples(byte[] samplePayload) {
+		ArrayList<IOSample> samples = new ArrayList<IOSample>();
+		if (samplePayload == null)
+			return samples;
+		
+		int nSamples = ByteUtils.byteToInt(samplePayload[0]);
+		
+		// Parse the first IO sample.
+		samples.add(new IOSample(samplePayload));
+		
+		if (nSamples > 1) {
+			// Get the mask of the first sample (fixed, the same for all samples).
+			byte[] rawMask = samples.get(0).getRawMask();
+			// Remove the number of samples and mask from the remaining bytes.
+			byte[] remaining = Arrays.copyOfRange(samplePayload, 1 + rawMask.length, samplePayload.length);
+			for (int i = 1; i < nSamples; i++) {
+				// Get the raw sample of the previous sample.
+				byte[] rawSample = samples.get(i - 1).getRawSample();
+				// Remove the previous sample from the remaining bytes.
+				remaining = Arrays.copyOfRange(remaining, rawSample.length, remaining.length);
+				// Create the byte array for the next sample.
+				ByteArrayOutputStream nextSampleData = new ByteArrayOutputStream();
+				try {
+					nextSampleData.write(samplePayload[0]);
+					nextSampleData.write(rawMask);
+					nextSampleData.write(remaining);
+				} catch (IOException e) {
+					e.printStackTrace();
+					break;
+				}
+				// Parse and add the next IO sample.
+				samples.add(new IOSample(nextSampleData.toByteArray()));
+			}
+		}
+		
+		return samples;
 	}
 	
 	/*

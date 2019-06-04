@@ -654,11 +654,17 @@ public class DataReader extends Thread {
 				break;
 			case RX_IO_64:
 				RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-				notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
+				if (rx64IOPacket.getIOSamples() != null && rx64IOPacket.getIOSamples().size() > 0) {
+					for (IOSample sample : rx64IOPacket.getIOSamples())
+						notifyIOSampleReceived(remoteDevice, sample);
+				}
 				break;
 			case RX_IO_16:
 				RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-				notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
+				if (rx16IOPacket.getIOSamples() != null && rx16IOPacket.getIOSamples().size() > 0) {
+					for (IOSample sample : rx16IOPacket.getIOSamples())
+						notifyIOSampleReceived(remoteDevice, sample);
+				}
 				break;
 			case IPV6_IO_DATA_SAMPLE_RX_INDICATOR:
 				IPv6IODataSampleRxIndicator ioSampleIPv6Packet = (IPv6IODataSampleRxIndicator)apiPacket;

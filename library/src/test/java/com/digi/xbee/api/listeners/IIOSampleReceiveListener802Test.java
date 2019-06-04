@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -72,6 +72,8 @@ public class IIOSampleReceiveListener802Test {
 	private static RX64IOPacket rx64ioPacket;
 	private static ATCommandResponsePacket invalidPacket;
 	
+	private static ArrayList<IOSample> samplesList;
+	
 	private DataReader dataReader;
 	
 	@BeforeClass
@@ -81,17 +83,23 @@ public class IIOSampleReceiveListener802Test {
 		Mockito.when(remote802Device.get64BitAddress()).thenReturn(XBEE_64BIT_ADDRESS);
 		Mockito.when(remote802Device.get16BitAddress()).thenReturn(XBEE_16BIT_ADDRESS);
 		
+		// Mock a samples list.
+		samplesList = new ArrayList<>();
+		samplesList.add(IO_SAMPLE);
+		
 		// Mock a RX16IO packet.
 		rx16ioPacket = Mockito.mock(RX16IOPacket.class);
 		Mockito.when(rx16ioPacket.getFrameType()).thenReturn(APIFrameType.RX_IO_16);
 		Mockito.when(rx16ioPacket.getIOSample()).thenReturn(IO_SAMPLE);
 		Mockito.when(rx16ioPacket.get16bitSourceAddress()).thenReturn(XBEE_16BIT_ADDRESS);
+		Mockito.when(rx16ioPacket.getIOSamples()).thenReturn(samplesList);
 		
 		// Mock a RX64IO packet.
 		rx64ioPacket = Mockito.mock(RX64IOPacket.class);
 		Mockito.when(rx64ioPacket.getFrameType()).thenReturn(APIFrameType.RX_IO_64);
 		Mockito.when(rx64ioPacket.getIOSample()).thenReturn(IO_SAMPLE);
 		Mockito.when(rx64ioPacket.get64bitSourceAddress()).thenReturn(XBEE_64BIT_ADDRESS);
+		Mockito.when(rx64ioPacket.getIOSamples()).thenReturn(samplesList);
 		
 		// Mock an invalid packet.
 		invalidPacket = Mockito.mock(ATCommandResponsePacket.class);

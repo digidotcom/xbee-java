@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ package com.digi.xbee.api.packet.raw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
@@ -48,6 +49,7 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	private final XBee16BitAddress sourceAddress16;
 	
 	private IOSample ioSample;
+	private ArrayList<IOSample> ioSamples;
 	
 	private final int rssi;
 	private final int receiveOptions;
@@ -139,10 +141,15 @@ public class RX16IOPacket extends XBeeAPIPacket {
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
 		this.rfData = rfData;
-		if (rfData != null && rfData.length >= 5)
-			ioSample = new IOSample(rfData);
-		else
+		if (rfData != null && rfData.length >= 5) {
+			try {
+				ioSamples = IOSample.parseIOSamples(rfData);
+				if (ioSamples.size() > 0)
+					ioSample = ioSamples.get(0);
+			} catch (Exception e) {}
+		} else {
 			ioSample = null;
+		}
 		this.logger = LoggerFactory.getLogger(RX16IOPacket.class);
 	}
 	
@@ -222,9 +229,27 @@ public class RX16IOPacket extends XBeeAPIPacket {
 	 *         any data or if the sample could not be generated correctly.
 	 * 
 	 * @see com.digi.xbee.api.io.IOSample
+	 * 
+	 * @deprecated use {@link #getIOSamples()} instead.
 	 */
 	public IOSample getIOSample() {
 		return ioSample;
+	}
+	
+	/**
+	 * Returns the IO samples corresponding to the data contained in the
+	 * packet.
+	 * 
+	 * @return The IO samples of the packet, {@code null} if the packet does
+	 *         not have any data or if the samples could not be generated
+	 *         correctly.
+	 * 
+	 * @see com.digi.xbee.api.io.IOSample
+	 * 
+	 * @since 1.3.0
+	 */
+	public ArrayList<IOSample> getIOSamples() {
+		return ioSamples;
 	}
 	
 	/**
@@ -266,17 +291,27 @@ public class RX16IOPacket extends XBeeAPIPacket {
 		parameters.put("16-bit source address", HexUtils.prettyHexString(sourceAddress16.toString()));
 		parameters.put("RSSI", HexUtils.prettyHexString(HexUtils.integerToHexString(rssi, 1)));
 		parameters.put("Options", HexUtils.prettyHexString(HexUtils.integerToHexString(receiveOptions, 1)));
-		if (ioSample != null) {
-			parameters.put("Number of samples", HexUtils.prettyHexString(HexUtils.integerToHexString(1, 1))); // There is always 1 sample.
-			parameters.put("Digital channel mask", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getDigitalMask(), 2)));
-			parameters.put("Analog channel mask", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getAnalogMask(), 2)));
-			for (int i = 0; i < 16; i++) {
-				if (ioSample.hasDigitalValue(IOLine.getDIO(i)))
-					parameters.put(IOLine.getDIO(i).getName() + " digital value", ioSample.getDigitalValue(IOLine.getDIO(i)).getName());
-			}
-			for (int i = 0; i < 6; i++) {
-				if (ioSample.hasAnalogValue(IOLine.getDIO(i)))
-					parameters.put(IOLine.getDIO(i).getName() + " analog value", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSample.getAnalogValue(IOLine.getDIO(i)), 2)));
+		if (ioSamples != null && !ioSamples.isEmpty()) {
+			parameters.put("Number of samples", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSamples.size(), 1)) + " (" + ioSamples.size() + ")");
+			parameters.put("Digital channel mask", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSamples.get(0).getDigitalMask(), 2)));
+			parameters.put("Analog channel mask", HexUtils.prettyHexString(HexUtils.integerToHexString(ioSamples.get(0).getAnalogMask(), 2)));
+			for (int index = 0; index < ioSamples.size(); index++) {
+				IOSample sample = ioSamples.get(index);
+				StringBuilder builder = new StringBuilder();
+				for (int i = 0; i < 16; i++) {
+					if (sample.hasDigitalValue(IOLine.getDIO(i))) {
+						builder.append("- " + IOLine.getDIO(i).getName() + " digital value: "
+								+ sample.getDigitalValue(IOLine.getDIO(i)).getName() + "\n");
+					}
+				}
+				for (int i = 0; i < 6; i++) {
+					if (sample.hasAnalogValue(IOLine.getDIO(i))) {
+						builder.append("- " + IOLine.getDIO(i).getName() + " analog value: "
+								+ HexUtils.prettyHexString(HexUtils.integerToHexString(sample.getAnalogValue(IOLine.getDIO(i)), 2))
+								+ " (" + sample.getAnalogValue(IOLine.getDIO(i)) + ")\n");
+					}
+				}
+				parameters.put("Sample " + (index + 1), builder.toString());
 			}
 		} else if (rfData != null)
 			parameters.put("RF data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(rfData)));

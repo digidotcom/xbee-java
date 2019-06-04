@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertThat;
@@ -283,7 +284,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 40;
 		int options = 0x01;
-		byte[] data = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
 		
 		byte[] payload = new byte[11 + data.length];
 		payload[0] = (byte)frameType;
@@ -483,7 +484,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 40;
-		byte[] data = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] data = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
 		
 		int expectedLength = 1 /* Frame type */ + 8 /* 64-bit address */ + 1 /* RSSI */ + 1 /* options */ + data.length /* Data */;
 		
@@ -631,7 +632,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 40;
-		byte[] receivedData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x02, 0x0C, 0x00, (byte)0xFA, 0x04, (byte)0xE2};
+		byte[] receivedData = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x02, 0x0C, 0x00, (byte)0xFA, 0x04, (byte)0xE2};
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, receivedData);
 		
 		String expectedSource64Addr = HexUtils.prettyHexString(source64Addr.getValue());
@@ -645,22 +646,31 @@ public class RX64IOPacketTest {
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
 		
 		// Verify the result.
-		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(24)));
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(7)));
 		assertThat("Source 64-bit Address is not the expected one", packetParams.get("64-bit source address"), is(equalTo(expectedSource64Addr)));
 		assertThat("RSSI is not the expected", packetParams.get("RSSI"), is(equalTo(expectedRSSI)));
 		assertThat("Options are not the expected", packetParams.get("Options"), is(equalTo(expectedOptions)));
-		assertThat("Number of samples is not the expected", packetParams.get("Number of samples"), is(equalTo("01"))); // Always 1.
+		assertThat("Number of samples is not the expected", packetParams.get("Number of samples"), is(equalTo("01 (1)"))); // Always 1.
 		assertThat("Digital channel mask is not the expected", packetParams.get("Digital channel mask"), is(equalTo(expectedDigitalMask)));
 		assertThat("Analog channel mask is not the expected", packetParams.get("Analog channel mask"), is(equalTo(expectedAnalogMask)));
+		
+		// Create a dictionary with the "Sample 1" values.
+		HashMap<String, String> sampleValues = new HashMap<>();
+		String[] lines = packetParams.get("Sample 1").split("\n");
+		for (String line : lines) {
+			String lineValues[] = line.split(": ");
+			sampleValues.put(lineValues[0].replace("- ", ""), lineValues[1]);
+		}
+		// Verify that all the sample values are the expected ones.
 		for (int i = 0; i < 16; i++) {
 			if (expectedIoSample.hasDigitalValue(IOLine.getDIO(i)))
-				assertThat(packetParams.get(IOLine.getDIO(i).getName() + " digital value"), 
+				assertThat(sampleValues.get(IOLine.getDIO(i).getName() + " digital value"), 
 						is(equalTo(expectedIoSample.getDigitalValue(IOLine.getDIO(i)).getName())));
 		}
 		for (int i = 0; i < 6; i++)
 			if (expectedIoSample.hasAnalogValue(IOLine.getDIO(i)))
-				assertThat(packetParams.get(IOLine.getDIO(i).getName() + " analog value"), 
-						is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getAnalogValue(IOLine.getDIO(i)), 2)))));
+				assertThat(sampleValues.get(IOLine.getDIO(i).getName() + " analog value"), 
+						is(equalTo(HexUtils.prettyHexString(HexUtils.integerToHexString(expectedIoSample.getAnalogValue(IOLine.getDIO(i)), 2)) + " (" + expectedIoSample.getAnalogValue(IOLine.getDIO(i)) + ")")));
 		
 		assertThat("RF data is not the expected", packetParams.get("RF data"), is(nullValue(String.class)));
 	}
@@ -791,7 +801,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 0x84; /* bit 2 */
-		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] origData = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
 		byte[] receivedData = null;
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, origData);
 		
@@ -820,7 +830,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 0x84; /* bit 2 */
-		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] origData = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
 		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61};
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, origData);
 		
@@ -849,8 +859,8 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 0x84; /* bit 2 */
-		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
-		byte[] receivedData = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		byte[] origData = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = new byte[]{(byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, origData);
 		
 		IOSample origSample = packet.getIOSample();
@@ -878,8 +888,8 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 0x84; /* bit 2 */
-		byte[] origData = new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
-		byte[] receivedData = new byte[]{(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+		byte[] origData = new byte[]{(byte)0x01, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
+		byte[] receivedData = new byte[]{(byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, origData);
 		
 		IOSample origSample = packet.getIOSample();
@@ -953,7 +963,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 0x84; /* bit 2 */
-		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11};
+		byte[] receivedData = new byte[]{0x01, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11};
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, receivedData);
 		
 		// Call the method under test.
@@ -975,7 +985,7 @@ public class RX64IOPacketTest {
 		XBee64BitAddress source64Addr = new XBee64BitAddress("0013A2004032D9AB");
 		int rssi = 75;
 		int options = 0x84; /* bit 2 */
-		byte[] receivedData = new byte[]{0x68, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11};
+		byte[] receivedData = new byte[]{0x01, 0x6F, 0x6C, 0x61, (byte)0x98, 0x11};
 		RX64IOPacket packet = new RX64IOPacket(source64Addr, rssi, options, receivedData);
 		
 		// Call the method under test.

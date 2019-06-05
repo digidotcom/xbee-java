@@ -12,10 +12,11 @@ also available in source code format.
 
 The main features of the library include:
 
-* Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint, Wi-Fi,  
-Cellular and Thread XBee devices.
+* Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint, Wi-Fi, Cellular
+and Thread XBee devices.
 * Support for API and API escaped operating modes.
-* Support for Android.
+* Support for Android with communication over Bluetooth Low Energy, USB host or
+serial port.
 * Management of local (attached to the PC) and remote XBee device objects.
 * Discovery of remote XBee devices associated with the same network as the 
 local device.
@@ -59,7 +60,7 @@ document.
 
 License
 -------
-Copyright 2017, Digi International Inc.
+Copyright 2017-2019, Digi International Inc.
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this

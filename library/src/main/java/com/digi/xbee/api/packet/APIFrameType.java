@@ -46,6 +46,8 @@ public enum APIFrameType {
 	SEND_DATA_REQUEST (0x28, "Send Data Request"),
 	DEVICE_RESPONSE (0x2A, "Device Response"),
 	/** @since 1.3.0 */
+	BLE_UNLOCK (0x2C, "Bluetooth Unlock"),
+	/** @since 1.3.0 */
 	USER_DATA_RELAY (0x2D, "User Data Relay"),
 	RX_64 (0x80, "RX (Receive) Packet 64-bit Address"),
 	RX_16 (0x81, "RX (Receive) Packet 16-bit Address"),
@@ -66,6 +68,8 @@ public enum APIFrameType {
 	COAP_RX_RESPONSE (0x9C, "CoAP Rx Response"),
 	RX_SMS (0x9F, "RX SMS"),
 	IPV6_IO_DATA_SAMPLE_RX_INDICATOR(0xA7, "IPv6 IO Data Sample Rx Indicator"),
+	/** @since 1.3.0 */
+	BLE_UNLOCK_RESPONSE (0xAC, "Bluetooth Unlock Response"),
 	/** @since 1.3.0 */
 	USER_DATA_RELAY_OUTPUT (0xAD, "User Data Relay Output"),
 	RX_IPV4 (0xB0, "RX IPv4"),

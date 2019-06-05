@@ -23,6 +23,8 @@ import java.util.Date;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
+import com.digi.xbee.api.packet.bluetooth.BluetoothUnlockPacket;
+import com.digi.xbee.api.packet.bluetooth.BluetoothUnlockResponsePacket;
 import com.digi.xbee.api.packet.cellular.RXSMSPacket;
 import com.digi.xbee.api.packet.cellular.TXSMSPacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
@@ -343,6 +345,9 @@ public class XBeePacketParser {
 		case DEVICE_RESPONSE:
 			packet = DeviceResponsePacket.createPacket(payload);
 			break;
+		case BLE_UNLOCK:
+			packet = BluetoothUnlockPacket.createPacket(payload);
+			break;
 		case USER_DATA_RELAY:
 			packet = UserDataRelayPacket.createPacket(payload);
 			break;
@@ -399,6 +404,9 @@ public class XBeePacketParser {
 			break;
 		case RX_SMS:
 			packet = RXSMSPacket.createPacket(payload);
+			break;
+		case BLE_UNLOCK_RESPONSE:
+			packet = BluetoothUnlockResponsePacket.createPacket(payload);
 			break;
 		case USER_DATA_RELAY_OUTPUT:
 			packet = UserDataRelayOutputPacket.createPacket(payload);

@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,7 @@
  */
 package com.digi.xbee.api;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import java.net.Inet6Address;
@@ -234,7 +235,60 @@ public class DigiMeshDevice extends XBeeDevice {
 	public DigiMeshDevice(Context context, String port, SerialPortParameters parameters) {
 		super(XBee.createConnectiontionInterface(context, port, parameters));
 	}
-	
+
+	/**
+	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Android with the given parameters.
+	 *
+	 * <p>This constructor uses the Android Bluetooth Low Energy API to
+	 * communicate with the devices.</p>
+	 *
+	 * <p>The Bluetooth password must be provided before calling the
+	 * {@link #open()} method, either through this constructor or the
+	 * {@link #setBluetoothPassword(String)} method.</p>
+	 *
+	 * @param context The Android application context.
+	 * @param bleDevice Bluetooth device.
+	 * @param password Bluetooth password (can be {@code null}).
+	 *
+	 * @see #DigiMeshDevice(Context, String, String)
+	 * @see #DigiMeshDevice(IConnectionInterface)
+	 * @see BluetoothDevice
+	 *
+	 * @since 1.3.0
+	 */
+	public DigiMeshDevice(Context context, BluetoothDevice bleDevice, String password) {
+		super(XBee.createConnectionInterface(context, bleDevice));
+
+		this.bluetoothPassword = password;
+	}
+
+	/**
+	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object for
+	 * Android with the given parameters.
+	 *
+	 * <p>This constructor uses the Android Bluetooth Low Energy API to
+	 * communicate with the devices.</p>
+	 *
+	 * <p>The Bluetooth password must be provided before calling the
+	 * {@link #open()} method, either through this constructor or the
+	 * {@link #setBluetoothPassword(String)} method.</p>
+	 *
+	 * @param context The Android application context.
+	 * @param deviceAddress Address of the Bluetooth device.
+	 * @param password Bluetooth password (can be {@code null}).
+	 *
+	 * @see #DigiMeshDevice(Context, BluetoothDevice, String)
+	 * @see #DigiMeshDevice(IConnectionInterface)
+	 *
+	 * @since 1.3.0
+	 */
+	public DigiMeshDevice(Context context, String deviceAddress, String password) {
+		super(XBee.createConnectionInterface(context, deviceAddress));
+
+		this.bluetoothPassword = password;
+	}
+
 	/**
 	 * Class constructor. Instantiates a new {@code DigiMeshDevice} object with the 
 	 * given connection interface.

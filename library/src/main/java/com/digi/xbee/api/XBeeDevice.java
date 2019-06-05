@@ -17,13 +17,16 @@ package com.digi.xbee.api;
 
 import java.io.IOException;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
+import com.digi.xbee.api.connection.bluetooth.BluetoothInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
+import com.digi.xbee.api.exceptions.BluetoothAuthenticationException;
 import com.digi.xbee.api.exceptions.InterfaceAlreadyOpenException;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.InvalidOperatingModeException;
@@ -88,6 +91,8 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	private Object resetLock = new Object();
 	
 	private boolean modemStatusReceived = false;
+
+	protected String bluetoothPassword;
 	
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object 
@@ -284,7 +289,60 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	public XBeeDevice(Context context, String port, SerialPortParameters parameters) {
 		super(XBee.createConnectiontionInterface(context, port, parameters));
 	}
-	
+
+	/**
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
+	 * Android with the given parameters.
+	 *
+	 * <p>This constructor uses the Android Bluetooth Low Energy API to
+	 * communicate with the devices.</p>
+	 *
+	 * <p>The Bluetooth password must be provided before calling the
+	 * {@link #open()} method, either through this constructor or the
+	 * {@link #setBluetoothPassword(String)} method.</p>
+	 *
+	 * @param context The Android application context.
+	 * @param bleDevice Bluetooth device.
+	 * @param password Bluetooth password (can be {@code null}).
+	 *
+	 * @see #XBeeDevice(Context, String, String)
+	 * @see #XBeeDevice(IConnectionInterface)
+	 * @see BluetoothDevice
+	 *
+	 * @since 1.3.0
+	 */
+	public XBeeDevice(Context context, BluetoothDevice bleDevice, String password) {
+		super(XBee.createConnectionInterface(context, bleDevice));
+
+		this.bluetoothPassword = password;
+	}
+
+	/**
+	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
+	 * Android with the given parameters.
+	 *
+	 * <p>This constructor uses the Android Bluetooth Low Energy API to
+	 * communicate with the devices.</p>
+	 *
+	 * <p>The Bluetooth password must be provided before calling the
+	 * {@link #open()} method, either through this constructor or the
+	 * {@link #setBluetoothPassword(String)} method.</p>
+	 *
+	 * @param context The Android application context.
+	 * @param deviceAddress Address of the Bluetooth device.
+	 * @param password Bluetooth password (can be {@code null}).
+	 *
+	 * @see #XBeeDevice(Context, BluetoothDevice, String)
+	 * @see #XBeeDevice(IConnectionInterface)
+	 *
+	 * @since 1.3.0
+	 */
+	public XBeeDevice(Context context, String deviceAddress, String password) {
+		super(XBee.createConnectionInterface(context, deviceAddress));
+
+		this.bluetoothPassword = password;
+	}
+
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object with the 
 	 * given connection interface.
@@ -321,7 +379,9 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * <li>XBee device protocol.</li>
 	 * <li>16-bit address (not for DigiMesh modules).</li>
 	 * </ul>
-	 * 
+	 *
+	 * @throws BluetoothAuthenticationException if there is any problem in the
+	 *                                          Bluetooth authentication.
 	 * @throws InterfaceAlreadyOpenException if this device connection is 
 	 *                                       already open.
 	 * @throws XBeeException if there is any problem opening this device 
@@ -353,18 +413,37 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		try {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {}
-		
-		// Determine the operating mode of the XBee device if it is unknown.
-		if (operatingMode == OperatingMode.UNKNOWN)
-			operatingMode = determineOperatingMode();
-		
-		// Check if the operating mode is a valid and supported one.
-		if (operatingMode == OperatingMode.UNKNOWN) {
-			close();
-			throw new InvalidOperatingModeException("Could not determine operating mode.");
-		} else if (operatingMode == OperatingMode.AT) {
-			close();
-			throw new InvalidOperatingModeException(operatingMode);
+
+		if (connectionInterface instanceof BluetoothInterface) {
+			// The communication in Bluetooth is always done through API frames
+			// regardless of the AP setting.
+			operatingMode = OperatingMode.API;
+			dataReader.setXBeeReaderMode(operatingMode);
+
+			// Perform the Bluetooth authentication.
+			try {
+				logger.info(toString() + "Starting Bluetooth authentication...");
+				BluetoothAuthentication auth = new BluetoothAuthentication(this, bluetoothPassword);
+				auth.authenticate();
+				((BluetoothInterface) connectionInterface).setEncryptionKeys(auth.getKey(), auth.getTxNonce(), auth.getRxNonce());
+				logger.info(toString() + "Authentication finished successfully.");
+			} catch (BluetoothAuthenticationException e) {
+				close();
+				throw e;
+			}
+		} else {
+			// Determine the operating mode of the XBee device if it is unknown.
+			if (operatingMode == OperatingMode.UNKNOWN)
+				operatingMode = determineOperatingMode();
+
+			// Check if the operating mode is a valid and supported one.
+			if (operatingMode == OperatingMode.UNKNOWN) {
+				close();
+				throw new InvalidOperatingModeException("Could not determine operating mode.");
+			} else if (operatingMode == OperatingMode.AT) {
+				close();
+				throw new InvalidOperatingModeException(operatingMode);
+			}
 		}
 		
 		// Read the device info (obtain its parameters and protocol).
@@ -2148,7 +2227,22 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		
 		return APIOutputMode.get(apiOutputModeValue[0]);
 	}
-	
+
+	/**
+	 * Sets the password of this Bluetooth device.
+	 *
+	 * <p>The Bluetooth password must be provided before calling the
+	 * {@link #open()} method, either through this method or the
+	 * {@link #XBeeDevice(Context, BluetoothDevice, String)} constructor.</p>
+	 *
+	 * @param password The password of this Bluetooth device.
+	 *
+	 * @since 1.3.0
+	 */
+	public void setBluetoothPassword(String password) {
+		this.bluetoothPassword = password;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.digi.xbee.api.AbstractXBeeDevice#toString()

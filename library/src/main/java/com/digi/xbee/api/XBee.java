@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,11 +15,13 @@
  */
 package com.digi.xbee.api;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.android.AndroidXBeeInterface;
+import com.digi.xbee.api.connection.bluetooth.BluetoothInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
 import com.digi.xbee.api.connection.serial.SerialPortDigiAndroid;
@@ -170,5 +172,50 @@ public class XBee {
 	 */
 	public static IConnectionInterface createConnectiontionInterface(Context context, String port, SerialPortParameters serialPortParameters) {
 		return new SerialPortDigiAndroid(context, port, serialPortParameters);
+	}
+
+	/**
+	 * Retrieves an XBee Android Bluetooth connection interface for the given
+	 * context and Bluetooth device.
+	 *
+	 * @param context The Android application context.
+	 * @param bleDevice The Bluetooth device.
+	 *
+	 * @return The XBee Android Bluetooth connection interface.
+	 *
+	 * @throws NullPointerException if {@code context == null} or
+	 *                              if {@code bleDevice == null}.
+	 *
+	 * @see #createConnectionInterface(Context, String)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 * @see BluetoothDevice
+	 *
+	 * @since 1.3.0
+	 */
+	public static IConnectionInterface createConnectionInterface(Context context, BluetoothDevice bleDevice) {
+		return new BluetoothInterface(context, bleDevice);
+	}
+
+	/**
+	 * Retrieves an XBee Android Bluetooth connection interface for the given
+	 * context and Bluetooth device address.
+	 *
+	 * @param context The Android application context.
+	 * @param deviceAddress The address of the Bluetooth device.
+	 *
+	 * @return The XBee Android Bluetooth connection interface.
+	 *
+	 * @throws IllegalArgumentException if the device address does not follow
+	 *                                  the format "00:11:22:33:AA:BB".
+	 * @throws NullPointerException if {@code context == null} or
+	 *                              if {@code deviceAddress == null}.
+	 *
+	 * @see #createConnectionInterface(Context, BluetoothDevice)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface
+	 *
+	 * @since 1.3.0
+	 */
+	public static IConnectionInterface createConnectionInterface(Context context, String deviceAddress) {
+		return new BluetoothInterface(context, deviceAddress);
 	}
 }

@@ -34,16 +34,13 @@ public class UserDataRelayMessage {
 	 * @param relayInterface The source relay interface.
 	 * @param data Byte array containing the data of the message.
 	 *
-	 * @throws NullPointerException if {@code relayInterface == null} or
-	 *                              if {@code data == null}.
+	 * @throws NullPointerException if {@code relayInterface == null}.
 	 *
 	 * @see RelayInterface
 	 */
 	public UserDataRelayMessage(RelayInterface relayInterface, byte[] data) {
 		if (relayInterface == null)
 			throw new NullPointerException("Relay interface cannot be null.");
-		if (data == null)
-			throw new NullPointerException("Data cannot be null.");
 
 		this.relayInterface = relayInterface;
 		this.data = data;
@@ -63,7 +60,8 @@ public class UserDataRelayMessage {
 	/**
 	 * Returns a byte array containing the data of the message.
 	 *
-	 * @return A byte array containing the data of the message.
+	 * @return A byte array containing the data of the message or {@code null}
+	 *         if the message does not have any data.
 	 */
 	public byte[] getData() {
 		return data;
@@ -72,9 +70,10 @@ public class UserDataRelayMessage {
 	/**
 	 * Returns the data of the message in string format.
 	 *
-	 * @return The data of the message in string format.
+	 * @return The data of the message in string format or {@code null} if the
+	 *         message does not have any data.
 	 */
 	public String getDataString() {
-		return new String(data);
+		return data == null ? null : new String(data);
 	}
 }

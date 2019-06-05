@@ -1232,7 +1232,7 @@ public class DataReader extends Thread {
 	private void notifyUserDataRelayReceived(final UserDataRelayMessage relayMessage) {
 		logger.info(connectionInterface.toString() +
 				"User Data Relay received from {} >> {}.", relayMessage.getSourceInterface().getDescription(),
-				HexUtils.prettyHexString(relayMessage.getData()));
+				relayMessage.getData() != null ? HexUtils.prettyHexString(relayMessage.getData()) : "");
 
 		try {
 			synchronized (dataRelayReceiveListeners) {

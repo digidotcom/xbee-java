@@ -1475,7 +1475,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			throw new OperationNotSupportedException("Cannot send User Data Relay messages from a remote device.");
 
 		logger.debug(toString() + "Sending User Data Relay to {} >> {}.", destInterface.getDescription(),
-				HexUtils.prettyHexString(data));
+				data != null ? HexUtils.prettyHexString(data) : "");
 
 		XBeePacket xbeePacket = new UserDataRelayPacket(getNextFrameID(), destInterface, data);
 		// Send the packet asynchronously since User Data Relay frames do not receive any transmit status.

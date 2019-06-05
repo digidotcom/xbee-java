@@ -27,7 +27,8 @@ public enum RelayInterface {
 	// Enumeration types
 	SERIAL(0, "Serial port"),
 	BLUETOOTH(1, "Bluetooth Low Energy"),
-	MICROPYTHON(2, "Micropython");
+	MICROPYTHON(2, "Micropython"),
+	UNKNOWN(-1, "Unknown");
 	
 	// Variables
 	private int id;
@@ -77,10 +78,12 @@ public enum RelayInterface {
 	 * @param id ID code to retrieve the {@code RelayInterface}.
 	 * 
 	 * @return The {@code RelayInterface} associated with the given ID code, 
-	 *         {@code null} if there is not any relay interface associated 
+	 *         {@code UNKNOWN} if there is not any relay interface associated
 	 *         to the provided ID.
 	 */
 	public static RelayInterface get(int id) {
-		return lookupTable.get(id);
+		if (lookupTable.get(id) != null)
+			return lookupTable.get(id);
+		return UNKNOWN;
 	}
 }

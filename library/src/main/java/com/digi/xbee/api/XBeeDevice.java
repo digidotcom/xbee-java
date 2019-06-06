@@ -1459,7 +1459,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @param data Data to send.
 	 *
 	 * @throws InterfaceNotOpenException if this device connection is not open.
-	 * @throws TimeoutException if there is a timeout sending the data.
 	 * @throws XBeeException if there is any XBee related exception sending the
 	 *                       User Data Relay message.
 	 *
@@ -1467,7 +1466,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 *
 	 * @since 1.3.0
 	 */
-	public void sendUserDataRelay(RelayInterface destInterface, byte[] data) throws TimeoutException, XBeeException {
+	public void sendUserDataRelay(RelayInterface destInterface, byte[] data) throws XBeeException {
 		if (destInterface == null)
 			throw new NullPointerException("Destination interface cannot be null.");
 

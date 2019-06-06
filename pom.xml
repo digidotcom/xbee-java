@@ -98,6 +98,8 @@
 		<module>examples/communication/ip/SendIPv6DataSample</module>
 		<module>examples/communication/ip/KnockKnockSample</module>
 		<module>examples/communication/ip/SendUDPDataSample</module>
+		<module>examples/communication/relay/ReceiveUserDataRelaySample</module>
+		<module>examples/communication/relay/SendUserDataRelaySample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>
 		<module>examples/configuration/ResetModuleSample</module>
 		<module>examples/configuration/SetAndGetParametersSample</module>

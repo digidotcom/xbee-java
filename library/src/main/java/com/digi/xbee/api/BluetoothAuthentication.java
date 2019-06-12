@@ -26,6 +26,7 @@ import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.bluetooth.BluetoothUnlockPacket;
 import com.digi.xbee.api.packet.bluetooth.BluetoothUnlockResponsePacket;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.srp.SrpConstants;
 import com.digi.xbee.api.utils.srp.SrpUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +48,6 @@ class BluetoothAuthentication {
 
 	// Constants.
 	private static final int TIMEOUT_AUTH = 4000;
-
-	private static final String API_USERNAME = "apiservice";
 
 	private static final String ERROR_AUTH = "Error performing authentication";
 	private static final String ERROR_AUTH_EXTENDED = ERROR_AUTH + " > %s";
@@ -110,7 +109,7 @@ class BluetoothAuthentication {
 		device.addPacketListener(bluetoothUnlockListener);
 
 		try {
-			SrpUser user = new SrpUser(API_USERNAME, password);
+			SrpUser user = new SrpUser(SrpConstants.API_USERNAME, password);
 
 			// Step 1.
 			byte[] clientEphemeral = user.startAuthentication();

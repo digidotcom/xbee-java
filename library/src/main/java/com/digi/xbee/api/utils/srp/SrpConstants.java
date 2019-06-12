@@ -25,18 +25,23 @@ import java.math.BigInteger;
  *
  * @since 1.3.0
  */
-class SrpConstants {
+public class SrpConstants {
 
-	static BigInteger N = new BigInteger(
+	public static final String API_USERNAME = "apiservice";
+
+	static final BigInteger N = new BigInteger(
 			"EEAF0AB9ADB38DD69C33F80AFA8FC5E86072618775FF3C0B9EA2314C" +
 			"9C256576D674DF7496EA81D3383B4813D692C6E0E0D5D8E250B98BE4" +
 			"8E495C1D6089DAD15DC7D7B46154D6B6CE8EF4AD69B15D4982559B29" +
 			"7BCF1885C529F566660E57EC68EDBC3C05726CC02FD4CBF4976EAA9A" +
 			"FD5138FE8376435B9FC61D2FC0EB06E3", 16);
 
-	static BigInteger g = BigInteger.valueOf(2);
+	static final BigInteger g = BigInteger.valueOf(2);
 
-	static byte[] SEPARATOR = ":".getBytes();
+	static final byte[] SEPARATOR = ":".getBytes();
 
-	static String HASH_ALGORITHM = "SHA-256";
+	static final String HASH_ALGORITHM = "SHA-256";
+
+	static final int LENGTH_SALT = 4;
+	static final int LENGTH_VERIFIER = 128;
 }

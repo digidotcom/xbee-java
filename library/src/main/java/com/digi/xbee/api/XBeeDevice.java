@@ -2229,7 +2229,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	}
 
 	/**
-	 * Sets the password of this Bluetooth device.
+	 * Sets the password of this Bluetooth device in order to connect to it.
 	 *
 	 * <p>The Bluetooth password must be provided before calling the
 	 * {@link #open()} method, either through this method or the

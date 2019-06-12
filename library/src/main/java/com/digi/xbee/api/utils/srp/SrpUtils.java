@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 /**
@@ -30,7 +31,39 @@ import java.util.Arrays;
  *
  * @since 1.3.0
  */
-class SrpUtils {
+public class SrpUtils {
+
+	/**
+	 * Generates and returns a random salt number.
+	 *
+	 * @return Random salt number.
+	 */
+	public static byte[] generateSalt() {
+		SecureRandom secureRandom = new SecureRandom();
+		byte[] salt = new byte[SrpConstants.LENGTH_SALT];
+		secureRandom.nextBytes(salt);
+		return salt;
+	}
+
+	/**
+	 * Generates and returns a verifier from the provided salt and password.
+	 *
+	 * <p>Note that the username (I) in the XBee Bluetooth Low Energy API is
+	 * fixed to {@code apiservice}.</p>
+	 *
+	 * @param salt The salt to use.
+	 * @param password The user password.
+	 *
+	 * @return A new SRP verifier.
+	 */
+	public static byte[] generateVerifier(byte[] salt, String password) throws IOException, NoSuchAlgorithmException {
+		BigInteger x = bigIntegerFromBytes(generateX(salt, SrpConstants.API_USERNAME.getBytes(), password.getBytes()));
+		byte[] verifier = new byte[SrpConstants.LENGTH_VERIFIER];
+		byte[] v = bigIntegerToBytes(SrpConstants.g.modPow(x, SrpConstants.N));
+		// Make sure the verifier is 128 bytes.
+		System.arraycopy(v, 0, verifier, verifier.length - v.length, v.length);
+		return verifier;
+	}
 
 	/**
 	 * Generates the X value as dictated by the SRP spec.

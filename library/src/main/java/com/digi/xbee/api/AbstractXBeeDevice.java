@@ -18,11 +18,13 @@ package com.digi.xbee.api;
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.digi.xbee.api.utils.srp.SrpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2811,5 +2813,49 @@ public abstract class AbstractXBeeDevice {
 	 */
 	public void writeChanges() throws TimeoutException, XBeeException {
 		executeParameter("WR");
+	}
+
+	/**
+	 * Changes the password of this Bluetooth device with the new one provided.
+	 *
+	 * <p>Note that your device must have Bluetooth Low Energy support to use
+	 * this method.</p>
+	 *
+	 * @param newPassword New Bluetooth password.
+	 *
+	 * @throws TimeoutException if there is a timeout changing the Bluetooth
+	 *                          password.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 *
+	 * @since 1.3.0
+	 */
+	public void updateBluetoothPassword(String newPassword) throws TimeoutException, XBeeException {
+		// Generate a new salt and verifier.
+		byte[] salt = SrpUtils.generateSalt();
+		byte[] verifier;
+		try {
+			verifier = SrpUtils.generateVerifier(salt, newPassword);
+		} catch (IOException | NoSuchAlgorithmException e) {
+			throw new XBeeException(e);
+		}
+
+		// Set the salt.
+		setParameter("$S", salt);
+
+		// Set the verifier (split in 4 settings).
+		int index = 0;
+		int atLength = verifier.length / 4;
+
+		setParameter("$V", Arrays.copyOfRange(verifier, index, index + atLength));
+		index += atLength;
+		setParameter("$W", Arrays.copyOfRange(verifier, index, index + atLength));
+		index += atLength;
+		setParameter("$X", Arrays.copyOfRange(verifier, index, index + atLength));
+		index += atLength;
+		setParameter("$Y", Arrays.copyOfRange(verifier, index, index + atLength));
+
+		// Write and apply changes.
+		writeChanges();
+		applyChanges();
 	}
 }

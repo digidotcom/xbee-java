@@ -2816,6 +2816,81 @@ public abstract class AbstractXBeeDevice {
 	}
 
 	/**
+	 * Enables the Bluetooth interface of this XBee device.
+	 *
+	 * <p>To work with this interface, you must also configure the Bluetooth
+	 * password if not done previously. You can use the
+	 * {@link #updateBluetoothPassword(String)} method for that purpose.</p>
+	 *
+	 * <p>Note that your device must have Bluetooth Low Energy support to use
+	 * this method.</p>
+	 *
+	 * @throws TimeoutException if there is a timeout enabling the interface.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 *
+	 * @see #disableBluetooth()
+	 * @see #updateBluetoothPassword(String)
+	 *
+	 * @since 1.3.0
+	 */
+	public void enableBluetooth() throws TimeoutException, XBeeException {
+		enableBluetooth(true);
+	}
+
+	/**
+	 * Disables the Bluetooth interface of this XBee device.
+	 *
+	 * <p>Note that your device must have Bluetooth Low Energy support to use
+	 * this method.</p>
+	 *
+	 * @throws TimeoutException if there is a timeout disabling the interface.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 *
+	 * @see #enableBluetooth()
+	 *
+	 * @since 1.3.0
+	 */
+	public void disableBluetooth() throws TimeoutException, XBeeException {
+		enableBluetooth(false);
+	}
+
+	/**
+	 * Enables or disables the Bluetooth interface of this XBee device.
+	 *
+	 * @param enable {@code true} to enable the Bluetooth interface,
+	 *               {@code false} to disable it.
+	 *
+	 * @throws TimeoutException if there is a timeout enabling or disabling the
+	 *                          interface.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 *
+	 * @since 1.3.0
+	 */
+	private void enableBluetooth(boolean enable) throws TimeoutException, XBeeException {
+		setParameter("BT", new byte[] {(byte) (enable ? 0x01 : 0x00)});
+		writeChanges();
+		applyChanges();
+	}
+
+	/**
+	 * Reads and returns the EUI-48 Bluetooth MAC address of this XBee device
+	 * in a format such as {@code 00112233AABB}.
+	 *
+	 * <p>Note that your device must have Bluetooth Low Energy support to use
+	 * this method.</p>
+	 *
+	 * @return The Bluetooth MAC address.
+	 *
+	 * @throws TimeoutException if there is a timeout reading the MAC address.
+	 * @throws XBeeException if there is any other XBee related exception.
+	 *
+	 * @since 1.3.0
+	 */
+	public String getBluetoothMacAddress() throws TimeoutException, XBeeException {
+		return HexUtils.byteArrayToHexString(getParameter("BL"));
+	}
+
+	/**
 	 * Changes the password of this Bluetooth device with the new one provided.
 	 *
 	 * <p>Note that your device must have Bluetooth Low Energy support to use

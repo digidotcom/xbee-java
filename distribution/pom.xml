@@ -44,11 +44,6 @@
 			<artifactId>slf4j-nop</artifactId>
 			<version>${slf4j-nop.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-android</artifactId>
-			<version>${slf4j-android.version}</version>
-		</dependency>
 	</dependencies>
 	
 	<build>

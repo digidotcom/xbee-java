@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.digi.xbee.api.connection.ConnectionType;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.ConnectionException;
 import com.digi.xbee.api.exceptions.InvalidConfigurationException;
@@ -517,6 +518,15 @@ public abstract class AbstractSerialPort implements IConnectionInterface {
 		if (getInputStream() != null)
 			readBytes = getInputStream().read(data, offset, length);
 		return readBytes;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.digi.xbee.api.connection.IConnectionInterface#getConnectionType()
+	 */
+	@Override
+	public ConnectionType getConnectionType() {
+		return ConnectionType.SERIAL;
 	}
 	
 	/**

@@ -17,13 +17,10 @@ package com.digi.xbee.api;
 
 import java.io.IOException;
 
-import android.bluetooth.BluetoothDevice;
-import android.content.Context;
-
+import com.digi.xbee.api.connection.ConnectionType;
 import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
-import com.digi.xbee.api.connection.bluetooth.BluetoothInterface;
+import com.digi.xbee.api.connection.bluetooth.AbstractBluetoothInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.BluetoothAuthenticationException;
@@ -41,7 +38,6 @@ import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
 import com.digi.xbee.api.listeners.relay.IBluetoothDataReceiveListener;
 import com.digi.xbee.api.listeners.relay.IMicroPythonDataReceiveListener;
-import com.digi.xbee.api.listeners.relay.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.APIOutputMode;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
@@ -113,10 +109,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(IConnectionInterface)
 	 * @see #XBeeDevice(String, SerialPortParameters)
 	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 */
 	public XBeeDevice(String port, int baudRate) {
 		super(port, baudRate);
@@ -144,10 +136,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(IConnectionInterface)
 	 * @see #XBeeDevice(String, int)
 	 * @see #XBeeDevice(String, SerialPortParameters)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 */
 	public XBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		super(port, baudRate, dataBits, stopBits, parity, flowControl);
@@ -167,185 +155,12 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(IConnectionInterface)
 	 * @see #XBeeDevice(String, int)
 	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public XBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		super(port, serialPortParameters);
 	}
 	
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Android USB host interface API to 
-	 * communicate with the devices.</p>
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #XBeeDevice(IConnectionInterface)
-	 * @see #XBeeDevice(String, int)
-	 * @see #XBeeDevice(String, SerialPortParameters)
-	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
-	 * 
-	 * @since 1.2.0
-	 */
-	public XBeeDevice(Context context, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Android USB host interface API to 
-	 * communicate with the devices.</p>
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * @param permissionListener The USB permission listener that will be 
-	 *                           notified when user grants USB permissions.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #XBeeDevice(IConnectionInterface)
-	 * @see #XBeeDevice(String, int)
-	 * @see #XBeeDevice(String, SerialPortParameters)
-	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
-	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
-	 * 
-	 * @since 1.2.0
-	 */
-	public XBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param baudRate The serial port connection baud rate.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null}.
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * 
-	 * @see #XBeeDevice(IConnectionInterface)
-	 * @see #XBeeDevice(String, int)
-	 * @see #XBeeDevice(String, SerialPortParameters)
-	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
-	 * 
-	 * @since 1.2.0
-	 */
-	public XBeeDevice(Context context, String port, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, port, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param parameters The serial port parameters.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null} or
-	 *                              if {@code parameters == null}.
-	 * 
-	 * @see #XBeeDevice(IConnectionInterface)
-	 * @see #XBeeDevice(String, int)
-	 * @see #XBeeDevice(String, SerialPortParameters)
-	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
-	 * 
-	 * @since 1.2.0
-	 */
-	public XBeeDevice(Context context, String port, SerialPortParameters parameters) {
-		super(XBee.createConnectiontionInterface(context, port, parameters));
-	}
-
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 *
-	 * <p>This constructor uses the Android Bluetooth Low Energy API to
-	 * communicate with the devices.</p>
-	 *
-	 * <p>The Bluetooth password must be provided before calling the
-	 * {@link #open()} method, either through this constructor or the
-	 * {@link #setBluetoothPassword(String)} method.</p>
-	 *
-	 * @param context The Android application context.
-	 * @param bleDevice Bluetooth device.
-	 * @param password Bluetooth password (can be {@code null}).
-	 *
-	 * @see #XBeeDevice(Context, String, String)
-	 * @see #XBeeDevice(IConnectionInterface)
-	 * @see BluetoothDevice
-	 *
-	 * @since 1.3.0
-	 */
-	public XBeeDevice(Context context, BluetoothDevice bleDevice, String password) {
-		super(XBee.createConnectionInterface(context, bleDevice));
-
-		this.bluetoothPassword = password;
-	}
-
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 *
-	 * <p>This constructor uses the Android Bluetooth Low Energy API to
-	 * communicate with the devices.</p>
-	 *
-	 * <p>The Bluetooth password must be provided before calling the
-	 * {@link #open()} method, either through this constructor or the
-	 * {@link #setBluetoothPassword(String)} method.</p>
-	 *
-	 * @param context The Android application context.
-	 * @param deviceAddress Address of the Bluetooth device.
-	 * @param password Bluetooth password (can be {@code null}).
-	 *
-	 * @see #XBeeDevice(Context, BluetoothDevice, String)
-	 * @see #XBeeDevice(IConnectionInterface)
-	 *
-	 * @since 1.3.0
-	 */
-	public XBeeDevice(Context context, String deviceAddress, String password) {
-		super(XBee.createConnectionInterface(context, deviceAddress));
-
-		this.bluetoothPassword = password;
-	}
-
 	/**
 	 * Class constructor. Instantiates a new {@code XBeeDevice} object with the 
 	 * given connection interface.
@@ -358,10 +173,6 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * @see #XBeeDevice(String, int)
 	 * @see #XBeeDevice(String, SerialPortParameters)
 	 * @see #XBeeDevice(String, int, int, int, int, int)
-	 * @see #XBeeDevice(Context, int)
-	 * @see #XBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #XBeeDevice(Context, String, int)
-	 * @see #XBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public XBeeDevice(IConnectionInterface connectionInterface) {
@@ -417,7 +228,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 			Thread.sleep(10);
 		} catch (InterruptedException e) {}
 
-		if (connectionInterface instanceof BluetoothInterface) {
+		if (connectionInterface.getConnectionType() == ConnectionType.BLUETOOTH) {
 			// The communication in Bluetooth is always done through API frames
 			// regardless of the AP setting.
 			operatingMode = OperatingMode.API;
@@ -428,7 +239,7 @@ public class XBeeDevice extends AbstractXBeeDevice {
 				logger.info(toString() + "Starting Bluetooth authentication...");
 				BluetoothAuthentication auth = new BluetoothAuthentication(this, bluetoothPassword);
 				auth.authenticate();
-				((BluetoothInterface) connectionInterface).setEncryptionKeys(auth.getKey(), auth.getTxNonce(), auth.getRxNonce());
+				((AbstractBluetoothInterface) connectionInterface).setEncryptionKeys(auth.getKey(), auth.getTxNonce(), auth.getRxNonce());
 				logger.info(toString() + "Authentication finished successfully.");
 			} catch (BluetoothAuthenticationException e) {
 				close();
@@ -2314,14 +2125,13 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	 * Sets the password of this Bluetooth device in order to connect to it.
 	 *
 	 * <p>The Bluetooth password must be provided before calling the
-	 * {@link #open()} method, either through this method or the
-	 * {@link #XBeeDevice(Context, BluetoothDevice, String)} constructor.</p>
+	 * {@link #open()} method.</p>
 	 *
 	 * @param password The password of this Bluetooth device.
 	 *
 	 * @since 1.3.0
 	 */
-	public void setBluetoothPassword(String password) {
+	protected void setBluetoothPassword(String password) {
 		this.bluetoothPassword = password;
 	}
 

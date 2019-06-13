@@ -15,8 +15,6 @@ The main features of the library include:
 * Support for ZigBee, 802.15.4, DigiMesh, Point-to-Multipoint, Wi-Fi, Cellular
 and Thread XBee devices.
 * Support for API and API escaped operating modes.
-* Support for Android with communication over Bluetooth Low Energy, USB host or
-serial port.
 * Management of local (attached to the PC) and remote XBee device objects.
 * Discovery of remote XBee devices associated with the same network as the 
 local device.

@@ -15,13 +15,9 @@
  */
 package com.digi.xbee.api;
 
-import android.bluetooth.BluetoothDevice;
-import android.content.Context;
-
 import java.net.Inet6Address;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -71,10 +67,6 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see #ZigBeeDevice(IConnectionInterface)
 	 * @see #ZigBeeDevice(String, SerialPortParameters)
 	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
 	 */
 	public ZigBeeDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -101,10 +93,6 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see #ZigBeeDevice(IConnectionInterface)
 	 * @see #ZigBeeDevice(String, int)
 	 * @see #ZigBeeDevice(String, SerialPortParameters)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
 	 */
 	public ZigBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -123,179 +111,12 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see #ZigBeeDevice(IConnectionInterface)
 	 * @see #ZigBeeDevice(String, int)
 	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public ZigBeeDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
 	}
 	
-	/**
-	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #ZigBeeDevice(IConnectionInterface)
-	 * @see #ZigBeeDevice(String, int)
-	 * @see #ZigBeeDevice(String, SerialPortParameters)
-	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
-	 * 
-	 * @since 1.2.0
-	 */
-	public ZigBeeDevice(Context context, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * @param permissionListener The USB permission listener that will be 
-	 *                           notified when user grants USB permissions.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #ZigBeeDevice(IConnectionInterface)
-	 * @see #ZigBeeDevice(String, int)
-	 * @see #ZigBeeDevice(String, SerialPortParameters)
-	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
-	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
-	 * 
-	 * @since 1.2.0
-	 */
-	public ZigBeeDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param baudRate The serial port connection baud rate.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null}.
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * 
-	 * @see #ZigBeeDevice(String, int)
-	 * @see #ZigBeeDevice(String, SerialPortParameters)
-	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
-	 * 
-	 * @since 1.2.0
-	 */
-	public ZigBeeDevice(Context context, String port, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, port, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code XBeeDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param parameters The serial port parameters.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null} or
-	 *                              if {@code parameters == null}.
-	 * 
-	 * @see #ZigBeeDevice(String, int)
-	 * @see #ZigBeeDevice(String, SerialPortParameters)
-	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
-	 * 
-	 * @since 1.2.0
-	 */
-	public ZigBeeDevice(Context context, String port, SerialPortParameters parameters) {
-		super(XBee.createConnectiontionInterface(context, port, parameters));
-	}
-
-	/**
-	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object for
-	 * Android with the given parameters.
-	 *
-	 * <p>This constructor uses the Android Bluetooth Low Energy API to
-	 * communicate with the devices.</p>
-	 *
-	 * <p>The Bluetooth password must be provided before calling the
-	 * {@link #open()} method, either through this constructor or the
-	 * {@link #setBluetoothPassword(String)} method.</p>
-	 *
-	 * @param context The Android application context.
-	 * @param bleDevice Bluetooth device.
-	 * @param password Bluetooth password (can be {@code null}).
-	 *
-	 * @see #ZigBeeDevice(Context, String, String)
-	 * @see #ZigBeeDevice(IConnectionInterface)
-	 * @see BluetoothDevice
-	 *
-	 * @since 1.3.0
-	 */
-	public ZigBeeDevice(Context context, BluetoothDevice bleDevice, String password) {
-		super(XBee.createConnectionInterface(context, bleDevice));
-
-		this.bluetoothPassword = password;
-	}
-
-	/**
-	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object for
-	 * Android with the given parameters.
-	 *
-	 * <p>This constructor uses the Android Bluetooth Low Energy API to
-	 * communicate with the devices.</p>
-	 *
-	 * <p>The Bluetooth password must be provided before calling the
-	 * {@link #open()} method, either through this constructor or the
-	 * {@link #setBluetoothPassword(String)} method.</p>
-	 *
-	 * @param context The Android application context.
-	 * @param deviceAddress Address of the Bluetooth device.
-	 * @param password Bluetooth password (can be {@code null}).
-	 *
-	 * @see #ZigBeeDevice(Context, BluetoothDevice, String)
-	 * @see #ZigBeeDevice(IConnectionInterface)
-	 *
-	 * @since 1.3.0
-	 */
-	public ZigBeeDevice(Context context, String deviceAddress, String password) {
-		super(XBee.createConnectionInterface(context, deviceAddress));
-
-		this.bluetoothPassword = password;
-	}
-
 	/**
 	 * Class constructor. Instantiates a new {@code ZigBeeDevice} object with the 
 	 * given connection interface.
@@ -309,10 +130,6 @@ public class ZigBeeDevice extends XBeeDevice {
 	 * @see #ZigBeeDevice(String, int)
 	 * @see #ZigBeeDevice(String, SerialPortParameters)
 	 * @see #ZigBeeDevice(String, int, int, int, int, int)
-	 * @see #ZigBeeDevice(Context, int)
-	 * @see #ZigBeeDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #ZigBeeDevice(Context, String, int)
-	 * @see #ZigBeeDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public ZigBeeDevice(IConnectionInterface connectionInterface) {

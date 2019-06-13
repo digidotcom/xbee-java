@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -158,4 +158,15 @@ public interface IConnectionInterface {
 	 * @see #readData(byte[])
 	 */
 	public int readData(byte[] data, int offset, int length) throws IOException;
+	
+	/**
+	 * Returns the connection type of the interface.
+	 * 
+	 * @return The connection type of the interface.
+	 * 
+	 * @see ConnectionType
+	 * 
+	 * @since 1.3.0
+	 */
+	public ConnectionType getConnectionType();
 }

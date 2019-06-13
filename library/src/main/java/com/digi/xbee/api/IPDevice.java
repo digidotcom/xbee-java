@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,10 +19,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
 
-import android.content.Context;
-
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.InterfaceNotOpenException;
 import com.digi.xbee.api.exceptions.OperationNotSupportedException;
@@ -82,10 +79,6 @@ public class IPDevice extends XBeeDevice {
 	 * @see #IPDevice(IConnectionInterface)
 	 * @see #IPDevice(String, SerialPortParameters)
 	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, int)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
 	 */
 	protected IPDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -112,10 +105,6 @@ public class IPDevice extends XBeeDevice {
 	 * @see #IPDevice(IConnectionInterface)
 	 * @see #IPDevice(String, int)
 	 * @see #IPDevice(String, SerialPortParameters)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, int)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
 	 */
 	protected IPDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -134,116 +123,10 @@ public class IPDevice extends XBeeDevice {
 	 * @see #IPDevice(IConnectionInterface)
 	 * @see #IPDevice(String, int)
 	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, int)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	protected IPDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code IPDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #IPDevice(IConnectionInterface)
-	 * @see #IPDevice(String, int)
-	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(String, SerialPortParameters)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, int)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
-	 */
-	protected IPDevice(Context context, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code IPDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * @param permissionListener The USB permission listener that will be 
-	 *                           notified when user grants USB permissions.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #IPDevice(IConnectionInterface)
-	 * @see #IPDevice(String, int)
-	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(String, SerialPortParameters)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, String, int)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
-	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
-	 */
-	protected IPDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code IPDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param baudRate The serial port connection baud rate.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null}.
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * 
-	 * @see #IPDevice(IConnectionInterface)
-	 * @see #IPDevice(String, int)
-	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(String, SerialPortParameters)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
-	 */
-	protected IPDevice(Context context, String port, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, port, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code IPDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param parameters The serial port parameters.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null} or
-	 *                              if {@code parameters == null}.
-	 * 
-	 * @see #IPDevice(IConnectionInterface)
-	 * @see #IPDevice(String, int)
-	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(String, SerialPortParameters)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, int)
-	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
-	 */
-	protected IPDevice(Context context, String port, SerialPortParameters parameters) {
-		super(XBee.createConnectiontionInterface(context, port, parameters));
 	}
 	
 	/**
@@ -258,10 +141,6 @@ public class IPDevice extends XBeeDevice {
 	 * @see #IPDevice(String, int)
 	 * @see #IPDevice(String, SerialPortParameters)
 	 * @see #IPDevice(String, int, int, int, int, int)
-	 * @see #IPDevice(Context, int)
-	 * @see #IPDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #IPDevice(Context, String, int)
-	 * @see #IPDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	protected IPDevice(IConnectionInterface connectionInterface) {

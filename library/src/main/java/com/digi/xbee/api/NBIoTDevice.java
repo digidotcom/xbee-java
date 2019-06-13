@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -16,13 +16,10 @@
 package com.digi.xbee.api;
 
 import com.digi.xbee.api.connection.IConnectionInterface;
-import com.digi.xbee.api.connection.android.AndroidUSBPermissionListener;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.XBeeDeviceException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.models.XBeeProtocol;
-
-import android.content.Context;
 
 /**
  * This class represents a local NB-IoT device.
@@ -51,10 +48,6 @@ public class NBIoTDevice extends LPWANDevice {
 	 * @see #NBIoTDevice(IConnectionInterface)
 	 * @see #NBIoTDevice(String, SerialPortParameters)
 	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
 	 */
 	public NBIoTDevice(String port, int baudRate) {
 		this(XBee.createConnectiontionInterface(port, baudRate));
@@ -81,10 +74,6 @@ public class NBIoTDevice extends LPWANDevice {
 	 * @see #NBIoTDevice(IConnectionInterface)
 	 * @see #NBIoTDevice(String, int)
 	 * @see #NBIoTDevice(String, SerialPortParameters)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
 	 */
 	public NBIoTDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -103,116 +92,10 @@ public class NBIoTDevice extends LPWANDevice {
 	 * @see #NBIoTDevice(IConnectionInterface)
 	 * @see #NBIoTDevice(String, int)
 	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
 	public NBIoTDevice(String port, SerialPortParameters serialPortParameters) {
 		this(XBee.createConnectiontionInterface(port, serialPortParameters));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code NBIoTDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #NBIoTDevice(IConnectionInterface)
-	 * @see #NBIoTDevice(String, int)
-	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(String, SerialPortParameters)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
-	 */
-	public NBIoTDevice(Context context, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code NBIoTDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * @param context The Android context.
-	 * @param baudRate The USB connection baud rate.
-	 * @param permissionListener The USB permission listener that will be 
-	 *                           notified when user grants USB permissions.
-	 * 
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * @throws NullPointerException if {@code context == null}.
-	 * 
-	 * @see #NBIoTDevice(IConnectionInterface)
-	 * @see #NBIoTDevice(String, int)
-	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(String, SerialPortParameters)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
-	 * @see com.digi.xbee.api.connection.android.AndroidUSBPermissionListener
-	 */
-	public NBIoTDevice(Context context, int baudRate, AndroidUSBPermissionListener permissionListener) {
-		super(XBee.createConnectiontionInterface(context, baudRate, permissionListener));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code NBIoTDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param baudRate The serial port connection baud rate.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null}.
-	 * @throws IllegalArgumentException if {@code baudRate < 1}.
-	 * 
-	 * @see #NBIoTDevice(IConnectionInterface)
-	 * @see #NBIoTDevice(String, int)
-	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(String, SerialPortParameters)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
-	 */
-	public NBIoTDevice(Context context, String port, int baudRate) {
-		super(XBee.createConnectiontionInterface(context, port, baudRate));
-	}
-	
-	/**
-	 * Class constructor. Instantiates a new {@code NBIoTDevice} object for
-	 * Android with the given parameters.
-	 * 
-	 * <p>This constructor uses the Digi Android Serial Port API based on the
-	 * RxTx library to communicate with the devices.</p>
-	 * 
-	 * @param context The Android application context.
-	 * @param port Serial port name where XBee device is attached to.
-	 * @param parameters The serial port parameters.
-	 * 
-	 * @throws NullPointerException If {@code context == null} or
-	 *                              if {@code port == null} or
-	 *                              if {@code parameters == null}.
-	 * 
-	 * @see #NBIoTDevice(IConnectionInterface)
-	 * @see #NBIoTDevice(String, int)
-	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(String, SerialPortParameters)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
-	 */
-	public NBIoTDevice(Context context, String port, SerialPortParameters parameters) {
-		super(XBee.createConnectiontionInterface(context, port, parameters));
 	}
 	
 	/**
@@ -227,10 +110,6 @@ public class NBIoTDevice extends LPWANDevice {
 	 * @see #NBIoTDevice(String, int)
 	 * @see #NBIoTDevice(String, SerialPortParameters)
 	 * @see #NBIoTDevice(String, int, int, int, int, int)
-	 * @see #NBIoTDevice(Context, int)
-	 * @see #NBIoTDevice(Context, int, AndroidUSBPermissionListener)
-	 * @see #NBIoTDevice(Context, String, int)
-	 * @see #NBIoTDevice(Context, String, SerialPortParameters)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
 	public NBIoTDevice(IConnectionInterface connectionInterface) {

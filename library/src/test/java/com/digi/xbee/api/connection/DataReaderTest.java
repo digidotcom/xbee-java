@@ -180,6 +180,11 @@ public class DataReaderTest {
 			return "[Test Connection Interface] ";
 		}
 		
+		@Override
+		public ConnectionType getConnectionType() {
+			return ConnectionType.SERIAL;
+		}
+		
 		public void notifyData() {
 			synchronized (this) {
 				this.notify();

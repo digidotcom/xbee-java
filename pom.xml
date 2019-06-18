@@ -72,7 +72,7 @@
 			<organizationUrl>http://www.digi.com</organizationUrl>
 		</developer>
 	</developers>
-	
+
 	<modules>
 		<module>library</module>
 		<module>distribution</module>
@@ -82,6 +82,8 @@
 		<module>examples/communication/SendBroadcastDataSample</module>
 		<module>examples/communication/SendDataAsyncSample</module>
 		<module>examples/communication/SendDataSample</module>
+		<module>examples/communication/bluetooth/ReceiveBluetoothDataSample</module>
+		<module>examples/communication/bluetooth/SendBluetoothDataSample</module>
 		<module>examples/communication/cellular/ReceiveSMSSample</module>
 		<module>examples/communication/cellular/SendSMSSample</module>
 		<module>examples/communication/coap/ReceiveCoAPDataSample</module>
@@ -98,6 +100,8 @@
 		<module>examples/communication/ip/SendIPv6DataSample</module>
 		<module>examples/communication/ip/KnockKnockSample</module>
 		<module>examples/communication/ip/SendUDPDataSample</module>
+		<module>examples/communication/micropython/ReceiveMicroPythonDataSample</module>
+		<module>examples/communication/micropython/SendMicroPythonDataSample</module>
 		<module>examples/communication/relay/ReceiveUserDataRelaySample</module>
 		<module>examples/communication/relay/SendUserDataRelaySample</module>
 		<module>examples/configuration/ManageCommonParametersSample</module>

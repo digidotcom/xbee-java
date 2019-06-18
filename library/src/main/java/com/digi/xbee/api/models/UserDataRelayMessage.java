@@ -24,25 +24,25 @@ package com.digi.xbee.api.models;
 public class UserDataRelayMessage {
 
 	// Variables.
-	private final RelayInterface relayInterface;
+	private final XBeeLocalInterface localInterface;
 	private final byte[] data;
 
 	/**
 	 * Class constructor. Instantiates a new object of type
 	 * {@code UserDataRelayMessage} with the given parameters.
 	 *
-	 * @param relayInterface The source relay interface.
+	 * @param localInterface The source XBee local interface.
 	 * @param data Byte array containing the data of the message.
 	 *
-	 * @throws NullPointerException if {@code relayInterface == null}.
+	 * @throws NullPointerException if {@code localInterface == null}.
 	 *
-	 * @see RelayInterface
+	 * @see XBeeLocalInterface
 	 */
-	public UserDataRelayMessage(RelayInterface relayInterface, byte[] data) {
-		if (relayInterface == null)
-			throw new NullPointerException("Relay interface cannot be null.");
+	public UserDataRelayMessage(XBeeLocalInterface localInterface, byte[] data) {
+		if (localInterface == null)
+			throw new NullPointerException("XBee local interface cannot be null.");
 
-		this.relayInterface = relayInterface;
+		this.localInterface = localInterface;
 		this.data = data;
 	}
 
@@ -51,10 +51,10 @@ public class UserDataRelayMessage {
 	 *
 	 * @return The source interface that sent this message.
 	 *
-	 * @see RelayInterface
+	 * @see XBeeLocalInterface
 	 */
-	public RelayInterface getSourceInterface() {
-		return relayInterface;
+	public XBeeLocalInterface getSourceInterface() {
+		return localInterface;
 	}
 	
 	/**

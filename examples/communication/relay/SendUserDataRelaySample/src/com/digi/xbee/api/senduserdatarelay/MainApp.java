@@ -17,7 +17,7 @@ package com.digi.xbee.api.senduserdatarelay;
 
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.exceptions.XBeeException;
-import com.digi.xbee.api.models.RelayInterface;
+import com.digi.xbee.api.models.XBeeLocalInterface;
 
 /**
  * XBee Java Library Send User Data Relay sample application.
@@ -37,7 +37,7 @@ public class MainApp {
 	// TODO Replace with the baud rate of your module.
 	private static final int BAUD_RATE = 9600;
 
-	private static final RelayInterface DEST_INTERFACE = RelayInterface.BLUETOOTH;
+	private static final XBeeLocalInterface DEST_INTERFACE = XBeeLocalInterface.BLUETOOTH;
 	private static final String DATA_TO_SEND = "Hello from the serial interface (#%s)";
 
 	/**

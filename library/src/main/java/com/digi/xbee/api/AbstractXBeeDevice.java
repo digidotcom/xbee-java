@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.digi.xbee.api.utils.srp.SrpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,9 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
 import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
+import com.digi.xbee.api.listeners.relay.IBluetoothDataReceiveListener;
+import com.digi.xbee.api.listeners.relay.IMicroPythonDataReceiveListener;
+import com.digi.xbee.api.listeners.relay.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ATCommandStatus;
@@ -85,6 +87,7 @@ import com.digi.xbee.api.packet.thread.IPv6RemoteATCommandRequestPacket;
 import com.digi.xbee.api.packet.thread.IPv6RemoteATCommandResponsePacket;
 import com.digi.xbee.api.utils.ByteUtils;
 import com.digi.xbee.api.utils.HexUtils;
+import com.digi.xbee.api.utils.srp.SrpUtils;
 
 /**
  * This class provides common functionality for all XBee devices.
@@ -793,12 +796,13 @@ public abstract class AbstractXBeeDevice {
 	
 	/**
 	 * Adds the provided listener to the list of listeners to be notified
-	 * when new data is received. 
+	 * when new data from a remote XBee device is received.
 	 * 
 	 * <p>If the listener has been already included this method does nothing.
 	 * </p>
 	 * 
-	 * @param listener Listener to be notified when new data is received.
+	 * @param listener Listener to be notified when new data from a remote XBee
+	 *                 device is received.
 	 * 
 	 * @throws NullPointerException if {@code listener == null}
 	 * 
@@ -815,7 +819,8 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
-	 * Removes the provided listener from the list of data listeners. 
+	 * Removes the provided listener from the list of data listeners for remote
+	 * XBee devices.
 	 * 
 	 * <p>If the listener was not in the list this method does nothing.</p>
 	 * 
@@ -1115,6 +1120,159 @@ public abstract class AbstractXBeeDevice {
 		if (dataReader == null)
 			return;
 		dataReader.removeUserDataRelayReceiveListener(listener);
+	}
+
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new data from the Bluetooth interface is received in a User Data
+	 * Relay frame.
+	 *
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Listener to be notified when new data from the Bluetooth
+	 *                 interface is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #removeBluetoothDataListener(IBluetoothDataReceiveListener)
+	 * @see IBluetoothDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void addBluetoothDataListener(IBluetoothDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.addBluetoothDataReceiveListener(listener);
+	}
+
+	/**
+	 * Removes the provided listener from the list of data receive listeners
+	 * for the Bluetooth interface.
+	 *
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 *
+	 * @param listener Listener to be removed from the list of listeners.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #addBluetoothDataListener(IBluetoothDataReceiveListener)
+	 * @see IBluetoothDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void removeBluetoothDataListener(IBluetoothDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.removeBluetoothDataReceiveListener(listener);
+	}
+
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new data from the MicroPython interface is received in a User
+	 * Data Relay frame.
+	 *
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Listener to be notified when new data from the
+	 *                 MicroPython interface is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #removeMicroPythonDataListener(IMicroPythonDataReceiveListener)
+	 * @see IMicroPythonDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void addMicroPythonDataListener(IMicroPythonDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.addMicroPythonDataReceiveListener(listener);
+	}
+
+	/**
+	 * Removes the provided listener from the list of data receive listeners
+	 * for the MicroPython interface.
+	 *
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 *
+	 * @param listener Listener to be removed from the list of listeners.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #addMicroPythonDataListener(IMicroPythonDataReceiveListener)
+	 * @see IMicroPythonDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void removeMicroPythonDataListener(IMicroPythonDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.removeMicroPythonDataReceiveListener(listener);
+	}
+
+	/**
+	 * Adds the provided listener to the list of listeners to be notified
+	 * when new data from the serial interface is received in a User Data
+	 * Relay frame.
+	 *
+	 * <p>If the listener has been already included this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Listener to be notified when new data from the serial
+	 *                 interface is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #removeSerialDataListener(ISerialDataReceiveListener)
+	 * @see ISerialDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void addSerialDataListener(ISerialDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.addSerialDataReceiveListener(listener);
+	}
+
+	/**
+	 * Removes the provided listener from the list of data receive listeners
+	 * for the serial interface.
+	 *
+	 * <p>If the listener was not in the list this method does nothing.</p>
+	 *
+	 * @param listener Listener to be removed from the list of listeners.
+	 *
+	 * @throws NullPointerException if {@code listener == null}
+	 *
+	 * @see #addSerialDataListener(ISerialDataReceiveListener)
+	 * @see ISerialDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	protected void removeSerialDataListener(ISerialDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null.");
+
+		if (dataReader == null)
+			return;
+		dataReader.removeSerialDataReceiveListener(listener);
 	}
 
 	/**

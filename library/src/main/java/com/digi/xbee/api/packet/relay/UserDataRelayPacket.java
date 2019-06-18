@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import com.digi.xbee.api.models.RelayInterface;
+import com.digi.xbee.api.models.XBeeLocalInterface;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * a designation of the target interface for the data to be output on.
  *
  * The destination interface must be one of the interfaces found in the
- * corresponding enumerator. See {@link RelayInterface}.
+ * corresponding enumerator. See {@link XBeeLocalInterface}.
  *
  * @see UserDataRelayOutputPacket
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
@@ -54,7 +54,7 @@ public class UserDataRelayPacket extends XBeeAPIPacket {
 	private static final String ERROR_FRAME_ID_ILLEGAL = "Frame ID must be between 0 and 255.";
 
 	// Variables.
-	private RelayInterface relayInterface;
+	private XBeeLocalInterface localInterface;
 
 	private byte[] data;
 
@@ -91,7 +91,7 @@ public class UserDataRelayPacket extends XBeeAPIPacket {
 		index = index + 1;
 
 		// Destination interface byte.
-		RelayInterface destInterface = RelayInterface.get(payload[index] & 0xFF);
+		XBeeLocalInterface destInterface = XBeeLocalInterface.get(payload[index] & 0xFF);
 		index = index + 1;
 
 		// Get data.
@@ -107,23 +107,23 @@ public class UserDataRelayPacket extends XBeeAPIPacket {
 	 * object with the given parameters.
 	 *
 	 * @param frameID Frame ID.
-	 * @param relayInterface The destination {@code RelayInterface}.
+	 * @param localInterface The destination {@code XBeeLocalInterface}.
 	 * @param data RF Data that is sent to the destination interface.
 	 *
 	 * @throws IllegalArgumentException if {@code frameID < 0} or
 	 *                                  if {@code frameID > 255}.
-	 * @throws NullPointerException if {@code relayInterface == null}.
+	 * @throws NullPointerException if {@code localInterface == null}.
 	 */
-	public UserDataRelayPacket(int frameID, RelayInterface relayInterface, byte[] data) {
+	public UserDataRelayPacket(int frameID, XBeeLocalInterface localInterface, byte[] data) {
 		super(APIFrameType.USER_DATA_RELAY);
 
 		if (frameID < 0 || frameID > 255)
 			throw new IllegalArgumentException(ERROR_FRAME_ID_ILLEGAL);
-		if (relayInterface == null)
+		if (localInterface == null)
 			throw new NullPointerException(ERROR_INTERFACE_NULL);
 
 		this.frameID = frameID;
-		this.relayInterface = relayInterface;
+		this.localInterface = localInterface;
 		this.data = data;
 		this.logger = LoggerFactory.getLogger(UserDataRelayPacket.class);
 	}
@@ -132,7 +132,7 @@ public class UserDataRelayPacket extends XBeeAPIPacket {
 	public byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(relayInterface.getID());
+			os.write(localInterface.getID());
 			if (data != null)
 				os.write(data);
 		} catch (IOException e) {
@@ -152,31 +152,31 @@ public class UserDataRelayPacket extends XBeeAPIPacket {
 	}
 	
 	/**
-	 * Sets the destination interface.
+	 * Sets the destination XBee local interface.
 	 *
-	 * @param relayInterface The new destination interface.
+	 * @param localInterface The new destination interface.
 	 *
-	 * @throws NullPointerException if {@code relayInterface == null}.
+	 * @throws NullPointerException if {@code localInterface == null}.
 	 *
 	 * @see #getDestinationInterface()
-	 * @see RelayInterface
+	 * @see XBeeLocalInterface
 	 */
-	public void setDestinationInterface(RelayInterface relayInterface) {
-		if (relayInterface == null)
+	public void setDestinationInterface(XBeeLocalInterface localInterface) {
+		if (localInterface == null)
 			throw new NullPointerException(ERROR_INTERFACE_NULL);
-		this.relayInterface = relayInterface;
+		this.localInterface = localInterface;
 	}
 	
 	/**
-	 * Retrieves the the destination interface.
+	 * Retrieves the the destination XBee local interface.
 	 *
 	 * @return The the destination interface.
 	 *
-	 * @see #setDestinationInterface(RelayInterface)
-	 * @see RelayInterface
+	 * @see #setDestinationInterface(XBeeLocalInterface)
+	 * @see XBeeLocalInterface
 	 */
-	public RelayInterface getDestinationInterface() {
-		return relayInterface;
+	public XBeeLocalInterface getDestinationInterface() {
+		return localInterface;
 	}
 	
 	/**
@@ -205,7 +205,7 @@ public class UserDataRelayPacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<>();
 		parameters.put("Destination interface", String.format("%s (%s)", HexUtils.prettyHexString(HexUtils.integerToHexString(
-				relayInterface.getID(), 1)), relayInterface.getDescription()));
+				localInterface.getID(), 1)), localInterface.getDescription()));
 		if (data != null)
 			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		return parameters;

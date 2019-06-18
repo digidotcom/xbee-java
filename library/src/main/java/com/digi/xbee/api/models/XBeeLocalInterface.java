@@ -18,70 +18,70 @@ package com.digi.xbee.api.models;
 import java.util.HashMap;
 
 /**
- * Enumerates the different interfaces used in the Relay API packets.
+ * Enumerates the different XBee local interfaces used in the Relay API packets.
  *
  * @since 1.3.0
  */
-public enum RelayInterface {
+public enum XBeeLocalInterface {
 
 	// Enumeration types
 	SERIAL(0, "Serial port"),
 	BLUETOOTH(1, "Bluetooth Low Energy"),
-	MICROPYTHON(2, "Micropython"),
+	MICROPYTHON(2, "MicroPython"),
 	UNKNOWN(-1, "Unknown");
-	
+
 	// Variables
 	private int id;
-	
+
 	private String description;
-	
-	private static HashMap<Integer, RelayInterface> lookupTable = new HashMap<>();
-	
+
+	private static HashMap<Integer, XBeeLocalInterface> lookupTable = new HashMap<>();
+
 	static {
-		for (RelayInterface status : values())
-			lookupTable.put(status.getID(), status);
+		for (XBeeLocalInterface localInterface : values())
+			lookupTable.put(localInterface.getID(), localInterface);
 	}
-	
+
 	/**
-	 * Class constructor. Instantiates a new {@code RelayInterface} entry with 
-	 * the given parameters.
-	 * 
-	 * @param id {@code RelayInterface} ID code.
-	 * @param description {@code RelayInterface} description.
+	 * Class constructor. Instantiates a new {@code XBeeLocalInterface} entry
+	 * with the given parameters.
+	 *
+	 * @param id {@code XBeeLocalInterface} ID code.
+	 * @param description {@code XBeeLocalInterface} description.
 	 */
-	RelayInterface(int id, String description) {
+	XBeeLocalInterface(int id, String description) {
 		this.id = id;
 		this.description = description;
 	}
-	
+
 	/**
-	 * Retrieves the {@code RelayInterface} ID code.
-	 * 
-	 * @return {@code RelayInterface} ID code.
+	 * Retrieves the {@code XBeeLocalInterface} ID code.
+	 *
+	 * @return {@code XBeeLocalInterface} ID code.
 	 */
 	public int getID() {
 		return id;
 	}
-	
+
 	/**
-	 * Retrieves the {@code RelayInterface} description.
-	 * 
-	 * @return {@code RelayInterface} description.
+	 * Retrieves the {@code XBeeLocalInterface} description.
+	 *
+	 * @return {@code XBeeLocalInterface} description.
 	 */
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
-	 * Retrieves the {@code RelayInterface} for the given ID code.
-	 * 
-	 * @param id ID code to retrieve the {@code RelayInterface}.
-	 * 
-	 * @return The {@code RelayInterface} associated with the given ID code, 
-	 *         {@code UNKNOWN} if there is not any relay interface associated
-	 *         to the provided ID.
+	 * Retrieves the {@code XBeeLocalInterface} for the given ID code.
+	 *
+	 * @param id ID code to retrieve the {@code XBeeLocalInterface}.
+	 *
+	 * @return The {@code XBeeLocalInterface} associated with the given ID code,
+	 *         {@code UNKNOWN} if there is not any XBee local interface
+	 *         associated to the provided ID.
 	 */
-	public static RelayInterface get(int id) {
+	public static XBeeLocalInterface get(int id) {
 		if (lookupTable.get(id) != null)
 			return lookupTable.get(id);
 		return UNKNOWN;

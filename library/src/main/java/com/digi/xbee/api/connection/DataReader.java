@@ -33,7 +33,6 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.RemoteZigBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
-import com.digi.xbee.api.exceptions.InvalidPacketException;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
@@ -44,6 +43,9 @@ import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.ISMSReceiveListener;
 import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
+import com.digi.xbee.api.listeners.relay.IBluetoothDataReceiveListener;
+import com.digi.xbee.api.listeners.relay.IMicroPythonDataReceiveListener;
+import com.digi.xbee.api.listeners.relay.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.IPMessage;
@@ -105,7 +107,10 @@ public class DataReader extends Thread {
 	private ArrayList<IIPDataReceiveListener> ipDataReceiveListeners = new ArrayList<>();
 	private ArrayList<ISMSReceiveListener> smsReceiveListeners = new ArrayList<>();
 	private ArrayList<IUserDataRelayReceiveListener> dataRelayReceiveListeners = new ArrayList<>();
-	
+	private ArrayList<IBluetoothDataReceiveListener> bluetoothDataReceiveListeners = new ArrayList<>();
+	private ArrayList<IMicroPythonDataReceiveListener> microPythonDataReceiveListeners = new ArrayList<>();
+	private ArrayList<ISerialDataReceiveListener> serialDataReceiveListeners = new ArrayList<>();
+
 	private Logger logger;
 	
 	private XBeePacketParser parser;
@@ -537,6 +542,150 @@ public class DataReader extends Thread {
 		synchronized (dataRelayReceiveListeners) {
 			if (dataRelayReceiveListeners.contains(listener))
 				dataRelayReceiveListeners.remove(listener);
+		}
+	}
+
+	/**
+	 * Adds the given data receive listener to the list of listeners that will
+	 * be notified when new data from the Bluetooth interface is received in
+	 * a User Data Relay frame.
+	 *
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 *
+	 * @param listener Listener to be notified when new data from the Bluetooth
+	 *                 interface is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}.
+	 *
+	 * @see #removeBluetoothDataReceiveListener(IBluetoothDataReceiveListener)
+	 * @see IBluetoothDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void addBluetoothDataReceiveListener(IBluetoothDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null");
+
+		synchronized (bluetoothDataReceiveListeners) {
+			if (!bluetoothDataReceiveListeners.contains(listener))
+				bluetoothDataReceiveListeners.add(listener);
+		}
+	}
+
+	/**
+	 * Removes the given data receive listener from the list of data receive
+	 * listeners for the Bluetooth interface.
+	 *
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Data receive listener to remove from the list.
+	 *
+	 * @see #addBluetoothDataReceiveListener(IBluetoothDataReceiveListener)
+	 * @see IBluetoothDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void removeBluetoothDataReceiveListener(IBluetoothDataReceiveListener listener) {
+		synchronized (bluetoothDataReceiveListeners) {
+			if (bluetoothDataReceiveListeners.contains(listener))
+				bluetoothDataReceiveListeners.remove(listener);
+		}
+	}
+
+	/**
+	 * Adds the given data receive listener to the list of listeners that will
+	 * be notified when new data from the MicroPython interface is received in
+	 * a User Data Relay frame.
+	 *
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 *
+	 * @param listener Listener to be notified when new data from the
+	 *                 MicroPython interface is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}.
+	 *
+	 * @see #removeMicroPythonDataReceiveListener(IMicroPythonDataReceiveListener)
+	 * @see IMicroPythonDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void addMicroPythonDataReceiveListener(IMicroPythonDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null");
+
+		synchronized (microPythonDataReceiveListeners) {
+			if (!microPythonDataReceiveListeners.contains(listener))
+				microPythonDataReceiveListeners.add(listener);
+		}
+	}
+
+	/**
+	 * Removes the given data receive listener from the list of data receive
+	 * listeners for the MicroPython interface.
+	 *
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Data receive listener to remove from the list.
+	 *
+	 * @see #addMicroPythonDataReceiveListener(IMicroPythonDataReceiveListener)
+	 * @see IMicroPythonDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void removeMicroPythonDataReceiveListener(IMicroPythonDataReceiveListener listener) {
+		synchronized (microPythonDataReceiveListeners) {
+			if (microPythonDataReceiveListeners.contains(listener))
+				microPythonDataReceiveListeners.remove(listener);
+		}
+	}
+
+	/**
+	 * Adds the given data receive listener to the list of listeners that will
+	 * be notified when new data from the serial interface is received in
+	 * a User Data Relay frame.
+	 *
+	 * <p>If the listener has been already added, this method does nothing.</p>
+	 *
+	 * @param listener Listener to be notified when new data from the serial
+	 *                 interface is received.
+	 *
+	 * @throws NullPointerException if {@code listener == null}.
+	 *
+	 * @see #removeSerialDataReceiveListener(ISerialDataReceiveListener)
+	 * @see ISerialDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void addSerialDataReceiveListener(ISerialDataReceiveListener listener) {
+		if (listener == null)
+			throw new NullPointerException("Listener cannot be null");
+
+		synchronized (serialDataReceiveListeners) {
+			if (!serialDataReceiveListeners.contains(listener))
+				serialDataReceiveListeners.add(listener);
+		}
+	}
+
+	/**
+	 * Removes the given data receive listener from the list of data receive
+	 * listeners for the serial interface.
+	 *
+	 * <p>If the listener is not included in the list, this method does nothing.
+	 * </p>
+	 *
+	 * @param listener Data receive listener to remove from the list.
+	 *
+	 * @see #addSerialDataReceiveListener(ISerialDataReceiveListener)
+	 * @see ISerialDataReceiveListener
+	 *
+	 * @since 1.3.0
+	 */
+	public void removeSerialDataReceiveListener(ISerialDataReceiveListener listener) {
+		synchronized (serialDataReceiveListeners) {
+			if (serialDataReceiveListeners.contains(listener))
+				serialDataReceiveListeners.remove(listener);
 		}
 	}
 
@@ -1229,16 +1378,60 @@ public class DataReader extends Thread {
 	 *
 	 * @since 1.3.0
 	 */
-	private void notifyUserDataRelayReceived(final UserDataRelayMessage relayMessage) {
+	private void notifyUserDataRelayReceived(UserDataRelayMessage relayMessage) {
 		logger.info(connectionInterface.toString() +
 				"User Data Relay received from {} >> {}.", relayMessage.getSourceInterface().getDescription(),
 				relayMessage.getData() != null ? HexUtils.prettyHexString(relayMessage.getData()) : "");
 
+		// Notify the generic User Data Relay listeners.
+		notifyUserDataRelayReceived(relayMessage, true);
+
+		// Notify the specific User Data Relay listeners.
+		notifyUserDataRelayReceived(relayMessage, false);
+	}
+
+	/**
+	 * Notifies subscribed generic or specific User Data Relay receive listeners
+	 * that a new User Data Relay packet has been received in form of a
+	 * {@code UserDataRelayMessage}.
+	 *
+	 * @param relayMessage The User Data Relay message to be sent to subscribed
+	 *                     User Data Relay listeners.
+	 * @param notifyGeneric {@code true} to notify only the generic listeners,
+	 *                      {@code false} to notify the specific ones.
+	 *
+	 * @see UserDataRelayMessage
+	 *
+	 * @since 1.3.0
+	 */
+	private void notifyUserDataRelayReceived(final UserDataRelayMessage relayMessage, final boolean notifyGeneric) {
+		ArrayList listenerList = new ArrayList<>();
+
+		// Get the list of listeners that should be notified depending on the parameters.
+		if (notifyGeneric) {
+			listenerList = dataRelayReceiveListeners;
+		} else {
+			switch (relayMessage.getSourceInterface()) {
+				case SERIAL:
+					listenerList = serialDataReceiveListeners;
+					break;
+				case BLUETOOTH:
+					listenerList = bluetoothDataReceiveListeners;
+					break;
+				case MICROPYTHON:
+					listenerList = microPythonDataReceiveListeners;
+					break;
+				default:
+					break;
+			}
+		}
+
+		// Notify the appropriate listeners.
 		try {
-			synchronized (dataRelayReceiveListeners) {
+			synchronized (listenerList) {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS,
-						dataRelayReceiveListeners.size()));
-				for (final IUserDataRelayReceiveListener listener : dataRelayReceiveListeners) {
+						listenerList.size()));
+				for (final Object listener : listenerList) {
 					// Ensure that the reader is running to avoid a RejectedExecutionException.
 					if (!running)
 						break;
@@ -1248,7 +1441,23 @@ public class DataReader extends Thread {
 							/* Synchronize the listener so it is not called
 							 twice. That is, let the listener to finish its job. */
 							synchronized (listener) {
-								listener.userDataRelayReceived(relayMessage);
+								if (notifyGeneric) {
+									((IUserDataRelayReceiveListener) listener).userDataRelayReceived(relayMessage);
+								} else {
+									switch (relayMessage.getSourceInterface()) {
+										case SERIAL:
+											((ISerialDataReceiveListener) listener).dataReceived(relayMessage.getData());
+											break;
+										case BLUETOOTH:
+											((IBluetoothDataReceiveListener) listener).dataReceived(relayMessage.getData());
+											break;
+										case MICROPYTHON:
+											((IMicroPythonDataReceiveListener) listener).dataReceived(relayMessage.getData());
+											break;
+										default:
+											break;
+									}
+								}
 							}
 						}
 					});

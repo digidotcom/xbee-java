@@ -39,15 +39,18 @@ import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
 import com.digi.xbee.api.listeners.IDataReceiveListener;
 import com.digi.xbee.api.listeners.IUserDataRelayReceiveListener;
+import com.digi.xbee.api.listeners.relay.IBluetoothDataReceiveListener;
+import com.digi.xbee.api.listeners.relay.IMicroPythonDataReceiveListener;
+import com.digi.xbee.api.listeners.relay.ISerialDataReceiveListener;
 import com.digi.xbee.api.models.APIOutputMode;
 import com.digi.xbee.api.models.ATCommand;
 import com.digi.xbee.api.models.ATCommandResponse;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.OperatingMode;
-import com.digi.xbee.api.models.RelayInterface;
 import com.digi.xbee.api.models.XBee16BitAddress;
 import com.digi.xbee.api.models.XBee64BitAddress;
+import com.digi.xbee.api.models.XBeeLocalInterface;
 import com.digi.xbee.api.models.XBeeMessage;
 import com.digi.xbee.api.models.XBeePacketsQueue;
 import com.digi.xbee.api.models.XBeeProtocol;
@@ -745,6 +748,26 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	@Override
 	public void removeUserDataRelayListener(IUserDataRelayReceiveListener listener) {
 		super.removeUserDataRelayListener(listener);
+	}
+
+	@Override
+	public void addBluetoothDataListener(IBluetoothDataReceiveListener listener) {
+		super.addBluetoothDataListener(listener);
+	}
+
+	@Override
+	public void removeBluetoothDataListener(IBluetoothDataReceiveListener listener) {
+		super.removeBluetoothDataListener(listener);
+	}
+
+	@Override
+	public void addMicroPythonDataListener(IMicroPythonDataReceiveListener listener) {
+		super.addMicroPythonDataListener(listener);
+	}
+
+	@Override
+	public void removeMicroPythonDataListener(IMicroPythonDataReceiveListener listener) {
+		super.removeMicroPythonDataListener(listener);
 	}
 
 	/**
@@ -1532,20 +1555,21 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	}
 
 	/**
-	 * Sends the given data to the give relay interface.
+	 * Sends the given data to the given XBee local interface.
 	 *
-	 * @param destInterface Destination relay interface.
+	 * @param destInterface Destination XBee local interface.
 	 * @param data Data to send.
 	 *
 	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code destInterface == null}.
 	 * @throws XBeeException if there is any XBee related exception sending the
 	 *                       User Data Relay message.
 	 *
-	 * @see RelayInterface
+	 * @see XBeeLocalInterface
 	 *
 	 * @since 1.3.0
 	 */
-	public void sendUserDataRelay(RelayInterface destInterface, byte[] data) throws XBeeException {
+	public void sendUserDataRelay(XBeeLocalInterface destInterface, byte[] data) throws XBeeException {
 		if (destInterface == null)
 			throw new NullPointerException("Destination interface cannot be null.");
 
@@ -1559,6 +1583,64 @@ public class XBeeDevice extends AbstractXBeeDevice {
 		XBeePacket xbeePacket = new UserDataRelayPacket(getNextFrameID(), destInterface, data);
 		// Send the packet asynchronously since User Data Relay frames do not receive any transmit status.
 		sendAndCheckXBeePacket(xbeePacket, true);
+	}
+
+	/**
+	 * Sends the given data to the XBee Bluetooth interface in a User Data Relay
+	 * frame.
+	 *
+	 * @param data Data to send.
+	 *
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws XBeeException if there is any XBee related exception sending the
+	 *                       data.
+	 *
+	 * @see #sendMicroPythonData(byte[])
+	 * @see #sendUserDataRelay(XBeeLocalInterface, byte[])
+	 *
+	 * @since 1.3.0
+	 */
+	public void sendBluetoothData(byte[] data) throws XBeeException {
+		sendUserDataRelay(XBeeLocalInterface.BLUETOOTH, data);
+	}
+
+	/**
+	 * Sends the given data to the XBee MicroPython interface in a User Data
+	 * Relay frame.
+	 *
+	 * @param data Data to send.
+	 *
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws XBeeException if there is any XBee related exception sending the
+	 *                       data.
+	 *
+	 * @see #sendBluetoothData(byte[])
+	 * @see #sendUserDataRelay(XBeeLocalInterface, byte[])
+	 *
+	 * @since 1.3.0
+	 */
+	public void sendMicroPythonData(byte[] data) throws XBeeException {
+		sendUserDataRelay(XBeeLocalInterface.MICROPYTHON, data);
+	}
+
+	/**
+	 * Sends the given data to the XBee serial interface in a User Data Relay
+	 * frame.
+	 *
+	 * @param data Data to send.
+	 *
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws XBeeException if there is any XBee related exception sending the
+	 *                       data.
+	 *
+	 * @see #sendBluetoothData(byte[])
+	 * @see #sendMicroPythonData(byte[])
+	 * @see #sendUserDataRelay(XBeeLocalInterface, byte[])
+	 *
+	 * @since 1.3.0
+	 */
+	protected void sendSerialData(byte[] data) throws XBeeException {
+		sendUserDataRelay(XBeeLocalInterface.SERIAL, data);
 	}
 
 	/**

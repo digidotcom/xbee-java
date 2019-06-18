@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import com.digi.xbee.api.models.RelayInterface;
+import com.digi.xbee.api.models.XBeeLocalInterface;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.utils.HexUtils;
@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
  * This class represents a User Data Relay Output packet. Packet is built
  * using the parameters of the constructor.
  *
- * The User Data Relay Output packet can be received from any relay interface.
+ * The User Data Relay Output packet can be received from any XBee local
+ * interface.
  *
  * The source interface must be one of the interfaces found in the
- * corresponding enumerator. See {@link RelayInterface}.
+ * corresponding enumerator. See {@link XBeeLocalInterface}.
  *
  * @see UserDataRelayPacket
  * @see com.digi.xbee.api.packet.XBeeAPIPacket
@@ -52,7 +53,7 @@ public class UserDataRelayOutputPacket extends XBeeAPIPacket {
 	private static final String ERROR_INTERFACE_NULL = "Source interface cannot be null.";
 
 	// Variables.
-	private RelayInterface relayInterface;
+	private XBeeLocalInterface localInterface;
 
 	private byte[] data;
 
@@ -86,7 +87,7 @@ public class UserDataRelayOutputPacket extends XBeeAPIPacket {
 		int index = 1;
 
 		// Source interface byte.
-		RelayInterface srcInterface = RelayInterface.get(payload[index] & 0xFF);
+		XBeeLocalInterface srcInterface = XBeeLocalInterface.get(payload[index] & 0xFF);
 		index = index + 1;
 
 		// Get data.
@@ -101,18 +102,18 @@ public class UserDataRelayOutputPacket extends XBeeAPIPacket {
 	 * Class constructor. Instantiates a new {@code UserDataRelayOutputPacket}
 	 * object with the given parameters.
 	 *
-	 * @param relayInterface The source {@code RelayInterface}.
+	 * @param localInterface The source {@code XBeeLocalInterface}.
 	 * @param data RF Data that is received from the source interface.
 	 *
-	 * @throws NullPointerException if {@code relayInterface == null}.
+	 * @throws NullPointerException if {@code localInterface == null}.
 	 */
-	public UserDataRelayOutputPacket(RelayInterface relayInterface, byte[] data) {
+	public UserDataRelayOutputPacket(XBeeLocalInterface localInterface, byte[] data) {
 		super(APIFrameType.USER_DATA_RELAY_OUTPUT);
 
-		if (relayInterface == null)
+		if (localInterface == null)
 			throw new NullPointerException(ERROR_INTERFACE_NULL);
 
-		this.relayInterface = relayInterface;
+		this.localInterface = localInterface;
 		this.data = data;
 		this.logger = LoggerFactory.getLogger(UserDataRelayOutputPacket.class);
 	}
@@ -121,7 +122,7 @@ public class UserDataRelayOutputPacket extends XBeeAPIPacket {
 	public byte[] getAPIPacketSpecificData() {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		try {
-			os.write(relayInterface.getID());
+			os.write(localInterface.getID());
 			if (data != null)
 				os.write(data);
 		} catch (IOException e) {
@@ -141,31 +142,31 @@ public class UserDataRelayOutputPacket extends XBeeAPIPacket {
 	}
 
 	/**
-	 * Sets the source interface.
+	 * Sets the source XBee local interface.
 	 *
-	 * @param relayInterface The new source interface.
+	 * @param localInterface The new source interface.
 	 *
-	 * @throws NullPointerException if {@code relayInterface == null}.
+	 * @throws NullPointerException if {@code localInterface == null}.
 	 *
 	 * @see #getSourceInterface()
-	 * @see RelayInterface
+	 * @see XBeeLocalInterface
 	 */
-	public void setSourceInterface(RelayInterface relayInterface) {
-		if (relayInterface == null)
+	public void setSourceInterface(XBeeLocalInterface localInterface) {
+		if (localInterface == null)
 			throw new NullPointerException(ERROR_INTERFACE_NULL);
-		this.relayInterface = relayInterface;
+		this.localInterface = localInterface;
 	}
 
 	/**
-	 * Retrieves the the source interface.
+	 * Retrieves the the source XBee local interface.
 	 *
 	 * @return The the source interface.
 	 *
-	 * @see #setSourceInterface(RelayInterface)
-	 * @see RelayInterface
+	 * @see #setSourceInterface(XBeeLocalInterface)
+	 * @see XBeeLocalInterface
 	 */
-	public RelayInterface getSourceInterface() {
-		return relayInterface;
+	public XBeeLocalInterface getSourceInterface() {
+		return localInterface;
 	}
 
 	/**
@@ -194,7 +195,7 @@ public class UserDataRelayOutputPacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<>();
 		parameters.put("Source interface", String.format("%s (%s)", HexUtils.prettyHexString(HexUtils.integerToHexString(
-				relayInterface.getID(), 1)), relayInterface.getDescription()));
+				localInterface.getID(), 1)), localInterface.getDescription()));
 		if (data != null)
 			parameters.put("Data", HexUtils.prettyHexString(HexUtils.byteArrayToHexString(data)));
 		return parameters;

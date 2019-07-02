@@ -83,6 +83,7 @@
 		<module>examples/communication/SendDataAsyncSample</module>
 		<module>examples/communication/SendDataSample</module>
 		<module>examples/communication/bluetooth/ReceiveBluetoothDataSample</module>
+		<module>examples/communication/bluetooth/ReceiveBluetoothFileSample</module>
 		<module>examples/communication/bluetooth/SendBluetoothDataSample</module>
 		<module>examples/communication/cellular/ReceiveSMSSample</module>
 		<module>examples/communication/cellular/SendSMSSample</module>

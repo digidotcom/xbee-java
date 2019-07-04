@@ -9,7 +9,7 @@
 	<name>XBee Java Library Project</name>
 	<inceptionYear>2014</inceptionYear>
 	<description>Set of Java APIs to interact with Digi International's XBee radio frequency modules.</description>
-	<url>https://github.com/digidotcom/XBeeJavaLibrary</url>
+	<url>https://github.com/digidotcom/xbee-java</url>
 	
 	<organization>
 		<name>Digi International Inc.</name>
@@ -25,13 +25,13 @@
 	</licenses>
 	
 	<scm>
-		<url>https://github.com/digidotcom/XBeeJavaLibrary/tree/master</url>
-		<connection>scm:git:git://github.com/digidotcom/XBeeJavaLibrary.git</connection>
-		<developerConnection>scm:git:ssh://github.com:digidotcom/XBeeJavaLibrary.git</developerConnection>
+		<url>https://github.com/digidotcom/xbee-java/tree/master</url>
+		<connection>scm:git:git://github.com/digidotcom/xbee-java.git</connection>
+		<developerConnection>scm:git:ssh://github.com:digidotcom/xbee-java.git</developerConnection>
 	</scm>
 	
 	<issueManagement>
- 		<url>https://github.com/digidotcom/XBeeJavaLibrary/issues</url>
+ 		<url>https://github.com/digidotcom/xbee-java/issues</url>
 		<system>GitHub</system>
 	</issueManagement>
 	
@@ -199,7 +199,7 @@
 	<distributionManagement>
 		<repository>
 			<id>bintray-repo</id>
-			<url>https://api.bintray.com/maven/digidotcom/maven/XBeeJavaLibrary</url>
+			<url>https://api.bintray.com/maven/digidotcom/maven/xbee-java</url>
 		</repository>
 	</distributionManagement>
 

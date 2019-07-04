@@ -1,25 +1,24 @@
-How to Contribute
-=================
+# How to Contribute
 
-Getting help
-------------
+## Getting help
+
 To ask questions about the XBee Java Library go to the 
 [Digi Forum](http://www.digi.com/support/forum).
 
 
-Reporting a bug
----------------
+## Reporting a bug
+
 The way to report bugs is to use the 
-[GitHub issue tracker](http://github.com/digidotcom/XBeeJavaLibrary/issues).
+[GitHub issue tracker](http://github.com/digidotcom/xbee-java/issues).
 Before reporting a bug, please read the following points:
 
 1. Make sure that is really a bug by checking the 
-[documentation](http://docs.digi.com/display/XBJLIB) and consulting the 
-[FAQs](https://docs.digi.com/display/XBJLIB/Frequently+Asked+Questions+%28FAQs%29) 
+[documentation](https://www.digi.com/resources/documentation/digidocs/90001438) and consulting the 
+[FAQs](https://www.digi.com/resources/documentation/digidocs/90001438/#reference/r_xb_java_lib_faq.htm) 
 section.
 2. If you still think you have found a bug, make sure someone has not already
 reported it. See the list of 
-[known issues](http://github.com/digidotcom/XBeeJavaLibrary/issues).
+[known issues](http://github.com/digidotcom/xbee-java/issues).
 3. If it has not been reported yet, create a new issue. Make sure to add enough 
 detail so that the bug can be reproduced.
 
@@ -27,18 +26,18 @@ detail so that the bug can be reproduced.
 should be asked on the [Digi Forum](http://www.digi.com/support/forum) instead.
 
 
-Suggesting a new feature
-------------------------
-1. Consult the [FAQs](https://docs.digi.com/display/XBJLIB/Frequently+Asked+Questions+%28FAQs%29) 
+## Suggesting a new feature
+
+1. Consult the [FAQs](https://www.digi.com/resources/documentation/digidocs/90001438/#reference/r_xb_java_lib_faq.htm) 
 section to ensure that the behavior you would like is not excluded.
 2. Make sure someone has not already requested it. See the list of 
-[known issues](http://github.com/digidotcom/XBeeJavaLibrary/issues).
+[known issues](http://github.com/digidotcom/xbee-java/issues).
 3. Submit your request in the issue tracker.
 
 
-Contributing code
------------------
-1. Fork the [XBee Java Library](http://github.com/digidotcom/XBeeJavaLibrary) 
+## Contributing code
+
+1. Fork the [XBee Java Library](http://github.com/digidotcom/xbee-java) 
 repository ([how to fork a repo](https://help.github.com/articles/fork-a-repo/)).
 2. Create a branch for your contribution. Use a name that defines the purpose of the additions/modifications. 
 3. Make your changes following the code style used in the library.

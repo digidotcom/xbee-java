@@ -1,5 +1,4 @@
-XBee Java Library
-=================
+# XBee Java Library [ ![Download](https://api.bintray.com/packages/digidotcom/maven/xbee-java/images/download.svg) ](https://bintray.com/digidotcom/maven/xbee-java/_latestVersion)
 
 This project contains the source code of the XBee Java Library, an easy-to-use 
 API developed in Java that allows you to interact with Digi International's
@@ -43,21 +42,21 @@ Destination endpoint, Profile ID, and Cluster ID).
 different interfaces (Serial, Bluetooth Low Energy and MicroPython).
 
 
-Start Here
-----------
+## Start Here
+
 The best place to get started is the 
 [XBee Java Library documentation](http://www.digi.com/resources/documentation/digidocs/90001438/Default.htm).
 
 
-How to Contribute
------------------
+## How to Contribute
+
 The contributing guidelines are in the 
-[CONTRIBUTING.md](https://github.com/digidotcom/XBeeJavaLibrary/blob/master/CONTRIBUTING.md) 
+[CONTRIBUTING.md](https://github.com/digidotcom/xbee-java/blob/master/CONTRIBUTING.md) 
 document.
 
 
-License
--------
+## License
+
 Copyright 2017-2019, Digi International Inc.
 
 This Source Code Form is subject to the terms of the Mozilla Public

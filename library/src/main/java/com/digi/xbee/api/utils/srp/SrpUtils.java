@@ -55,6 +55,10 @@ public class SrpUtils {
 	 * @param password The user password.
 	 *
 	 * @return A new SRP verifier.
+	 * 
+	 * @throws IOException If there is a problem generating the X value.
+	 * @throws NoSuchAlgorithmException If the hash algorithm to use does not
+	 *                                  exist.
 	 */
 	public static byte[] generateVerifier(byte[] salt, String password) throws IOException, NoSuchAlgorithmException {
 		BigInteger x = bigIntegerFromBytes(generateX(salt, SrpConstants.API_USERNAME.getBytes(), password.getBytes()));
@@ -73,6 +77,10 @@ public class SrpUtils {
 	 * @param byte_p Password.
 	 *
 	 * @return The X value.
+	 * 
+	 * @throws IOException If there is a problem generating the X value.
+	 * @throws NoSuchAlgorithmException If the hash algorithm to use does not
+	 *                                  exist.
 	 */
 	static byte[] generateX(byte[] byte_s, byte[] byte_I, byte[] byte_p) throws NoSuchAlgorithmException, IOException {
 		byte[] byte_x;
@@ -107,6 +115,10 @@ public class SrpUtils {
 	 * @param byte_K K as per the SRP spec.
 	 *
 	 * @return The M value.
+	 * 
+	 * @throws IOException If there is a problem generating the M value.
+	 * @throws NoSuchAlgorithmException If the hash algorithm to use does not
+	 *                                  exist.
 	 */
 	static byte[] generateM(byte[] byte_N, byte[] byte_g, byte[] byte_I, byte[] byte_s,
 			byte[] byte_A, byte[] byte_B, byte[] byte_K) throws NoSuchAlgorithmException, IOException {
@@ -136,6 +148,9 @@ public class SrpUtils {
 	 * @param byte_2 Byte array 2.
 	 *
 	 * @return Hashed and xor of the given arrays.
+	 * 
+	 * @throws NoSuchAlgorithmException If the hash algorithm to use does not
+	 *                                  exist.
 	 */
 	private static byte[] hashXor(byte[] byte_1, byte[] byte_2) throws NoSuchAlgorithmException {
 		byte[] ret;

@@ -77,6 +77,10 @@ public class SrpUser {
 	 * Computes and returns A, which is needed to start authentication.
 	 *
 	 * @return Public ephemeral value A.
+	 * 
+	 * @throws IOException If there is a problem generating 'byte k' value.
+	 * @throws NoSuchAlgorithmException If the hash algorithm to use does not
+	 *                                  exist.
 	 */
 	public byte[] startAuthentication() throws NoSuchAlgorithmException, IOException {
 		// Reset variables.
@@ -113,6 +117,10 @@ public class SrpUser {
 	 *
 	 * @return Proof of session key M1, or {@code null} if the challenge could
 	 *         not be processed.
+	 * 
+	 * @throws IOException If there is a problem generating any value.
+	 * @throws NoSuchAlgorithmException If the hash algorithm to use does not
+	 *                                  exist.
 	 */
 	public byte[] processChallenge(byte[] byte_s, byte[] byte_B) throws NoSuchAlgorithmException, IOException {
 		BigInteger B = SrpUtils.bigIntegerFromBytes(byte_B);

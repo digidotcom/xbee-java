@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,8 +32,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.packet.XBeeAPIPacket;
@@ -119,7 +119,7 @@ public class IPacketReceiveListenerTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * Test method for {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that the callback of the IPacketReceiveListener interface is executed correctly.</p>
 	 */
@@ -134,7 +134,7 @@ public class IPacketReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(XBeePacket)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that if the listener is not subscribed to receive packets, the callback is not 
 	 * executed although a packet is received.</p>
@@ -158,7 +158,7 @@ public class IPacketReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(XBeePacket)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive packets with any frame ID, and any packet is received, the 
 	 * callback of the listener is always executed.</p>
@@ -187,7 +187,7 @@ public class IPacketReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IPacketReceiveListener#packetReceived(XBeePacket)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive packets of a specific frame ID, and a packet with that ID is 
 	 * received, the callback of the listener is executed, but next time that the same packet or other packets 

@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -73,7 +73,7 @@ public class XBeeNetworkConfigurationTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#XBeeNetwork(XBeeDevice)}.
+	 * Test method for {@link com.digi.xbee.api.XBeeNetwork#XBeeNetwork(AbstractXBeeDevice)}.
 	 * 
 	 * <p>A {@code NullPointerException} exception must be thrown when passing a 
 	 * {@code null} local device.</p>

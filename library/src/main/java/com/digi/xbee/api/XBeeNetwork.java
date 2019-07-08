@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -46,7 +46,7 @@ public class XBeeNetwork {
 	
 	// Variables.
 
-	private XBeeDevice localDevice;
+	private AbstractXBeeDevice localDevice;
 	
 	private Map<XBee64BitAddress, RemoteXBeeDevice> remotesBy64BitAddr;
 	private Map<XBee16BitAddress, RemoteXBeeDevice> remotesBy16BitAddr;
@@ -63,12 +63,15 @@ public class XBeeNetwork {
 	 * @param device Local XBee device to get the network from.
 	 * 
 	 * @throws NullPointerException if {@code device == null}.
+	 * @throws IllegalArgumentException If {@code xbeeDevice.isRemote() == true}.
 	 * 
-	 * @see XBeeDevice
+	 * @see AbstractXBeeDevice
 	 */
-	XBeeNetwork(XBeeDevice device) {
+	XBeeNetwork(AbstractXBeeDevice device) {
 		if (device == null)
 			throw new NullPointerException("Local XBee device cannot be null.");
+		if (device.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
 		
 		localDevice = device;
 		remotesBy64BitAddr = new ConcurrentHashMap<XBee64BitAddress, RemoteXBeeDevice>();

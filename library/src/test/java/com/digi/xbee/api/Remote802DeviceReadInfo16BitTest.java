@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -77,7 +77,7 @@ public class Remote802DeviceReadInfo16BitTest {
 		SerialPortRxTx mockPort = Mockito.mock(SerialPortRxTx.class);
 		
 		// Mock the local XBee device necessary to instantiate a remote one.
-		XBeeDevice localXBeeDevice = Mockito.mock(XBeeDevice.class);
+		AbstractXBeeDevice localXBeeDevice = Mockito.mock(XBeeDevice.class);
 		Mockito.when(localXBeeDevice.getConnectionInterface()).thenReturn(mockPort);
 		Mockito.when(localXBeeDevice.getXBeeProtocol()).thenReturn(XBeeProtocol.RAW_802_15_4);
 		

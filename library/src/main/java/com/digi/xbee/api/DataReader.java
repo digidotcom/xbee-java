@@ -13,7 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF 
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package com.digi.xbee.api.connection;
+package com.digi.xbee.api;
 
 import java.io.IOException;
 import java.net.Inet6Address;
@@ -25,14 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.digi.xbee.api.RemoteDigiMeshDevice;
-import com.digi.xbee.api.RemoteDigiPointDevice;
-import com.digi.xbee.api.RemoteRaw802Device;
-import com.digi.xbee.api.RemoteThreadDevice;
-import com.digi.xbee.api.RemoteXBeeDevice;
-import com.digi.xbee.api.RemoteZigBeeDevice;
-import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.XBeeNetwork;
+import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IExplicitDataReceiveListener;
@@ -117,7 +110,7 @@ public class DataReader extends Thread {
 	
 	private XBeePacketsQueue xbeePacketsQueue;
 	
-	private XBeeDevice xbeeDevice;
+	private AbstractXBeeDevice xbeeDevice;
 	
 	/**
 	 * Class constructor. Instantiates a new {@code DataReader} object for the 
@@ -131,16 +124,19 @@ public class DataReader extends Thread {
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null} or
 	 *                                 {@code mode == null}.
+	 * @throws IllegalArgumentException If {@code xbeeDevice.isRemote() == true}.
 	 * 
 	 * @see IConnectionInterface
 	 * @see com.digi.xbee.api.XBeeDevice
 	 * @see com.digi.xbee.api.models.OperatingMode
 	 */
-	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode, XBeeDevice xbeeDevice) {
+	public DataReader(IConnectionInterface connectionInterface, OperatingMode mode, AbstractXBeeDevice xbeeDevice) {
 		if (connectionInterface == null)
 			throw new NullPointerException("Connection interface cannot be null.");
 		if (mode == null)
 			throw new NullPointerException("Operating mode cannot be null.");
+		if (xbeeDevice.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
 		
 		this.connectionInterface = connectionInterface;
 		this.mode = mode;
@@ -1405,7 +1401,7 @@ public class DataReader extends Thread {
 	 * @since 1.3.0
 	 */
 	private void notifyUserDataRelayReceived(final UserDataRelayMessage relayMessage, final boolean notifyGeneric) {
-		ArrayList listenerList = new ArrayList<>();
+		ArrayList<?> listenerList = new ArrayList<>();
 
 		// Get the list of listeners that should be notified depending on the parameters.
 		if (notifyGeneric) {

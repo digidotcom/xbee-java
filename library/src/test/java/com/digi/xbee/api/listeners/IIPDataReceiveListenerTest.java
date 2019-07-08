@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,8 +32,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.IPMessage;
 import com.digi.xbee.api.models.IPProtocol;
@@ -135,7 +135,7 @@ public class IIPDataReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IIPDataReceiveListener#ipDataReceived(IPMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that if the listener is not subscribed to receive IP data, the callback 
 	 * is not executed although a data packet is received.</p>
@@ -165,7 +165,7 @@ public class IIPDataReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IIPDataReceiveListener#ipDataReceived(IPMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive IP data and an RXIPV4 packet is received,
 	 * the callback of the listener is executed.</p>
@@ -200,7 +200,7 @@ public class IIPDataReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IIPDataReceiveListener#ipDataReceived(IPMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive IP data and a packet that does not 
 	 * correspond to IP data is received, the callback of the listener is not executed.</p>

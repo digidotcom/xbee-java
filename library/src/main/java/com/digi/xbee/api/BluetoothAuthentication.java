@@ -61,7 +61,7 @@ class BluetoothAuthentication {
 	private static final int LENGTH_NONCE = 12;
 
 	// Variables.
-	private final XBeeDevice device;
+	private final AbstractXBeeDevice device;
 	private final String password;
 
 	private final Object unlockLock = new Object();
@@ -82,10 +82,15 @@ class BluetoothAuthentication {
 	 * Class constructor. Instantiates a new {@code BluetoothAuthentication}
 	 * object with the given parameters.
 	 *
+	 * @throws IllegalArgumentException If {@code device.isRemote() == true}.
+	 *
 	 * @param device XBee device.
 	 * @param password Bluetooth password.
 	 */
-	BluetoothAuthentication(XBeeDevice device, String password) {
+	BluetoothAuthentication(AbstractXBeeDevice device, String password) {
+		if (device.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
+		
 		this.device = device;
 		this.password = password;
 

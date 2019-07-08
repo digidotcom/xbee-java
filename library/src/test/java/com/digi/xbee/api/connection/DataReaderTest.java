@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -47,6 +47,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
@@ -305,7 +306,7 @@ public class DataReaderTest {
 	}
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#DataReader(IConnectionInterface, com.digi.xbee.api.models.OperatingMode, com.digi.xbee.api.XBeeDevice)}.
+	 * Test method for {@link com.digi.xbee.api.DataReader#DataReader(IConnectionInterface, com.digi.xbee.api.models.OperatingMode, com.digi.xbee.api.XBeeDevice)}.
 	 */
 	@Test
 	public final void testCreateDataReaderNullConnectionInterface() {
@@ -318,7 +319,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#DataReader(IConnectionInterface, com.digi.xbee.api.models.OperatingMode, com.digi.xbee.api.XBeeDevice)}.
+	 * Test method for {@link com.digi.xbee.api.DataReader#DataReader(IConnectionInterface, com.digi.xbee.api.models.OperatingMode, com.digi.xbee.api.XBeeDevice)}.
 	 */
 	@Test
 	public final void testCreateDataReaderNullOperatingMode() {
@@ -331,7 +332,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#DataReader(IConnectionInterface, com.digi.xbee.api.models.OperatingMode, com.digi.xbee.api.XBeeDevice)}.
+	 * Test method for {@link com.digi.xbee.api.DataReader#DataReader(IConnectionInterface, com.digi.xbee.api.models.OperatingMode, com.digi.xbee.api.XBeeDevice)}.
 	 * 
 	 * @throws Exception 
 	 */
@@ -348,7 +349,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#setXBeeReaderMode(OperatingMode)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#setXBeeReaderMode(OperatingMode)}. 
 	 */
 	@Test
 	public final void testSetXbeeReaderModeNullMode() {
@@ -363,7 +364,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#setXBeeReaderMode(OperatingMode)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#setXBeeReaderMode(OperatingMode)}. 
 	 */
 	@Test
 	public final void testSetXbeeReaderMode() {
@@ -379,7 +380,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddDataReceiveListenerNullListener() {
@@ -395,7 +396,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddDataReceiveListener() {
@@ -413,7 +414,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddDataReceiveListenerExistingListener() {
@@ -437,7 +438,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveDataReceiveListenerNonAdded() {
@@ -459,7 +460,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeDataReceiveListener(com.digi.xbee.api.listeners.IDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveDataReceiveListener() {
@@ -479,7 +480,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addPacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addPacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddPacketReceiveListenerNullListener() {
@@ -495,7 +496,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addPacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addPacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddPacketReceiveListener() {
@@ -514,7 +515,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addPacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addPacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddPacketReceiveListenerExistingListener() {
@@ -627,7 +628,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removePacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removePacketReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemovePacketReceiveListenerNonAdded() {
@@ -650,7 +651,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeDataReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeDataReceiveListener(com.digi.xbee.api.listeners.IPacketReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemovePacketReceiveListener() {
@@ -670,7 +671,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddIOSampleReceiveListenerNullListener() {
@@ -686,7 +687,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddIOSampleReceiveListener() {
@@ -704,7 +705,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddIOSampleReceiveListenerExistingListener() {
@@ -728,7 +729,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveIOSampleReceiveListenerNonAdded() {
@@ -750,7 +751,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeIOSampleReceiveListener(com.digi.xbee.api.listeners.IIOSampleReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveIOSampleReceiveListener() {
@@ -770,7 +771,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddModemStatusReceiveListenerNullListener() {
@@ -786,7 +787,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddModemStatusReceiveListener() {
@@ -804,7 +805,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddModemStatuseReceiveListenerExistingListener() {
@@ -828,7 +829,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveModemStatusReceiveListenerNonAdded() {
@@ -850,7 +851,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeModemStatusReceiveListener(com.digi.xbee.api.listeners.IModemStatusReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveModemStatusReceiveListener() {
@@ -870,7 +871,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddExplicitDataReceiveListenerNullListener() {
@@ -886,7 +887,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddExplicitDataReceiveListener() {
@@ -904,7 +905,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddExplicitDataeReceiveListenerExistingListener() {
@@ -928,7 +929,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveExplicitDataReceiveListenerNonAdded() {
@@ -950,7 +951,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeExplicitDataReceiveListener(com.digi.xbee.api.listeners.IExplicitDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveExplicitDataReceiveListener() {
@@ -970,7 +971,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddIPDataReceiveListenerNullListener() {
@@ -986,7 +987,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddIPDataReceiveListener() {
@@ -1004,7 +1005,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#addIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testAddIPDataReceiveListenerExistingListener() {
@@ -1028,7 +1029,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveIPDataReceiveListenerNonAdded() {
@@ -1050,7 +1051,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#removeIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#removeIPDataReceiveListener(com.digi.xbee.api.listeners.IIPDataReceiveListener)}. 
 	 */
 	@Test
 	public final void testRemoveIPDataReceiveListener() {
@@ -1070,7 +1071,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketBadHeaderByte() throws Exception {
@@ -1107,7 +1108,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketBadPacket() throws Exception {
@@ -1142,7 +1143,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketNotContemplatedPacket() throws Exception {
@@ -1188,7 +1189,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketListentoFrameIDNotReceived() throws Exception {
@@ -1234,7 +1235,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketListentoFrameIDReceived() throws Exception {
@@ -1280,7 +1281,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketATResponse() throws Exception {
@@ -1326,7 +1327,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRemoteATResponse() throws Exception {
@@ -1372,7 +1373,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRX64DataPacket() throws Exception {
@@ -1418,7 +1419,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRXIPv6DataPacket() throws Exception {
@@ -1464,7 +1465,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRX16DataPacket() throws Exception {
@@ -1510,7 +1511,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRXDataPacket() throws Exception {
@@ -1556,7 +1557,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRXIO64DataPacket() throws Exception {
@@ -1602,7 +1603,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRXIO16DataPacket() throws Exception {
@@ -1648,7 +1649,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRXIOIPv6DataPacket() throws Exception {
@@ -1694,7 +1695,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketRXIOPacket() throws Exception {
@@ -1740,7 +1741,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketModemStatusPacket() throws Exception {
@@ -1786,7 +1787,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketExplicitIndicatorDigiPacket() throws Exception {
@@ -1832,7 +1833,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketExplicitIndicatorPacket() throws Exception {
@@ -1878,7 +1879,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketIOExceptionWhenReading() throws Exception {
@@ -1915,7 +1916,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketATmode() throws Exception {
@@ -1952,7 +1953,7 @@ public class DataReaderTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.connection.DataReader#start()}. 
+	 * Test method for {@link com.digi.xbee.api.DataReader#start()}. 
 	 */
 	@Test
 	public final void testDataReaderReceivePacketNullInputStream() throws Exception {

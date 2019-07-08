@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,7 +37,7 @@ import com.digi.xbee.api.models.XBee64BitAddress;
 public class RemoteXBeeDeviceInstantiateTest {
 
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, XBee64BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)}.
 	 * 
 	 * <p>Verify that a remote XBeeDevice object is not correctly instantiated when the local 
 	 * XBee device associated is null or the remote XBee64BitAddress is null.</p>
@@ -62,7 +62,7 @@ public class RemoteXBeeDeviceInstantiateTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, Inet6Address)}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(AbstractXBeeDevice, Inet6Address)}.
 	 * 
 	 * <p>Verify that a remote XBeeDevice object is not correctly instantiated when the local 
 	 * XBee device associated is null or the remote Inet6Address is null.</p>
@@ -87,7 +87,7 @@ public class RemoteXBeeDeviceInstantiateTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, XBee64BitAddress)}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)}.
 	 * 
 	 * <p>Verify that a remote XBeeDevice object can be instantiated correctly.</p>
 	 */
@@ -111,7 +111,7 @@ public class RemoteXBeeDeviceInstantiateTest {
 	}
 	
 	/**
-	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(XBeeDevice, Inet6Address)}.
+	 * Test method for {@link com.digi.xbee.api.RemoteXBeeDevice#RemoteXBeeDevice(AbstractXBeeDevice, Inet6Address)}.
 	 * 
 	 * <p>Verify that a remote XBeeDevice object can be instantiated correctly.</p>
 	 */

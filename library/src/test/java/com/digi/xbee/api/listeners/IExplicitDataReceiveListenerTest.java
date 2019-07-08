@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,10 +31,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
-import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.ExplicitXBeeMessage;
 import com.digi.xbee.api.models.OperatingMode;
@@ -169,7 +169,7 @@ public class IExplicitDataReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IExplicitDataReceiveListener#explicitDataReceived(ExplicitXBeeMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that if the listener is not subscribed to receive explicit data, the callback is not 
 	 * executed although an explicit data packet is received.</p>
@@ -201,7 +201,7 @@ public class IExplicitDataReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IExplicitDataReceiveListener#explicitDataReceived(ExplicitXBeeMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive explicit data and an Explicit Rx Indicator packet is received, 
 	 * the callback of the listener is executed.</p>
@@ -238,7 +238,7 @@ public class IExplicitDataReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IExplicitDataReceiveListener#explicitDataReceived(ExplicitXBeeMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive data and a packet that does not correspond to 
 	 * data, the callback of the listener is not executed.</p>

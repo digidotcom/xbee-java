@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -59,7 +59,7 @@ class NodeDiscovery {
 	// Variables.
 	private static int globalFrameID = 1;
 	
-	private XBeeDevice xbeeDevice;
+	private AbstractXBeeDevice xbeeDevice;
 	
 	private List<RemoteXBeeDevice> deviceList;
 	
@@ -76,12 +76,15 @@ class NodeDiscovery {
 	 * @param xbeeDevice XBee Device to perform the discovery operation.
 	 * 
 	 * @throws NullPointerException If {@code xbeeDevice == null}.
+	 * @throws IllegalArgumentException If {@code xbeeDevice.isRemote() == true}.
 	 * 
 	 * @see XBeeDevice
 	 */
-	public NodeDiscovery(XBeeDevice xbeeDevice) {
+	public NodeDiscovery(AbstractXBeeDevice xbeeDevice) {
 		if (xbeeDevice == null)
 			throw new NullPointerException("Local XBee device cannot be null.");
+		if (xbeeDevice.isRemote())
+			throw new IllegalArgumentException("The given local XBee device is remote.");
 		
 		this.xbeeDevice = xbeeDevice;
 		
@@ -453,7 +456,7 @@ class NodeDiscovery {
 	 * 
 	 * @return Discovered XBee device.
 	 */
-	private RemoteXBeeDevice parseDiscoveryAPIData(byte[] data, XBeeDevice localDevice) {
+	private RemoteXBeeDevice parseDiscoveryAPIData(byte[] data, AbstractXBeeDevice localDevice) {
 		if (data == null)
 			return null;
 		

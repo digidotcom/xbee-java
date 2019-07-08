@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,8 +31,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.OperatingMode;
@@ -106,7 +106,7 @@ public class IModemStatusReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IModemStatusReceiveListener#modemStatusEventReceived(ModemStatusEvent)} 
-	 * and {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * and {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that if the listener is not subscribed to receive Modem Status events, the callback is not 
 	 * executed although a Modem Status packet is received.</p>
@@ -128,7 +128,7 @@ public class IModemStatusReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IModemStatusReceiveListener#modemStatusEventReceived(ModemStatusEvent)} 
-	 * and {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * and {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive Modem Status events and a ModemStatusPacket is received, 
 	 * the callback of the listener is executed.</p>
@@ -154,7 +154,7 @@ public class IModemStatusReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.IModemStatusReceiveListener#modemStatusEventReceived(ModemStatusEvent)} 
-	 * and {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * and {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive Modem Status events and a packet that does not correspond to a Modem 
 	 * Status event is received, the callback of the listener is not executed.</p>

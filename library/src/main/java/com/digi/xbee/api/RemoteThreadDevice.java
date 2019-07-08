@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -57,8 +57,8 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	 * @throws NullPointerException if {@code localXBeeDevice == null} or
 	 *                              if {@code ipv6addr == null}.
 	 * 
-	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address)
-	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address, String)
+	 * @see #RemoteThreadDevice(AbstractXBeeDevice, Inet6Address)
+	 * @see #RemoteThreadDevice(AbstractXBeeDevice, Inet6Address, String)
 	 * @see com.digi.xbee.api.ThreadDevice
 	 * @see java.net.Inet6Address
 	 */
@@ -82,11 +82,11 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	 *                              if {@code ipv6addr == null}.
 	 * 
 	 * @see #RemoteThreadDevice(ThreadDevice, Inet6Address)
-	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address, String)
+	 * @see #RemoteThreadDevice(AbstractXBeeDevice, Inet6Address, String)
 	 * @see com.digi.xbee.api.XBeeDevice
 	 * @see java.net.Inet6Address
 	 */
-	public RemoteThreadDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
+	public RemoteThreadDevice(AbstractXBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
 		super(localXBeeDevice, ipv6Addr);
 		
 		// Verify the local device has Thread protocol.
@@ -112,11 +112,11 @@ public class RemoteThreadDevice extends RemoteXBeeDevice {
 	 *                              if {@code ipv6Address == null}.
 	 * 
 	 * @see #RemoteThreadDevice(ThreadDevice, Inet6Address)
-	 * @see #RemoteThreadDevice(XBeeDevice, Inet6Address)
+	 * @see #RemoteThreadDevice(AbstractXBeeDevice, Inet6Address)
 	 * @see com.digi.xbee.api.XBeeDevice
 	 * @see java.net.Inet6Address
 	 */
-	public RemoteThreadDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String ni) {
+	public RemoteThreadDevice(AbstractXBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String ni) {
 		super(localXBeeDevice, ipv6Addr, ni);
 		
 		// Verify the local device has Thread protocol.

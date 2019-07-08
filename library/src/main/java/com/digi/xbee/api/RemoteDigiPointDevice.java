@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,7 +75,7 @@ public class RemoteDigiPointDevice extends RemoteXBeeDevice {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public RemoteDigiPointDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+	public RemoteDigiPointDevice(AbstractXBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
 		
 		// Verify the local device has point-to-multipoint protocol.
@@ -103,7 +103,7 @@ public class RemoteDigiPointDevice extends RemoteXBeeDevice {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public RemoteDigiPointDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, String id) {
+	public RemoteDigiPointDevice(AbstractXBeeDevice localXBeeDevice, XBee64BitAddress addr64, String id) {
 		super(localXBeeDevice, addr64, null, id);
 		
 		// Verify the local device has point-to-multipoint protocol.

@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.bluetooth.AbstractBluetoothInterface;
 import com.digi.xbee.api.connection.ConnectionType;
-import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.BluetoothAuthenticationException;
@@ -211,8 +210,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #AbstractXBeeDevice(IConnectionInterface)
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 */
 	public AbstractXBeeDevice(String port, int baudRate) {
@@ -240,8 +239,8 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(IConnectionInterface)
 	 * @see #AbstractXBeeDevice(String, int)
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 */
 	public AbstractXBeeDevice(String port, int baudRate, int dataBits, int stopBits, int parity, int flowControl) {
 		this(port, new SerialPortParameters(baudRate, dataBits, stopBits, parity, flowControl));
@@ -259,8 +258,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #AbstractXBeeDevice(IConnectionInterface)
 	 * @see #AbstractXBeeDevice(String, int)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see com.digi.xbee.api.connection.serial.SerialPortParameters
 	 */
@@ -279,8 +278,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #AbstractXBeeDevice(String, int)
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see com.digi.xbee.api.connection.IConnectionInterface
 	 */
@@ -311,11 +310,11 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(IConnectionInterface)
 	 * @see #AbstractXBeeDevice(String, int)
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress, XBee16BitAddress, String)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 */
-	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+	public AbstractXBeeDevice(AbstractXBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		this(localXBeeDevice, addr64, null, null);
 	}
 	
@@ -340,12 +339,12 @@ public abstract class AbstractXBeeDevice {
 	 * @see #AbstractXBeeDevice(IConnectionInterface)
 	 * @see #AbstractXBeeDevice(String, int)
 	 * @see #AbstractXBeeDevice(String, SerialPortParameters)
-	 * @see #AbstractXBeeDevice(XBeeDevice, XBee64BitAddress)
+	 * @see #AbstractXBeeDevice(AbstractXBeeDevice, XBee64BitAddress)
 	 * @see #AbstractXBeeDevice(String, int, int, int, int, int)
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
+	public AbstractXBeeDevice(AbstractXBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String id) {
 		if (localXBeeDevice == null)
 			throw new NullPointerException("Local XBee device cannot be null.");
@@ -388,7 +387,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @since 1.2.1
 	 */
-	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
+	public AbstractXBeeDevice(AbstractXBeeDevice localXBeeDevice, Inet6Address ipv6Addr) {
 		this(localXBeeDevice, ipv6Addr, null);
 	}
 	
@@ -416,7 +415,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @since 1.2.1
 	 */
-	public AbstractXBeeDevice(XBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String id) {
+	public AbstractXBeeDevice(AbstractXBeeDevice localXBeeDevice, Inet6Address ipv6Addr, String id) {
 		if (localXBeeDevice == null)
 			throw new NullPointerException("Local XBee device cannot be null.");
 		if (ipv6Addr == null)
@@ -3112,7 +3111,7 @@ public abstract class AbstractXBeeDevice {
 		logger.info(toString() + "Connection interface open.");
 		
 		// Initialize the data reader.
-		dataReader = new DataReader(connectionInterface, operatingMode, (XBeeDevice)this);
+		dataReader = new DataReader(connectionInterface, operatingMode, this);
 		dataReader.start();
 		
 		// Wait 10 milliseconds until the dataReader thread is started.
@@ -3132,7 +3131,7 @@ public abstract class AbstractXBeeDevice {
 			// Perform the Bluetooth authentication.
 			try {
 				logger.info(toString() + "Starting Bluetooth authentication...");
-				BluetoothAuthentication auth = new BluetoothAuthentication((XBeeDevice)this, bluetoothPassword);
+				BluetoothAuthentication auth = new BluetoothAuthentication(this, bluetoothPassword);
 				auth.authenticate();
 				((AbstractBluetoothInterface) connectionInterface).setEncryptionKeys(auth.getKey(), auth.getTxNonce(), auth.getRxNonce());
 				logger.info(toString() + "Authentication finished successfully.");
@@ -3313,7 +3312,7 @@ public abstract class AbstractXBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		if (network == null)
-			network = new XBeeNetwork((XBeeDevice)this);
+			network = new XBeeNetwork(this);
 		return network;
 	}
 	
@@ -4833,7 +4832,7 @@ public abstract class AbstractXBeeDevice {
 			if (remoteXBeeDevice != null)
 				remoteDevice = remoteXBeeDevice;
 			else
-				remoteDevice = new RemoteXBeeDevice((XBeeDevice)this, explicitDataPacket.get64BitSourceAddress());
+				remoteDevice = new RemoteXBeeDevice(this, explicitDataPacket.get64BitSourceAddress());
 			getNetwork().addRemoteDevice(remoteDevice);
 		}
 		int sourceEndpoint = explicitDataPacket.getSourceEndpoint();

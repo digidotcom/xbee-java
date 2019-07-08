@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,7 +75,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 * 
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public RemoteZigBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
+	public RemoteZigBeeDevice(AbstractXBeeDevice localXBeeDevice, XBee64BitAddress addr64) {
 		super(localXBeeDevice, addr64);
 		
 		// Verify the local device has ZigBee protocol.
@@ -105,7 +105,7 @@ public class RemoteZigBeeDevice extends RemoteXBeeDevice {
 	 * @see com.digi.xbee.api.models.XBee16BitAddress
 	 * @see com.digi.xbee.api.models.XBee64BitAddress
 	 */
-	public RemoteZigBeeDevice(XBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
+	public RemoteZigBeeDevice(AbstractXBeeDevice localXBeeDevice, XBee64BitAddress addr64, 
 			XBee16BitAddress addr16, String ni) {
 		super(localXBeeDevice, addr64, addr16, ni);
 		

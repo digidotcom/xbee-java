@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,6 +29,7 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.RemoteDigiMeshDevice;
 import com.digi.xbee.api.RemoteDigiPointDevice;
 import com.digi.xbee.api.RemoteRaw802Device;

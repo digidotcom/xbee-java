@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,8 +31,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
+import com.digi.xbee.api.DataReader;
 import com.digi.xbee.api.XBeeDevice;
-import com.digi.xbee.api.connection.DataReader;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.SMSMessage;
@@ -118,7 +118,7 @@ public class ISMSReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.ISMSReceiveListener#smsReceived(SMSMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that if the listener is not subscribed to receive SMS, the callback 
 	 * is not executed although an SMS packet is received.</p>
@@ -142,7 +142,7 @@ public class ISMSReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.ISMSReceiveListener#smsReceived(SMSMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive SMS and an RXSMS packet is received,
 	 * the callback of the listener is executed.</p>
@@ -171,7 +171,7 @@ public class ISMSReceiveListenerTest {
 	
 	/**
 	 * Test method for {@link com.digi.xbee.api.listeners.ISMSReceiveListener#smsReceived(SMSMessage)} and
-	 * {@link com.digi.xbee.api.connection.DataReader#packetReceived(XBeePacket)}.
+	 * {@link com.digi.xbee.api.DataReader#packetReceived(XBeePacket)}.
 	 * 
 	 * <p>Verify that, when subscribed to receive SMS and a packet that does not 
 	 * correspond to SMS is received, the callback of the listener is not executed.</p>

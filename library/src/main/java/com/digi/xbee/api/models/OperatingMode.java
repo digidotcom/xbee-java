@@ -1,5 +1,5 @@
-/**
- * Copyright 2017, Digi International Inc.
+/*
+ * Copyright 2017-2019, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +15,8 @@
  */
 package com.digi.xbee.api.models;
 
+import java.util.HashMap;
+
 /**
  * Enumerates the different working modes of the XBee device. The operating 
  * mode establishes the way a user communicates with an XBee device through 
@@ -26,12 +28,23 @@ public enum OperatingMode {
 	AT(0, "AT mode"),
 	API(1, "API mode"),
 	API_ESCAPE(2, "API mode with escaped characters"),
+	/** @since 1.3.1 */
+	MICROPYTHON(4, "MicroPython REPL"),
+	/** @since 1.3.1 */
+	BYPASS(5, "Bypass mode"),
 	UNKNOWN(3, "Unknown");
 	
 	// Variables
 	private final int id;
 	
 	private final String name;
+	
+	private final static HashMap<Integer, OperatingMode> lookupTable = new HashMap<Integer, OperatingMode>();
+	
+	static {
+		for (OperatingMode operatingMode:values())
+			lookupTable.put(operatingMode.getID(), operatingMode);
+	}
 	
 	/**
 	 * Class constructor. Instantiates a new {@code OperatingMode} enumeration 
@@ -61,6 +74,23 @@ public enum OperatingMode {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Returns the {@code OperatingMode} entry associated to the given value.
+	 * 
+	 * @param value Value of the {@code OperatingMode} to retrieve.
+	 * 
+	 * @return The {@code OperatingMode} entry associated to the given value,
+	 *         {@code #UNKNOWN} if the value could not be found in the list.
+	 * 
+	 * @since 1.3.1
+	 */
+	public static OperatingMode get(int value) {
+		OperatingMode operatingMode = lookupTable.get(value);
+		if (operatingMode != null)
+			return operatingMode;
+		return OperatingMode.UNKNOWN;
 	}
 	
 	/*

@@ -705,6 +705,7 @@ public class DataReader extends Thread {
 				if (connectionInterface.getInputStream() != null) {
 					switch (mode) {
 					case AT:
+					default:
 						break;
 					case API:
 					case API_ESCAPE:
@@ -718,8 +719,6 @@ public class DataReader extends Thread {
 								logger.error("Error parsing the API packet.", e);
 							}
 						}
-						break;
-					default:
 						break;
 					}
 				} else if (connectionInterface.getInputStream() == null)

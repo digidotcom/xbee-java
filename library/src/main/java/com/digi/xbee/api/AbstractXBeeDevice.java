@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.bluetooth.AbstractBluetoothInterface;
 import com.digi.xbee.api.connection.ConnectionType;
+import com.digi.xbee.api.connection.serial.AbstractSerialPort;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.exceptions.ATCommandException;
 import com.digi.xbee.api.exceptions.BluetoothAuthenticationException;
@@ -115,6 +116,8 @@ public abstract class AbstractXBeeDevice {
 	// Constants.
 	private static String COMMAND_MODE_CHAR = "+";
 	private static String COMMAND_MODE_OK = "OK\r";
+	private static String COMMAND_MODE_EXIT = "ATCN\r";
+	private static String COMMAND_MODE_AP = "ATAP\r";
 	
 	private static int TIMEOUT_RESET = 5000;
 	protected static int TIMEOUT_READ_PACKET = 3000;
@@ -151,7 +154,7 @@ public abstract class AbstractXBeeDevice {
 	protected final static int TIMEOUT_BEFORE_COMMAND_MODE = 1200;
 	
 	/**
-	 * Timeout to wait after entering in command mode: {@value} ms.
+	 * Timeout to wait after entering and exiting command mode: {@value} ms.
 	 * 
 	 * <p>It is used to determine the operating mode of the module (this 
 	 * library only supports API modes, not transparent mode).</p>
@@ -161,7 +164,7 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see XBeeDevice#determineOperatingMode()
 	 */
-	protected final static int TIMEOUT_ENTER_COMMAND_MODE = 1500;
+	protected final static int DEFAULT_GUARD_TIME = 1500;
 	
 	// Variables.
 	protected IConnectionInterface connectionInterface;
@@ -3148,7 +3151,7 @@ public abstract class AbstractXBeeDevice {
 			if (operatingMode == OperatingMode.UNKNOWN) {
 				close();
 				throw new InvalidOperatingModeException("Could not determine operating mode.");
-			} else if (operatingMode == OperatingMode.AT) {
+			} else if (operatingMode != OperatingMode.API && operatingMode != OperatingMode.API_ESCAPE) {
 				close();
 				throw new InvalidOperatingModeException(operatingMode);
 			}
@@ -3212,16 +3215,23 @@ public abstract class AbstractXBeeDevice {
 				// It is necessary to wait at least 1 second to enter in 
 				// command mode after sending any data to the device.
 				Thread.sleep(TIMEOUT_BEFORE_COMMAND_MODE);
-				// Try to enter in AT command mode, if so the module is in AT mode.
-				boolean success = enterATCommandMode();
-				if (success)
-					return OperatingMode.AT;
+				// Try to enter in AT command mode and get the actual mode.
+				if (enterATCommandMode()) {
+					operatingMode = getActualMode();
+					logger.debug(toString() + "Using {}.", operatingMode.getName());
+					// Update the data reader with the correct mode.
+					dataReader.setXBeeReaderMode(operatingMode);
+					return operatingMode;
+				}
 			} catch (TimeoutException e1) {
 				logger.error(e1.getMessage(), e1);
 			} catch (InvalidOperatingModeException e1) {
 				logger.error(e1.getMessage(), e1);
 			} catch (InterruptedException e1) {
 				logger.error(e1.getMessage(), e1);
+			} finally {
+				// Exit AT command mode.
+				exitATCommandMode();
 			}
 		} catch (InvalidOperatingModeException e) {
 			logger.error("Invalid operating mode", e);
@@ -3246,7 +3256,7 @@ public abstract class AbstractXBeeDevice {
 	private boolean enterATCommandMode() throws InvalidOperatingModeException, TimeoutException {
 		if (!connectionInterface.isOpen())
 			throw new InterfaceNotOpenException();
-		if (operatingMode != OperatingMode.AT)
+		if (operatingMode == OperatingMode.API || operatingMode == OperatingMode.API_ESCAPE)
 			throw new InvalidOperatingModeException("Invalid mode. Command mode can be only accessed while in AT mode.");
 		
 		// Enter in AT command mode (send '+++'). The process waits 1,5 seconds for the 'OK\n'.
@@ -3258,7 +3268,7 @@ public abstract class AbstractXBeeDevice {
 			connectionInterface.writeData(COMMAND_MODE_CHAR.getBytes());
 			
 			// Wait some time to let the module generate a response.
-			Thread.sleep(TIMEOUT_ENTER_COMMAND_MODE);
+			Thread.sleep(DEFAULT_GUARD_TIME);
 			
 			// Read data from the device (it should answer with 'OK\r').
 			int readBytes = connectionInterface.readData(readData);
@@ -3272,12 +3282,66 @@ public abstract class AbstractXBeeDevice {
 			
 			// Read data was 'OK\r'.
 			return true;
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
-		} catch (InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			logger.error(e.getMessage(), e);
 		}
 		return false;
+	}
+	
+	/**
+	 * Exits AT command mode. The XBee device has to be in command mode.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @since 1.3.1
+	 */
+	private void exitATCommandMode() {
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		try {
+			// Send the exit ('ATCN\r') command.
+			connectionInterface.writeData(COMMAND_MODE_EXIT.getBytes());
+			// Wait the guard time.
+			Thread.sleep(DEFAULT_GUARD_TIME);
+		} catch (IOException | InterruptedException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Gets and returns the actual operating mode of the XBee device reading
+	 * the {@code AP} parameter in AT command mode.
+	 * 
+	 * @return The actual operating mode of the XBee device or
+	 *         {@code OperatingMode.UNKNOWN} if the mode could not be read.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @since 1.3.1
+	 */
+	private OperatingMode getActualMode() throws InvalidOperatingModeException {
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		byte[] readData = new byte[256];
+		try {
+			// Clear the serial input stream.
+			if (connectionInterface instanceof AbstractSerialPort)
+				((AbstractSerialPort)connectionInterface).purge();
+			// Send the 'AP' command.
+			connectionInterface.writeData(COMMAND_MODE_AP.getBytes());
+			Thread.sleep(100);
+			// Read the 'AP' answer.
+			int readBytes = connectionInterface.readData(readData);
+			if (readBytes == 0)
+				return OperatingMode.UNKNOWN;
+			// Return the corresponding operating mode for the AP answer.
+			return OperatingMode.get(Integer.parseInt(new String(readData).trim(), 16));
+		} catch (IOException | NumberFormatException | InterruptedException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return OperatingMode.UNKNOWN;
 	}
 	
 	/**

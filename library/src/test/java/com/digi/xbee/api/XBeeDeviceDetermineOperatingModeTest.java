@@ -214,6 +214,7 @@ public class XBeeDeviceDetermineOperatingModeTest {
 		// Setup the resources for the test.
 		Mockito.doThrow(new TimeoutException()).when(xbeeDevice).sendATCommand(Mockito.any(ATCommand.class));
 		PowerMockito.doReturn(true).when(xbeeDevice, "enterATCommandMode");
+		PowerMockito.doReturn(OperatingMode.AT).when(xbeeDevice, "getActualMode");
 		
 		PowerMockito.mockStatic(Thread.class);
 		Thread.sleep(Mockito.anyLong());

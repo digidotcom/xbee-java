@@ -363,6 +363,15 @@
 	<!-- Repositories -->
 	<repositories>
 		<repository>
+			<id>maven-central-repo</id>
+			<name>Central Maven Repository</name>
+			<url>https://repo.maven.apache.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>digi-repo</id>
 			<name>Digi Releases Repository</name>
 			<layout>default</layout>

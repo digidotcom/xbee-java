@@ -366,7 +366,7 @@
 			<id>digi-repo</id>
 			<name>Digi Releases Repository</name>
 			<layout>default</layout>
-			<url>http://ftp1.digi.com/support/m-repo/</url>
+			<url>https://ftp1.digi.com/support/m-repo/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>

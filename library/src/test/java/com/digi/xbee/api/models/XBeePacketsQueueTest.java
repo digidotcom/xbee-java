@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2020, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1436,6 +1436,49 @@ public class XBeePacketsQueueTest {
 		Mockito.when(mockedRx16Packet.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
 		for (XBeePacket packet:api16Packets)
 			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_ADDRESSES_MATCH, packet, mockedRemoteDevice));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.models.XBeePacketsQueue#addressesMatch(XBeePacket, RemoteXBeeDevice)}.
+	 * 
+	 * <p>Verify that the {@code addressesMatch} method of the {@code XBeePacketsQueue} class works 
+	 * successfully when the device's 16-bit address is unknown.</p>
+	 */
+	@Test
+	public void testAddressesDontMatchUnkown16BitAddress() throws Exception {
+		ArrayList<XBeePacket> api16Packets = new ArrayList<XBeePacket>();
+		
+		// Create a mocked remote XBee device.
+		RemoteXBeeDevice mockedRemoteDevice = Mockito.mock(RemoteXBeeDevice.class);
+		Mockito.when(mockedRemoteDevice.get64BitAddress()).thenReturn(xbee64BitAddress1);
+		Mockito.when(mockedRemoteDevice.get16BitAddress()).thenReturn(XBee16BitAddress.UNKNOWN_ADDRESS);
+		
+		// Fill the list of API packets.
+		api16Packets.add(mockedReceivePacket);
+		api16Packets.add(mockedRemoteATCommandPacket);
+		
+		// Create an XBeePacketsQueue.
+		XBeePacketsQueue xbeePacketsQueue = PowerMockito.spy(new XBeePacketsQueue());
+		
+		// Verify the addresses don't match.
+		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress2);
+		Mockito.when(mockedReceivePacket.get16bitSourceAddress()).thenReturn(XBee16BitAddress.UNKNOWN_ADDRESS);
+		Mockito.when(mockedRemoteATCommandPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress2);
+		Mockito.when(mockedRemoteATCommandPacket.get16bitSourceAddress()).thenReturn(XBee16BitAddress.UNKNOWN_ADDRESS);
+		for (XBeePacket packet:api16Packets)
+			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_ADDRESSES_MATCH, packet, mockedRemoteDevice));
+		
+		// Verify the addresses don't match.
+		Mockito.when(mockedReceivePacket.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
+		Mockito.when(mockedRemoteATCommandPacket.get16bitSourceAddress()).thenReturn(xbee16BitAddress2);
+		for (XBeePacket packet:api16Packets)
+			assertFalse((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_ADDRESSES_MATCH, packet, mockedRemoteDevice));
+		
+		// Verify the addresses match.
+		Mockito.when(mockedReceivePacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		Mockito.when(mockedRemoteATCommandPacket.get64bitSourceAddress()).thenReturn(xbee64BitAddress1);
+		for (XBeePacket packet:api16Packets)
+			assertTrue((Boolean)Whitebox.invokeMethod(xbeePacketsQueue, METHOD_ADDRESSES_MATCH, packet, mockedRemoteDevice));
 	}
 	
 	/**

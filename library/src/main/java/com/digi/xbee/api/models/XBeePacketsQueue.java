@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Digi International Inc.
+ * Copyright 2017-2020, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -534,15 +534,21 @@ public class XBeePacketsQueue {
 		APIFrameType packetType = ((XBeeAPIPacket)xbeePacket).getFrameType();
 		switch (packetType) {
 		case RECEIVE_PACKET:
-			if (remoteXBeeDevice.get64BitAddress() != null && ((ReceivePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+			if (remoteXBeeDevice.get64BitAddress() != null
+					&& ((ReceivePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
-			if (remoteXBeeDevice.get16BitAddress() != null && ((ReceivePacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
+			if (remoteXBeeDevice.get16BitAddress() != null
+					&& !remoteXBeeDevice.get16BitAddress().equals(XBee16BitAddress.UNKNOWN_ADDRESS)
+					&& ((ReceivePacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
 				return true;
 			break;
 		case REMOTE_AT_COMMAND_RESPONSE:
-			if (remoteXBeeDevice.get64BitAddress() != null && ((RemoteATCommandResponsePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
+			if (remoteXBeeDevice.get64BitAddress() != null
+					&& ((RemoteATCommandResponsePacket)xbeePacket).get64bitSourceAddress().equals(remoteXBeeDevice.get64BitAddress()))
 				return true;
-			if (remoteXBeeDevice.get16BitAddress() != null && ((RemoteATCommandResponsePacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
+			if (remoteXBeeDevice.get16BitAddress() != null
+					&& !remoteXBeeDevice.get16BitAddress().equals(XBee16BitAddress.UNKNOWN_ADDRESS)
+					&& ((RemoteATCommandResponsePacket)xbeePacket).get16bitSourceAddress().equals(remoteXBeeDevice.get16BitAddress()))
 				return true;
 			break;
 		case RX_16:

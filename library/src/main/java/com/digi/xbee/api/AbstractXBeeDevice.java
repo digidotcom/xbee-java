@@ -4460,6 +4460,173 @@ public abstract class AbstractXBeeDevice {
 	}
 	
 	/**
+	 * Reads new packet received by this XBee device during the configured 
+	 * receive timeout.
+	 * 
+	 * <p>This method blocks until new packet is received or the configured 
+	 * receive timeout expires.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations, register a {@code IPacketReceiveListener}
+	 * using the method {@link #addPacketListener(IPacketReceiveListener)}.</p>
+	 * 
+	 * @return The received XBee packet, or {@code null} if none was received
+	 *         during the configured timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #readPacket(int)
+	 * @see #readPacketFrom(RemoteXBeeDevice)
+	 * @see #readPacketFrom(RemoteXBeeDevice, int)
+	 * @see XBeePacket
+	 */
+	protected XBeePacket readPacket() {
+		return readPacket(null, TIMEOUT_READ_PACKET);
+	}
+	
+	/**
+	 * Reads new packet received by this XBee device during the provided
+	 * timeout.
+	 * 
+	 * <p>This method blocks until new packet is received or the provided
+	 * timeout expires.</p>
+	 * 
+	 * <p>For non-blocking operations, register a {@code IPacketReceiveListener}
+	 * using the method {@link #addPacketListener(IPacketReceiveListener)}.</p>
+	 * 
+	 * @param timeout The time to wait for new packet in milliseconds.
+	 * 
+	 * @return The received XBee packet, or {@code null} if none was received
+	 *         during the provided timeout.
+	 * 
+	 * @throws IllegalArgumentException if {@code timeout < 0}.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @see #readPacket()
+	 * @see #readPacketFrom(RemoteXBeeDevice)
+	 * @see #readPacketFrom(RemoteXBeeDevice, int)
+	 * @see XBeePacket
+	 */
+	protected XBeePacket readPacket(int timeout) {
+		if (timeout < 0)
+			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
+		
+		return readPacket(null, timeout);
+	}
+	
+	/**
+	 * Reads new packet received from the given remote XBee device during the 
+	 * configured receive timeout.
+	 * 
+	 * <p>This method blocks until new packet from the provided remote XBee 
+	 * device is received or the configured receive timeout expires.</p>
+	 * 
+	 * <p>The receive timeout is configured using the {@code setReceiveTimeout}
+	 * method and can be consulted with {@code getReceiveTimeout} method.</p>
+	 * 
+	 * <p>For non-blocking operations, register a {@code IPacketReceiveListener}
+	 * using the method {@link #addPacketListener(IPacketReceiveListener)}.</p>
+	 * 
+	 * @param remoteXBeeDevice The remote device to read packet from.
+	 * 
+	 * @return The received XBee packet, or {@code null} if none was received
+	 *         from the given remote device during the configured timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null}.
+	 * 
+	 * @see #getReceiveTimeout()
+	 * @see #setReceiveTimeout(int)
+	 * @see #readPacket()
+	 * @see #readPacket(int)
+	 * @see #readPacketFrom(RemoteXBeeDevice, int)
+	 * @see XBeePacket
+	 */
+	protected XBeePacket readPacketFrom(RemoteXBeeDevice remoteXBeeDevice) {
+		if (remoteXBeeDevice == null)
+			throw new NullPointerException("Remote XBee device cannot be null.");
+		
+		return readPacketFrom(remoteXBeeDevice, TIMEOUT_READ_PACKET);
+	}
+	
+	/**
+	 * Reads new packet received from the given remote XBee device during the 
+	 * provided timeout.
+	 * 
+	 * <p>This method blocks until new packet from the provided remote XBee 
+	 * device is received or the given timeout expires.</p>
+	 * 
+	 * <p>For non-blocking operations, register a {@code IPacketReceiveListener}
+	 * using the method {@link #addPacketListener(IPacketReceiveListener)}.</p>
+	 * 
+	 * @param remoteXBeeDevice The remote device to read packet from.
+	 * @param timeout The time to wait for new packet in milliseconds.
+	 * 
+	 * @return The received XBee packet, or {@code null} if none was received
+	 *         from the given remote device during the provided timeout.
+	 * 
+	 * @throws IllegalArgumentException if {@code timeout < 0}.
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * @throws NullPointerException if {@code remoteXBeeDevice == null}.
+	 * 
+	 * @see #readPacket()
+	 * @see #readPacket(int)
+	 * @see #readPacketFrom(RemoteXBeeDevice)
+	 * @see XBeePacket
+	 */
+	protected XBeePacket readPacketFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		if (remoteXBeeDevice == null)
+			throw new NullPointerException("Remote XBee device cannot be null.");
+		if (timeout < 0)
+			throw new IllegalArgumentException("Read timeout must be 0 or greater.");
+		
+		return readPacket(remoteXBeeDevice, timeout);
+	}
+	
+	/**
+	 * Reads a new packet received by this XBee device during the provided 
+	 * timeout.
+	 * 
+	 * <p>This method blocks until new packet is received or the given timeout 
+	 * expires.</p>
+	 * 
+	 * <p>If the provided remote XBee device is {@code null} the method returns 
+	 * the first packet read from any remote device.
+	 * <br>
+	 * If the remote device is not {@code null} the method returns the first 
+	 * packet read from the provided device.</p>
+	 * 
+	 * @param remoteXBeeDevice The remote device to get a packet from. 
+	 *                         {@code null} to read a packet sent by any 
+	 *                         remote XBee device.
+	 * @param timeout The time to wait for a packet in milliseconds.
+	 * 
+	 * @return The received XBee packet, or {@code null} if none was received
+	 *         from the given remote device during the provided timeout.
+	 * 
+	 * @throws InterfaceNotOpenException if this device connection is not open.
+	 * 
+	 * @see RemoteXBeeDevice
+	 * @see XBeePacket
+	 */
+	private XBeePacket readPacket(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		// Check connection.
+		if (!connectionInterface.isOpen())
+			throw new InterfaceNotOpenException();
+		
+		XBeePacketsQueue xbeePacketsQueue = dataReader.getXBeePacketsQueue();
+		
+		if (remoteXBeeDevice != null)
+			return xbeePacketsQueue.getFirstPacketFrom(remoteXBeeDevice, timeout);
+		else
+			return xbeePacketsQueue.getFirstPacket(timeout);
+	}
+	
+	/**
 	 * Reads new data received by this XBee device during the configured 
 	 * receive timeout.
 	 * 

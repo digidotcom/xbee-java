@@ -296,6 +296,26 @@ public class XBeeDevice extends AbstractXBeeDevice {
 	}
 	
 	@Override
+	public XBeePacket readPacket() {
+		return super.readPacket();
+	}
+	
+	@Override
+	public XBeePacket readPacket(int timeout) {
+		return super.readPacket(timeout);
+	}
+	
+	@Override
+	public XBeePacket readPacketFrom(RemoteXBeeDevice remoteXBeeDevice) {
+		return super.readPacketFrom(remoteXBeeDevice);
+	}
+	
+	@Override
+	public XBeePacket readPacketFrom(RemoteXBeeDevice remoteXBeeDevice, int timeout) {
+		return super.readPacketFrom(remoteXBeeDevice, timeout);
+	}
+	
+	@Override
 	public XBeeMessage readData() {
 		return super.readData();
 	}

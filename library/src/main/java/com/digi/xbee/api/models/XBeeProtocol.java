@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2019, Digi International Inc.
+ * Copyright 2017-2021, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -245,10 +245,12 @@ public enum XBeeProtocol {
 		case CELLULAR_3_LTE_M_ATT:
 		case CELLULAR_3_LTE_M_ATT_TELIT:
 		case CELLULAR_3_CAT1_LTE_VERIZON:
+		case CELLULAR_3_LTE_M_TELIT:
 			return CELLULAR;
 		case XBEE3:
 		case XBEE3_SMT:
 		case XBEE3_TH:
+		case XBEE3_RR:
 			if (firmwareVersion.startsWith("2"))
 				return RAW_802_15_4;
 			else if (firmwareVersion.startsWith("3"))
@@ -257,6 +259,11 @@ public enum XBeeProtocol {
 				return ZIGBEE;
 		case XB8X:
 			return DIGI_MESH;
+		case XBEE3_DM_LR:
+		case XBEE3_DM_LR_868:
+			return DIGI_MESH;
+		case S2C_P5:
+			return ZIGBEE;
 		default:
 			return ZIGBEE;
 		}

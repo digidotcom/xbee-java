@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2019, Digi International Inc.
+ * Copyright 2017-2021, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -110,6 +110,16 @@ public enum HardwareVersionEnum {
 	CELLULAR_3_LTE_M_ATT_TELIT(0x4C, "XBee3 Cellular LTE-M AT&T (Telit)"),  // Never released
 	/** @since 1.3.0 */
 	CELLULAR_3_CAT1_LTE_VERIZON(0x4D, "XBee3 Cellular Cat 1 LTE Verizon");
+	/** @since 1.3.1 */
+	CELLULAR_3_LTE_M_TELIT(0x4E, "XBee 3 Cellular LTE-M/NB-IoT (Telit)");
+	/** @since 1.3.1 */
+	XBEE3_DM_LR(0x50, "XB3-DMLR");
+	/** @since 1.3.1 */
+	XBEE3_DM_LR_868(0x51, "XB3-DMLR868");
+	/** @since 1.3.1 */
+	XBEE3_RR(0x52, "XBee 3 Reduced RAM");
+	/** @since 1.3.1 */
+	S2C_P5(0x53, "S2C P5");
 	
 	// Variables
 	private final int value;

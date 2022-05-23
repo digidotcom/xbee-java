@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019, Digi International Inc.
+ * Copyright 2017-2022, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1618,7 +1618,7 @@ public abstract class AbstractXBeeDevice {
 	private void writePacket(XBeePacket packet) throws IOException {
 		logger.debug(toString() + "Sending XBee packet: \n{}", packet.toPrettyString());
 		// Write bytes with the required escaping mode.
-		switch (operatingMode) {
+		switch (getOperatingMode()) {
 		case API:
 		default:
 			connectionInterface.writeData(packet.generateByteArray());

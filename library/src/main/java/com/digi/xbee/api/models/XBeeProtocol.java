@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2021, Digi International Inc.
+ * Copyright 2017-2022, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -246,6 +246,8 @@ public enum XBeeProtocol {
 		case CELLULAR_3_LTE_M_ATT_TELIT:
 		case CELLULAR_3_CAT1_LTE_VERIZON:
 		case CELLULAR_3_LTE_M_TELIT:
+		case CELLULAR_3_GLOBAL_LTE_CAT1:
+		case CELLULAR_3_NA_LTE_CAT1:
 			return CELLULAR;
 		case XBEE3:
 		case XBEE3_SMT:

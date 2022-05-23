@@ -1,4 +1,4 @@
-# XBee Java Library [ ![Download](https://api.bintray.com/packages/digidotcom/maven/xbee-java/images/download.svg) ](https://bintray.com/digidotcom/maven/xbee-java/_latestVersion)
+# XBee Java Library ![Maven Central](https://img.shields.io/maven-central/v/com.digi.xbee/xbee-java-library)
 
 This project contains the source code of the XBee Java Library, an easy-to-use 
 API developed in Java that allows you to interact with Digi International's
@@ -57,7 +57,7 @@ document.
 
 ## License
 
-Copyright 2017-2019, Digi International Inc.
+Copyright 2017-2022, Digi International Inc.
 
 This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this

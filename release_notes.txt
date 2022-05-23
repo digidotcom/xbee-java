@@ -1,10 +1,10 @@
                                 XBee Java Library
 
                            Release Notes (PN 93000776)
-                                   Build 1.3.0
-                                  4 July, 2019
+                                   Build 1.3.1
+                                  23 May, 2022
  
-                  Copyright 2017-2019, Digi International Inc.
+                  Copyright 2017-2022, Digi International Inc.
                                http://www.digi.com
  
  Introduction
@@ -13,6 +13,12 @@
  This document provides the latest release information for the XBee Java 
  Library, which allows customers to easily develop Java applications 
  that communicate with XBee modules.
+
+ XBee Java Library v1.3.1, May 2022
+--------------------------------------------------------------------------------
+ 1. Changes with respect to previous version:
+     * Added support for new hardware versions.
+     * Minor bug fixes and improvements.
 
  XBee Java Library v1.3.0, July 2019
 --------------------------------------------------------------------------------

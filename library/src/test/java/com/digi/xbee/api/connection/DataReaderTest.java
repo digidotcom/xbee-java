@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019, Digi International Inc.
+ * Copyright 2017-2022, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -1015,7 +1015,7 @@ public class DataReaderTest {
 		
 		reader.addIPDataReceiveListener(l);
 		
-		ArrayList<IIOSampleReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		ArrayList<IIPDataReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
 		assertThat(list.size(), is(equalTo(1)));
 		assertThat(list.contains(l), is(equalTo(true)));
 		

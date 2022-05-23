@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2021, Digi International Inc.
+ * Copyright 2017-2022, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -119,7 +119,11 @@ public enum HardwareVersionEnum {
 	/** @since 1.3.1 */
 	XBEE3_RR(0x52, "XBee 3 Reduced RAM"),
 	/** @since 1.3.1 */
-	S2C_P5(0x53, "S2C P5");
+	S2C_P5(0x53, "S2C P5"),
+	/** @since 1.3.1 */
+	CELLULAR_3_GLOBAL_LTE_CAT1(0x54, "XBee 3 Cellular Global LTE Cat 1"),
+	/** @since 1.3.1 */
+	CELLULAR_3_NA_LTE_CAT1(0x55, "XBee 3 Cellular North America LTE Cat 1");
 	
 	// Variables
 	private final int value;

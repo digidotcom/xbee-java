@@ -1015,7 +1015,7 @@ public class DataReaderTest {
 		
 		reader.addIPDataReceiveListener(l);
 		
-		ArrayList<IIOSampleReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
+		ArrayList<IIPDataReceiveListener> list = Whitebox.getInternalState(reader, "ipDataReceiveListeners");
 		assertThat(list.size(), is(equalTo(1)));
 		assertThat(list.contains(l), is(equalTo(true)));
 		

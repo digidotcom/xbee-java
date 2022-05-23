@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2021, Digi International Inc.
+ * Copyright 2017-2022, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -263,6 +263,10 @@ public enum XBeeProtocol {
 		case XBEE3_DM_LR_868:
 			return DIGI_MESH;
 		case S2C_P5:
+			if (firmwareVersion.toLowerCase().startsWith("b"))
+				return DIGI_MESH;
+			else if (firmwareVersion.toLowerCase().startsWith("c"))
+				return RAW_802_15_4;
 			return ZIGBEE;
 		default:
 			return ZIGBEE;

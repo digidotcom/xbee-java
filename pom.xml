@@ -140,6 +140,7 @@
 		<asm.plugin.version>5.0.3</asm.plugin.version>
 		<maven.assembly.version>2.5.4</maven.assembly.version>
 		<exec.maven.version>1.4.0</exec.maven.version>
+		<nexus.staging.maven.plugin.version>1.6.13</nexus.staging.maven.plugin.version>
 		<rxtx.native.libs.dir>rxtx-native-libs</rxtx.native.libs.dir>
 		<assemblyId>Release</assemblyId>
 		
@@ -191,15 +192,32 @@
 						</dependency>
 					</dependencies>
 				</plugin>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>${nexus.staging.maven.plugin.version}</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>sonatype-nexus-staging</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>false</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
 	
 	<!-- Distribution Management -->
 	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
 		<repository>
-			<id>bintray-repo</id>
-			<url>https://api.bintray.com/maven/digidotcom/maven/xbee-java</url>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 	</distributionManagement>
 
@@ -213,7 +231,6 @@
 			<groupId>org.rxtx</groupId>
 			<artifactId>rxtx-native</artifactId>
 			<version>${rxtx.version}</version>
-			<classifier>${build.type}</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

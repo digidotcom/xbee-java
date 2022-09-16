@@ -117,13 +117,17 @@ public enum HardwareVersionEnum {
 	/** @since 1.3.1 */
 	XBEE3_DM_LR_868(0x51, "XB3-DMLR868"),
 	/** @since 1.3.1 */
-	XBEE3_RR(0x52, "XBee 3 Reduced RAM"),
+	XBEE3_RR(0x52, "XBee RR SMT/MMT, Pro/Non-Pro"),
 	/** @since 1.3.1 */
 	S2C_P5(0x53, "S2C P5"),
 	/** @since 1.3.1 */
 	CELLULAR_3_GLOBAL_LTE_CAT1(0x54, "XBee 3 Cellular Global LTE Cat 1"),
 	/** @since 1.3.1 */
-	CELLULAR_3_NA_LTE_CAT1(0x55, "XBee 3 Cellular North America LTE Cat 1");
+	CELLULAR_3_NA_LTE_CAT1(0x55, "XBee 3 Cellular North America LTE Cat 1"),
+	/** @since 1.3.2 */
+	CELLULAR_3_LTE_M_LOW_POWER(0x56, "XBee 3 Cellular LTE-M/NB-IoT Low Power"),
+	/** @since 1.3.2 */
+	XBEE3_RR_TH(0x57, "XBee RR TH Pro/Non-Pro");
 	
 	// Variables
 	private final int value;

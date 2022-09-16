@@ -248,11 +248,13 @@ public enum XBeeProtocol {
 		case CELLULAR_3_LTE_M_TELIT:
 		case CELLULAR_3_GLOBAL_LTE_CAT1:
 		case CELLULAR_3_NA_LTE_CAT1:
+		case CELLULAR_3_LTE_M_LOW_POWER:
 			return CELLULAR;
 		case XBEE3:
 		case XBEE3_SMT:
 		case XBEE3_TH:
 		case XBEE3_RR:
+		case XBEE3_RR_TH:
 			if (firmwareVersion.startsWith("2"))
 				return RAW_802_15_4;
 			else if (firmwareVersion.startsWith("3"))

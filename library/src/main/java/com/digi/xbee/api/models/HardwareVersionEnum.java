@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2022, Digi International Inc.
+ * Copyright 2017-2023, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -80,42 +80,55 @@ public enum HardwareVersionEnum {
 	XTR(0x3F, "XTR"),
 	/** 
 	 * @deprecated Use {@link #CELLULAR_CAT1_LTE_VERIZON} instead.
-	 * @since 1.2.0 */
+	 * @since 1.2.0
+	 */
 	CELLULAR(0x40, "CELLULAR"),
 	/** @since 1.2.1 */
 	CELLULAR_CAT1_LTE_VERIZON(0x40, "XBee Cellular Cat 1 LTE Verizon"),
-	// TODO: Add the since annotation in the next version of the library.
+	/** @since 1.2.1 */
 	XBEE3(0x41, "XBee3"),
-	// TODO: Add the since annotation in the next version of the library.
+	/** @since 1.2.1 */
 	XBEE3_SMT(0x42, "XBee3 SMT"),
-	// TODO: Add the since annotation in the next version of the library.
+	/** @since 1.2.1 */
 	XBEE3_TH(0x43, "XBee3 TH"),
 	/** @since 1.2.1 */
 	CELLULAR_3G(0x44, "XBee Cellular 3G"),
-	// TODO: Add the since annotation in the next version of the library.
-	XB8X(0x45, "XB8X"),
 	/** @since 1.2.1 */
-	CELLULAR_LTE_VERIZON(0x46, "XBee Cellular LTE-M Verizon"),  // Abandoned
+	XB8X(0x45, "XB8X"),
+	/**
+	 * @deprecated Abandoned.
+	 * @since 1.2.1
+	 */
+	CELLULAR_LTE_VERIZON(0x46, "XBee Cellular LTE-M Verizon"),
 	/** @since 1.2.1 */
 	CELLULAR_LTE_ATT(0x47, "XBee Cellular LTE-M AT&T"),
-	/** @since 1.2.1 */
-	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe"),  // Never released
+	/**
+	 * @deprecated Never released.
+	 * @since 1.2.1
+	 */
+	CELLULAR_NBIOT_EUROPE(0x48, "XBee Cellular NBIoT Europe"),
 	/** @since 1.3.0 */
 	CELLULAR_3_CAT1_LTE_ATT(0x49, "XBee3 Cellular Cat 1 LTE AT&T"),
-	/** @since 1.3.0 */
-	CELLULAR_3_LTE_M_VERIZON(0x4A, "XBee3 Cellular LTE-M Verizon"),  // Abandoned
+	/**
+	 * @deprecated Abandoned.
+	 * @since 1.3.0
+	 */
+	CELLULAR_3_LTE_M_VERIZON(0x4A, "XBee3 Cellular LTE-M Verizon"),
 	/** @since 1.3.0 */
 	CELLULAR_3_LTE_M_ATT(0x4B, "XBee3 Cellular LTE-M AT&T (u-blox)"),
-	/** @since 1.3.0 */
-	CELLULAR_3_LTE_M_ATT_TELIT(0x4C, "XBee3 Cellular LTE-M AT&T (Telit)"),  // Never released
+	/**
+	 * @deprecated Never released.
+	 * @since 1.3.0
+	 */
+	CELLULAR_3_LTE_M_ATT_TELIT(0x4C, "XBee3 Cellular LTE-M AT&T (Telit)"),
 	/** @since 1.3.0 */
 	CELLULAR_3_CAT1_LTE_VERIZON(0x4D, "XBee3 Cellular Cat 1 LTE Verizon"),
 	/** @since 1.3.1 */
 	CELLULAR_3_LTE_M_TELIT(0x4E, "XBee 3 Cellular LTE-M/NB-IoT (Telit)"),
 	/** @since 1.3.1 */
-	XBEE3_DM_LR(0x50, "XB3-DMLR"),
+	XBEE3_DM_LR(0x50, "XBee XR 900"),
 	/** @since 1.3.1 */
-	XBEE3_DM_LR_868(0x51, "XB3-DMLR868"),
+	XBEE3_DM_LR_868(0x51, "XBee XR 868"),
 	/** @since 1.3.1 */
 	XBEE3_RR(0x52, "XBee RR SMT/MMT, Pro/Non-Pro"),
 	/** @since 1.3.1 */
@@ -127,7 +140,15 @@ public enum HardwareVersionEnum {
 	/** @since 1.3.2 */
 	CELLULAR_3_LTE_M_LOW_POWER(0x56, "XBee 3 Cellular LTE-M/NB-IoT Low Power"),
 	/** @since 1.3.2 */
-	XBEE3_RR_TH(0x57, "XBee RR TH Pro/Non-Pro");
+	XBEE3_RR_TH(0x57, "XBee RR TH Pro/Non-Pro"),
+	/** @since 1.3.2 */
+	CELLULAR_3_GLOBAL_CAT4(0x58, "XBee 3 Cellular Global Cat 4"),
+	/** @since 1.3.2 */
+	CELLULAR_3_NA_CAT4(0x59, "XBee 3 Cellular North America Cat 4"),
+	/** @since 1.3.2 */
+	XBEE_XR_900_TH(0x5A, "XBee XR 900 TH"),
+	/** @since 1.3.2 */
+	XBEE_XR_868_TH(0x5B, "XBee XR 868 TH");
 	
 	// Variables
 	private final int value;

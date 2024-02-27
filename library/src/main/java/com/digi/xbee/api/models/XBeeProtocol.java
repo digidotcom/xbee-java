@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2023, Digi International Inc.
+ * Copyright 2017-2024, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -47,6 +47,8 @@ public enum XBeeProtocol {
 	CELLULAR_NBIOT(16, "Cellular NB-IoT"),
 	/** @since 1.2.1 */
 	THREAD(17, "Thread"),
+	/** @since 1.3.2 */
+	BLUETOOTH(18, "Bluetooth"),
 	UNKNOWN(99, "Unknown");
 	
 	// Variables
@@ -276,6 +278,9 @@ public enum XBeeProtocol {
 			else if (firmwareVersion.toLowerCase().startsWith("c"))
 				return RAW_802_15_4;
 			return ZIGBEE;
+		case XBEE_BLU_MICRO_SMT:
+		case XBEE_BLU_TH:
+			return BLUETOOTH;
 		default:
 			return ZIGBEE;
 		}

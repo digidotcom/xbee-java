@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2023, Digi International Inc.
+ * Copyright 2017-2024, Digi International Inc.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -148,7 +148,11 @@ public enum HardwareVersionEnum {
 	/** @since 1.3.2 */
 	XBEE_XR_900_TH(0x5A, "XBee XR 900 TH"),
 	/** @since 1.3.2 */
-	XBEE_XR_868_TH(0x5B, "XBee XR 868 TH");
+	XBEE_XR_868_TH(0x5B, "XBee XR 868 TH"),
+	/** @since 1.3.2 */
+	XBEE_BLU_MICRO_SMT(0x5C, "XBee BLU Micro and SMT"),
+	/** @since 1.3.2 */
+	XBEE_BLU_TH(0x5D, "XBee BLU TH");
 	
 	// Variables
 	private final int value;

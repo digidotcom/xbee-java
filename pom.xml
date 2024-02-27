@@ -380,19 +380,19 @@
 	<!-- Repositories -->
 	<repositories>
 		<repository>
-			<id>maven-central-repo</id>
-			<name>Central Maven Repository</name>
-			<url>https://repo.maven.apache.org/maven2</url>
+			<id>digi-repo</id>
+			<name>Digi Releases Repository</name>
 			<layout>default</layout>
+			<url>https://ftp1.digi.com/support/m-repo/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>
-			<id>digi-repo</id>
-			<name>Digi Releases Repository</name>
+			<id>maven-central-repo</id>
+			<name>Central Maven Repository</name>
+			<url>https://repo.maven.apache.org/maven2</url>
 			<layout>default</layout>
-			<url>https://ftp1.digi.com/support/m-repo/</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
